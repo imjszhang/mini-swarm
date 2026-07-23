@@ -14,6 +14,7 @@
     "run:quick:coordinated": "node orchestrator/run.mjs --quick --coordination",
     "run:mock": "node orchestrator/run.mjs --mock",
     "run:serial": "node orchestrator/run.mjs --serial",
+    "compare": "node orchestrator/compare-runs.mjs",
     "smoke:runner": "node orchestrator/smoke-runner.mjs"
   }
 }

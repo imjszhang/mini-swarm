@@ -43,6 +43,16 @@ import { spawnAgent } from "./runner.mjs";
 
 const ROOT = projectRoot();
 
+function ensureBuilt(workspaceDir) {
+  if (!existsSync(path.join(workspaceDir, "package.json"))) return;
+  try {
+    execSync("npm install", { cwd: workspaceDir, stdio: "ignore", shell: true });
+    execSync("npm run build", { cwd: workspaceDir, stdio: "ignore", shell: true });
+  } catch (err) {
+    console.warn(`[run] build failed in ${workspaceDir}: ${err.message || err}`);
+  }
+}
+
 function parseArgs(argv) {
   const args = {
     coordination: false,
@@ -179,6 +189,43 @@ function initWorkspace(workspaceDir, coordination) {
   writeFileSync(path.join(workspaceDir, ".gitignore"), "node_modules/\ndist/\n", "utf8");
 }
 
+function initSkeleton(workspaceDir) {
+  mkdirSync(path.join(workspaceDir, "src"), { recursive: true });
+  const pkg = {
+    name: "mini-commonmark",
+    type: "module",
+    scripts: { build: "tsc" },
+    devDependencies: { typescript: "^5.6.0", "@types/node": "^22.0.0" },
+  };
+  writeFileSync(path.join(workspaceDir, "package.json"), `${JSON.stringify(pkg, null, 2)}\n`, "utf8");
+  writeFileSync(path.join(workspaceDir, "tsconfig.json"), `${JSON.stringify({
+    compilerOptions: {
+      target: "ES2022",
+      module: "NodeNext",
+      moduleResolution: "NodeNext",
+      outDir: "dist",
+      rootDir: "src",
+      strict: true,
+    },
+    include: ["src/**/*"],
+  }, null, 2)}\n`, "utf8");
+  writeFileSync(path.join(workspaceDir, "src", "cli.ts"), `import { renderMarkdown } from "./index.js";
+let input = "";
+process.stdin.setEncoding("utf8");
+process.stdin.on("data", (c) => { input += c; });
+process.stdin.on("end", () => { process.stdout.write(renderMarkdown(input)); });
+`);
+  writeFileSync(path.join(workspaceDir, "src", "index.ts"), `export function renderMarkdown(input: string): string {
+  return input.trim() ? "<p>" + input.trim() + "</p>\\n" : "";
+}
+`);
+  try {
+    execSync("git add -A && git commit -m \"chore: skeleton\"", { cwd: workspaceDir, shell: true, stdio: "ignore" });
+  } catch {
+    /* ignore if nothing to commit */
+  }
+}
+
 function createMockSkeleton(workspaceDir) {
   mkdirSync(path.join(workspaceDir, "src"), { recursive: true });
   writeFileSync(path.join(workspaceDir, "package.json"), JSON.stringify({
@@ -250,6 +297,7 @@ async function main() {
   console.log(`[run] id=${runId} coordination=${config.coordination} mock=${config.mock}`);
 
   initWorkspace(workspaceDir, config.coordination);
+  initSkeleton(workspaceDir);
 
   let tasks = await runPlanner({
     workspaceDir,
@@ -320,7 +368,7 @@ async function main() {
     metrics.recordTask({ id: task.id, status: "in_progress", started_at: new Date().toISOString() });
     const started = Date.now();
 
-    if (useWorktrees) {
+    if (useWorktrees && task.id !== "task-01") {
       mkdirSync(worktreesRoot, { recursive: true });
       let wt;
       try {
@@ -357,6 +405,7 @@ async function main() {
       });
       removeWorktree(workspaceDir, wt.path);
 
+      ensureBuilt(workspaceDir);
       const scorePath = path.join(runDir, `score-after-${task.id}.json`);
       const scored = runScore(workspaceDir, scorePath);
       metrics.recordScore({ phase: `after-${task.id}`, ...scored.report });
@@ -371,7 +420,6 @@ async function main() {
       return { task, ok: mergeResult.ok && workerResult.ok };
     }
 
-    // Serial: work directly on main branch
     const workerResult = await runWorkerTask({
       task,
       cwd: workspaceDir,
@@ -381,6 +429,7 @@ async function main() {
       metrics,
     });
 
+    ensureBuilt(workspaceDir);
     const scorePath = path.join(runDir, `score-after-${task.id}.json`);
     const scored = runScore(workspaceDir, scorePath);
     metrics.recordScore({ phase: `after-${task.id}`, ...scored.report });
@@ -393,10 +442,20 @@ async function main() {
     return { task, ok: workerResult.ok };
   }
 
-  await runPool(tasks, concurrency, executeTask);
+  const skeletonTask = tasks.find((t) => t.id === "task-01") || tasks[0];
+  const restTasks = tasks.filter((t) => t !== skeletonTask);
+
+  if (useWorktrees && skeletonTask) {
+    console.log("[run] skeleton task first:", skeletonTask.id);
+    await executeTask(skeletonTask);
+  }
+
+  const poolTasks = useWorktrees ? restTasks : tasks;
+  await runPool(poolTasks, concurrency, executeTask);
 
   // Optional reviewer on final diff
   const diff = getDiff(workspaceDir);
+  ensureBuilt(workspaceDir);
   const finalScorePath = path.join(runDir, "score-final.json");
   const finalScored = runScore(workspaceDir, finalScorePath);
   metrics.recordScore({ phase: "final", ...finalScored.report });

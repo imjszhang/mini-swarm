@@ -1,0 +1,46 @@
+[
+  {
+    "id": "task-01",
+    "title": "TypeScript skeleton and CLI",
+    "spec_sections": [
+      "Paragraphs"
+    ],
+    "files_scope": [
+      "package.json",
+      "tsconfig.json",
+      "src/cli.ts",
+      "src/index.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "stdin markdown → stdout HTML stub"
+  },
+  {
+    "id": "task-02",
+    "title": "ATX and Setext headings",
+    "spec_sections": [
+      "ATX headings",
+      "Setext headings"
+    ],
+    "files_scope": [
+      "src/headings.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": ""
+  },
+  {
+    "id": "task-03",
+    "title": "Paragraphs and blank lines",
+    "spec_sections": [
+      "Paragraphs",
+      "Blank lines"
+    ],
+    "files_scope": [
+      "src/paragraphs.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": ""
+  }
+]

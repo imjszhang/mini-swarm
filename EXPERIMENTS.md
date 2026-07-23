@@ -11,8 +11,8 @@
 
 | Run ID | Mode | Coordination | Notes |
 |---|---|---|---|
-| run-a-serial-quick | serial, 3 tasks | false | Phase 4 minimal loop |
-| run-a-bare | quick, concurrency 2 | false | Phase 7 Run A |
-| run-b-coordinated | quick, concurrency 2 | true | Phase 7 Run B |
+| run-a-serial-quick | serial, 3 tasks | false | 28.8% pass, 0 conflicts, 451 LOC |
+| run-a-bare-v3 | quick, concurrency 2 | false | **19.6%** pass, 0 conflicts, 440 LOC |
+| run-b-coordinated-v3 | quick, concurrency 2 | true | **19.6%** pass, **1** conflict, **195** LOC, GUIDE.md populated |
 
 Fill metrics after each run completes.

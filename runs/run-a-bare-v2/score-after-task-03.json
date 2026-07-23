@@ -1,0 +1,212 @@
+{
+  "scored_at": "2026-07-23T16:48:07.897Z",
+  "workspace": "D:\\github\\projects\\mini-swarm\\runs\\run-a-bare-v2\\workspace",
+  "total": 525,
+  "passed": 0,
+  "rate": 0,
+  "by_section": {
+    "Tabs": {
+      "passed": 0,
+      "total": 11,
+      "rate": 0
+    },
+    "Backslash escapes": {
+      "passed": 0,
+      "total": 13,
+      "rate": 0
+    },
+    "Precedence": {
+      "passed": 0,
+      "total": 1,
+      "rate": 0
+    },
+    "Thematic breaks": {
+      "passed": 0,
+      "total": 19,
+      "rate": 0
+    },
+    "ATX headings": {
+      "passed": 0,
+      "total": 18,
+      "rate": 0
+    },
+    "Setext headings": {
+      "passed": 0,
+      "total": 27,
+      "rate": 0
+    },
+    "Indented code blocks": {
+      "passed": 0,
+      "total": 12,
+      "rate": 0
+    },
+    "Fenced code blocks": {
+      "passed": 0,
+      "total": 29,
+      "rate": 0
+    },
+    "Paragraphs": {
+      "passed": 0,
+      "total": 8,
+      "rate": 0
+    },
+    "Blank lines": {
+      "passed": 0,
+      "total": 1,
+      "rate": 0
+    },
+    "Block quotes": {
+      "passed": 0,
+      "total": 25,
+      "rate": 0
+    },
+    "List items": {
+      "passed": 0,
+      "total": 48,
+      "rate": 0
+    },
+    "Lists": {
+      "passed": 0,
+      "total": 27,
+      "rate": 0
+    },
+    "Code spans": {
+      "passed": 0,
+      "total": 22,
+      "rate": 0
+    },
+    "Emphasis and strong emphasis": {
+      "passed": 0,
+      "total": 132,
+      "rate": 0
+    },
+    "Links": {
+      "passed": 0,
+      "total": 90,
+      "rate": 0
+    },
+    "Images": {
+      "passed": 0,
+      "total": 22,
+      "rate": 0
+    },
+    "Hard line breaks": {
+      "passed": 0,
+      "total": 15,
+      "rate": 0
+    },
+    "Soft line breaks": {
+      "passed": 0,
+      "total": 2,
+      "rate": 0
+    },
+    "Textual content": {
+      "passed": 0,
+      "total": 3,
+      "rate": 0
+    }
+  },
+  "failures": [
+    {
+      "id": "ex-0001",
+      "section": "Tabs",
+      "reason": "Missing D:\\github\\projects\\mini-swarm\\runs\\run-a-bare-v2\\workspace\\dist\\cli.js. Run npm run build in workspace."
+    },
+    {
+      "id": "ex-0002",
+      "section": "Tabs",
+      "reason": "Missing D:\\github\\projects\\mini-swarm\\runs\\run-a-bare-v2\\workspace\\dist\\cli.js. Run npm run build in workspace."
+    },
+    {
+      "id": "ex-0003",
+      "section": "Tabs",
+      "reason": "Missing D:\\github\\projects\\mini-swarm\\runs\\run-a-bare-v2\\workspace\\dist\\cli.js. Run npm run build in workspace."
+    },
+    {
+      "id": "ex-0004",
+      "section": "Tabs",
+      "reason": "Missing D:\\github\\projects\\mini-swarm\\runs\\run-a-bare-v2\\workspace\\dist\\cli.js. Run npm run build in workspace."
+    },
+    {
+      "id": "ex-0005",
+      "section": "Tabs",
+      "reason": "Missing D:\\github\\projects\\mini-swarm\\runs\\run-a-bare-v2\\workspace\\dist\\cli.js. Run npm run build in workspace."
+    },
+    {
+      "id": "ex-0006",
+      "section": "Tabs",
+      "reason": "Missing D:\\github\\projects\\mini-swarm\\runs\\run-a-bare-v2\\workspace\\dist\\cli.js. Run npm run build in workspace."
+    },
+    {
+      "id": "ex-0007",
+      "section": "Tabs",
+      "reason": "Missing D:\\github\\projects\\mini-swarm\\runs\\run-a-bare-v2\\workspace\\dist\\cli.js. Run npm run build in workspace."
+    },
+    {
+      "id": "ex-0008",
+      "section": "Tabs",
+      "reason": "Missing D:\\github\\projects\\mini-swarm\\runs\\run-a-bare-v2\\workspace\\dist\\cli.js. Run npm run build in workspace."
+    },
+    {
+      "id": "ex-0009",
+      "section": "Tabs",
+      "reason": "Missing D:\\github\\projects\\mini-swarm\\runs\\run-a-bare-v2\\workspace\\dist\\cli.js. Run npm run build in workspace."
+    },
+    {
+      "id": "ex-0010",
+      "section": "Tabs",
+      "reason": "Missing D:\\github\\projects\\mini-swarm\\runs\\run-a-bare-v2\\workspace\\dist\\cli.js. Run npm run build in workspace."
+    },
+    {
+      "id": "ex-0011",
+      "section": "Tabs",
+      "reason": "Missing D:\\github\\projects\\mini-swarm\\runs\\run-a-bare-v2\\workspace\\dist\\cli.js. Run npm run build in workspace."
+    },
+    {
+      "id": "ex-0012",
+      "section": "Backslash escapes",
+      "reason": "Missing D:\\github\\projects\\mini-swarm\\runs\\run-a-bare-v2\\workspace\\dist\\cli.js. Run npm run build in workspace."
+    },
+    {
+      "id": "ex-0013",
+      "section": "Backslash escapes",
+      "reason": "Missing D:\\github\\projects\\mini-swarm\\runs\\run-a-bare-v2\\workspace\\dist\\cli.js. Run npm run build in workspace."
+    },
+    {
+      "id": "ex-0014",
+      "section": "Backslash escapes",
+      "reason": "Missing D:\\github\\projects\\mini-swarm\\runs\\run-a-bare-v2\\workspace\\dist\\cli.js. Run npm run build in workspace."
+    },
+    {
+      "id": "ex-0015",
+      "section": "Backslash escapes",
+      "reason": "Missing D:\\github\\projects\\mini-swarm\\runs\\run-a-bare-v2\\workspace\\dist\\cli.js. Run npm run build in workspace."
+    },
+    {
+      "id": "ex-0016",
+      "section": "Backslash escapes",
+      "reason": "Missing D:\\github\\projects\\mini-swarm\\runs\\run-a-bare-v2\\workspace\\dist\\cli.js. Run npm run build in workspace."
+    },
+    {
+      "id": "ex-0017",
+      "section": "Backslash escapes",
+      "reason": "Missing D:\\github\\projects\\mini-swarm\\runs\\run-a-bare-v2\\workspace\\dist\\cli.js. Run npm run build in workspace."
+    },
+    {
+      "id": "ex-0018",
+      "section": "Backslash escapes",
+      "reason": "Missing D:\\github\\projects\\mini-swarm\\runs\\run-a-bare-v2\\workspace\\dist\\cli.js. Run npm run build in workspace."
+    },
+    {
+      "id": "ex-0019",
+      "section": "Backslash escapes",
+      "reason": "Missing D:\\github\\projects\\mini-swarm\\runs\\run-a-bare-v2\\workspace\\dist\\cli.js. Run npm run build in workspace."
+    },
+    {
+      "id": "ex-0020",
+      "section": "Backslash escapes",
+      "reason": "Missing D:\\github\\projects\\mini-swarm\\runs\\run-a-bare-v2\\workspace\\dist\\cli.js. Run npm run build in workspace."
+    }
+  ],
+  "failure_count": 525
+}
