@@ -1,0 +1,3152 @@
+[
+  {
+    "id": "ex-0001",
+    "section": "Tabs",
+    "markdown": "→foo→baz→→bim",
+    "html": "<pre><code>foo→baz→→bim\n</code></pre>"
+  },
+  {
+    "id": "ex-0002",
+    "section": "Tabs",
+    "markdown": "  →foo→baz→→bim",
+    "html": "<pre><code>foo→baz→→bim\n</code></pre>"
+  },
+  {
+    "id": "ex-0003",
+    "section": "Tabs",
+    "markdown": "    a→a\n    ὐ→a",
+    "html": "<pre><code>a→a\nὐ→a\n</code></pre>"
+  },
+  {
+    "id": "ex-0004",
+    "section": "Tabs",
+    "markdown": "  - foo\n\n→bar",
+    "html": "<ul>\n<li>\n<p>foo</p>\n<p>bar</p>\n</li>\n</ul>"
+  },
+  {
+    "id": "ex-0005",
+    "section": "Tabs",
+    "markdown": "- foo\n\n→→bar",
+    "html": "<ul>\n<li>\n<p>foo</p>\n<pre><code>  bar\n</code></pre>\n</li>\n</ul>"
+  },
+  {
+    "id": "ex-0006",
+    "section": "Tabs",
+    "markdown": ">→→foo",
+    "html": "<blockquote>\n<pre><code>  foo\n</code></pre>\n</blockquote>"
+  },
+  {
+    "id": "ex-0007",
+    "section": "Tabs",
+    "markdown": "-→→foo",
+    "html": "<ul>\n<li>\n<pre><code>  foo\n</code></pre>\n</li>\n</ul>"
+  },
+  {
+    "id": "ex-0008",
+    "section": "Tabs",
+    "markdown": "    foo\n→bar",
+    "html": "<pre><code>foo\nbar\n</code></pre>"
+  },
+  {
+    "id": "ex-0009",
+    "section": "Tabs",
+    "markdown": " - foo\n   - bar\n→ - baz",
+    "html": "<ul>\n<li>foo\n<ul>\n<li>bar\n<ul>\n<li>baz</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>"
+  },
+  {
+    "id": "ex-0010",
+    "section": "Tabs",
+    "markdown": "#→Foo",
+    "html": "<h1>Foo</h1>"
+  },
+  {
+    "id": "ex-0011",
+    "section": "Tabs",
+    "markdown": "*→*→*→",
+    "html": "<hr />"
+  },
+  {
+    "id": "ex-0012",
+    "section": "Backslash escapes",
+    "markdown": "\\!\\\"\\#\\$\\%\\&\\'\\(\\)\\*\\+\\,\\-\\.\\/\\:\\;\\<\\=\\>\\?\\@\\[\\\\\\]\\^\\_\\`\\{\\|\\}\\~",
+    "html": "<p>!&quot;#$%&amp;'()*+,-./:;&lt;=&gt;?@[\\]^_`{|}~</p>"
+  },
+  {
+    "id": "ex-0013",
+    "section": "Backslash escapes",
+    "markdown": "\\→\\A\\a\\ \\3\\φ\\«",
+    "html": "<p>\\→\\A\\a\\ \\3\\φ\\«</p>"
+  },
+  {
+    "id": "ex-0014",
+    "section": "Backslash escapes",
+    "markdown": "\\*not emphasized*\n\\<br/> not a tag\n\\[not a link](/foo)\n\\`not code`\n1\\. not a list\n\\* not a list\n\\# not a heading\n\\[foo]: /url \"not a reference\"\n\\&ouml; not a character entity",
+    "html": "<p>*not emphasized*\n&lt;br/&gt; not a tag\n[not a link](/foo)\n`not code`\n1. not a list\n* not a list\n# not a heading\n[foo]: /url &quot;not a reference&quot;\n&amp;ouml; not a character entity</p>"
+  },
+  {
+    "id": "ex-0015",
+    "section": "Backslash escapes",
+    "markdown": "\\\\*emphasis*",
+    "html": "<p>\\<em>emphasis</em></p>"
+  },
+  {
+    "id": "ex-0016",
+    "section": "Backslash escapes",
+    "markdown": "foo\\\nbar",
+    "html": "<p>foo<br />\nbar</p>"
+  },
+  {
+    "id": "ex-0017",
+    "section": "Backslash escapes",
+    "markdown": "`` \\[\\` ``",
+    "html": "<p><code>\\[\\`</code></p>"
+  },
+  {
+    "id": "ex-0018",
+    "section": "Backslash escapes",
+    "markdown": "    \\[\\]",
+    "html": "<pre><code>\\[\\]\n</code></pre>"
+  },
+  {
+    "id": "ex-0019",
+    "section": "Backslash escapes",
+    "markdown": "~~~\n\\[\\]\n~~~",
+    "html": "<pre><code>\\[\\]\n</code></pre>"
+  },
+  {
+    "id": "ex-0020",
+    "section": "Backslash escapes",
+    "markdown": "<https://example.com?find=\\*>",
+    "html": "<p><a href=\"https://example.com?find=%5C*\">https://example.com?find=\\*</a></p>"
+  },
+  {
+    "id": "ex-0021",
+    "section": "Backslash escapes",
+    "markdown": "<a href=\"/bar\\/)\">",
+    "html": "<a href=\"/bar\\/)\">"
+  },
+  {
+    "id": "ex-0022",
+    "section": "Backslash escapes",
+    "markdown": "[foo](/bar\\* \"ti\\*tle\")",
+    "html": "<p><a href=\"/bar*\" title=\"ti*tle\">foo</a></p>"
+  },
+  {
+    "id": "ex-0023",
+    "section": "Backslash escapes",
+    "markdown": "[foo]\n\n[foo]: /bar\\* \"ti\\*tle\"",
+    "html": "<p><a href=\"/bar*\" title=\"ti*tle\">foo</a></p>"
+  },
+  {
+    "id": "ex-0024",
+    "section": "Backslash escapes",
+    "markdown": "``` foo\\+bar\nfoo\n```",
+    "html": "<pre><code class=\"language-foo+bar\">foo\n</code></pre>"
+  },
+  {
+    "id": "ex-0025",
+    "section": "Precedence",
+    "markdown": "- `one\n- two`",
+    "html": "<ul>\n<li>`one</li>\n<li>two`</li>\n</ul>"
+  },
+  {
+    "id": "ex-0026",
+    "section": "Thematic breaks",
+    "markdown": "***\n---\n___",
+    "html": "<hr />\n<hr />\n<hr />"
+  },
+  {
+    "id": "ex-0027",
+    "section": "Thematic breaks",
+    "markdown": "+++",
+    "html": "<p>+++</p>"
+  },
+  {
+    "id": "ex-0028",
+    "section": "Thematic breaks",
+    "markdown": "===",
+    "html": "<p>===</p>"
+  },
+  {
+    "id": "ex-0029",
+    "section": "Thematic breaks",
+    "markdown": "--\n**\n__",
+    "html": "<p>--\n**\n__</p>"
+  },
+  {
+    "id": "ex-0030",
+    "section": "Thematic breaks",
+    "markdown": " ***\n  ***\n   ***",
+    "html": "<hr />\n<hr />\n<hr />"
+  },
+  {
+    "id": "ex-0031",
+    "section": "Thematic breaks",
+    "markdown": "    ***",
+    "html": "<pre><code>***\n</code></pre>"
+  },
+  {
+    "id": "ex-0032",
+    "section": "Thematic breaks",
+    "markdown": "Foo\n    ***",
+    "html": "<p>Foo\n***</p>"
+  },
+  {
+    "id": "ex-0033",
+    "section": "Thematic breaks",
+    "markdown": "_____________________________________",
+    "html": "<hr />"
+  },
+  {
+    "id": "ex-0034",
+    "section": "Thematic breaks",
+    "markdown": " - - -",
+    "html": "<hr />"
+  },
+  {
+    "id": "ex-0035",
+    "section": "Thematic breaks",
+    "markdown": " **  * ** * ** * **",
+    "html": "<hr />"
+  },
+  {
+    "id": "ex-0036",
+    "section": "Thematic breaks",
+    "markdown": "-     -      -      -",
+    "html": "<hr />"
+  },
+  {
+    "id": "ex-0037",
+    "section": "Thematic breaks",
+    "markdown": "- - - -    ",
+    "html": "<hr />"
+  },
+  {
+    "id": "ex-0038",
+    "section": "Thematic breaks",
+    "markdown": "_ _ _ _ a\n\na------\n\n---a---",
+    "html": "<p>_ _ _ _ a</p>\n<p>a------</p>\n<p>---a---</p>"
+  },
+  {
+    "id": "ex-0039",
+    "section": "Thematic breaks",
+    "markdown": " *-*",
+    "html": "<p><em>-</em></p>"
+  },
+  {
+    "id": "ex-0040",
+    "section": "Thematic breaks",
+    "markdown": "- foo\n***\n- bar",
+    "html": "<ul>\n<li>foo</li>\n</ul>\n<hr />\n<ul>\n<li>bar</li>\n</ul>"
+  },
+  {
+    "id": "ex-0041",
+    "section": "Thematic breaks",
+    "markdown": "Foo\n***\nbar",
+    "html": "<p>Foo</p>\n<hr />\n<p>bar</p>"
+  },
+  {
+    "id": "ex-0042",
+    "section": "Thematic breaks",
+    "markdown": "Foo\n---\nbar",
+    "html": "<h2>Foo</h2>\n<p>bar</p>"
+  },
+  {
+    "id": "ex-0043",
+    "section": "Thematic breaks",
+    "markdown": "* Foo\n* * *\n* Bar",
+    "html": "<ul>\n<li>Foo</li>\n</ul>\n<hr />\n<ul>\n<li>Bar</li>\n</ul>"
+  },
+  {
+    "id": "ex-0044",
+    "section": "Thematic breaks",
+    "markdown": "- Foo\n- * * *",
+    "html": "<ul>\n<li>Foo</li>\n<li>\n<hr />\n</li>\n</ul>"
+  },
+  {
+    "id": "ex-0045",
+    "section": "ATX headings",
+    "markdown": "# foo\n## foo\n### foo\n#### foo\n##### foo\n###### foo",
+    "html": "<h1>foo</h1>\n<h2>foo</h2>\n<h3>foo</h3>\n<h4>foo</h4>\n<h5>foo</h5>\n<h6>foo</h6>"
+  },
+  {
+    "id": "ex-0046",
+    "section": "ATX headings",
+    "markdown": "####### foo",
+    "html": "<p>####### foo</p>"
+  },
+  {
+    "id": "ex-0047",
+    "section": "ATX headings",
+    "markdown": "#5 bolt\n\n#hashtag",
+    "html": "<p>#5 bolt</p>\n<p>#hashtag</p>"
+  },
+  {
+    "id": "ex-0048",
+    "section": "ATX headings",
+    "markdown": "\\## foo",
+    "html": "<p>## foo</p>"
+  },
+  {
+    "id": "ex-0049",
+    "section": "ATX headings",
+    "markdown": "# foo *bar* \\*baz\\*",
+    "html": "<h1>foo <em>bar</em> *baz*</h1>"
+  },
+  {
+    "id": "ex-0050",
+    "section": "ATX headings",
+    "markdown": "#                  foo                     ",
+    "html": "<h1>foo</h1>"
+  },
+  {
+    "id": "ex-0051",
+    "section": "ATX headings",
+    "markdown": " ### foo\n  ## foo\n   # foo",
+    "html": "<h3>foo</h3>\n<h2>foo</h2>\n<h1>foo</h1>"
+  },
+  {
+    "id": "ex-0052",
+    "section": "ATX headings",
+    "markdown": "    # foo",
+    "html": "<pre><code># foo\n</code></pre>"
+  },
+  {
+    "id": "ex-0053",
+    "section": "ATX headings",
+    "markdown": "foo\n    # bar",
+    "html": "<p>foo\n# bar</p>"
+  },
+  {
+    "id": "ex-0054",
+    "section": "ATX headings",
+    "markdown": "## foo ##\n  ###   bar    ###",
+    "html": "<h2>foo</h2>\n<h3>bar</h3>"
+  },
+  {
+    "id": "ex-0055",
+    "section": "ATX headings",
+    "markdown": "# foo ##################################\n##### foo ##",
+    "html": "<h1>foo</h1>\n<h5>foo</h5>"
+  },
+  {
+    "id": "ex-0056",
+    "section": "ATX headings",
+    "markdown": "### foo ###     ",
+    "html": "<h3>foo</h3>"
+  },
+  {
+    "id": "ex-0057",
+    "section": "ATX headings",
+    "markdown": "### foo ### b",
+    "html": "<h3>foo ### b</h3>"
+  },
+  {
+    "id": "ex-0058",
+    "section": "ATX headings",
+    "markdown": "# foo#",
+    "html": "<h1>foo#</h1>"
+  },
+  {
+    "id": "ex-0059",
+    "section": "ATX headings",
+    "markdown": "### foo \\###\n## foo #\\##\n# foo \\#",
+    "html": "<h3>foo ###</h3>\n<h2>foo ###</h2>\n<h1>foo #</h1>"
+  },
+  {
+    "id": "ex-0060",
+    "section": "ATX headings",
+    "markdown": "****\n## foo\n****",
+    "html": "<hr />\n<h2>foo</h2>\n<hr />"
+  },
+  {
+    "id": "ex-0061",
+    "section": "ATX headings",
+    "markdown": "Foo bar\n# baz\nBar foo",
+    "html": "<p>Foo bar</p>\n<h1>baz</h1>\n<p>Bar foo</p>"
+  },
+  {
+    "id": "ex-0062",
+    "section": "ATX headings",
+    "markdown": "## \n#\n### ###",
+    "html": "<h2></h2>\n<h1></h1>\n<h3></h3>"
+  },
+  {
+    "id": "ex-0063",
+    "section": "Setext headings",
+    "markdown": "Foo *bar*\n=========\n\nFoo *bar*\n---------",
+    "html": "<h1>Foo <em>bar</em></h1>\n<h2>Foo <em>bar</em></h2>"
+  },
+  {
+    "id": "ex-0064",
+    "section": "Setext headings",
+    "markdown": "Foo *bar\nbaz*\n====",
+    "html": "<h1>Foo <em>bar\nbaz</em></h1>"
+  },
+  {
+    "id": "ex-0065",
+    "section": "Setext headings",
+    "markdown": "  Foo *bar\nbaz*→\n====",
+    "html": "<h1>Foo <em>bar\nbaz</em></h1>"
+  },
+  {
+    "id": "ex-0066",
+    "section": "Setext headings",
+    "markdown": "Foo\n-------------------------\n\nFoo\n=",
+    "html": "<h2>Foo</h2>\n<h1>Foo</h1>"
+  },
+  {
+    "id": "ex-0067",
+    "section": "Setext headings",
+    "markdown": "   Foo\n---\n\n  Foo\n-----\n\n  Foo\n  ===",
+    "html": "<h2>Foo</h2>\n<h2>Foo</h2>\n<h1>Foo</h1>"
+  },
+  {
+    "id": "ex-0068",
+    "section": "Setext headings",
+    "markdown": "    Foo\n    ---\n\n    Foo\n---",
+    "html": "<pre><code>Foo\n---\n\nFoo\n</code></pre>\n<hr />"
+  },
+  {
+    "id": "ex-0069",
+    "section": "Setext headings",
+    "markdown": "Foo\n   ----      ",
+    "html": "<h2>Foo</h2>"
+  },
+  {
+    "id": "ex-0070",
+    "section": "Setext headings",
+    "markdown": "Foo\n    ---",
+    "html": "<p>Foo\n---</p>"
+  },
+  {
+    "id": "ex-0071",
+    "section": "Setext headings",
+    "markdown": "Foo\n= =\n\nFoo\n--- -",
+    "html": "<p>Foo\n= =</p>\n<p>Foo</p>\n<hr />"
+  },
+  {
+    "id": "ex-0072",
+    "section": "Setext headings",
+    "markdown": "Foo  \n-----",
+    "html": "<h2>Foo</h2>"
+  },
+  {
+    "id": "ex-0073",
+    "section": "Setext headings",
+    "markdown": "Foo\\\n----",
+    "html": "<h2>Foo\\</h2>"
+  },
+  {
+    "id": "ex-0074",
+    "section": "Setext headings",
+    "markdown": "`Foo\n----\n`\n\n<a title=\"a lot\n---\nof dashes\"/>",
+    "html": "<h2>`Foo</h2>\n<p>`</p>\n<h2>&lt;a title=&quot;a lot</h2>\n<p>of dashes&quot;/&gt;</p>"
+  },
+  {
+    "id": "ex-0075",
+    "section": "Setext headings",
+    "markdown": "> Foo\n---",
+    "html": "<blockquote>\n<p>Foo</p>\n</blockquote>\n<hr />"
+  },
+  {
+    "id": "ex-0076",
+    "section": "Setext headings",
+    "markdown": "> foo\nbar\n===",
+    "html": "<blockquote>\n<p>foo\nbar\n===</p>\n</blockquote>"
+  },
+  {
+    "id": "ex-0077",
+    "section": "Setext headings",
+    "markdown": "- Foo\n---",
+    "html": "<ul>\n<li>Foo</li>\n</ul>\n<hr />"
+  },
+  {
+    "id": "ex-0078",
+    "section": "Setext headings",
+    "markdown": "Foo\nBar\n---",
+    "html": "<h2>Foo\nBar</h2>"
+  },
+  {
+    "id": "ex-0079",
+    "section": "Setext headings",
+    "markdown": "---\nFoo\n---\nBar\n---\nBaz",
+    "html": "<hr />\n<h2>Foo</h2>\n<h2>Bar</h2>\n<p>Baz</p>"
+  },
+  {
+    "id": "ex-0080",
+    "section": "Setext headings",
+    "markdown": "\n====",
+    "html": "<p>====</p>"
+  },
+  {
+    "id": "ex-0081",
+    "section": "Setext headings",
+    "markdown": "---\n---",
+    "html": "<hr />\n<hr />"
+  },
+  {
+    "id": "ex-0082",
+    "section": "Setext headings",
+    "markdown": "- foo\n-----",
+    "html": "<ul>\n<li>foo</li>\n</ul>\n<hr />"
+  },
+  {
+    "id": "ex-0083",
+    "section": "Setext headings",
+    "markdown": "    foo\n---",
+    "html": "<pre><code>foo\n</code></pre>\n<hr />"
+  },
+  {
+    "id": "ex-0084",
+    "section": "Setext headings",
+    "markdown": "> foo\n-----",
+    "html": "<blockquote>\n<p>foo</p>\n</blockquote>\n<hr />"
+  },
+  {
+    "id": "ex-0085",
+    "section": "Setext headings",
+    "markdown": "\\> foo\n------",
+    "html": "<h2>&gt; foo</h2>"
+  },
+  {
+    "id": "ex-0086",
+    "section": "Setext headings",
+    "markdown": "Foo\n\nbar\n---\nbaz",
+    "html": "<p>Foo</p>\n<h2>bar</h2>\n<p>baz</p>"
+  },
+  {
+    "id": "ex-0087",
+    "section": "Setext headings",
+    "markdown": "Foo\nbar\n\n---\n\nbaz",
+    "html": "<p>Foo\nbar</p>\n<hr />\n<p>baz</p>"
+  },
+  {
+    "id": "ex-0088",
+    "section": "Setext headings",
+    "markdown": "Foo\nbar\n* * *\nbaz",
+    "html": "<p>Foo\nbar</p>\n<hr />\n<p>baz</p>"
+  },
+  {
+    "id": "ex-0089",
+    "section": "Setext headings",
+    "markdown": "Foo\nbar\n\\---\nbaz",
+    "html": "<p>Foo\nbar\n---\nbaz</p>"
+  },
+  {
+    "id": "ex-0090",
+    "section": "Indented code blocks",
+    "markdown": "    a simple\n      indented code block",
+    "html": "<pre><code>a simple\n  indented code block\n</code></pre>"
+  },
+  {
+    "id": "ex-0091",
+    "section": "Indented code blocks",
+    "markdown": "  - foo\n\n    bar",
+    "html": "<ul>\n<li>\n<p>foo</p>\n<p>bar</p>\n</li>\n</ul>"
+  },
+  {
+    "id": "ex-0092",
+    "section": "Indented code blocks",
+    "markdown": "1.  foo\n\n    - bar",
+    "html": "<ol>\n<li>\n<p>foo</p>\n<ul>\n<li>bar</li>\n</ul>\n</li>\n</ol>"
+  },
+  {
+    "id": "ex-0093",
+    "section": "Indented code blocks",
+    "markdown": "    <a/>\n    *hi*\n\n    - one",
+    "html": "<pre><code>&lt;a/&gt;\n*hi*\n\n- one\n</code></pre>"
+  },
+  {
+    "id": "ex-0094",
+    "section": "Indented code blocks",
+    "markdown": "    chunk1\n\n    chunk2\n  \n \n \n    chunk3",
+    "html": "<pre><code>chunk1\n\nchunk2\n\n\n\nchunk3\n</code></pre>"
+  },
+  {
+    "id": "ex-0095",
+    "section": "Indented code blocks",
+    "markdown": "    chunk1\n      \n      chunk2",
+    "html": "<pre><code>chunk1\n  \n  chunk2\n</code></pre>"
+  },
+  {
+    "id": "ex-0096",
+    "section": "Indented code blocks",
+    "markdown": "Foo\n    bar\n",
+    "html": "<p>Foo\nbar</p>"
+  },
+  {
+    "id": "ex-0097",
+    "section": "Indented code blocks",
+    "markdown": "    foo\nbar",
+    "html": "<pre><code>foo\n</code></pre>\n<p>bar</p>"
+  },
+  {
+    "id": "ex-0098",
+    "section": "Indented code blocks",
+    "markdown": "# Heading\n    foo\nHeading\n------\n    foo\n----",
+    "html": "<h1>Heading</h1>\n<pre><code>foo\n</code></pre>\n<h2>Heading</h2>\n<pre><code>foo\n</code></pre>\n<hr />"
+  },
+  {
+    "id": "ex-0099",
+    "section": "Indented code blocks",
+    "markdown": "        foo\n    bar",
+    "html": "<pre><code>    foo\nbar\n</code></pre>"
+  },
+  {
+    "id": "ex-0100",
+    "section": "Indented code blocks",
+    "markdown": "\n    \n    foo\n    \n",
+    "html": "<pre><code>foo\n</code></pre>"
+  },
+  {
+    "id": "ex-0101",
+    "section": "Indented code blocks",
+    "markdown": "    foo  ",
+    "html": "<pre><code>foo  \n</code></pre>"
+  },
+  {
+    "id": "ex-0102",
+    "section": "Fenced code blocks",
+    "markdown": "```\n<\n >\n```",
+    "html": "<pre><code>&lt;\n &gt;\n</code></pre>"
+  },
+  {
+    "id": "ex-0103",
+    "section": "Fenced code blocks",
+    "markdown": "~~~\n<\n >\n~~~",
+    "html": "<pre><code>&lt;\n &gt;\n</code></pre>"
+  },
+  {
+    "id": "ex-0104",
+    "section": "Fenced code blocks",
+    "markdown": "``\nfoo\n``",
+    "html": "<p><code>foo</code></p>"
+  },
+  {
+    "id": "ex-0105",
+    "section": "Fenced code blocks",
+    "markdown": "```\naaa\n~~~\n```",
+    "html": "<pre><code>aaa\n~~~\n</code></pre>"
+  },
+  {
+    "id": "ex-0106",
+    "section": "Fenced code blocks",
+    "markdown": "~~~\naaa\n```\n~~~",
+    "html": "<pre><code>aaa\n```\n</code></pre>"
+  },
+  {
+    "id": "ex-0107",
+    "section": "Fenced code blocks",
+    "markdown": "````\naaa\n```\n``````",
+    "html": "<pre><code>aaa\n```\n</code></pre>"
+  },
+  {
+    "id": "ex-0108",
+    "section": "Fenced code blocks",
+    "markdown": "~~~~\naaa\n~~~\n~~~~",
+    "html": "<pre><code>aaa\n~~~\n</code></pre>"
+  },
+  {
+    "id": "ex-0109",
+    "section": "Fenced code blocks",
+    "markdown": "```",
+    "html": "<pre><code></code></pre>"
+  },
+  {
+    "id": "ex-0110",
+    "section": "Fenced code blocks",
+    "markdown": "`````\n\n```\naaa",
+    "html": "<pre><code>\n```\naaa\n</code></pre>"
+  },
+  {
+    "id": "ex-0111",
+    "section": "Fenced code blocks",
+    "markdown": "> ```\n> aaa\n\nbbb",
+    "html": "<blockquote>\n<pre><code>aaa\n</code></pre>\n</blockquote>\n<p>bbb</p>"
+  },
+  {
+    "id": "ex-0112",
+    "section": "Fenced code blocks",
+    "markdown": "```\n\n  \n```",
+    "html": "<pre><code>\n  \n</code></pre>"
+  },
+  {
+    "id": "ex-0113",
+    "section": "Fenced code blocks",
+    "markdown": "```\n```",
+    "html": "<pre><code></code></pre>"
+  },
+  {
+    "id": "ex-0114",
+    "section": "Fenced code blocks",
+    "markdown": " ```\n aaa\naaa\n```",
+    "html": "<pre><code>aaa\naaa\n</code></pre>"
+  },
+  {
+    "id": "ex-0115",
+    "section": "Fenced code blocks",
+    "markdown": "  ```\naaa\n  aaa\naaa\n  ```",
+    "html": "<pre><code>aaa\naaa\naaa\n</code></pre>"
+  },
+  {
+    "id": "ex-0116",
+    "section": "Fenced code blocks",
+    "markdown": "   ```\n   aaa\n    aaa\n  aaa\n   ```",
+    "html": "<pre><code>aaa\n aaa\naaa\n</code></pre>"
+  },
+  {
+    "id": "ex-0117",
+    "section": "Fenced code blocks",
+    "markdown": "    ```\n    aaa\n    ```",
+    "html": "<pre><code>```\naaa\n```\n</code></pre>"
+  },
+  {
+    "id": "ex-0118",
+    "section": "Fenced code blocks",
+    "markdown": "```\naaa\n  ```",
+    "html": "<pre><code>aaa\n</code></pre>"
+  },
+  {
+    "id": "ex-0119",
+    "section": "Fenced code blocks",
+    "markdown": "   ```\naaa\n  ```",
+    "html": "<pre><code>aaa\n</code></pre>"
+  },
+  {
+    "id": "ex-0120",
+    "section": "Fenced code blocks",
+    "markdown": "```\naaa\n    ```",
+    "html": "<pre><code>aaa\n    ```\n</code></pre>"
+  },
+  {
+    "id": "ex-0121",
+    "section": "Fenced code blocks",
+    "markdown": "``` ```\naaa",
+    "html": "<p><code> </code>\naaa</p>"
+  },
+  {
+    "id": "ex-0122",
+    "section": "Fenced code blocks",
+    "markdown": "~~~~~~\naaa\n~~~ ~~",
+    "html": "<pre><code>aaa\n~~~ ~~\n</code></pre>"
+  },
+  {
+    "id": "ex-0123",
+    "section": "Fenced code blocks",
+    "markdown": "foo\n```\nbar\n```\nbaz",
+    "html": "<p>foo</p>\n<pre><code>bar\n</code></pre>\n<p>baz</p>"
+  },
+  {
+    "id": "ex-0124",
+    "section": "Fenced code blocks",
+    "markdown": "foo\n---\n~~~\nbar\n~~~\n# baz",
+    "html": "<h2>foo</h2>\n<pre><code>bar\n</code></pre>\n<h1>baz</h1>"
+  },
+  {
+    "id": "ex-0125",
+    "section": "Fenced code blocks",
+    "markdown": "```ruby\ndef foo(x)\n  return 3\nend\n```",
+    "html": "<pre><code class=\"language-ruby\">def foo(x)\n  return 3\nend\n</code></pre>"
+  },
+  {
+    "id": "ex-0126",
+    "section": "Fenced code blocks",
+    "markdown": "~~~~    ruby startline=3 $%@#$\ndef foo(x)\n  return 3\nend\n~~~~~~~",
+    "html": "<pre><code class=\"language-ruby\">def foo(x)\n  return 3\nend\n</code></pre>"
+  },
+  {
+    "id": "ex-0127",
+    "section": "Fenced code blocks",
+    "markdown": "````;\n````",
+    "html": "<pre><code class=\"language-;\"></code></pre>"
+  },
+  {
+    "id": "ex-0128",
+    "section": "Fenced code blocks",
+    "markdown": "``` aa ```\nfoo",
+    "html": "<p><code>aa</code>\nfoo</p>"
+  },
+  {
+    "id": "ex-0129",
+    "section": "Fenced code blocks",
+    "markdown": "~~~ aa ``` ~~~\nfoo\n~~~",
+    "html": "<pre><code class=\"language-aa\">foo\n</code></pre>"
+  },
+  {
+    "id": "ex-0130",
+    "section": "Fenced code blocks",
+    "markdown": "```\n``` aaa\n```",
+    "html": "<pre><code>``` aaa\n</code></pre>"
+  },
+  {
+    "id": "ex-0131",
+    "section": "Paragraphs",
+    "markdown": "aaa\n\nbbb",
+    "html": "<p>aaa</p>\n<p>bbb</p>"
+  },
+  {
+    "id": "ex-0132",
+    "section": "Paragraphs",
+    "markdown": "aaa\nbbb\n\nccc\nddd",
+    "html": "<p>aaa\nbbb</p>\n<p>ccc\nddd</p>"
+  },
+  {
+    "id": "ex-0133",
+    "section": "Paragraphs",
+    "markdown": "aaa\n\n\nbbb",
+    "html": "<p>aaa</p>\n<p>bbb</p>"
+  },
+  {
+    "id": "ex-0134",
+    "section": "Paragraphs",
+    "markdown": "  aaa\n bbb",
+    "html": "<p>aaa\nbbb</p>"
+  },
+  {
+    "id": "ex-0135",
+    "section": "Paragraphs",
+    "markdown": "aaa\n             bbb\n                                       ccc",
+    "html": "<p>aaa\nbbb\nccc</p>"
+  },
+  {
+    "id": "ex-0136",
+    "section": "Paragraphs",
+    "markdown": "   aaa\nbbb",
+    "html": "<p>aaa\nbbb</p>"
+  },
+  {
+    "id": "ex-0137",
+    "section": "Paragraphs",
+    "markdown": "    aaa\nbbb",
+    "html": "<pre><code>aaa\n</code></pre>\n<p>bbb</p>"
+  },
+  {
+    "id": "ex-0138",
+    "section": "Paragraphs",
+    "markdown": "aaa     \nbbb     ",
+    "html": "<p>aaa<br />\nbbb</p>"
+  },
+  {
+    "id": "ex-0139",
+    "section": "Blank lines",
+    "markdown": "  \n\naaa\n  \n\n# aaa\n\n  ",
+    "html": "<p>aaa</p>\n<h1>aaa</h1>"
+  },
+  {
+    "id": "ex-0140",
+    "section": "Block quotes",
+    "markdown": "> # Foo\n> bar\n> baz",
+    "html": "<blockquote>\n<h1>Foo</h1>\n<p>bar\nbaz</p>\n</blockquote>"
+  },
+  {
+    "id": "ex-0141",
+    "section": "Block quotes",
+    "markdown": "># Foo\n>bar\n> baz",
+    "html": "<blockquote>\n<h1>Foo</h1>\n<p>bar\nbaz</p>\n</blockquote>"
+  },
+  {
+    "id": "ex-0142",
+    "section": "Block quotes",
+    "markdown": "   > # Foo\n   > bar\n > baz",
+    "html": "<blockquote>\n<h1>Foo</h1>\n<p>bar\nbaz</p>\n</blockquote>"
+  },
+  {
+    "id": "ex-0143",
+    "section": "Block quotes",
+    "markdown": "    > # Foo\n    > bar\n    > baz",
+    "html": "<pre><code>&gt; # Foo\n&gt; bar\n&gt; baz\n</code></pre>"
+  },
+  {
+    "id": "ex-0144",
+    "section": "Block quotes",
+    "markdown": "> # Foo\n> bar\nbaz",
+    "html": "<blockquote>\n<h1>Foo</h1>\n<p>bar\nbaz</p>\n</blockquote>"
+  },
+  {
+    "id": "ex-0145",
+    "section": "Block quotes",
+    "markdown": "> bar\nbaz\n> foo",
+    "html": "<blockquote>\n<p>bar\nbaz\nfoo</p>\n</blockquote>"
+  },
+  {
+    "id": "ex-0146",
+    "section": "Block quotes",
+    "markdown": "> foo\n---",
+    "html": "<blockquote>\n<p>foo</p>\n</blockquote>\n<hr />"
+  },
+  {
+    "id": "ex-0147",
+    "section": "Block quotes",
+    "markdown": "> - foo\n- bar",
+    "html": "<blockquote>\n<ul>\n<li>foo</li>\n</ul>\n</blockquote>\n<ul>\n<li>bar</li>\n</ul>"
+  },
+  {
+    "id": "ex-0148",
+    "section": "Block quotes",
+    "markdown": ">     foo\n    bar",
+    "html": "<blockquote>\n<pre><code>foo\n</code></pre>\n</blockquote>\n<pre><code>bar\n</code></pre>"
+  },
+  {
+    "id": "ex-0149",
+    "section": "Block quotes",
+    "markdown": "> ```\nfoo\n```",
+    "html": "<blockquote>\n<pre><code></code></pre>\n</blockquote>\n<p>foo</p>\n<pre><code></code></pre>"
+  },
+  {
+    "id": "ex-0150",
+    "section": "Block quotes",
+    "markdown": "> foo\n    - bar",
+    "html": "<blockquote>\n<p>foo\n- bar</p>\n</blockquote>"
+  },
+  {
+    "id": "ex-0151",
+    "section": "Block quotes",
+    "markdown": ">",
+    "html": "<blockquote>\n</blockquote>"
+  },
+  {
+    "id": "ex-0152",
+    "section": "Block quotes",
+    "markdown": ">\n>  \n> ",
+    "html": "<blockquote>\n</blockquote>"
+  },
+  {
+    "id": "ex-0153",
+    "section": "Block quotes",
+    "markdown": ">\n> foo\n>  ",
+    "html": "<blockquote>\n<p>foo</p>\n</blockquote>"
+  },
+  {
+    "id": "ex-0154",
+    "section": "Block quotes",
+    "markdown": "> foo\n\n> bar",
+    "html": "<blockquote>\n<p>foo</p>\n</blockquote>\n<blockquote>\n<p>bar</p>\n</blockquote>"
+  },
+  {
+    "id": "ex-0155",
+    "section": "Block quotes",
+    "markdown": "> foo\n> bar",
+    "html": "<blockquote>\n<p>foo\nbar</p>\n</blockquote>"
+  },
+  {
+    "id": "ex-0156",
+    "section": "Block quotes",
+    "markdown": "> foo\n>\n> bar",
+    "html": "<blockquote>\n<p>foo</p>\n<p>bar</p>\n</blockquote>"
+  },
+  {
+    "id": "ex-0157",
+    "section": "Block quotes",
+    "markdown": "foo\n> bar",
+    "html": "<p>foo</p>\n<blockquote>\n<p>bar</p>\n</blockquote>"
+  },
+  {
+    "id": "ex-0158",
+    "section": "Block quotes",
+    "markdown": "> aaa\n***\n> bbb",
+    "html": "<blockquote>\n<p>aaa</p>\n</blockquote>\n<hr />\n<blockquote>\n<p>bbb</p>\n</blockquote>"
+  },
+  {
+    "id": "ex-0159",
+    "section": "Block quotes",
+    "markdown": "> bar\nbaz",
+    "html": "<blockquote>\n<p>bar\nbaz</p>\n</blockquote>"
+  },
+  {
+    "id": "ex-0160",
+    "section": "Block quotes",
+    "markdown": "> bar\n\nbaz",
+    "html": "<blockquote>\n<p>bar</p>\n</blockquote>\n<p>baz</p>"
+  },
+  {
+    "id": "ex-0161",
+    "section": "Block quotes",
+    "markdown": "> bar\n>\nbaz",
+    "html": "<blockquote>\n<p>bar</p>\n</blockquote>\n<p>baz</p>"
+  },
+  {
+    "id": "ex-0162",
+    "section": "Block quotes",
+    "markdown": "> > > foo\nbar",
+    "html": "<blockquote>\n<blockquote>\n<blockquote>\n<p>foo\nbar</p>\n</blockquote>\n</blockquote>\n</blockquote>"
+  },
+  {
+    "id": "ex-0163",
+    "section": "Block quotes",
+    "markdown": ">>> foo\n> bar\n>>baz",
+    "html": "<blockquote>\n<blockquote>\n<blockquote>\n<p>foo\nbar\nbaz</p>\n</blockquote>\n</blockquote>\n</blockquote>"
+  },
+  {
+    "id": "ex-0164",
+    "section": "Block quotes",
+    "markdown": ">     code\n\n>    not code",
+    "html": "<blockquote>\n<pre><code>code\n</code></pre>\n</blockquote>\n<blockquote>\n<p>not code</p>\n</blockquote>"
+  },
+  {
+    "id": "ex-0165",
+    "section": "List items",
+    "markdown": "A paragraph\nwith two lines.\n\n    indented code\n\n> A block quote.",
+    "html": "<p>A paragraph\nwith two lines.</p>\n<pre><code>indented code\n</code></pre>\n<blockquote>\n<p>A block quote.</p>\n</blockquote>"
+  },
+  {
+    "id": "ex-0166",
+    "section": "List items",
+    "markdown": "1.  A paragraph\n    with two lines.\n\n        indented code\n\n    > A block quote.",
+    "html": "<ol>\n<li>\n<p>A paragraph\nwith two lines.</p>\n<pre><code>indented code\n</code></pre>\n<blockquote>\n<p>A block quote.</p>\n</blockquote>\n</li>\n</ol>"
+  },
+  {
+    "id": "ex-0167",
+    "section": "List items",
+    "markdown": "- one\n\n two",
+    "html": "<ul>\n<li>one</li>\n</ul>\n<p>two</p>"
+  },
+  {
+    "id": "ex-0168",
+    "section": "List items",
+    "markdown": "- one\n\n  two",
+    "html": "<ul>\n<li>\n<p>one</p>\n<p>two</p>\n</li>\n</ul>"
+  },
+  {
+    "id": "ex-0169",
+    "section": "List items",
+    "markdown": " -    one\n\n     two",
+    "html": "<ul>\n<li>one</li>\n</ul>\n<pre><code> two\n</code></pre>"
+  },
+  {
+    "id": "ex-0170",
+    "section": "List items",
+    "markdown": " -    one\n\n      two",
+    "html": "<ul>\n<li>\n<p>one</p>\n<p>two</p>\n</li>\n</ul>"
+  },
+  {
+    "id": "ex-0171",
+    "section": "List items",
+    "markdown": "   > > 1.  one\n>>\n>>     two",
+    "html": "<blockquote>\n<blockquote>\n<ol>\n<li>\n<p>one</p>\n<p>two</p>\n</li>\n</ol>\n</blockquote>\n</blockquote>"
+  },
+  {
+    "id": "ex-0172",
+    "section": "List items",
+    "markdown": ">>- one\n>>\n  >  > two",
+    "html": "<blockquote>\n<blockquote>\n<ul>\n<li>one</li>\n</ul>\n<p>two</p>\n</blockquote>\n</blockquote>"
+  },
+  {
+    "id": "ex-0173",
+    "section": "List items",
+    "markdown": "-one\n\n2.two",
+    "html": "<p>-one</p>\n<p>2.two</p>"
+  },
+  {
+    "id": "ex-0174",
+    "section": "List items",
+    "markdown": "- foo\n\n\n  bar",
+    "html": "<ul>\n<li>\n<p>foo</p>\n<p>bar</p>\n</li>\n</ul>"
+  },
+  {
+    "id": "ex-0175",
+    "section": "List items",
+    "markdown": "1.  foo\n\n    ```\n    bar\n    ```\n\n    baz\n\n    > bam",
+    "html": "<ol>\n<li>\n<p>foo</p>\n<pre><code>bar\n</code></pre>\n<p>baz</p>\n<blockquote>\n<p>bam</p>\n</blockquote>\n</li>\n</ol>"
+  },
+  {
+    "id": "ex-0176",
+    "section": "List items",
+    "markdown": "- Foo\n\n      bar\n\n\n      baz",
+    "html": "<ul>\n<li>\n<p>Foo</p>\n<pre><code>bar\n\n\nbaz\n</code></pre>\n</li>\n</ul>"
+  },
+  {
+    "id": "ex-0177",
+    "section": "List items",
+    "markdown": "123456789. ok",
+    "html": "<ol start=\"123456789\">\n<li>ok</li>\n</ol>"
+  },
+  {
+    "id": "ex-0178",
+    "section": "List items",
+    "markdown": "1234567890. not ok",
+    "html": "<p>1234567890. not ok</p>"
+  },
+  {
+    "id": "ex-0179",
+    "section": "List items",
+    "markdown": "0. ok",
+    "html": "<ol start=\"0\">\n<li>ok</li>\n</ol>"
+  },
+  {
+    "id": "ex-0180",
+    "section": "List items",
+    "markdown": "003. ok",
+    "html": "<ol start=\"3\">\n<li>ok</li>\n</ol>"
+  },
+  {
+    "id": "ex-0181",
+    "section": "List items",
+    "markdown": "-1. not ok",
+    "html": "<p>-1. not ok</p>"
+  },
+  {
+    "id": "ex-0182",
+    "section": "List items",
+    "markdown": "- foo\n\n      bar",
+    "html": "<ul>\n<li>\n<p>foo</p>\n<pre><code>bar\n</code></pre>\n</li>\n</ul>"
+  },
+  {
+    "id": "ex-0183",
+    "section": "List items",
+    "markdown": "  10.  foo\n\n           bar",
+    "html": "<ol start=\"10\">\n<li>\n<p>foo</p>\n<pre><code>bar\n</code></pre>\n</li>\n</ol>"
+  },
+  {
+    "id": "ex-0184",
+    "section": "List items",
+    "markdown": "    indented code\n\nparagraph\n\n    more code",
+    "html": "<pre><code>indented code\n</code></pre>\n<p>paragraph</p>\n<pre><code>more code\n</code></pre>"
+  },
+  {
+    "id": "ex-0185",
+    "section": "List items",
+    "markdown": "1.     indented code\n\n   paragraph\n\n       more code",
+    "html": "<ol>\n<li>\n<pre><code>indented code\n</code></pre>\n<p>paragraph</p>\n<pre><code>more code\n</code></pre>\n</li>\n</ol>"
+  },
+  {
+    "id": "ex-0186",
+    "section": "List items",
+    "markdown": "1.      indented code\n\n   paragraph\n\n       more code",
+    "html": "<ol>\n<li>\n<pre><code> indented code\n</code></pre>\n<p>paragraph</p>\n<pre><code>more code\n</code></pre>\n</li>\n</ol>"
+  },
+  {
+    "id": "ex-0187",
+    "section": "List items",
+    "markdown": "   foo\n\nbar",
+    "html": "<p>foo</p>\n<p>bar</p>"
+  },
+  {
+    "id": "ex-0188",
+    "section": "List items",
+    "markdown": "-    foo\n\n  bar",
+    "html": "<ul>\n<li>foo</li>\n</ul>\n<p>bar</p>"
+  },
+  {
+    "id": "ex-0189",
+    "section": "List items",
+    "markdown": "-  foo\n\n   bar",
+    "html": "<ul>\n<li>\n<p>foo</p>\n<p>bar</p>\n</li>\n</ul>"
+  },
+  {
+    "id": "ex-0190",
+    "section": "List items",
+    "markdown": "-\n  foo\n-\n  ```\n  bar\n  ```\n-\n      baz",
+    "html": "<ul>\n<li>foo</li>\n<li>\n<pre><code>bar\n</code></pre>\n</li>\n<li>\n<pre><code>baz\n</code></pre>\n</li>\n</ul>"
+  },
+  {
+    "id": "ex-0191",
+    "section": "List items",
+    "markdown": "-   \n  foo",
+    "html": "<ul>\n<li>foo</li>\n</ul>"
+  },
+  {
+    "id": "ex-0192",
+    "section": "List items",
+    "markdown": "-\n\n  foo",
+    "html": "<ul>\n<li></li>\n</ul>\n<p>foo</p>"
+  },
+  {
+    "id": "ex-0193",
+    "section": "List items",
+    "markdown": "- foo\n-\n- bar",
+    "html": "<ul>\n<li>foo</li>\n<li></li>\n<li>bar</li>\n</ul>"
+  },
+  {
+    "id": "ex-0194",
+    "section": "List items",
+    "markdown": "- foo\n-   \n- bar",
+    "html": "<ul>\n<li>foo</li>\n<li></li>\n<li>bar</li>\n</ul>"
+  },
+  {
+    "id": "ex-0195",
+    "section": "List items",
+    "markdown": "1. foo\n2.\n3. bar",
+    "html": "<ol>\n<li>foo</li>\n<li></li>\n<li>bar</li>\n</ol>"
+  },
+  {
+    "id": "ex-0196",
+    "section": "List items",
+    "markdown": "*",
+    "html": "<ul>\n<li></li>\n</ul>"
+  },
+  {
+    "id": "ex-0197",
+    "section": "List items",
+    "markdown": "foo\n*\n\nfoo\n1.",
+    "html": "<p>foo\n*</p>\n<p>foo\n1.</p>"
+  },
+  {
+    "id": "ex-0198",
+    "section": "List items",
+    "markdown": " 1.  A paragraph\n     with two lines.\n\n         indented code\n\n     > A block quote.",
+    "html": "<ol>\n<li>\n<p>A paragraph\nwith two lines.</p>\n<pre><code>indented code\n</code></pre>\n<blockquote>\n<p>A block quote.</p>\n</blockquote>\n</li>\n</ol>"
+  },
+  {
+    "id": "ex-0199",
+    "section": "List items",
+    "markdown": "  1.  A paragraph\n      with two lines.\n\n          indented code\n\n      > A block quote.",
+    "html": "<ol>\n<li>\n<p>A paragraph\nwith two lines.</p>\n<pre><code>indented code\n</code></pre>\n<blockquote>\n<p>A block quote.</p>\n</blockquote>\n</li>\n</ol>"
+  },
+  {
+    "id": "ex-0200",
+    "section": "List items",
+    "markdown": "   1.  A paragraph\n       with two lines.\n\n           indented code\n\n       > A block quote.",
+    "html": "<ol>\n<li>\n<p>A paragraph\nwith two lines.</p>\n<pre><code>indented code\n</code></pre>\n<blockquote>\n<p>A block quote.</p>\n</blockquote>\n</li>\n</ol>"
+  },
+  {
+    "id": "ex-0201",
+    "section": "List items",
+    "markdown": "    1.  A paragraph\n        with two lines.\n\n            indented code\n\n        > A block quote.",
+    "html": "<pre><code>1.  A paragraph\n    with two lines.\n\n        indented code\n\n    &gt; A block quote.\n</code></pre>"
+  },
+  {
+    "id": "ex-0202",
+    "section": "List items",
+    "markdown": "  1.  A paragraph\nwith two lines.\n\n          indented code\n\n      > A block quote.",
+    "html": "<ol>\n<li>\n<p>A paragraph\nwith two lines.</p>\n<pre><code>indented code\n</code></pre>\n<blockquote>\n<p>A block quote.</p>\n</blockquote>\n</li>\n</ol>"
+  },
+  {
+    "id": "ex-0203",
+    "section": "List items",
+    "markdown": "  1.  A paragraph\n    with two lines.",
+    "html": "<ol>\n<li>A paragraph\nwith two lines.</li>\n</ol>"
+  },
+  {
+    "id": "ex-0204",
+    "section": "List items",
+    "markdown": "> 1. > Blockquote\ncontinued here.",
+    "html": "<blockquote>\n<ol>\n<li>\n<blockquote>\n<p>Blockquote\ncontinued here.</p>\n</blockquote>\n</li>\n</ol>\n</blockquote>"
+  },
+  {
+    "id": "ex-0205",
+    "section": "List items",
+    "markdown": "> 1. > Blockquote\n> continued here.",
+    "html": "<blockquote>\n<ol>\n<li>\n<blockquote>\n<p>Blockquote\ncontinued here.</p>\n</blockquote>\n</li>\n</ol>\n</blockquote>"
+  },
+  {
+    "id": "ex-0206",
+    "section": "List items",
+    "markdown": "- foo\n  - bar\n    - baz\n      - boo",
+    "html": "<ul>\n<li>foo\n<ul>\n<li>bar\n<ul>\n<li>baz\n<ul>\n<li>boo</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>"
+  },
+  {
+    "id": "ex-0207",
+    "section": "List items",
+    "markdown": "- foo\n - bar\n  - baz\n   - boo",
+    "html": "<ul>\n<li>foo</li>\n<li>bar</li>\n<li>baz</li>\n<li>boo</li>\n</ul>"
+  },
+  {
+    "id": "ex-0208",
+    "section": "List items",
+    "markdown": "10) foo\n    - bar",
+    "html": "<ol start=\"10\">\n<li>foo\n<ul>\n<li>bar</li>\n</ul>\n</li>\n</ol>"
+  },
+  {
+    "id": "ex-0209",
+    "section": "List items",
+    "markdown": "10) foo\n   - bar",
+    "html": "<ol start=\"10\">\n<li>foo</li>\n</ol>\n<ul>\n<li>bar</li>\n</ul>"
+  },
+  {
+    "id": "ex-0210",
+    "section": "List items",
+    "markdown": "- - foo",
+    "html": "<ul>\n<li>\n<ul>\n<li>foo</li>\n</ul>\n</li>\n</ul>"
+  },
+  {
+    "id": "ex-0211",
+    "section": "List items",
+    "markdown": "1. - 2. foo",
+    "html": "<ol>\n<li>\n<ul>\n<li>\n<ol start=\"2\">\n<li>foo</li>\n</ol>\n</li>\n</ul>\n</li>\n</ol>"
+  },
+  {
+    "id": "ex-0212",
+    "section": "List items",
+    "markdown": "- # Foo\n- Bar\n  ---\n  baz",
+    "html": "<ul>\n<li>\n<h1>Foo</h1>\n</li>\n<li>\n<h2>Bar</h2>\nbaz</li>\n</ul>"
+  },
+  {
+    "id": "ex-0213",
+    "section": "Lists",
+    "markdown": "- foo\n- bar\n+ baz",
+    "html": "<ul>\n<li>foo</li>\n<li>bar</li>\n</ul>\n<ul>\n<li>baz</li>\n</ul>"
+  },
+  {
+    "id": "ex-0214",
+    "section": "Lists",
+    "markdown": "1. foo\n2. bar\n3) baz",
+    "html": "<ol>\n<li>foo</li>\n<li>bar</li>\n</ol>\n<ol start=\"3\">\n<li>baz</li>\n</ol>"
+  },
+  {
+    "id": "ex-0215",
+    "section": "Lists",
+    "markdown": "Foo\n- bar\n- baz",
+    "html": "<p>Foo</p>\n<ul>\n<li>bar</li>\n<li>baz</li>\n</ul>"
+  },
+  {
+    "id": "ex-0216",
+    "section": "Lists",
+    "markdown": "The number of windows in my house is\n14.  The number of doors is 6.",
+    "html": "<p>The number of windows in my house is\n14.  The number of doors is 6.</p>"
+  },
+  {
+    "id": "ex-0217",
+    "section": "Lists",
+    "markdown": "The number of windows in my house is\n1.  The number of doors is 6.",
+    "html": "<p>The number of windows in my house is</p>\n<ol>\n<li>The number of doors is 6.</li>\n</ol>"
+  },
+  {
+    "id": "ex-0218",
+    "section": "Lists",
+    "markdown": "- foo\n\n- bar\n\n\n- baz",
+    "html": "<ul>\n<li>\n<p>foo</p>\n</li>\n<li>\n<p>bar</p>\n</li>\n<li>\n<p>baz</p>\n</li>\n</ul>"
+  },
+  {
+    "id": "ex-0219",
+    "section": "Lists",
+    "markdown": "- foo\n  - bar\n    - baz\n\n\n      bim",
+    "html": "<ul>\n<li>foo\n<ul>\n<li>bar\n<ul>\n<li>\n<p>baz</p>\n<p>bim</p>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>"
+  },
+  {
+    "id": "ex-0220",
+    "section": "Lists",
+    "markdown": "- foo\n- bar\n\n<!-- -->\n\n- baz\n- bim",
+    "html": "<ul>\n<li>foo</li>\n<li>bar</li>\n</ul>\n<!-- -->\n<ul>\n<li>baz</li>\n<li>bim</li>\n</ul>"
+  },
+  {
+    "id": "ex-0221",
+    "section": "Lists",
+    "markdown": "-   foo\n\n    notcode\n\n-   foo\n\n<!-- -->\n\n    code",
+    "html": "<ul>\n<li>\n<p>foo</p>\n<p>notcode</p>\n</li>\n<li>\n<p>foo</p>\n</li>\n</ul>\n<!-- -->\n<pre><code>code\n</code></pre>"
+  },
+  {
+    "id": "ex-0222",
+    "section": "Lists",
+    "markdown": "- a\n - b\n  - c\n   - d\n  - e\n - f\n- g",
+    "html": "<ul>\n<li>a</li>\n<li>b</li>\n<li>c</li>\n<li>d</li>\n<li>e</li>\n<li>f</li>\n<li>g</li>\n</ul>"
+  },
+  {
+    "id": "ex-0223",
+    "section": "Lists",
+    "markdown": "1. a\n\n  2. b\n\n   3. c",
+    "html": "<ol>\n<li>\n<p>a</p>\n</li>\n<li>\n<p>b</p>\n</li>\n<li>\n<p>c</p>\n</li>\n</ol>"
+  },
+  {
+    "id": "ex-0224",
+    "section": "Lists",
+    "markdown": "- a\n - b\n  - c\n   - d\n    - e",
+    "html": "<ul>\n<li>a</li>\n<li>b</li>\n<li>c</li>\n<li>d\n- e</li>\n</ul>"
+  },
+  {
+    "id": "ex-0225",
+    "section": "Lists",
+    "markdown": "1. a\n\n  2. b\n\n    3. c",
+    "html": "<ol>\n<li>\n<p>a</p>\n</li>\n<li>\n<p>b</p>\n</li>\n</ol>\n<pre><code>3. c\n</code></pre>"
+  },
+  {
+    "id": "ex-0226",
+    "section": "Lists",
+    "markdown": "- a\n- b\n\n- c",
+    "html": "<ul>\n<li>\n<p>a</p>\n</li>\n<li>\n<p>b</p>\n</li>\n<li>\n<p>c</p>\n</li>\n</ul>"
+  },
+  {
+    "id": "ex-0227",
+    "section": "Lists",
+    "markdown": "* a\n*\n\n* c",
+    "html": "<ul>\n<li>\n<p>a</p>\n</li>\n<li></li>\n<li>\n<p>c</p>\n</li>\n</ul>"
+  },
+  {
+    "id": "ex-0228",
+    "section": "Lists",
+    "markdown": "- a\n- b\n\n  c\n- d",
+    "html": "<ul>\n<li>\n<p>a</p>\n</li>\n<li>\n<p>b</p>\n<p>c</p>\n</li>\n<li>\n<p>d</p>\n</li>\n</ul>"
+  },
+  {
+    "id": "ex-0229",
+    "section": "Lists",
+    "markdown": "- a\n- b\n\n  [ref]: /url\n- d",
+    "html": "<ul>\n<li>\n<p>a</p>\n</li>\n<li>\n<p>b</p>\n</li>\n<li>\n<p>d</p>\n</li>\n</ul>"
+  },
+  {
+    "id": "ex-0230",
+    "section": "Lists",
+    "markdown": "- a\n- ```\n  b\n\n\n  ```\n- c",
+    "html": "<ul>\n<li>a</li>\n<li>\n<pre><code>b\n\n\n</code></pre>\n</li>\n<li>c</li>\n</ul>"
+  },
+  {
+    "id": "ex-0231",
+    "section": "Lists",
+    "markdown": "- a\n  - b\n\n    c\n- d",
+    "html": "<ul>\n<li>a\n<ul>\n<li>\n<p>b</p>\n<p>c</p>\n</li>\n</ul>\n</li>\n<li>d</li>\n</ul>"
+  },
+  {
+    "id": "ex-0232",
+    "section": "Lists",
+    "markdown": "* a\n  > b\n  >\n* c",
+    "html": "<ul>\n<li>a\n<blockquote>\n<p>b</p>\n</blockquote>\n</li>\n<li>c</li>\n</ul>"
+  },
+  {
+    "id": "ex-0233",
+    "section": "Lists",
+    "markdown": "- a\n  > b\n  ```\n  c\n  ```\n- d",
+    "html": "<ul>\n<li>a\n<blockquote>\n<p>b</p>\n</blockquote>\n<pre><code>c\n</code></pre>\n</li>\n<li>d</li>\n</ul>"
+  },
+  {
+    "id": "ex-0234",
+    "section": "Lists",
+    "markdown": "- a",
+    "html": "<ul>\n<li>a</li>\n</ul>"
+  },
+  {
+    "id": "ex-0235",
+    "section": "Lists",
+    "markdown": "- a\n  - b",
+    "html": "<ul>\n<li>a\n<ul>\n<li>b</li>\n</ul>\n</li>\n</ul>"
+  },
+  {
+    "id": "ex-0236",
+    "section": "Lists",
+    "markdown": "1. ```\n   foo\n   ```\n\n   bar",
+    "html": "<ol>\n<li>\n<pre><code>foo\n</code></pre>\n<p>bar</p>\n</li>\n</ol>"
+  },
+  {
+    "id": "ex-0237",
+    "section": "Lists",
+    "markdown": "* foo\n  * bar\n\n  baz",
+    "html": "<ul>\n<li>\n<p>foo</p>\n<ul>\n<li>bar</li>\n</ul>\n<p>baz</p>\n</li>\n</ul>"
+  },
+  {
+    "id": "ex-0238",
+    "section": "Lists",
+    "markdown": "- a\n  - b\n  - c\n\n- d\n  - e\n  - f",
+    "html": "<ul>\n<li>\n<p>a</p>\n<ul>\n<li>b</li>\n<li>c</li>\n</ul>\n</li>\n<li>\n<p>d</p>\n<ul>\n<li>e</li>\n<li>f</li>\n</ul>\n</li>\n</ul>"
+  },
+  {
+    "id": "ex-0239",
+    "section": "Lists",
+    "markdown": "`hi`lo`",
+    "html": "<p><code>hi</code>lo`</p>"
+  },
+  {
+    "id": "ex-0240",
+    "section": "Code spans",
+    "markdown": "`foo`",
+    "html": "<p><code>foo</code></p>"
+  },
+  {
+    "id": "ex-0241",
+    "section": "Code spans",
+    "markdown": "`` foo ` bar ``",
+    "html": "<p><code>foo ` bar</code></p>"
+  },
+  {
+    "id": "ex-0242",
+    "section": "Code spans",
+    "markdown": "` `` `",
+    "html": "<p><code>``</code></p>"
+  },
+  {
+    "id": "ex-0243",
+    "section": "Code spans",
+    "markdown": "`  ``  `",
+    "html": "<p><code> `` </code></p>"
+  },
+  {
+    "id": "ex-0244",
+    "section": "Code spans",
+    "markdown": "` a`",
+    "html": "<p><code> a</code></p>"
+  },
+  {
+    "id": "ex-0245",
+    "section": "Code spans",
+    "markdown": "` b `",
+    "html": "<p><code> b </code></p>"
+  },
+  {
+    "id": "ex-0246",
+    "section": "Code spans",
+    "markdown": "` `\n`  `",
+    "html": "<p><code> </code>\n<code>  </code></p>"
+  },
+  {
+    "id": "ex-0247",
+    "section": "Code spans",
+    "markdown": "``\nfoo\nbar  \nbaz\n``",
+    "html": "<p><code>foo bar   baz</code></p>"
+  },
+  {
+    "id": "ex-0248",
+    "section": "Code spans",
+    "markdown": "``\nfoo \n``",
+    "html": "<p><code>foo </code></p>"
+  },
+  {
+    "id": "ex-0249",
+    "section": "Code spans",
+    "markdown": "`foo   bar \nbaz`",
+    "html": "<p><code>foo   bar  baz</code></p>"
+  },
+  {
+    "id": "ex-0250",
+    "section": "Code spans",
+    "markdown": "`foo\\`bar`",
+    "html": "<p><code>foo\\</code>bar`</p>"
+  },
+  {
+    "id": "ex-0251",
+    "section": "Code spans",
+    "markdown": "``foo`bar``",
+    "html": "<p><code>foo`bar</code></p>"
+  },
+  {
+    "id": "ex-0252",
+    "section": "Code spans",
+    "markdown": "` foo `` bar `",
+    "html": "<p><code>foo `` bar</code></p>"
+  },
+  {
+    "id": "ex-0253",
+    "section": "Code spans",
+    "markdown": "*foo`*`",
+    "html": "<p>*foo<code>*</code></p>"
+  },
+  {
+    "id": "ex-0254",
+    "section": "Code spans",
+    "markdown": "[not a `link](/foo`)",
+    "html": "<p>[not a <code>link](/foo</code>)</p>"
+  },
+  {
+    "id": "ex-0255",
+    "section": "Code spans",
+    "markdown": "`<a href=\"`\">`",
+    "html": "<p><code>&lt;a href=&quot;</code>&quot;&gt;`</p>"
+  },
+  {
+    "id": "ex-0256",
+    "section": "Code spans",
+    "markdown": "<a href=\"`\">`",
+    "html": "<p><a href=\"`\">`</p>"
+  },
+  {
+    "id": "ex-0257",
+    "section": "Code spans",
+    "markdown": "`<https://foo.bar.`baz>`",
+    "html": "<p><code>&lt;https://foo.bar.</code>baz&gt;`</p>"
+  },
+  {
+    "id": "ex-0258",
+    "section": "Code spans",
+    "markdown": "<https://foo.bar.`baz>`",
+    "html": "<p><a href=\"https://foo.bar.%60baz\">https://foo.bar.`baz</a>`</p>"
+  },
+  {
+    "id": "ex-0259",
+    "section": "Code spans",
+    "markdown": "```foo``",
+    "html": "<p>```foo``</p>"
+  },
+  {
+    "id": "ex-0260",
+    "section": "Code spans",
+    "markdown": "`foo",
+    "html": "<p>`foo</p>"
+  },
+  {
+    "id": "ex-0261",
+    "section": "Code spans",
+    "markdown": "`foo``bar``",
+    "html": "<p>`foo<code>bar</code></p>"
+  },
+  {
+    "id": "ex-0262",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "*foo bar*",
+    "html": "<p><em>foo bar</em></p>"
+  },
+  {
+    "id": "ex-0263",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "a * foo bar*",
+    "html": "<p>a * foo bar*</p>"
+  },
+  {
+    "id": "ex-0264",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "a*\"foo\"*",
+    "html": "<p>a*&quot;foo&quot;*</p>"
+  },
+  {
+    "id": "ex-0265",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "* a *",
+    "html": "<p>* a *</p>"
+  },
+  {
+    "id": "ex-0266",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "*$*alpha.\n\n*£*bravo.\n\n*€*charlie.",
+    "html": "<p>*$*alpha.</p>\n<p>*£*bravo.</p>\n<p>*€*charlie.</p>"
+  },
+  {
+    "id": "ex-0267",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "foo*bar*",
+    "html": "<p>foo<em>bar</em></p>"
+  },
+  {
+    "id": "ex-0268",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "5*6*78",
+    "html": "<p>5<em>6</em>78</p>"
+  },
+  {
+    "id": "ex-0269",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "_foo bar_",
+    "html": "<p><em>foo bar</em></p>"
+  },
+  {
+    "id": "ex-0270",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "_ foo bar_",
+    "html": "<p>_ foo bar_</p>"
+  },
+  {
+    "id": "ex-0271",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "a_\"foo\"_",
+    "html": "<p>a_&quot;foo&quot;_</p>"
+  },
+  {
+    "id": "ex-0272",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "foo_bar_",
+    "html": "<p>foo_bar_</p>"
+  },
+  {
+    "id": "ex-0273",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "5_6_78",
+    "html": "<p>5_6_78</p>"
+  },
+  {
+    "id": "ex-0274",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "пристаням_стремятся_",
+    "html": "<p>пристаням_стремятся_</p>"
+  },
+  {
+    "id": "ex-0275",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "aa_\"bb\"_cc",
+    "html": "<p>aa_&quot;bb&quot;_cc</p>"
+  },
+  {
+    "id": "ex-0276",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "foo-_(bar)_",
+    "html": "<p>foo-<em>(bar)</em></p>"
+  },
+  {
+    "id": "ex-0277",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "_foo*",
+    "html": "<p>_foo*</p>"
+  },
+  {
+    "id": "ex-0278",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "*foo bar *",
+    "html": "<p>*foo bar *</p>"
+  },
+  {
+    "id": "ex-0279",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "*foo bar\n*",
+    "html": "<p>*foo bar\n*</p>"
+  },
+  {
+    "id": "ex-0280",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "*(*foo)",
+    "html": "<p>*(*foo)</p>"
+  },
+  {
+    "id": "ex-0281",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "*(*foo*)*",
+    "html": "<p><em>(<em>foo</em>)</em></p>"
+  },
+  {
+    "id": "ex-0282",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "*foo*bar",
+    "html": "<p><em>foo</em>bar</p>"
+  },
+  {
+    "id": "ex-0283",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "_foo bar _",
+    "html": "<p>_foo bar _</p>"
+  },
+  {
+    "id": "ex-0284",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "_(_foo)",
+    "html": "<p>_(_foo)</p>"
+  },
+  {
+    "id": "ex-0285",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "_(_foo_)_",
+    "html": "<p><em>(<em>foo</em>)</em></p>"
+  },
+  {
+    "id": "ex-0286",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "_foo_bar",
+    "html": "<p>_foo_bar</p>"
+  },
+  {
+    "id": "ex-0287",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "_пристаням_стремятся",
+    "html": "<p>_пристаням_стремятся</p>"
+  },
+  {
+    "id": "ex-0288",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "_foo_bar_baz_",
+    "html": "<p><em>foo_bar_baz</em></p>"
+  },
+  {
+    "id": "ex-0289",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "_(bar)_.",
+    "html": "<p><em>(bar)</em>.</p>"
+  },
+  {
+    "id": "ex-0290",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "**foo bar**",
+    "html": "<p><strong>foo bar</strong></p>"
+  },
+  {
+    "id": "ex-0291",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "** foo bar**",
+    "html": "<p>** foo bar**</p>"
+  },
+  {
+    "id": "ex-0292",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "a**\"foo\"**",
+    "html": "<p>a**&quot;foo&quot;**</p>"
+  },
+  {
+    "id": "ex-0293",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "foo**bar**",
+    "html": "<p>foo<strong>bar</strong></p>"
+  },
+  {
+    "id": "ex-0294",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "__foo bar__",
+    "html": "<p><strong>foo bar</strong></p>"
+  },
+  {
+    "id": "ex-0295",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "__ foo bar__",
+    "html": "<p>__ foo bar__</p>"
+  },
+  {
+    "id": "ex-0296",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "__\nfoo bar__",
+    "html": "<p>__\nfoo bar__</p>"
+  },
+  {
+    "id": "ex-0297",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "a__\"foo\"__",
+    "html": "<p>a__&quot;foo&quot;__</p>"
+  },
+  {
+    "id": "ex-0298",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "foo__bar__",
+    "html": "<p>foo__bar__</p>"
+  },
+  {
+    "id": "ex-0299",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "5__6__78",
+    "html": "<p>5__6__78</p>"
+  },
+  {
+    "id": "ex-0300",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "пристаням__стремятся__",
+    "html": "<p>пристаням__стремятся__</p>"
+  },
+  {
+    "id": "ex-0301",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "__foo, __bar__, baz__",
+    "html": "<p><strong>foo, <strong>bar</strong>, baz</strong></p>"
+  },
+  {
+    "id": "ex-0302",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "foo-__(bar)__",
+    "html": "<p>foo-<strong>(bar)</strong></p>"
+  },
+  {
+    "id": "ex-0303",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "**foo bar **",
+    "html": "<p>**foo bar **</p>"
+  },
+  {
+    "id": "ex-0304",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "**(**foo)",
+    "html": "<p>**(**foo)</p>"
+  },
+  {
+    "id": "ex-0305",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "*(**foo**)*",
+    "html": "<p><em>(<strong>foo</strong>)</em></p>"
+  },
+  {
+    "id": "ex-0306",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "**Gomphocarpus (*Gomphocarpus physocarpus*, syn.\n*Asclepias physocarpa*)**",
+    "html": "<p><strong>Gomphocarpus (<em>Gomphocarpus physocarpus</em>, syn.\n<em>Asclepias physocarpa</em>)</strong></p>"
+  },
+  {
+    "id": "ex-0307",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "**foo \"*bar*\" foo**",
+    "html": "<p><strong>foo &quot;<em>bar</em>&quot; foo</strong></p>"
+  },
+  {
+    "id": "ex-0308",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "**foo**bar",
+    "html": "<p><strong>foo</strong>bar</p>"
+  },
+  {
+    "id": "ex-0309",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "__foo bar __",
+    "html": "<p>__foo bar __</p>"
+  },
+  {
+    "id": "ex-0310",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "__(__foo)",
+    "html": "<p>__(__foo)</p>"
+  },
+  {
+    "id": "ex-0311",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "_(__foo__)_",
+    "html": "<p><em>(<strong>foo</strong>)</em></p>"
+  },
+  {
+    "id": "ex-0312",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "__foo__bar",
+    "html": "<p>__foo__bar</p>"
+  },
+  {
+    "id": "ex-0313",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "__пристаням__стремятся",
+    "html": "<p>__пристаням__стремятся</p>"
+  },
+  {
+    "id": "ex-0314",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "__foo__bar__baz__",
+    "html": "<p><strong>foo__bar__baz</strong></p>"
+  },
+  {
+    "id": "ex-0315",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "__(bar)__.",
+    "html": "<p><strong>(bar)</strong>.</p>"
+  },
+  {
+    "id": "ex-0316",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "*foo [bar](/url)*",
+    "html": "<p><em>foo <a href=\"/url\">bar</a></em></p>"
+  },
+  {
+    "id": "ex-0317",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "*foo\nbar*",
+    "html": "<p><em>foo\nbar</em></p>"
+  },
+  {
+    "id": "ex-0318",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "_foo __bar__ baz_",
+    "html": "<p><em>foo <strong>bar</strong> baz</em></p>"
+  },
+  {
+    "id": "ex-0319",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "_foo _bar_ baz_",
+    "html": "<p><em>foo <em>bar</em> baz</em></p>"
+  },
+  {
+    "id": "ex-0320",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "__foo_ bar_",
+    "html": "<p><em><em>foo</em> bar</em></p>"
+  },
+  {
+    "id": "ex-0321",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "*foo *bar**",
+    "html": "<p><em>foo <em>bar</em></em></p>"
+  },
+  {
+    "id": "ex-0322",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "*foo **bar** baz*",
+    "html": "<p><em>foo <strong>bar</strong> baz</em></p>"
+  },
+  {
+    "id": "ex-0323",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "*foo**bar**baz*",
+    "html": "<p><em>foo<strong>bar</strong>baz</em></p>"
+  },
+  {
+    "id": "ex-0324",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "*foo**bar*",
+    "html": "<p><em>foo**bar</em></p>"
+  },
+  {
+    "id": "ex-0325",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "***foo** bar*",
+    "html": "<p><em><strong>foo</strong> bar</em></p>"
+  },
+  {
+    "id": "ex-0326",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "*foo **bar***",
+    "html": "<p><em>foo <strong>bar</strong></em></p>"
+  },
+  {
+    "id": "ex-0327",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "*foo**bar***",
+    "html": "<p><em>foo<strong>bar</strong></em></p>"
+  },
+  {
+    "id": "ex-0328",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "foo***bar***baz",
+    "html": "<p>foo<em><strong>bar</strong></em>baz</p>"
+  },
+  {
+    "id": "ex-0329",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "foo******bar*********baz",
+    "html": "<p>foo<strong><strong><strong>bar</strong></strong></strong>***baz</p>"
+  },
+  {
+    "id": "ex-0330",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "*foo **bar *baz* bim** bop*",
+    "html": "<p><em>foo <strong>bar <em>baz</em> bim</strong> bop</em></p>"
+  },
+  {
+    "id": "ex-0331",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "*foo [*bar*](/url)*",
+    "html": "<p><em>foo <a href=\"/url\"><em>bar</em></a></em></p>"
+  },
+  {
+    "id": "ex-0332",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "** is not an empty emphasis",
+    "html": "<p>** is not an empty emphasis</p>"
+  },
+  {
+    "id": "ex-0333",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "**** is not an empty strong emphasis",
+    "html": "<p>**** is not an empty strong emphasis</p>"
+  },
+  {
+    "id": "ex-0334",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "**foo [bar](/url)**",
+    "html": "<p><strong>foo <a href=\"/url\">bar</a></strong></p>"
+  },
+  {
+    "id": "ex-0335",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "**foo\nbar**",
+    "html": "<p><strong>foo\nbar</strong></p>"
+  },
+  {
+    "id": "ex-0336",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "__foo _bar_ baz__",
+    "html": "<p><strong>foo <em>bar</em> baz</strong></p>"
+  },
+  {
+    "id": "ex-0337",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "__foo __bar__ baz__",
+    "html": "<p><strong>foo <strong>bar</strong> baz</strong></p>"
+  },
+  {
+    "id": "ex-0338",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "____foo__ bar__",
+    "html": "<p><strong><strong>foo</strong> bar</strong></p>"
+  },
+  {
+    "id": "ex-0339",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "**foo **bar****",
+    "html": "<p><strong>foo <strong>bar</strong></strong></p>"
+  },
+  {
+    "id": "ex-0340",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "**foo *bar* baz**",
+    "html": "<p><strong>foo <em>bar</em> baz</strong></p>"
+  },
+  {
+    "id": "ex-0341",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "**foo*bar*baz**",
+    "html": "<p><strong>foo<em>bar</em>baz</strong></p>"
+  },
+  {
+    "id": "ex-0342",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "***foo* bar**",
+    "html": "<p><strong><em>foo</em> bar</strong></p>"
+  },
+  {
+    "id": "ex-0343",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "**foo *bar***",
+    "html": "<p><strong>foo <em>bar</em></strong></p>"
+  },
+  {
+    "id": "ex-0344",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "**foo *bar **baz**\nbim* bop**",
+    "html": "<p><strong>foo <em>bar <strong>baz</strong>\nbim</em> bop</strong></p>"
+  },
+  {
+    "id": "ex-0345",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "**foo [*bar*](/url)**",
+    "html": "<p><strong>foo <a href=\"/url\"><em>bar</em></a></strong></p>"
+  },
+  {
+    "id": "ex-0346",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "__ is not an empty emphasis",
+    "html": "<p>__ is not an empty emphasis</p>"
+  },
+  {
+    "id": "ex-0347",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "____ is not an empty strong emphasis",
+    "html": "<p>____ is not an empty strong emphasis</p>"
+  },
+  {
+    "id": "ex-0348",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "foo ***",
+    "html": "<p>foo ***</p>"
+  },
+  {
+    "id": "ex-0349",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "foo *\\**",
+    "html": "<p>foo <em>*</em></p>"
+  },
+  {
+    "id": "ex-0350",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "foo *_*",
+    "html": "<p>foo <em>_</em></p>"
+  },
+  {
+    "id": "ex-0351",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "foo *****",
+    "html": "<p>foo *****</p>"
+  },
+  {
+    "id": "ex-0352",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "foo **\\***",
+    "html": "<p>foo <strong>*</strong></p>"
+  },
+  {
+    "id": "ex-0353",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "foo **_**",
+    "html": "<p>foo <strong>_</strong></p>"
+  },
+  {
+    "id": "ex-0354",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "**foo*",
+    "html": "<p>*<em>foo</em></p>"
+  },
+  {
+    "id": "ex-0355",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "*foo**",
+    "html": "<p><em>foo</em>*</p>"
+  },
+  {
+    "id": "ex-0356",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "***foo**",
+    "html": "<p>*<strong>foo</strong></p>"
+  },
+  {
+    "id": "ex-0357",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "****foo*",
+    "html": "<p>***<em>foo</em></p>"
+  },
+  {
+    "id": "ex-0358",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "**foo***",
+    "html": "<p><strong>foo</strong>*</p>"
+  },
+  {
+    "id": "ex-0359",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "*foo****",
+    "html": "<p><em>foo</em>***</p>"
+  },
+  {
+    "id": "ex-0360",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "foo ___",
+    "html": "<p>foo ___</p>"
+  },
+  {
+    "id": "ex-0361",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "foo _\\__",
+    "html": "<p>foo <em>_</em></p>"
+  },
+  {
+    "id": "ex-0362",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "foo _*_",
+    "html": "<p>foo <em>*</em></p>"
+  },
+  {
+    "id": "ex-0363",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "foo _____",
+    "html": "<p>foo _____</p>"
+  },
+  {
+    "id": "ex-0364",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "foo __\\___",
+    "html": "<p>foo <strong>_</strong></p>"
+  },
+  {
+    "id": "ex-0365",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "foo __*__",
+    "html": "<p>foo <strong>*</strong></p>"
+  },
+  {
+    "id": "ex-0366",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "__foo_",
+    "html": "<p>_<em>foo</em></p>"
+  },
+  {
+    "id": "ex-0367",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "_foo__",
+    "html": "<p><em>foo</em>_</p>"
+  },
+  {
+    "id": "ex-0368",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "___foo__",
+    "html": "<p>_<strong>foo</strong></p>"
+  },
+  {
+    "id": "ex-0369",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "____foo_",
+    "html": "<p>___<em>foo</em></p>"
+  },
+  {
+    "id": "ex-0370",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "__foo___",
+    "html": "<p><strong>foo</strong>_</p>"
+  },
+  {
+    "id": "ex-0371",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "_foo____",
+    "html": "<p><em>foo</em>___</p>"
+  },
+  {
+    "id": "ex-0372",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "**foo**",
+    "html": "<p><strong>foo</strong></p>"
+  },
+  {
+    "id": "ex-0373",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "*_foo_*",
+    "html": "<p><em><em>foo</em></em></p>"
+  },
+  {
+    "id": "ex-0374",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "__foo__",
+    "html": "<p><strong>foo</strong></p>"
+  },
+  {
+    "id": "ex-0375",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "_*foo*_",
+    "html": "<p><em><em>foo</em></em></p>"
+  },
+  {
+    "id": "ex-0376",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "****foo****",
+    "html": "<p><strong><strong>foo</strong></strong></p>"
+  },
+  {
+    "id": "ex-0377",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "____foo____",
+    "html": "<p><strong><strong>foo</strong></strong></p>"
+  },
+  {
+    "id": "ex-0378",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "******foo******",
+    "html": "<p><strong><strong><strong>foo</strong></strong></strong></p>"
+  },
+  {
+    "id": "ex-0379",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "***foo***",
+    "html": "<p><em><strong>foo</strong></em></p>"
+  },
+  {
+    "id": "ex-0380",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "_____foo_____",
+    "html": "<p><em><strong><strong>foo</strong></strong></em></p>"
+  },
+  {
+    "id": "ex-0381",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "*foo _bar* baz_",
+    "html": "<p><em>foo _bar</em> baz_</p>"
+  },
+  {
+    "id": "ex-0382",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "*foo __bar *baz bim__ bam*",
+    "html": "<p><em>foo <strong>bar *baz bim</strong> bam</em></p>"
+  },
+  {
+    "id": "ex-0383",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "**foo **bar baz**",
+    "html": "<p>**foo <strong>bar baz</strong></p>"
+  },
+  {
+    "id": "ex-0384",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "*foo *bar baz*",
+    "html": "<p>*foo <em>bar baz</em></p>"
+  },
+  {
+    "id": "ex-0385",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "*[bar*](/url)",
+    "html": "<p>*<a href=\"/url\">bar*</a></p>"
+  },
+  {
+    "id": "ex-0386",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "_foo [bar_](/url)",
+    "html": "<p>_foo <a href=\"/url\">bar_</a></p>"
+  },
+  {
+    "id": "ex-0387",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "*<img src=\"foo\" title=\"*\"/>",
+    "html": "<p>*<img src=\"foo\" title=\"*\"/></p>"
+  },
+  {
+    "id": "ex-0388",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "**<a href=\"**\">",
+    "html": "<p>**<a href=\"**\"></p>"
+  },
+  {
+    "id": "ex-0389",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "__<a href=\"__\">",
+    "html": "<p>__<a href=\"__\"></p>"
+  },
+  {
+    "id": "ex-0390",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "*a `*`*",
+    "html": "<p><em>a <code>*</code></em></p>"
+  },
+  {
+    "id": "ex-0391",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "_a `_`_",
+    "html": "<p><em>a <code>_</code></em></p>"
+  },
+  {
+    "id": "ex-0392",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "**a<https://foo.bar/?q=**>",
+    "html": "<p>**a<a href=\"https://foo.bar/?q=**\">https://foo.bar/?q=**</a></p>"
+  },
+  {
+    "id": "ex-0393",
+    "section": "Emphasis and strong emphasis",
+    "markdown": "__a<https://foo.bar/?q=__>",
+    "html": "<p>__a<a href=\"https://foo.bar/?q=__\">https://foo.bar/?q=__</a></p>"
+  },
+  {
+    "id": "ex-0394",
+    "section": "Links",
+    "markdown": "[link](/uri \"title\")",
+    "html": "<p><a href=\"/uri\" title=\"title\">link</a></p>"
+  },
+  {
+    "id": "ex-0395",
+    "section": "Links",
+    "markdown": "[link](/uri)",
+    "html": "<p><a href=\"/uri\">link</a></p>"
+  },
+  {
+    "id": "ex-0396",
+    "section": "Links",
+    "markdown": "[](./target.md)",
+    "html": "<p><a href=\"./target.md\"></a></p>"
+  },
+  {
+    "id": "ex-0397",
+    "section": "Links",
+    "markdown": "[link]()",
+    "html": "<p><a href=\"\">link</a></p>"
+  },
+  {
+    "id": "ex-0398",
+    "section": "Links",
+    "markdown": "[link](<>)",
+    "html": "<p><a href=\"\">link</a></p>"
+  },
+  {
+    "id": "ex-0399",
+    "section": "Links",
+    "markdown": "[]()",
+    "html": "<p><a href=\"\"></a></p>"
+  },
+  {
+    "id": "ex-0400",
+    "section": "Links",
+    "markdown": "[link](/my uri)",
+    "html": "<p>[link](/my uri)</p>"
+  },
+  {
+    "id": "ex-0401",
+    "section": "Links",
+    "markdown": "[link](</my uri>)",
+    "html": "<p><a href=\"/my%20uri\">link</a></p>"
+  },
+  {
+    "id": "ex-0402",
+    "section": "Links",
+    "markdown": "[link](foo\nbar)",
+    "html": "<p>[link](foo\nbar)</p>"
+  },
+  {
+    "id": "ex-0403",
+    "section": "Links",
+    "markdown": "[link](<foo\nbar>)",
+    "html": "<p>[link](<foo\nbar>)</p>"
+  },
+  {
+    "id": "ex-0404",
+    "section": "Links",
+    "markdown": "[a](<b)c>)",
+    "html": "<p><a href=\"b)c\">a</a></p>"
+  },
+  {
+    "id": "ex-0405",
+    "section": "Links",
+    "markdown": "[link](<foo\\>)",
+    "html": "<p>[link](&lt;foo&gt;)</p>"
+  },
+  {
+    "id": "ex-0406",
+    "section": "Links",
+    "markdown": "[a](<b)c\n[a](<b)c>\n[a](<b>c)",
+    "html": "<p>[a](&lt;b)c\n[a](&lt;b)c&gt;\n[a](<b>c)</p>"
+  },
+  {
+    "id": "ex-0407",
+    "section": "Links",
+    "markdown": "[link](\\(foo\\))",
+    "html": "<p><a href=\"(foo)\">link</a></p>"
+  },
+  {
+    "id": "ex-0408",
+    "section": "Links",
+    "markdown": "[link](foo(and(bar)))",
+    "html": "<p><a href=\"foo(and(bar))\">link</a></p>"
+  },
+  {
+    "id": "ex-0409",
+    "section": "Links",
+    "markdown": "[link](foo(and(bar))",
+    "html": "<p>[link](foo(and(bar))</p>"
+  },
+  {
+    "id": "ex-0410",
+    "section": "Links",
+    "markdown": "[link](foo\\(and\\(bar\\))",
+    "html": "<p><a href=\"foo(and(bar)\">link</a></p>"
+  },
+  {
+    "id": "ex-0411",
+    "section": "Links",
+    "markdown": "[link](<foo(and(bar)>)",
+    "html": "<p><a href=\"foo(and(bar)\">link</a></p>"
+  },
+  {
+    "id": "ex-0412",
+    "section": "Links",
+    "markdown": "[link](foo\\)\\:)",
+    "html": "<p><a href=\"foo):\">link</a></p>"
+  },
+  {
+    "id": "ex-0413",
+    "section": "Links",
+    "markdown": "[link](#fragment)\n\n[link](https://example.com#fragment)\n\n[link](https://example.com?foo=3#frag)",
+    "html": "<p><a href=\"#fragment\">link</a></p>\n<p><a href=\"https://example.com#fragment\">link</a></p>\n<p><a href=\"https://example.com?foo=3#frag\">link</a></p>"
+  },
+  {
+    "id": "ex-0414",
+    "section": "Links",
+    "markdown": "[link](foo\\bar)",
+    "html": "<p><a href=\"foo%5Cbar\">link</a></p>"
+  },
+  {
+    "id": "ex-0415",
+    "section": "Links",
+    "markdown": "[link](foo%20b&auml;)",
+    "html": "<p><a href=\"foo%20b%C3%A4\">link</a></p>"
+  },
+  {
+    "id": "ex-0416",
+    "section": "Links",
+    "markdown": "[link](\"title\")",
+    "html": "<p><a href=\"%22title%22\">link</a></p>"
+  },
+  {
+    "id": "ex-0417",
+    "section": "Links",
+    "markdown": "[link](/url \"title\")\n[link](/url 'title')\n[link](/url (title))",
+    "html": "<p><a href=\"/url\" title=\"title\">link</a>\n<a href=\"/url\" title=\"title\">link</a>\n<a href=\"/url\" title=\"title\">link</a></p>"
+  },
+  {
+    "id": "ex-0418",
+    "section": "Links",
+    "markdown": "[link](/url \"title \\\"&quot;\")",
+    "html": "<p><a href=\"/url\" title=\"title &quot;&quot;\">link</a></p>"
+  },
+  {
+    "id": "ex-0419",
+    "section": "Links",
+    "markdown": "[link](/url \"title\")",
+    "html": "<p><a href=\"/url%C2%A0%22title%22\">link</a></p>"
+  },
+  {
+    "id": "ex-0420",
+    "section": "Links",
+    "markdown": "[link](/url \"title \"and\" title\")",
+    "html": "<p>[link](/url &quot;title &quot;and&quot; title&quot;)</p>"
+  },
+  {
+    "id": "ex-0421",
+    "section": "Links",
+    "markdown": "[link](/url 'title \"and\" title')",
+    "html": "<p><a href=\"/url\" title=\"title &quot;and&quot; title\">link</a></p>"
+  },
+  {
+    "id": "ex-0422",
+    "section": "Links",
+    "markdown": "[link](   /uri\n  \"title\"  )",
+    "html": "<p><a href=\"/uri\" title=\"title\">link</a></p>"
+  },
+  {
+    "id": "ex-0423",
+    "section": "Links",
+    "markdown": "[link] (/uri)",
+    "html": "<p>[link] (/uri)</p>"
+  },
+  {
+    "id": "ex-0424",
+    "section": "Links",
+    "markdown": "[link [foo [bar]]](/uri)",
+    "html": "<p><a href=\"/uri\">link [foo [bar]]</a></p>"
+  },
+  {
+    "id": "ex-0425",
+    "section": "Links",
+    "markdown": "[link] bar](/uri)",
+    "html": "<p>[link] bar](/uri)</p>"
+  },
+  {
+    "id": "ex-0426",
+    "section": "Links",
+    "markdown": "[link [bar](/uri)",
+    "html": "<p>[link <a href=\"/uri\">bar</a></p>"
+  },
+  {
+    "id": "ex-0427",
+    "section": "Links",
+    "markdown": "[link \\[bar](/uri)",
+    "html": "<p><a href=\"/uri\">link [bar</a></p>"
+  },
+  {
+    "id": "ex-0428",
+    "section": "Links",
+    "markdown": "[link *foo **bar** `#`*](/uri)",
+    "html": "<p><a href=\"/uri\">link <em>foo <strong>bar</strong> <code>#</code></em></a></p>"
+  },
+  {
+    "id": "ex-0429",
+    "section": "Links",
+    "markdown": "[![moon](moon.jpg)](/uri)",
+    "html": "<p><a href=\"/uri\"><img src=\"moon.jpg\" alt=\"moon\" /></a></p>"
+  },
+  {
+    "id": "ex-0430",
+    "section": "Links",
+    "markdown": "[foo [bar](/uri)](/uri)",
+    "html": "<p>[foo <a href=\"/uri\">bar</a>](/uri)</p>"
+  },
+  {
+    "id": "ex-0431",
+    "section": "Links",
+    "markdown": "[foo *[bar [baz](/uri)](/uri)*](/uri)",
+    "html": "<p>[foo <em>[bar <a href=\"/uri\">baz</a>](/uri)</em>](/uri)</p>"
+  },
+  {
+    "id": "ex-0432",
+    "section": "Links",
+    "markdown": "![[[foo](uri1)](uri2)](uri3)",
+    "html": "<p><img src=\"uri3\" alt=\"[foo](uri2)\" /></p>"
+  },
+  {
+    "id": "ex-0433",
+    "section": "Links",
+    "markdown": "*[foo*](/uri)",
+    "html": "<p>*<a href=\"/uri\">foo*</a></p>"
+  },
+  {
+    "id": "ex-0434",
+    "section": "Links",
+    "markdown": "[foo *bar](baz*)",
+    "html": "<p><a href=\"baz*\">foo *bar</a></p>"
+  },
+  {
+    "id": "ex-0435",
+    "section": "Links",
+    "markdown": "*foo [bar* baz]",
+    "html": "<p><em>foo [bar</em> baz]</p>"
+  },
+  {
+    "id": "ex-0436",
+    "section": "Links",
+    "markdown": "[foo <bar attr=\"](baz)\">",
+    "html": "<p>[foo <bar attr=\"](baz)\"></p>"
+  },
+  {
+    "id": "ex-0437",
+    "section": "Links",
+    "markdown": "[foo`](/uri)`",
+    "html": "<p>[foo<code>](/uri)</code></p>"
+  },
+  {
+    "id": "ex-0438",
+    "section": "Links",
+    "markdown": "[foo<https://example.com/?search=](uri)>",
+    "html": "<p>[foo<a href=\"https://example.com/?search=%5D(uri)\">https://example.com/?search=](uri)</a></p>"
+  },
+  {
+    "id": "ex-0439",
+    "section": "Links",
+    "markdown": "[foo][bar]\n\n[bar]: /url \"title\"",
+    "html": "<p><a href=\"/url\" title=\"title\">foo</a></p>"
+  },
+  {
+    "id": "ex-0440",
+    "section": "Links",
+    "markdown": "[link [foo [bar]]][ref]\n\n[ref]: /uri",
+    "html": "<p><a href=\"/uri\">link [foo [bar]]</a></p>"
+  },
+  {
+    "id": "ex-0441",
+    "section": "Links",
+    "markdown": "[link \\[bar][ref]\n\n[ref]: /uri",
+    "html": "<p><a href=\"/uri\">link [bar</a></p>"
+  },
+  {
+    "id": "ex-0442",
+    "section": "Links",
+    "markdown": "[link *foo **bar** `#`*][ref]\n\n[ref]: /uri",
+    "html": "<p><a href=\"/uri\">link <em>foo <strong>bar</strong> <code>#</code></em></a></p>"
+  },
+  {
+    "id": "ex-0443",
+    "section": "Links",
+    "markdown": "[![moon](moon.jpg)][ref]\n\n[ref]: /uri",
+    "html": "<p><a href=\"/uri\"><img src=\"moon.jpg\" alt=\"moon\" /></a></p>"
+  },
+  {
+    "id": "ex-0444",
+    "section": "Links",
+    "markdown": "[foo [bar](/uri)][ref]\n\n[ref]: /uri",
+    "html": "<p>[foo <a href=\"/uri\">bar</a>]<a href=\"/uri\">ref</a></p>"
+  },
+  {
+    "id": "ex-0445",
+    "section": "Links",
+    "markdown": "[foo *bar [baz][ref]*][ref]\n\n[ref]: /uri",
+    "html": "<p>[foo <em>bar <a href=\"/uri\">baz</a></em>]<a href=\"/uri\">ref</a></p>"
+  },
+  {
+    "id": "ex-0446",
+    "section": "Links",
+    "markdown": "*[foo*][ref]\n\n[ref]: /uri",
+    "html": "<p>*<a href=\"/uri\">foo*</a></p>"
+  },
+  {
+    "id": "ex-0447",
+    "section": "Links",
+    "markdown": "[foo *bar][ref]*\n\n[ref]: /uri",
+    "html": "<p><a href=\"/uri\">foo *bar</a>*</p>"
+  },
+  {
+    "id": "ex-0448",
+    "section": "Links",
+    "markdown": "[foo <bar attr=\"][ref]\">\n\n[ref]: /uri",
+    "html": "<p>[foo <bar attr=\"][ref]\"></p>"
+  },
+  {
+    "id": "ex-0449",
+    "section": "Links",
+    "markdown": "[foo`][ref]`\n\n[ref]: /uri",
+    "html": "<p>[foo<code>][ref]</code></p>"
+  },
+  {
+    "id": "ex-0450",
+    "section": "Links",
+    "markdown": "[foo<https://example.com/?search=][ref]>\n\n[ref]: /uri",
+    "html": "<p>[foo<a href=\"https://example.com/?search=%5D%5Bref%5D\">https://example.com/?search=][ref]</a></p>"
+  },
+  {
+    "id": "ex-0451",
+    "section": "Links",
+    "markdown": "[foo][BaR]\n\n[bar]: /url \"title\"",
+    "html": "<p><a href=\"/url\" title=\"title\">foo</a></p>"
+  },
+  {
+    "id": "ex-0452",
+    "section": "Links",
+    "markdown": "[ẞ]\n\n[SS]: /url",
+    "html": "<p><a href=\"/url\">ẞ</a></p>"
+  },
+  {
+    "id": "ex-0453",
+    "section": "Links",
+    "markdown": "[Foo\n  bar]: /url\n\n[Baz][Foo bar]",
+    "html": "<p><a href=\"/url\">Baz</a></p>"
+  },
+  {
+    "id": "ex-0454",
+    "section": "Links",
+    "markdown": "[foo] [bar]\n\n[bar]: /url \"title\"",
+    "html": "<p>[foo] <a href=\"/url\" title=\"title\">bar</a></p>"
+  },
+  {
+    "id": "ex-0455",
+    "section": "Links",
+    "markdown": "[foo]\n[bar]\n\n[bar]: /url \"title\"",
+    "html": "<p>[foo]\n<a href=\"/url\" title=\"title\">bar</a></p>"
+  },
+  {
+    "id": "ex-0456",
+    "section": "Links",
+    "markdown": "[foo]: /url1\n\n[foo]: /url2\n\n[bar][foo]",
+    "html": "<p><a href=\"/url1\">bar</a></p>"
+  },
+  {
+    "id": "ex-0457",
+    "section": "Links",
+    "markdown": "[bar][foo\\!]\n\n[foo!]: /url",
+    "html": "<p>[bar][foo!]</p>"
+  },
+  {
+    "id": "ex-0458",
+    "section": "Links",
+    "markdown": "[foo][ref[]\n\n[ref[]: /uri",
+    "html": "<p>[foo][ref[]</p>\n<p>[ref[]: /uri</p>"
+  },
+  {
+    "id": "ex-0459",
+    "section": "Links",
+    "markdown": "[foo][ref[bar]]\n\n[ref[bar]]: /uri",
+    "html": "<p>[foo][ref[bar]]</p>\n<p>[ref[bar]]: /uri</p>"
+  },
+  {
+    "id": "ex-0460",
+    "section": "Links",
+    "markdown": "[[[foo]]]\n\n[[[foo]]]: /url",
+    "html": "<p>[[[foo]]]</p>\n<p>[[[foo]]]: /url</p>"
+  },
+  {
+    "id": "ex-0461",
+    "section": "Links",
+    "markdown": "[foo][ref\\[]\n\n[ref\\[]: /uri",
+    "html": "<p><a href=\"/uri\">foo</a></p>"
+  },
+  {
+    "id": "ex-0462",
+    "section": "Links",
+    "markdown": "[bar\\\\]: /uri\n\n[bar\\\\]",
+    "html": "<p><a href=\"/uri\">bar\\</a></p>"
+  },
+  {
+    "id": "ex-0463",
+    "section": "Links",
+    "markdown": "[]\n\n[]: /uri",
+    "html": "<p>[]</p>\n<p>[]: /uri</p>"
+  },
+  {
+    "id": "ex-0464",
+    "section": "Links",
+    "markdown": "[\n ]\n\n[\n ]: /uri",
+    "html": "<p>[\n]</p>\n<p>[\n]: /uri</p>"
+  },
+  {
+    "id": "ex-0465",
+    "section": "Links",
+    "markdown": "[foo][]\n\n[foo]: /url \"title\"",
+    "html": "<p><a href=\"/url\" title=\"title\">foo</a></p>"
+  },
+  {
+    "id": "ex-0466",
+    "section": "Links",
+    "markdown": "[*foo* bar][]\n\n[*foo* bar]: /url \"title\"",
+    "html": "<p><a href=\"/url\" title=\"title\"><em>foo</em> bar</a></p>"
+  },
+  {
+    "id": "ex-0467",
+    "section": "Links",
+    "markdown": "[Foo][]\n\n[foo]: /url \"title\"",
+    "html": "<p><a href=\"/url\" title=\"title\">Foo</a></p>"
+  },
+  {
+    "id": "ex-0468",
+    "section": "Links",
+    "markdown": "[foo] \n[]\n\n[foo]: /url \"title\"",
+    "html": "<p><a href=\"/url\" title=\"title\">foo</a>\n[]</p>"
+  },
+  {
+    "id": "ex-0469",
+    "section": "Links",
+    "markdown": "[foo]\n\n[foo]: /url \"title\"",
+    "html": "<p><a href=\"/url\" title=\"title\">foo</a></p>"
+  },
+  {
+    "id": "ex-0470",
+    "section": "Links",
+    "markdown": "[*foo* bar]\n\n[*foo* bar]: /url \"title\"",
+    "html": "<p><a href=\"/url\" title=\"title\"><em>foo</em> bar</a></p>"
+  },
+  {
+    "id": "ex-0471",
+    "section": "Links",
+    "markdown": "[[*foo* bar]]\n\n[*foo* bar]: /url \"title\"",
+    "html": "<p>[<a href=\"/url\" title=\"title\"><em>foo</em> bar</a>]</p>"
+  },
+  {
+    "id": "ex-0472",
+    "section": "Links",
+    "markdown": "[[bar [foo]\n\n[foo]: /url",
+    "html": "<p>[[bar <a href=\"/url\">foo</a></p>"
+  },
+  {
+    "id": "ex-0473",
+    "section": "Links",
+    "markdown": "[Foo]\n\n[foo]: /url \"title\"",
+    "html": "<p><a href=\"/url\" title=\"title\">Foo</a></p>"
+  },
+  {
+    "id": "ex-0474",
+    "section": "Links",
+    "markdown": "[foo] bar\n\n[foo]: /url",
+    "html": "<p><a href=\"/url\">foo</a> bar</p>"
+  },
+  {
+    "id": "ex-0475",
+    "section": "Links",
+    "markdown": "\\[foo]\n\n[foo]: /url \"title\"",
+    "html": "<p>[foo]</p>"
+  },
+  {
+    "id": "ex-0476",
+    "section": "Links",
+    "markdown": "[foo*]: /url\n\n*[foo*]",
+    "html": "<p>*<a href=\"/url\">foo*</a></p>"
+  },
+  {
+    "id": "ex-0477",
+    "section": "Links",
+    "markdown": "[foo][bar]\n\n[foo]: /url1\n[bar]: /url2",
+    "html": "<p><a href=\"/url2\">foo</a></p>"
+  },
+  {
+    "id": "ex-0478",
+    "section": "Links",
+    "markdown": "[foo][]\n\n[foo]: /url1",
+    "html": "<p><a href=\"/url1\">foo</a></p>"
+  },
+  {
+    "id": "ex-0479",
+    "section": "Links",
+    "markdown": "[foo]()\n\n[foo]: /url1",
+    "html": "<p><a href=\"\">foo</a></p>"
+  },
+  {
+    "id": "ex-0480",
+    "section": "Links",
+    "markdown": "[foo](not a link)\n\n[foo]: /url1",
+    "html": "<p><a href=\"/url1\">foo</a>(not a link)</p>"
+  },
+  {
+    "id": "ex-0481",
+    "section": "Links",
+    "markdown": "[foo][bar][baz]\n\n[baz]: /url",
+    "html": "<p>[foo]<a href=\"/url\">bar</a></p>"
+  },
+  {
+    "id": "ex-0482",
+    "section": "Links",
+    "markdown": "[foo][bar][baz]\n\n[baz]: /url1\n[bar]: /url2",
+    "html": "<p><a href=\"/url2\">foo</a><a href=\"/url1\">baz</a></p>"
+  },
+  {
+    "id": "ex-0483",
+    "section": "Links",
+    "markdown": "[foo][bar][baz]\n\n[baz]: /url1\n[foo]: /url2",
+    "html": "<p>[foo]<a href=\"/url1\">bar</a></p>"
+  },
+  {
+    "id": "ex-0484",
+    "section": "Images",
+    "markdown": "![foo](/url \"title\")",
+    "html": "<p><img src=\"/url\" alt=\"foo\" title=\"title\" /></p>"
+  },
+  {
+    "id": "ex-0485",
+    "section": "Images",
+    "markdown": "![foo *bar*]\n\n[foo *bar*]: train.jpg \"train & tracks\"",
+    "html": "<p><img src=\"train.jpg\" alt=\"foo bar\" title=\"train &amp; tracks\" /></p>"
+  },
+  {
+    "id": "ex-0486",
+    "section": "Images",
+    "markdown": "![foo ![bar](/url)](/url2)",
+    "html": "<p><img src=\"/url2\" alt=\"foo bar\" /></p>"
+  },
+  {
+    "id": "ex-0487",
+    "section": "Images",
+    "markdown": "![foo [bar](/url)](/url2)",
+    "html": "<p><img src=\"/url2\" alt=\"foo bar\" /></p>"
+  },
+  {
+    "id": "ex-0488",
+    "section": "Images",
+    "markdown": "![foo *bar*][]\n\n[foo *bar*]: train.jpg \"train & tracks\"",
+    "html": "<p><img src=\"train.jpg\" alt=\"foo bar\" title=\"train &amp; tracks\" /></p>"
+  },
+  {
+    "id": "ex-0489",
+    "section": "Images",
+    "markdown": "![foo *bar*][foobar]\n\n[FOOBAR]: train.jpg \"train & tracks\"",
+    "html": "<p><img src=\"train.jpg\" alt=\"foo bar\" title=\"train &amp; tracks\" /></p>"
+  },
+  {
+    "id": "ex-0490",
+    "section": "Images",
+    "markdown": "![foo](train.jpg)",
+    "html": "<p><img src=\"train.jpg\" alt=\"foo\" /></p>"
+  },
+  {
+    "id": "ex-0491",
+    "section": "Images",
+    "markdown": "My ![foo bar](/path/to/train.jpg  \"title\"   )",
+    "html": "<p>My <img src=\"/path/to/train.jpg\" alt=\"foo bar\" title=\"title\" /></p>"
+  },
+  {
+    "id": "ex-0492",
+    "section": "Images",
+    "markdown": "![foo](<url>)",
+    "html": "<p><img src=\"url\" alt=\"foo\" /></p>"
+  },
+  {
+    "id": "ex-0493",
+    "section": "Images",
+    "markdown": "![](/url)",
+    "html": "<p><img src=\"/url\" alt=\"\" /></p>"
+  },
+  {
+    "id": "ex-0494",
+    "section": "Images",
+    "markdown": "![foo][bar]\n\n[bar]: /url",
+    "html": "<p><img src=\"/url\" alt=\"foo\" /></p>"
+  },
+  {
+    "id": "ex-0495",
+    "section": "Images",
+    "markdown": "![foo][bar]\n\n[BAR]: /url",
+    "html": "<p><img src=\"/url\" alt=\"foo\" /></p>"
+  },
+  {
+    "id": "ex-0496",
+    "section": "Images",
+    "markdown": "![foo][]\n\n[foo]: /url \"title\"",
+    "html": "<p><img src=\"/url\" alt=\"foo\" title=\"title\" /></p>"
+  },
+  {
+    "id": "ex-0497",
+    "section": "Images",
+    "markdown": "![*foo* bar][]\n\n[*foo* bar]: /url \"title\"",
+    "html": "<p><img src=\"/url\" alt=\"foo bar\" title=\"title\" /></p>"
+  },
+  {
+    "id": "ex-0498",
+    "section": "Images",
+    "markdown": "![Foo][]\n\n[foo]: /url \"title\"",
+    "html": "<p><img src=\"/url\" alt=\"Foo\" title=\"title\" /></p>"
+  },
+  {
+    "id": "ex-0499",
+    "section": "Images",
+    "markdown": "![foo] \n[]\n\n[foo]: /url \"title\"",
+    "html": "<p><img src=\"/url\" alt=\"foo\" title=\"title\" />\n[]</p>"
+  },
+  {
+    "id": "ex-0500",
+    "section": "Images",
+    "markdown": "![foo]\n\n[foo]: /url \"title\"",
+    "html": "<p><img src=\"/url\" alt=\"foo\" title=\"title\" /></p>"
+  },
+  {
+    "id": "ex-0501",
+    "section": "Images",
+    "markdown": "![*foo* bar]\n\n[*foo* bar]: /url \"title\"",
+    "html": "<p><img src=\"/url\" alt=\"foo bar\" title=\"title\" /></p>"
+  },
+  {
+    "id": "ex-0502",
+    "section": "Images",
+    "markdown": "![[foo]]\n\n[[foo]]: /url \"title\"",
+    "html": "<p>![[foo]]</p>\n<p>[[foo]]: /url &quot;title&quot;</p>"
+  },
+  {
+    "id": "ex-0503",
+    "section": "Images",
+    "markdown": "![Foo]\n\n[foo]: /url \"title\"",
+    "html": "<p><img src=\"/url\" alt=\"Foo\" title=\"title\" /></p>"
+  },
+  {
+    "id": "ex-0504",
+    "section": "Images",
+    "markdown": "!\\[foo]\n\n[foo]: /url \"title\"",
+    "html": "<p>![foo]</p>"
+  },
+  {
+    "id": "ex-0505",
+    "section": "Images",
+    "markdown": "\\![foo]\n\n[foo]: /url \"title\"",
+    "html": "<p>!<a href=\"/url\" title=\"title\">foo</a></p>"
+  },
+  {
+    "id": "ex-0506",
+    "section": "Hard line breaks",
+    "markdown": "foo  \nbaz",
+    "html": "<p>foo<br />\nbaz</p>"
+  },
+  {
+    "id": "ex-0507",
+    "section": "Hard line breaks",
+    "markdown": "foo\\\nbaz",
+    "html": "<p>foo<br />\nbaz</p>"
+  },
+  {
+    "id": "ex-0508",
+    "section": "Hard line breaks",
+    "markdown": "foo       \nbaz",
+    "html": "<p>foo<br />\nbaz</p>"
+  },
+  {
+    "id": "ex-0509",
+    "section": "Hard line breaks",
+    "markdown": "foo  \n     bar",
+    "html": "<p>foo<br />\nbar</p>"
+  },
+  {
+    "id": "ex-0510",
+    "section": "Hard line breaks",
+    "markdown": "foo\\\n     bar",
+    "html": "<p>foo<br />\nbar</p>"
+  },
+  {
+    "id": "ex-0511",
+    "section": "Hard line breaks",
+    "markdown": "*foo  \nbar*",
+    "html": "<p><em>foo<br />\nbar</em></p>"
+  },
+  {
+    "id": "ex-0512",
+    "section": "Hard line breaks",
+    "markdown": "*foo\\\nbar*",
+    "html": "<p><em>foo<br />\nbar</em></p>"
+  },
+  {
+    "id": "ex-0513",
+    "section": "Hard line breaks",
+    "markdown": "`code  \nspan`",
+    "html": "<p><code>code   span</code></p>"
+  },
+  {
+    "id": "ex-0514",
+    "section": "Hard line breaks",
+    "markdown": "`code\\\nspan`",
+    "html": "<p><code>code\\ span</code></p>"
+  },
+  {
+    "id": "ex-0515",
+    "section": "Hard line breaks",
+    "markdown": "<a href=\"foo  \nbar\">",
+    "html": "<p><a href=\"foo  \nbar\"></p>"
+  },
+  {
+    "id": "ex-0516",
+    "section": "Hard line breaks",
+    "markdown": "<a href=\"foo\\\nbar\">",
+    "html": "<p><a href=\"foo\\\nbar\"></p>"
+  },
+  {
+    "id": "ex-0517",
+    "section": "Hard line breaks",
+    "markdown": "foo\\",
+    "html": "<p>foo\\</p>"
+  },
+  {
+    "id": "ex-0518",
+    "section": "Hard line breaks",
+    "markdown": "foo  ",
+    "html": "<p>foo</p>"
+  },
+  {
+    "id": "ex-0519",
+    "section": "Hard line breaks",
+    "markdown": "### foo\\",
+    "html": "<h3>foo\\</h3>"
+  },
+  {
+    "id": "ex-0520",
+    "section": "Hard line breaks",
+    "markdown": "### foo  ",
+    "html": "<h3>foo</h3>"
+  },
+  {
+    "id": "ex-0521",
+    "section": "Soft line breaks",
+    "markdown": "foo\nbaz",
+    "html": "<p>foo\nbaz</p>"
+  },
+  {
+    "id": "ex-0522",
+    "section": "Soft line breaks",
+    "markdown": "foo \n baz",
+    "html": "<p>foo\nbaz</p>"
+  },
+  {
+    "id": "ex-0523",
+    "section": "Textual content",
+    "markdown": "hello $.;'there",
+    "html": "<p>hello $.;'there</p>"
+  },
+  {
+    "id": "ex-0524",
+    "section": "Textual content",
+    "markdown": "Foo χρῆν",
+    "html": "<p>Foo χρῆν</p>"
+  },
+  {
+    "id": "ex-0525",
+    "section": "Textual content",
+    "markdown": "Multiple     spaces",
+    "html": "<p>Multiple     spaces</p>"
+  }
+]

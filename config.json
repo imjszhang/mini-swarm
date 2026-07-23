@@ -1,0 +1,15 @@
+{
+  "models": {
+    "planner": "claude-fable-5-medium",
+    "worker": "composer-2.5-fast",
+    "merger": "composer-2.5-fast",
+    "reviewer": "composer-2.5-fast"
+  },
+  "concurrency": 2,
+  "coordination": false,
+  "taskTimeoutMinutes": 20,
+  "maxMergeRetries": 2,
+  "maxPlannerRetries": 2,
+  "guideMaxLines": 80,
+  "agentCommand": "cursor-agent"
+}

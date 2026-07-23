@@ -1,0 +1,8 @@
+node_modules/
+workspace/
+runs/*/workspace/
+runs/*/worktrees/
+runs/*/logs/
+scorer/.fixture-workspace/
+*.log
+.DS_Store

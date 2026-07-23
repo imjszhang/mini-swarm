@@ -1,0 +1,19 @@
+{
+  "name": "mini-swarm",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Minimal agent swarm orchestrator for CommonMark renderer A/B coordination experiments",
+  "scripts": {
+    "spec:extract": "node spec/extract.mjs",
+    "score": "node scorer/score.mjs",
+    "score:validate": "node scorer/validate-scorer.mjs",
+    "run": "node orchestrator/run.mjs",
+    "run:coordinated": "node orchestrator/run.mjs --coordination",
+    "run:quick": "node orchestrator/run.mjs --quick",
+    "run:quick:coordinated": "node orchestrator/run.mjs --quick --coordination",
+    "run:mock": "node orchestrator/run.mjs --mock",
+    "run:serial": "node orchestrator/run.mjs --serial",
+    "smoke:runner": "node orchestrator/smoke-runner.mjs"
+  }
+}
