@@ -1,11 +1,9 @@
 import { execSync } from "node:child_process";
-import { readFileSync } from "node:fs";
-import path from "node:path";
 import {
   abortMerge,
-  getDiff,
   listConflictFiles,
   mergeBranch,
+  readDesign,
 } from "./lib/git.mjs";
 import { buildMergerPrompt } from "./lib/prompts.mjs";
 import { spawnAgent } from "./runner.mjs";
@@ -20,7 +18,6 @@ export class MergeQueue {
     runDir,
     metrics,
     coordination,
-    designMd,
     resolveWithMerger,
   }) {
     this.mainDir = mainDir;
@@ -28,7 +25,6 @@ export class MergeQueue {
     this.runDir = runDir;
     this.metrics = metrics;
     this.coordination = coordination;
-    this.designMd = designMd;
     this.resolveWithMerger = resolveWithMerger;
     this.queue = [];
     this.processing = false;
@@ -56,7 +52,7 @@ export class MergeQueue {
     this.processing = false;
   }
 
-  async _mergeOne({ branch, taskId, workerDir, workerRole = "worker" }) {
+  async _mergeOne({ branch, taskId, workerRole = "worker" }) {
     const mergeResult = mergeBranch(this.mainDir, branch);
     if (mergeResult.ok) {
       return { ok: true, conflict: false, taskId };
@@ -66,8 +62,9 @@ export class MergeQueue {
     }
 
     const files = listConflictFiles(this.mainDir);
-    this.metrics.recordConflict({ taskId, branch, files });
+    this.metrics.recordMergeConflict({ taskId, branch, files });
 
+    const designMd = readDesign(this.mainDir);
     const conflictContext = [
       `Merge conflict merging branch ${branch} for task ${taskId}.`,
       `Conflict files: ${files.join(", ") || "(unknown)"}`,
@@ -80,7 +77,7 @@ export class MergeQueue {
     for (let attempt = 1; attempt <= maxRetries; attempt += 1) {
       const role = this.coordination && this.resolveWithMerger ? "merger" : workerRole;
       const prompt = this.coordination && this.resolveWithMerger
-        ? buildMergerPrompt({ conflictContext, designMd: this.designMd })
+        ? buildMergerPrompt({ conflictContext, designMd })
         : `${conflictContext}\n\nResolve the merge conflict in this workspace. Stage and commit when done. Say WORKER_DONE when finished.`;
 
       const agentResult = await spawnAgent({
@@ -121,7 +118,12 @@ export class MergeQueue {
   }
 }
 
+// Side effects of the required build step (npm install / tsc), not code edits.
+const SCOPE_EXEMPT = new Set(["GUIDE.md", "package-lock.json", "npm-shrinkwrap.json"]);
+
 export function checkScopeViolation(changedFiles, allowedScope) {
   const allowed = new Set(allowedScope || []);
-  return changedFiles.filter((f) => !allowed.has(f) && f !== "GUIDE.md");
+  return changedFiles.filter(
+    (f) => !allowed.has(f) && !SCOPE_EXEMPT.has(f) && !f.startsWith("dist/"),
+  );
 }

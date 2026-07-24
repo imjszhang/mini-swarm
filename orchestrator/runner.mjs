@@ -29,6 +29,8 @@ export function spawnAgent({
 
   const cmd = config.agentCommand || "cursor-agent";
   const { executable, shell } = resolveAgentExecutable(cmd);
+  // Prompt goes through stdin, not argv: coordinated prompts (DESIGN.md + GUIDE.md
+  // inlined) exceed the Windows cmd.exe 8191-char argv limit and fail to spawn.
   const args = [
     "-p",
     "--force",
@@ -39,7 +41,6 @@ export function spawnAgent({
     model,
     "--output-format",
     "text",
-    prompt,
   ];
 
   const logDir = path.join(runDir, "logs");
@@ -55,6 +56,10 @@ export function spawnAgent({
       windowsHide: true,
       env: { ...process.env },
     });
+
+    child.stdin?.on("error", () => {});
+    child.stdin?.write(prompt);
+    child.stdin?.end();
 
     let stdout = "";
     let stderr = "";

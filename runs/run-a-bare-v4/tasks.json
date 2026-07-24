@@ -1,0 +1,47 @@
+[
+  {
+    "id": "task-01",
+    "title": "Extend CLI stub and index orchestrator",
+    "spec_sections": [
+      "Paragraphs"
+    ],
+    "files_scope": [
+      "src/cli.ts",
+      "src/index.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "Skeleton pre-exists (package.json, tsconfig); improve renderMarkdown stub, wire block/inline module stubs, ensure tsc passes"
+  },
+  {
+    "id": "task-02",
+    "title": "ATX and Setext headings",
+    "spec_sections": [
+      "ATX headings",
+      "Setext headings"
+    ],
+    "files_scope": [
+      "src/headings.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": ""
+  },
+  {
+    "id": "task-03",
+    "title": "Paragraphs and blank lines",
+    "spec_sections": [
+      "Paragraphs",
+      "Blank lines",
+      "Hard line breaks",
+      "Soft line breaks",
+      "Textual content"
+    ],
+    "files_scope": [
+      "src/paragraphs.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": ""
+  }
+]

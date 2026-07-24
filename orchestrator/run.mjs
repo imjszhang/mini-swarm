@@ -4,10 +4,8 @@
  */
 import { execSync } from "node:child_process";
 import {
-  cpSync,
   existsSync,
   mkdirSync,
-  readFileSync,
   rmSync,
   writeFileSync,
 } from "node:fs";
@@ -104,6 +102,7 @@ Write tasks.json in the workspace root. If coordination is on, also write DESIGN
 
   if (config.mock) {
     seedTasks(workspaceDir);
+    metrics.setMeta({ planner_source: "seed" });
     if (coordination) {
       writeFileSync(path.join(workspaceDir, "DESIGN.md"), "# Design\n\nModule-per-section parser pipeline.\n", "utf8");
       writeFileSync(path.join(workspaceDir, "GUIDE.md"), "# Field Guide\n\n", "utf8");
@@ -127,10 +126,18 @@ Write tasks.json in the workspace root. If coordination is on, also write DESIGN
   });
 
   let tasks = loadTasks(workspaceDir);
-  if (!tasks?.length) {
-    console.warn("[run] planner did not produce tasks.json; using seed tasks");
-    tasks = seedTasks(workspaceDir);
+  if (result.ok && tasks?.length) {
+    metrics.setMeta({ planner_source: "llm" });
+    return tasks;
   }
+
+  if (!result.ok) {
+    console.warn(`[run] planner failed (exit ${result.code}); using seed tasks`);
+  } else {
+    console.warn("[run] planner did not produce tasks.json; using seed tasks");
+  }
+  metrics.setMeta({ planner_source: "seed" });
+  tasks = seedTasks(workspaceDir);
   return tasks;
 }
 
@@ -297,7 +304,9 @@ async function main() {
   console.log(`[run] id=${runId} coordination=${config.coordination} mock=${config.mock}`);
 
   initWorkspace(workspaceDir, config.coordination);
-  initSkeleton(workspaceDir);
+  if (!config.mock) {
+    initSkeleton(workspaceDir);
+  }
 
   let tasks = await runPlanner({
     workspaceDir,
@@ -358,7 +367,6 @@ async function main() {
     runDir,
     metrics,
     coordination: config.coordination,
-    designMd: readDesign(workspaceDir),
     resolveWithMerger: true,
   });
 
@@ -388,10 +396,10 @@ async function main() {
       });
 
       if (config.coordination) {
-        const changed = filesChangedInWorktree(wt.path, workspaceDir);
+        const changed = filesChangedInWorktree(wt.path);
         const violations = checkScopeViolation(changed, task.files_scope);
         if (violations.length) {
-          metrics.recordConflict({ taskId: task.id, type: "scope_violation", files: violations });
+          metrics.recordScopeViolation({ taskId: task.id, files: violations });
           removeWorktree(workspaceDir, wt.path);
           metrics.recordTask({ id: task.id, status: "failed", scope_violation: violations });
           return { task, ok: false };
@@ -401,7 +409,6 @@ async function main() {
       const mergeResult = await mergeQueue.enqueue({
         branch: wt.branch,
         taskId: task.id,
-        workerDir: wt.path,
       });
       removeWorktree(workspaceDir, wt.path);
 
@@ -461,7 +468,7 @@ async function main() {
   metrics.recordScore({ phase: "final", ...finalScored.report });
 
   if (diff.trim()) {
-    await spawnAgent({
+    const reviewResult = await spawnAgent({
       role: "reviewer",
       prompt: buildReviewerPrompt({
         diff: diff.slice(0, 8000),
@@ -473,17 +480,23 @@ async function main() {
       logKey: "reviewer-final",
       timeoutMs: 5 * 60 * 1000,
     });
+    metrics.recordAgentCall({
+      role: "reviewer",
+      ok: reviewResult.ok,
+      elapsedMs: reviewResult.elapsedMs,
+    });
   }
 
   const metricsPath = metrics.finish({
     commits: commitCount(workspaceDir),
     loc: countLoc(workspaceDir),
     final_score: finalScored.report,
+    tasks_done: metrics.data.tasks.filter((t) => t.status === "done").length,
   });
 
   console.log(`[run] done metrics=${metricsPath}`);
   console.log(`[run] pass rate ${(finalScored.report.rate * 100).toFixed(1)}% (${finalScored.report.passed}/${finalScored.report.total})`);
-  console.log(`[run] conflicts=${metrics.data.conflict_count} loc=${countLoc(workspaceDir)}`);
+  console.log(`[run] merge_conflicts=${metrics.data.merge_conflict_count} scope_violations=${metrics.data.scope_violation_count} loc=${countLoc(workspaceDir)}`);
 }
 
 main().catch((err) => {

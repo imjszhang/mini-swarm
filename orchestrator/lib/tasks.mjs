@@ -5,12 +5,12 @@ import { projectRoot } from "./config.mjs";
 export const DEFAULT_TASKS = [
   {
     id: "task-01",
-    title: "TypeScript skeleton and CLI",
+    title: "Extend CLI stub and index orchestrator",
     spec_sections: ["Paragraphs"],
-    files_scope: ["package.json", "tsconfig.json", "src/cli.ts", "src/index.ts"],
+    files_scope: ["src/cli.ts", "src/index.ts"],
     status: "pending",
     attempts: 0,
-    notes: "stdin markdown → stdout HTML stub",
+    notes: "Skeleton pre-exists (package.json, tsconfig); improve renderMarkdown stub, ensure tsc passes",
   },
   {
     id: "task-02",

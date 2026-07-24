@@ -1,6 +1,6 @@
 {
   "models": {
-    "planner": "claude-fable-5-medium",
+    "planner": "composer-2.5-fast",
     "worker": "composer-2.5-fast",
     "merger": "composer-2.5-fast",
     "reviewer": "composer-2.5-fast"

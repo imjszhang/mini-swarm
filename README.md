@@ -9,23 +9,24 @@ Run A/B experiments comparing:
 - **Run A (bare swarm)**: planner + workers, no scope enforcement, workers resolve merge conflicts themselves
 - **Run B (coordinated swarm)**: disjoint file scopes, `DESIGN.md`, `GUIDE.md`, neutral merger on conflicts
 
-Fixed model routing: strong planner, cheap workers (`config.json`).
+Fixed model routing: planner and workers use `composer-2.5-fast` by default (`config.json`). Planner falls back to seed `tasks.json` if the LLM call fails.
 
 ## Prerequisites
 
 - Node.js 20+
 - Git
 - `cursor-agent` CLI (logged in)
-- `npm install` only needed for scorer validation (`commonmark` dev dependency)
 
 ## Quick start
 
 ```bash
-npm run spec:extract          # parse CommonMark spec → spec/examples.json
+npm run spec:extract          # parse CommonMark spec → spec/examples.json (525 cases)
 npm run score                 # score workspace implementation (needs dist/cli.js)
 npm run smoke:runner          # verify cursor-agent spawn works
-npm run run                   # Run A (coordination=false)
-npm run run:coordinated       # Run B (coordination=true)
+npm run run:quick             # Run A bare (3 tasks, concurrency 2)
+npm run run:quick:coordinated # Run B coordinated
+npm run run:serial -- --quick # serial minimal loop (no worktrees)
+npm run compare -- runs/run-a-bare-v3/metrics.json runs/run-b-coordinated-v3/metrics.json
 ```
 
 ## Layout
@@ -36,8 +37,9 @@ scorer/         Automated pass-rate scoring
 orchestrator/   Planner/worker/merge orchestration
 prompts/        Role prompt templates
 runs/           Experiment outputs (metrics, logs, tasks)
-workspace/      Renderer built by agents (gitignored, reset per run)
 ```
+
+Each run writes `runs/{runId}/workspace/` (gitignored) and `metrics.json`.
 
 ## Scoring contract
 
@@ -47,17 +49,17 @@ Workspace must expose:
 node dist/cli.js   # stdin = markdown, stdout = HTML
 ```
 
-Scorer compares output to `spec/examples.json` (core subset, ~400 cases).
+Scorer compares output to `spec/examples.json` (**525** core-subset cases; HTML blocks / autolinks etc. excluded).
 
 ## Metrics
 
 Each run writes `runs/{runId}/metrics.json`:
 
-- pass rate curve (sampled after merges)
-- merge conflict count
-- lines of code
-- per-task timing
-- coordination mode
+- `planner_source`: `llm` or `seed`
+- pass rate curve (`score_curve`)
+- `merge_conflict_count` vs `scope_violation_count` (separate)
+- `tasks_done` / per-task status
+- lines of code, agent call timing
 
 ## Article lineage
 

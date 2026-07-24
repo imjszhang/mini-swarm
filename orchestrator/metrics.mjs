@@ -1,13 +1,23 @@
 import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
+function recomputeConflictTotals(data) {
+  data.merge_conflict_count = data.merge_conflicts.length;
+  data.scope_violation_count = data.scope_violations.length;
+  data.conflict_count = data.merge_conflict_count + data.scope_violation_count;
+}
+
 export function createMetricsCollector(runDir) {
   const data = {
     started_at: new Date().toISOString(),
     finished_at: null,
     coordination: false,
+    planner_source: null,
     commits: 0,
-    conflicts: [],
+    merge_conflicts: [],
+    scope_violations: [],
+    merge_conflict_count: 0,
+    scope_violation_count: 0,
     conflict_count: 0,
     tasks: [],
     score_curve: [],
@@ -21,9 +31,13 @@ export function createMetricsCollector(runDir) {
     recordAgentCall(entry) {
       data.agent_calls.push({ ...entry, at: new Date().toISOString() });
     },
-    recordConflict(entry) {
-      data.conflicts.push({ ...entry, at: new Date().toISOString() });
-      data.conflict_count = data.conflicts.length;
+    recordMergeConflict(entry) {
+      data.merge_conflicts.push({ ...entry, at: new Date().toISOString() });
+      recomputeConflictTotals(data);
+    },
+    recordScopeViolation(entry) {
+      data.scope_violations.push({ ...entry, at: new Date().toISOString() });
+      recomputeConflictTotals(data);
     },
     recordTask(entry) {
       const idx = data.tasks.findIndex((t) => t.id === entry.id);
@@ -38,6 +52,7 @@ export function createMetricsCollector(runDir) {
     },
     finish(extra = {}) {
       data.finished_at = new Date().toISOString();
+      recomputeConflictTotals(data);
       Object.assign(data, extra);
       const out = path.join(runDir, "metrics.json");
       writeFileSync(out, `${JSON.stringify(data, null, 2)}\n`, "utf8");
@@ -61,4 +76,23 @@ export function countLoc(workspaceDir) {
   const src = path.join(workspaceDir, "src");
   if (existsSync(src)) walk(src);
   return lines;
+}
+
+export function countTasksDone(tasks) {
+  return (tasks || []).filter((t) => t.status === "done").length;
+}
+
+/** Normalize legacy metrics.json (conflicts[] only) for compare-runs. */
+export function normalizeMetrics(raw) {
+  const m = { ...raw };
+  if (!m.merge_conflicts && Array.isArray(m.conflicts)) {
+    m.merge_conflicts = m.conflicts.filter((c) => c.type !== "scope_violation");
+    m.scope_violations = m.conflicts.filter((c) => c.type === "scope_violation");
+  }
+  m.merge_conflicts = m.merge_conflicts || [];
+  m.scope_violations = m.scope_violations || [];
+  m.merge_conflict_count = m.merge_conflicts.length;
+  m.scope_violation_count = m.scope_violations.length;
+  m.conflict_count = m.merge_conflict_count + m.scope_violation_count;
+  return m;
 }

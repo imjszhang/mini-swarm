@@ -3,10 +3,12 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
 function git(cwd, args, opts = {}) {
-  return execSync(`git ${args.join(" ")}`, {
+  const quoted = args.map((a) => (/\s/.test(a) ? JSON.stringify(a) : a));
+  return execSync(`git ${quoted.join(" ")}`, {
     cwd,
     encoding: "utf8",
     stdio: opts.stdio || "pipe",
+    shell: true,
     ...opts,
   }).trim();
 }
@@ -33,7 +35,11 @@ export function getDiff(workspaceDir, ref = "HEAD~1") {
   try {
     return git(workspaceDir, ["diff", ref, "HEAD"]);
   } catch {
-    return git(workspaceDir, ["diff"]);
+    try {
+      return git(workspaceDir, ["diff", "HEAD"]);
+    } catch {
+      return "";
+    }
   }
 }
 
@@ -67,9 +73,22 @@ export function listConflictFiles(mainDir) {
 
 export function createWorktree(mainDir, worktreesRoot, taskId) {
   const branch = `task/${taskId}`;
-  git(mainDir, ["branch", branch], { stdio: "pipe" });
   const wtPath = path.join(worktreesRoot, taskId);
-  git(mainDir, ["worktree", "add", wtPath, branch]);
+
+  if (existsSync(wtPath)) {
+    try {
+      git(mainDir, ["worktree", "remove", wtPath, "--force"]);
+    } catch {
+      /* ignore */
+    }
+  }
+  try {
+    git(mainDir, ["branch", "-D", branch]);
+  } catch {
+    /* branch may not exist */
+  }
+
+  git(mainDir, ["worktree", "add", "-b", branch, wtPath, "main"]);
   return { branch, path: wtPath };
 }
 
@@ -91,11 +110,16 @@ export function readDesign(workspaceDir) {
   return existsSync(p) ? readFileSync(p, "utf8") : "";
 }
 
-export function filesChangedInWorktree(wtDir, baseDir) {
+export function filesChangedInWorktree(wtDir) {
   try {
-    const out = git(wtDir, ["diff", "--name-only", "main"]);
+    const out = git(wtDir, ["diff", "--name-only", "main...HEAD"]);
     return out ? out.split("\n").filter(Boolean) : [];
   } catch {
-    return [];
+    try {
+      const fallback = git(wtDir, ["diff", "--name-only", "main"]);
+      return fallback ? fallback.split("\n").filter(Boolean) : [];
+    } catch {
+      return [];
+    }
   }
 }

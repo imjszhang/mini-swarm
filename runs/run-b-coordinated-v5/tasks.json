@@ -1,0 +1,54 @@
+[
+  {
+    "id": "task-01",
+    "title": "Core skeleton: types, util, HTML renderer, block/inline orchestrators",
+    "spec_sections": [
+      "Textual content",
+      "Blank lines",
+      "Tabs",
+      "Precedence"
+    ],
+    "files_scope": [
+      "src/index.ts",
+      "src/cli.ts",
+      "src/types.ts",
+      "src/util.ts",
+      "src/html.ts",
+      "src/blocks/index.ts",
+      "src/inline/index.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "Extend pre-existing skeleton. Define AST types, tab expansion, HTML escape, parseBlocks/parseInlines stubs, wire renderMarkdown pipeline. Leave block/inline handlers as no-op stubs imported by later tasks."
+  },
+  {
+    "id": "task-02",
+    "title": "Block parsers: ATX/Setext headings and thematic breaks",
+    "spec_sections": [
+      "ATX headings",
+      "Setext headings",
+      "Thematic breaks"
+    ],
+    "files_scope": [
+      "src/blocks/heading.ts",
+      "src/blocks/thematic-break.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "Implement tryParse for ATX (#), Setext (underline), and hr (---/***/___). Register in blocks/index.ts. Parse inline content in headings via parseInlines."
+  },
+  {
+    "id": "task-03",
+    "title": "Block parsers: indented and fenced code blocks",
+    "spec_sections": [
+      "Indented code blocks",
+      "Fenced code blocks"
+    ],
+    "files_scope": [
+      "src/blocks/code-block.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "4-space indented code and ``` fenced blocks with optional info string. No inline parsing inside code. Preserve trailing newline in <pre><code>."
+  }
+]

@@ -12,8 +12,9 @@ You are the **planner** for a mini agent swarm building a CommonMark markdown-to
 
 1. Read `../spec/examples.json` (or copy section summary if provided) and understand which CommonMark sections we must support.
 2. Create or update `tasks.json` at workspace root with **6–8 tasks**:
-   - First task MUST be skeleton: `tsconfig.json`, `package.json`, `src/cli.ts`, module stubs, npm script `build` → `tsc`.
-   - Remaining tasks split block-level and inline parsing (paragraphs, headings, lists, blockquotes, fenced code, emphasis, links, code spans).
+   - First task MUST extend the existing skeleton (do not recreate package.json/tsconfig); improve `src/index.ts` / `src/cli.ts`.
+   - First task extends the **pre-existing skeleton** (orchestrator already created package.json, tsconfig, src/cli.ts, src/index.ts); do not recreate them.
+- Remaining tasks split block-level and inline parsing (paragraphs, headings, lists, blockquotes, fenced code, emphasis, links, code spans).
 3. Each task object schema:
 ```json
 {
