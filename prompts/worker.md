@@ -17,6 +17,7 @@ You are a **worker** agent implementing one task in a CommonMark renderer (TypeS
 ## Rules
 
 - Only modify files listed in `files_scope` for this task (plus `GUIDE.md` append-only if coordination enabled).
+- If task `notes` mention editing a file outside `files_scope`, **ignore that instruction** — scope wins. Implement your module and export APIs; a wiring task or merger integrates later.
 - Implement parsing/rendering for the listed `spec_sections`.
 - Run `npm run build` (or `npx tsc`) and fix errors before finishing.
 - Commit your changes: `git add -A && git commit -m "task {{TASK_ID}}: <summary>"`

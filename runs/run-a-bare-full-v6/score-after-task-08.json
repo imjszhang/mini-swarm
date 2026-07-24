@@ -1,0 +1,252 @@
+{
+  "scored_at": "2026-07-24T06:26:40.745Z",
+  "workspace": "D:\\github\\projects\\mini-swarm\\runs\\run-a-bare-full-v6\\workspace",
+  "total": 525,
+  "passed": 403,
+  "rate": 0.7676190476190476,
+  "by_section": {
+    "Tabs": {
+      "passed": 11,
+      "total": 11,
+      "rate": 1
+    },
+    "Backslash escapes": {
+      "passed": 10,
+      "total": 13,
+      "rate": 0.7692307692307693
+    },
+    "Precedence": {
+      "passed": 1,
+      "total": 1,
+      "rate": 1
+    },
+    "Thematic breaks": {
+      "passed": 17,
+      "total": 19,
+      "rate": 0.8947368421052632
+    },
+    "ATX headings": {
+      "passed": 18,
+      "total": 18,
+      "rate": 1
+    },
+    "Setext headings": {
+      "passed": 13,
+      "total": 27,
+      "rate": 0.48148148148148145
+    },
+    "Indented code blocks": {
+      "passed": 8,
+      "total": 12,
+      "rate": 0.6666666666666666
+    },
+    "Fenced code blocks": {
+      "passed": 5,
+      "total": 29,
+      "rate": 0.1724137931034483
+    },
+    "Paragraphs": {
+      "passed": 8,
+      "total": 8,
+      "rate": 1
+    },
+    "Blank lines": {
+      "passed": 1,
+      "total": 1,
+      "rate": 1
+    },
+    "Block quotes": {
+      "passed": 25,
+      "total": 25,
+      "rate": 1
+    },
+    "List items": {
+      "passed": 35,
+      "total": 48,
+      "rate": 0.7291666666666666
+    },
+    "Lists": {
+      "passed": 17,
+      "total": 27,
+      "rate": 0.6296296296296297
+    },
+    "Code spans": {
+      "passed": 16,
+      "total": 22,
+      "rate": 0.7272727272727273
+    },
+    "Emphasis and strong emphasis": {
+      "passed": 125,
+      "total": 132,
+      "rate": 0.946969696969697
+    },
+    "Links": {
+      "passed": 64,
+      "total": 90,
+      "rate": 0.7111111111111111
+    },
+    "Images": {
+      "passed": 15,
+      "total": 22,
+      "rate": 0.6818181818181818
+    },
+    "Hard line breaks": {
+      "passed": 9,
+      "total": 15,
+      "rate": 0.6
+    },
+    "Soft line breaks": {
+      "passed": 2,
+      "total": 2,
+      "rate": 1
+    },
+    "Textual content": {
+      "passed": 3,
+      "total": 3,
+      "rate": 1
+    }
+  },
+  "failures": [
+    {
+      "id": "ex-0019",
+      "section": "Backslash escapes",
+      "reason": "output mismatch",
+      "expected": "<pre><code>\\[\\]\n</code></pre>",
+      "actual": "<pre><code></code></pre>"
+    },
+    {
+      "id": "ex-0021",
+      "section": "Backslash escapes",
+      "reason": "output mismatch",
+      "expected": "<a href=\"/bar\\/)\">",
+      "actual": "<p>&lt;a href=&quot;/bar/)&quot;&gt;</p>"
+    },
+    {
+      "id": "ex-0024",
+      "section": "Backslash escapes",
+      "reason": "output mismatch",
+      "expected": "<pre><code class=\"language-foo+bar\">foo\n</code></pre>",
+      "actual": "<pre><code class=\"language-foo\\+bar\"> foo\\+bar\n</code></pre>"
+    },
+    {
+      "id": "ex-0042",
+      "section": "Thematic breaks",
+      "reason": "output mismatch",
+      "expected": "<h2>Foo</h2>\n<p>bar</p>",
+      "actual": "<p>Foo</p>\n<hr />\n<p>bar</p>"
+    },
+    {
+      "id": "ex-0044",
+      "section": "Thematic breaks",
+      "reason": "output mismatch",
+      "expected": "<ul>\n<li>Foo</li>\n<li>\n<hr />\n</li>\n</ul>",
+      "actual": "<ul>\n<li>Foo</li>\n<li><hr />\n</li>\n</ul>"
+    },
+    {
+      "id": "ex-0063",
+      "section": "Setext headings",
+      "reason": "output mismatch",
+      "expected": "<h1>Foo <em>bar</em></h1>\n<h2>Foo <em>bar</em></h2>",
+      "actual": "<p>Foo <em>bar</em>\n=========</p>\n<p>Foo <em>bar</em></p>\n<hr />"
+    },
+    {
+      "id": "ex-0064",
+      "section": "Setext headings",
+      "reason": "output mismatch",
+      "expected": "<h1>Foo <em>bar\nbaz</em></h1>",
+      "actual": "<p>Foo *bar\nbaz*\n====</p>"
+    },
+    {
+      "id": "ex-0065",
+      "section": "Setext headings",
+      "reason": "output mismatch",
+      "expected": "<h1>Foo <em>bar\nbaz</em></h1>",
+      "actual": "<p>Foo *bar\nbaz*→\n====</p>"
+    },
+    {
+      "id": "ex-0066",
+      "section": "Setext headings",
+      "reason": "output mismatch",
+      "expected": "<h2>Foo</h2>\n<h1>Foo</h1>",
+      "actual": "<p>Foo</p>\n<hr />\n<p>Foo\n=</p>"
+    },
+    {
+      "id": "ex-0067",
+      "section": "Setext headings",
+      "reason": "output mismatch",
+      "expected": "<h2>Foo</h2>\n<h2>Foo</h2>\n<h1>Foo</h1>",
+      "actual": "<p>Foo</p>\n<hr />\n<p>Foo</p>\n<hr />\n<p>Foo\n===</p>"
+    },
+    {
+      "id": "ex-0068",
+      "section": "Setext headings",
+      "reason": "output mismatch",
+      "expected": "<pre><code>Foo\n---\n\nFoo\n</code></pre>\n<hr />",
+      "actual": "<pre><code>Foo\n---\n</code></pre>\n<pre><code>Foo\n</code></pre>\n<hr />"
+    },
+    {
+      "id": "ex-0069",
+      "section": "Setext headings",
+      "reason": "output mismatch",
+      "expected": "<h2>Foo</h2>",
+      "actual": "<p>Foo</p>\n<hr />"
+    },
+    {
+      "id": "ex-0072",
+      "section": "Setext headings",
+      "reason": "output mismatch",
+      "expected": "<h2>Foo</h2>",
+      "actual": "<p>Foo</p>\n<hr />"
+    },
+    {
+      "id": "ex-0073",
+      "section": "Setext headings",
+      "reason": "output mismatch",
+      "expected": "<h2>Foo\\</h2>",
+      "actual": "<p>Foo\\</p>\n<hr />"
+    },
+    {
+      "id": "ex-0074",
+      "section": "Setext headings",
+      "reason": "output mismatch",
+      "expected": "<h2>`Foo</h2>\n<p>`</p>\n<h2>&lt;a title=&quot;a lot</h2>\n<p>of dashes&quot;/&gt;</p>",
+      "actual": "<p>`Foo</p>\n<hr />\n<p>`</p>\n<p>&lt;a title=&quot;a lot</p>\n<hr />\n<p>of dashes&quot;/&gt;</p>"
+    },
+    {
+      "id": "ex-0078",
+      "section": "Setext headings",
+      "reason": "output mismatch",
+      "expected": "<h2>Foo\nBar</h2>",
+      "actual": "<p>Foo\nBar</p>\n<hr />"
+    },
+    {
+      "id": "ex-0079",
+      "section": "Setext headings",
+      "reason": "output mismatch",
+      "expected": "<hr />\n<h2>Foo</h2>\n<h2>Bar</h2>\n<p>Baz</p>",
+      "actual": "<hr />\n<p>Foo</p>\n<hr />\n<p>Bar</p>\n<hr />\n<p>Baz</p>"
+    },
+    {
+      "id": "ex-0085",
+      "section": "Setext headings",
+      "reason": "output mismatch",
+      "expected": "<h2>&gt; foo</h2>",
+      "actual": "<p>&gt; foo</p>\n<hr />"
+    },
+    {
+      "id": "ex-0086",
+      "section": "Setext headings",
+      "reason": "output mismatch",
+      "expected": "<p>Foo</p>\n<h2>bar</h2>\n<p>baz</p>",
+      "actual": "<p>Foo</p>\n<p>bar</p>\n<hr />\n<p>baz</p>"
+    },
+    {
+      "id": "ex-0093",
+      "section": "Indented code blocks",
+      "reason": "output mismatch",
+      "expected": "<pre><code>&lt;a/&gt;\n*hi*\n\n- one\n</code></pre>",
+      "actual": "<pre><code>&lt;a/&gt;\n*hi*\n</code></pre>\n<pre><code>- one\n</code></pre>"
+    }
+  ],
+  "failure_count": 122
+}

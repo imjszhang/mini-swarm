@@ -1,0 +1,138 @@
+[
+  {
+    "id": "task-01",
+    "title": "Core skeleton: types, HTML shell, util, CLI, public API",
+    "spec_sections": [
+      "Textual content",
+      "Blank lines",
+      "Tabs",
+      "Precedence"
+    ],
+    "files_scope": [
+      "src/index.ts",
+      "src/cli.ts",
+      "src/types.ts",
+      "src/html.ts",
+      "src/util/escape.ts",
+      "src/util/tabs.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "Extend pre-existing package.json/tsconfig skeleton. Define AST types, HTML escape + renderDocument skeleton, tab expansion helper, improve renderMarkdown to call parseDocument from blocks/index and renderDocument. Do not implement block/inline parsers here; blocks/index is owned by task-08 (stub may exist in repo)."
+  },
+  {
+    "id": "task-02",
+    "title": "Block parsers: paragraphs and document line splitting",
+    "spec_sections": [
+      "Paragraphs",
+      "Blank lines",
+      "Soft line breaks"
+    ],
+    "files_scope": [
+      "src/blocks/paragraph.ts",
+      "src/blocks/lines.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "Implement paragraph blocks and shared line splitting helpers. Export BlockParser tryParse functions; wiring task integrates into blocks/index.ts."
+  },
+  {
+    "id": "task-03",
+    "title": "Block parsers: ATX/Setext headings and thematic breaks",
+    "spec_sections": [
+      "ATX headings",
+      "Setext headings",
+      "Thematic breaks"
+    ],
+    "files_scope": [
+      "src/blocks/heading.ts",
+      "src/blocks/thematic-break.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "Implement heading and hr tryParse exports. Headings use parseInlines from inline/index when available; export APIs only — task-08 wires order."
+  },
+  {
+    "id": "task-04",
+    "title": "Block parsers: indented and fenced code blocks",
+    "spec_sections": [
+      "Indented code blocks",
+      "Fenced code blocks"
+    ],
+    "files_scope": [
+      "src/blocks/code-block.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "4-space indented code and ``` fenced blocks with optional info string. No inline parsing inside code; preserve literal newlines for HTML rendering."
+  },
+  {
+    "id": "task-05",
+    "title": "Block parsers: block quotes and lists",
+    "spec_sections": [
+      "Block quotes",
+      "List items",
+      "Lists"
+    ],
+    "files_scope": [
+      "src/blocks/blockquote.ts",
+      "src/blocks/list.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "Nested block quotes and ordered/unordered lists including tight/loose items. Export tryParse helpers; wiring task integrates."
+  },
+  {
+    "id": "task-06",
+    "title": "Inline: textual content, escapes, and line breaks",
+    "spec_sections": [
+      "Textual content",
+      "Backslash escapes",
+      "Hard line breaks",
+      "Soft line breaks",
+      "Tabs"
+    ],
+    "files_scope": [
+      "src/inline/text.ts",
+      "src/inline/escapes.ts",
+      "src/inline/line-break.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "Plain text runs, backslash escapes, hard/soft breaks. Export inline parser hooks; task-08 registers in inline/index.ts."
+  },
+  {
+    "id": "task-07",
+    "title": "Inline: emphasis, code spans, links, and images",
+    "spec_sections": [
+      "Emphasis and strong emphasis",
+      "Code spans",
+      "Links",
+      "Images",
+      "Precedence"
+    ],
+    "files_scope": [
+      "src/inline/emphasis.ts",
+      "src/inline/code-span.ts",
+      "src/inline/link.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "Implement emphasis/strong with delimiter rules, code spans, autolinks and bracket links, images. Respect precedence vs escapes and code; export parsers for wiring task."
+  },
+  {
+    "id": "task-08",
+    "title": "Wire block and inline parsers into orchestrators",
+    "spec_sections": [
+      "Precedence",
+      "Tabs"
+    ],
+    "files_scope": [
+      "src/blocks/index.ts",
+      "src/inline/index.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "Implement parseDocument/parseBlocks and parseInlines: import all block/inline modules, register tryParse order per CommonMark, connect to types and html renderer. Ensure tab expansion is applied where needed before parsing."
+  }
+]

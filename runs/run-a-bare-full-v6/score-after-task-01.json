@@ -1,0 +1,252 @@
+{
+  "scored_at": "2026-07-24T05:46:31.796Z",
+  "workspace": "D:\\github\\projects\\mini-swarm\\runs\\run-a-bare-full-v6\\workspace",
+  "total": 525,
+  "passed": 74,
+  "rate": 0.14095238095238094,
+  "by_section": {
+    "Tabs": {
+      "passed": 0,
+      "total": 11,
+      "rate": 0
+    },
+    "Backslash escapes": {
+      "passed": 1,
+      "total": 13,
+      "rate": 0.07692307692307693
+    },
+    "Precedence": {
+      "passed": 0,
+      "total": 1,
+      "rate": 0
+    },
+    "Thematic breaks": {
+      "passed": 4,
+      "total": 19,
+      "rate": 0.21052631578947367
+    },
+    "ATX headings": {
+      "passed": 2,
+      "total": 18,
+      "rate": 0.1111111111111111
+    },
+    "Setext headings": {
+      "passed": 1,
+      "total": 27,
+      "rate": 0.037037037037037035
+    },
+    "Indented code blocks": {
+      "passed": 0,
+      "total": 12,
+      "rate": 0
+    },
+    "Fenced code blocks": {
+      "passed": 0,
+      "total": 29,
+      "rate": 0
+    },
+    "Paragraphs": {
+      "passed": 3,
+      "total": 8,
+      "rate": 0.375
+    },
+    "Blank lines": {
+      "passed": 0,
+      "total": 1,
+      "rate": 0
+    },
+    "Block quotes": {
+      "passed": 0,
+      "total": 25,
+      "rate": 0
+    },
+    "List items": {
+      "passed": 4,
+      "total": 48,
+      "rate": 0.08333333333333333
+    },
+    "Lists": {
+      "passed": 1,
+      "total": 27,
+      "rate": 0.037037037037037035
+    },
+    "Code spans": {
+      "passed": 2,
+      "total": 22,
+      "rate": 0.09090909090909091
+    },
+    "Emphasis and strong emphasis": {
+      "passed": 40,
+      "total": 132,
+      "rate": 0.30303030303030304
+    },
+    "Links": {
+      "passed": 10,
+      "total": 90,
+      "rate": 0.1111111111111111
+    },
+    "Images": {
+      "passed": 1,
+      "total": 22,
+      "rate": 0.045454545454545456
+    },
+    "Hard line breaks": {
+      "passed": 1,
+      "total": 15,
+      "rate": 0.06666666666666667
+    },
+    "Soft line breaks": {
+      "passed": 1,
+      "total": 2,
+      "rate": 0.5
+    },
+    "Textual content": {
+      "passed": 3,
+      "total": 3,
+      "rate": 1
+    }
+  },
+  "failures": [
+    {
+      "id": "ex-0001",
+      "section": "Tabs",
+      "reason": "output mismatch",
+      "expected": "<pre><code>foo→baz→→bim\n</code></pre>",
+      "actual": "<p>→foo→baz→→bim</p>"
+    },
+    {
+      "id": "ex-0002",
+      "section": "Tabs",
+      "reason": "output mismatch",
+      "expected": "<pre><code>foo→baz→→bim\n</code></pre>",
+      "actual": "<p>  →foo→baz→→bim</p>"
+    },
+    {
+      "id": "ex-0003",
+      "section": "Tabs",
+      "reason": "output mismatch",
+      "expected": "<pre><code>a→a\nὐ→a\n</code></pre>",
+      "actual": "<p>    a→a\n    ὐ→a</p>"
+    },
+    {
+      "id": "ex-0004",
+      "section": "Tabs",
+      "reason": "output mismatch",
+      "expected": "<ul>\n<li>\n<p>foo</p>\n<p>bar</p>\n</li>\n</ul>",
+      "actual": "<p>  - foo</p>\n<p>→bar</p>"
+    },
+    {
+      "id": "ex-0005",
+      "section": "Tabs",
+      "reason": "output mismatch",
+      "expected": "<ul>\n<li>\n<p>foo</p>\n<pre><code>  bar\n</code></pre>\n</li>\n</ul>",
+      "actual": "<p>- foo</p>\n<p>→→bar</p>"
+    },
+    {
+      "id": "ex-0006",
+      "section": "Tabs",
+      "reason": "output mismatch",
+      "expected": "<blockquote>\n<pre><code>  foo\n</code></pre>\n</blockquote>",
+      "actual": "<p>&gt;→→foo</p>"
+    },
+    {
+      "id": "ex-0007",
+      "section": "Tabs",
+      "reason": "output mismatch",
+      "expected": "<ul>\n<li>\n<pre><code>  foo\n</code></pre>\n</li>\n</ul>",
+      "actual": "<p>-→→foo</p>"
+    },
+    {
+      "id": "ex-0008",
+      "section": "Tabs",
+      "reason": "output mismatch",
+      "expected": "<pre><code>foo\nbar\n</code></pre>",
+      "actual": "<p>    foo\n→bar</p>"
+    },
+    {
+      "id": "ex-0009",
+      "section": "Tabs",
+      "reason": "output mismatch",
+      "expected": "<ul>\n<li>foo\n<ul>\n<li>bar\n<ul>\n<li>baz</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>",
+      "actual": "<p> - foo\n   - bar\n→ - baz</p>"
+    },
+    {
+      "id": "ex-0010",
+      "section": "Tabs",
+      "reason": "output mismatch",
+      "expected": "<h1>Foo</h1>",
+      "actual": "<p>#→Foo</p>"
+    },
+    {
+      "id": "ex-0011",
+      "section": "Tabs",
+      "reason": "output mismatch",
+      "expected": "<hr />",
+      "actual": "<p>*→*→*→</p>"
+    },
+    {
+      "id": "ex-0012",
+      "section": "Backslash escapes",
+      "reason": "output mismatch",
+      "expected": "<p>!&quot;#$%&amp;'()*+,-./:;&lt;=&gt;?@[\\]^_`{|}~</p>",
+      "actual": "<p>\\!\\&quot;\\#\\$\\%\\&amp;\\'\\(\\)\\*\\+\\,\\-\\.\\/\\:\\;\\&lt;\\=\\&gt;\\?\\@\\[\\\\\\]\\^\\_\\`\\{\\|\\}\\~</p>"
+    },
+    {
+      "id": "ex-0014",
+      "section": "Backslash escapes",
+      "reason": "output mismatch",
+      "expected": "<p>*not emphasized*\n&lt;br/&gt; not a tag\n[not a link](/foo)\n`not code`\n1. not a list\n* not a list\n# not a heading\n[foo]: /url &quot;not a reference&quot;\n&amp;ouml; not a character entity</p>",
+      "actual": "<p>\\*not emphasized*\n\\&lt;br/&gt; not a tag\n\\[not a link](/foo)\n\\`not code`\n1\\. not a list\n\\* not a list\n\\# not a heading\n\\[foo]: /url &quot;not a reference&quot;\n\\&amp;ouml; not a character entity</p"
+    },
+    {
+      "id": "ex-0015",
+      "section": "Backslash escapes",
+      "reason": "output mismatch",
+      "expected": "<p>\\<em>emphasis</em></p>",
+      "actual": "<p>\\\\*emphasis*</p>"
+    },
+    {
+      "id": "ex-0016",
+      "section": "Backslash escapes",
+      "reason": "output mismatch",
+      "expected": "<p>foo<br />\nbar</p>",
+      "actual": "<p>foo\\\nbar</p>"
+    },
+    {
+      "id": "ex-0017",
+      "section": "Backslash escapes",
+      "reason": "output mismatch",
+      "expected": "<p><code>\\[\\`</code></p>",
+      "actual": "<p>`` \\[\\` ``</p>"
+    },
+    {
+      "id": "ex-0018",
+      "section": "Backslash escapes",
+      "reason": "output mismatch",
+      "expected": "<pre><code>\\[\\]\n</code></pre>",
+      "actual": "<p>    \\[\\]</p>"
+    },
+    {
+      "id": "ex-0019",
+      "section": "Backslash escapes",
+      "reason": "output mismatch",
+      "expected": "<pre><code>\\[\\]\n</code></pre>",
+      "actual": "<p>~~~\n\\[\\]\n~~~</p>"
+    },
+    {
+      "id": "ex-0020",
+      "section": "Backslash escapes",
+      "reason": "output mismatch",
+      "expected": "<p><a href=\"https://example.com?find=%5C*\">https://example.com?find=\\*</a></p>",
+      "actual": "<p>&lt;https://example.com?find=\\*&gt;</p>"
+    },
+    {
+      "id": "ex-0021",
+      "section": "Backslash escapes",
+      "reason": "output mismatch",
+      "expected": "<a href=\"/bar\\/)\">",
+      "actual": "<p>&lt;a href=&quot;/bar\\/)&quot;&gt;</p>"
+    }
+  ],
+  "failure_count": 451
+}

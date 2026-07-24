@@ -18,7 +18,9 @@ export function buildPlannerPrompt({ coordination }) {
   const rules = coordination
     ? `- **Coordination ON**: Write \`DESIGN.md\` first (module interfaces, data structures, file layout).
 - \`files_scope\` MUST be pairwise disjoint across tasks (no overlapping paths).
-- Initialize \`GUIDE.md\` with a short header (project tips for future workers).`
+- Initialize \`GUIDE.md\` with a short header (project tips for future workers).
+- **Integration / wiring**: If workers must hook modules into a shared orchestrator (e.g. \`src/index.ts\`, \`src/blocks/index.ts\`, barrel \`index.ts\` files), either (1) put that path in **this task's** \`files_scope\` when the task owns the wiring, or (2) add a **final dedicated task** (e.g. "Wire block parsers into orchestrator") whose \`files_scope\` is only those integration files, after all parser tasks.
+- **Notes discipline**: Never tell a worker in \`notes\` to edit or "register in" a file that is **not** in that task's \`files_scope\`. Parser tasks should say "export API from this module; wiring task integrates" instead.`
     : `- **Coordination OFF**: No DESIGN.md required. Overlapping files_scope allowed (conflicts expected).`;
   return fillTemplate(loadPrompt("planner"), {
     COORDINATION_RULES: rules,

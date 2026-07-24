@@ -1,0 +1,143 @@
+[
+  {
+    "id": "task-01",
+    "title": "Extend skeleton: parser pipeline, HTML escape, CLI, and module stubs",
+    "spec_sections": [
+      "Textual content",
+      "Blank lines"
+    ],
+    "files_scope": [
+      "src/index.ts",
+      "src/cli.ts",
+      "src/parser.ts",
+      "src/html.ts",
+      "src/types.ts",
+      "src/blocks.ts",
+      "src/inline.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "Wire renderMarkdown through a block parser entrypoint; add escapeHtml and document rendering; keep package.json/tsconfig unchanged. Stubs may export placeholders consumed by later tasks."
+  },
+  {
+    "id": "task-02",
+    "title": "Paragraphs, blank lines, and line breaks",
+    "spec_sections": [
+      "Paragraphs",
+      "Blank lines",
+      "Hard line breaks",
+      "Soft line breaks",
+      "Textual content"
+    ],
+    "files_scope": [
+      "src/blocks.ts",
+      "src/parser.ts",
+      "src/inline.ts",
+      "src/html.ts",
+      "src/index.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "Block-level paragraph parsing and inline text with soft/hard breaks inside paragraphs."
+  },
+  {
+    "id": "task-03",
+    "title": "ATX and Setext headings plus thematic breaks",
+    "spec_sections": [
+      "ATX headings",
+      "Setext headings",
+      "Thematic breaks"
+    ],
+    "files_scope": [
+      "src/blocks.ts",
+      "src/parser.ts",
+      "src/html.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "Heading levels 1–6; hr from ---, ***, ___ with CommonMark rules."
+  },
+  {
+    "id": "task-04",
+    "title": "Block quotes",
+    "spec_sections": [
+      "Block quotes"
+    ],
+    "files_scope": [
+      "src/blocks.ts",
+      "src/parser.ts",
+      "src/html.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "Nested blockquotes; lazy continuation; containers for other block types inside quotes."
+  },
+  {
+    "id": "task-05",
+    "title": "Lists and list items (including tab handling in lists)",
+    "spec_sections": [
+      "Lists",
+      "List items",
+      "Tabs"
+    ],
+    "files_scope": [
+      "src/blocks.ts",
+      "src/parser.ts",
+      "src/html.ts",
+      "src/inline.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "Ordered/unordered/tight/loose lists; marker widths; tab expansion where spec requires."
+  },
+  {
+    "id": "task-06",
+    "title": "Indented and fenced code blocks",
+    "spec_sections": [
+      "Indented code blocks",
+      "Fenced code blocks"
+    ],
+    "files_scope": [
+      "src/blocks.ts",
+      "src/parser.ts",
+      "src/html.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "Four-space indented code; ``` and ~~~ fences with info strings; escape content in pre/code."
+  },
+  {
+    "id": "task-07",
+    "title": "Inline code spans, emphasis, escapes, and precedence",
+    "spec_sections": [
+      "Code spans",
+      "Emphasis and strong emphasis",
+      "Backslash escapes",
+      "Precedence"
+    ],
+    "files_scope": [
+      "src/inline.ts",
+      "src/html.ts",
+      "src/blocks.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "Delimiter runs for * and _; nested emphasis; backslash escapes in text; inline parser precedence vs links."
+  },
+  {
+    "id": "task-08",
+    "title": "Links and images",
+    "spec_sections": [
+      "Links",
+      "Images"
+    ],
+    "files_scope": [
+      "src/inline.ts",
+      "src/html.ts",
+      "src/parser.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "Inline and reference links; autolinks; image syntax; title and destination parsing."
+  }
+]
