@@ -4,13 +4,15 @@
 
 - **Run A (bare)**: `npm run run:quick -- --run-id=run-a-bare-v4`
 - **Run B (coordinated)**: `npm run run:quick:coordinated -- --run-id=run-b-coordinated-v4`
+- **Run B faithful**: `npm run run:faithful -- --run-id=run-b-faithful-v7`
 - **Serial minimal loop**: `npm run run:serial -- --quick --run-id=run-a-serial-quick`
-- **Compare**: `npm run compare -- runs/run-a-bare-v4/metrics.json runs/run-b-coordinated-full-v6/metrics.json` (full B beats quick A: 31.0% vs 24.2%)
+- **Compare**: `npm run compare -- runs/run-a-bare-full-v6/metrics.json runs/run-b-faithful-v7/metrics.json`
 
 ## Runs (2026-07-24) — composer planner re-run
 
 | Run ID | Mode | Coordination | planner | Notes |
 |---|---|---|---|---|
+| run-b-faithful-v7 | **full 8 tasks**, concurrency 2 | **faithful** | **llm** | **76.6%** pass (402/525), 8/8, 7 cross-scope task events, 5 neutral-merger conflicts, 0 build repairs, 2644 LOC, ~43 min wall / ~64.5 min agent |
 | run-a-bare-full-v6 | **full 8 tasks**, concurrency 2 | false | **llm** | **76.8%** pass (403/525), **8/8 tasks**, **5 merge conflicts self-resolved by workers**, 2456 LOC, ~45 min wall / ~71.5 min agent |
 | run-a-bare-v4 | quick, concurrency 2 | false | **llm** | **24.2%** pass (127/525), 0 merge/scope, 463 LOC, 3/3 tasks, ~22 min |
 | run-b-coordinated-full-v6 | **full 8 tasks**, concurrency 2 | true | **llm** | **31.0%** pass (163/525), **8/8 tasks**, 0 scope violations, **2 merge conflicts** (GUIDE.md, merger resolved), 2274 LOC, ~23 min wall / ~32.7 min agent; planner wiring task + integration rules |
@@ -19,6 +21,21 @@
 | run-b-coordinated-v4 | quick, concurrency 2 | true | seed | **INVALID** — cursor-agent auth expired mid-session |
 
 Compare v4 A vs v3 A: `npm run compare -- runs/run-a-bare-v4/metrics.json runs/run-a-bare-v3/metrics.json` (+4.6pp pass rate with LLM planner).
+
+### v7 faithful coordination: quality recovered
+
+Faithful mode replaces strict isolation with Cursor-like coordination primitives: scopes express primary ownership; targeted cross-scope patches are allowed; DESIGN.md may evolve; a neutral agent resolves conflicts; and merged build failures can launch an integration-fix agent.
+
+Full comparison:
+
+- **Bare v6: 76.8%; faithful v7: 76.6%.** One CommonMark example separates them (403 vs 402); both complete 8/8.
+- Faithful workers made cross-scope source changes in **7 task events**, restoring continuous integration instead of concentrating it in one final wiring task.
+- Both runs had **5 real merge conflicts**. Bare workers resolved their own; faithful used a neutral merger.
+- Faithful used **~9.8% less agent time** (64.5 vs 71.5 min) while matching quality. It did not reproduce strict v6's 2.2x compute saving, but avoided strict v6's quality collapse (31.0%).
+- No build failed after merge, so the integration-fix fallback was implemented but not exercised in this run.
+- Protocol caveat: only task-06 used the requested `cross-scope:` commit-message marker; the other cross-scope edits were anticipated in planner task notes but not marked in commits. The harness records all such edits independently.
+
+Interpretation: the result now matches Cursor's mechanism more closely. Coordination is not file isolation; it is making overlap observable and resolvable while preserving shared design context. At this scale, faithful coordination matches bare quality with a modest compute reduction—not the dramatic conflict suppression seen in Cursor's hundreds-agent system.
 
 ### v6 full A/B: bare wins on quality, coordination wins on cost
 
@@ -54,5 +71,6 @@ Legacy failed runs (`run-a-bare`, `run-a-bare-v2`) had 0% pass due to missing po
 
 ## Interpretation
 
-- Compare **merge_conflicts** vs **scope_violations** separately in `metrics.json`.
-- Run B matched pass rate but **lost task-02 merge** (scope enforcement); use `tasks_done` and LOC, not pass rate alone.
+- Compare `merge_conflicts`, strict `scope_violations`, faithful `cross_scope_changes`, and `integration_fixes` separately.
+- `strict` is an intentionally rigid control, not a faithful reproduction of Cursor's newer swarm.
+- `faithful` remains a minimal Git-backed subset; it does not implement Cursor's custom VCS, multiple planner trees, compile-checked design references, bloated-file decomposition, or stacked review perspectives.

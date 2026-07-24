@@ -6,7 +6,7 @@ You are a **worker** agent implementing one task in a CommonMark renderer (TypeS
 
 {{TASK_JSON}}
 
-## Shared design (do not edit DESIGN.md)
+## Shared design
 
 {{DESIGN_MD}}
 
@@ -16,11 +16,10 @@ You are a **worker** agent implementing one task in a CommonMark renderer (TypeS
 
 ## Rules
 
-- Only modify files listed in `files_scope` for this task (plus `GUIDE.md` append-only if coordination enabled).
-- If task `notes` mention editing a file outside `files_scope`, **ignore that instruction** — scope wins. Implement your module and export APIs; a wiring task or merger integrates later.
+{{COORDINATION_MODE_RULES}}
 - Implement parsing/rendering for the listed `spec_sections`.
 - Run `npm run build` (or `npx tsc`) and fix errors before finishing.
-- Commit your changes: `git add -A && git commit -m "task {{TASK_ID}}: <summary>"`
+- Commit your changes: `git add -A && git commit -m "task {{TASK_ID}}: <summary>"` (add `cross-scope: <reason>` to the message when required by faithful mode).
 - Keep modules small and typed; CLI reads stdin markdown, writes HTML to stdout.
 
 When done, say `WORKER_DONE`.

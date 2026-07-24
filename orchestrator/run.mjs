@@ -24,6 +24,7 @@ import {
 } from "./lib/git.mjs";
 import {
   buildPlannerPrompt,
+  buildIntegrationFixPrompt,
   buildReviewerPrompt,
   buildWorkerPrompt,
 } from "./lib/prompts.mjs";
@@ -42,12 +43,15 @@ import { spawnAgent } from "./runner.mjs";
 const ROOT = projectRoot();
 
 function ensureBuilt(workspaceDir) {
-  if (!existsSync(path.join(workspaceDir, "package.json"))) return;
+  if (!existsSync(path.join(workspaceDir, "package.json"))) return { ok: true, stderr: "" };
   try {
-    execSync("npm install", { cwd: workspaceDir, stdio: "ignore", shell: true });
-    execSync("npm run build", { cwd: workspaceDir, stdio: "ignore", shell: true });
+    execSync("npm install", { cwd: workspaceDir, stdio: "pipe", shell: true, encoding: "utf8" });
+    execSync("npm run build", { cwd: workspaceDir, stdio: "pipe", shell: true, encoding: "utf8" });
+    return { ok: true, stderr: "" };
   } catch (err) {
-    console.warn(`[run] build failed in ${workspaceDir}: ${err.message || err}`);
+    const stderr = String(err.stderr || err.stdout || err.message || err);
+    console.warn(`[run] build failed in ${workspaceDir}: ${stderr.slice(0, 500)}`);
+    return { ok: false, stderr };
   }
 }
 
@@ -59,6 +63,7 @@ function parseArgs(argv) {
     mock: false,
     runId: null,
     concurrency: null,
+    coordMode: "strict",
     help: false,
   };
   for (const a of argv) {
@@ -69,6 +74,7 @@ function parseArgs(argv) {
     else if (a === "--help" || a === "-h") args.help = true;
     else if (a.startsWith("--run-id=")) args.runId = a.split("=")[1];
     else if (a.startsWith("--concurrency=")) args.concurrency = Number(a.split("=")[1]);
+    else if (a.startsWith("--coord-mode=")) args.coordMode = a.split("=")[1];
   }
   return args;
 }
@@ -78,6 +84,7 @@ function usage() {
 
 Options:
   --coordination     Run B: disjoint scopes, DESIGN.md, GUIDE.md, neutral merger
+  --coord-mode=MODE  strict (hard scope) or faithful (soft scope + repair loop)
   --quick            Only first 3 tasks (cheaper experiment)
   --serial           Concurrency 1, no worktrees (minimal loop)
   --mock             Skip LLM agents; seed tasks + stub workspace only
@@ -86,10 +93,10 @@ Options:
 `);
 }
 
-async function runPlanner({ workspaceDir, config, runDir, coordination, metrics }) {
+async function runPlanner({ workspaceDir, config, runDir, coordination, coordMode, metrics }) {
   const examplesPath = path.join(ROOT, "spec", "examples.json");
   const sections = sectionSummary();
-  const prompt = `${buildPlannerPrompt({ coordination })}
+  const prompt = `${buildPlannerPrompt({ coordination, coordMode })}
 
 ## Spec sections (example counts)
 
@@ -147,11 +154,12 @@ async function runWorkerTask({
   config,
   runDir,
   coordination,
+  coordMode,
   metrics,
 }) {
   const designMd = readDesign(cwd);
   const guideMd = readGuide(cwd);
-  const prompt = buildWorkerPrompt({ task, designMd, guideMd });
+  const prompt = buildWorkerPrompt({ task, designMd, guideMd, coordMode });
   const result = await spawnAgent({
     role: "worker",
     prompt,
@@ -168,6 +176,45 @@ async function runWorkerTask({
     elapsedMs: result.elapsedMs,
   });
   return result;
+}
+
+async function ensureBuiltWithRepair({ workspaceDir, config, runDir, metrics, taskId }) {
+  let build = ensureBuilt(workspaceDir);
+  if (build.ok) return { ok: true, attempts: 0 };
+
+  const maxRetries = config.maxIntegrationFixRetries ?? 2;
+  for (let attempt = 1; attempt <= maxRetries; attempt += 1) {
+    const result = await spawnAgent({
+      role: "worker",
+      prompt: buildIntegrationFixPrompt({
+        buildError: build.stderr,
+        designMd: readDesign(workspaceDir),
+        diff: getDiff(workspaceDir).slice(0, 8000),
+      }),
+      cwd: workspaceDir,
+      config,
+      runDir,
+      logKey: `integration-fix-${taskId}-${attempt}`,
+      timeoutMs: (config.taskTimeoutMinutes || 20) * 60 * 1000,
+    });
+    build = ensureBuilt(workspaceDir);
+    metrics.recordIntegrationFix({
+      taskId,
+      attempt,
+      agent_ok: result.ok,
+      build_ok: build.ok,
+      elapsedMs: result.elapsedMs,
+    });
+    metrics.recordAgentCall({
+      role: "integration-fix",
+      taskId,
+      attempt,
+      ok: result.ok && build.ok,
+      elapsedMs: result.elapsedMs,
+    });
+    if (build.ok) return { ok: true, attempts: attempt };
+  }
+  return { ok: false, attempts: maxRetries, stderr: build.stderr };
 }
 
 async function runPool(items, concurrency, fn) {
@@ -275,6 +322,10 @@ async function main() {
     usage();
     process.exit(0);
   }
+  if (!["strict", "faithful"].includes(cli.coordMode)) {
+    throw new Error(`Invalid --coord-mode=${cli.coordMode}; expected strict or faithful`);
+  }
+  if (cli.coordMode === "faithful") cli.coordination = true;
 
   const config = loadConfig({
     coordination: cli.coordination,
@@ -299,6 +350,7 @@ async function main() {
     mock: config.mock,
     models: config.models,
     concurrency: cli.serial ? 1 : (config.concurrency || 2),
+    coordination_mode: config.coordination ? cli.coordMode : "none",
   });
 
   console.log(`[run] id=${runId} coordination=${config.coordination} mock=${config.mock}`);
@@ -313,6 +365,7 @@ async function main() {
     config,
     runDir,
     coordination: config.coordination,
+    coordMode: cli.coordMode,
     metrics,
   });
 
@@ -392,39 +445,58 @@ async function main() {
         config,
         runDir,
         coordination: config.coordination,
+        coordMode: cli.coordMode,
         metrics,
       });
 
       if (config.coordination) {
         const changed = filesChangedInWorktree(wt.path);
-        const violations = checkScopeViolation(changed, task.files_scope);
+        const violations = checkScopeViolation(changed, task.files_scope, {
+          allowDesign: cli.coordMode === "faithful",
+        });
         if (violations.length) {
-          metrics.recordScopeViolation({ taskId: task.id, files: violations });
-          removeWorktree(workspaceDir, wt.path);
-          metrics.recordTask({ id: task.id, status: "failed", scope_violation: violations });
-          return { task, ok: false };
+          if (cli.coordMode === "faithful") {
+            metrics.recordCrossScopeChange({ taskId: task.id, files: violations });
+          } else {
+            metrics.recordScopeViolation({ taskId: task.id, files: violations });
+            removeWorktree(workspaceDir, wt.path);
+            metrics.recordTask({ id: task.id, status: "failed", scope_violation: violations });
+            return { task, ok: false };
+          }
         }
       }
 
       const mergeResult = await mergeQueue.enqueue({
         branch: wt.branch,
         taskId: task.id,
+        afterMerge: cli.coordMode === "faithful"
+          ? () => ensureBuiltWithRepair({
+            workspaceDir,
+            config,
+            runDir,
+            metrics,
+            taskId: task.id,
+          })
+          : null,
       });
       removeWorktree(workspaceDir, wt.path);
 
-      ensureBuilt(workspaceDir);
+      if (cli.coordMode !== "faithful") ensureBuilt(workspaceDir);
       const scorePath = path.join(runDir, `score-after-${task.id}.json`);
       const scored = runScore(workspaceDir, scorePath);
       metrics.recordScore({ phase: `after-${task.id}`, ...scored.report });
 
       metrics.recordTask({
         id: task.id,
-        status: mergeResult.ok ? "done" : "failed",
+        status: mergeResult.ok && mergeResult.postMerge?.ok !== false ? "done" : "failed",
         elapsedMs: Date.now() - started,
         worker_ok: workerResult.ok,
         merge: mergeResult,
       });
-      return { task, ok: mergeResult.ok && workerResult.ok };
+      return {
+        task,
+        ok: mergeResult.ok && mergeResult.postMerge?.ok !== false && workerResult.ok,
+      };
     }
 
     const workerResult = await runWorkerTask({
@@ -433,20 +505,29 @@ async function main() {
       config,
       runDir,
       coordination: config.coordination,
+      coordMode: cli.coordMode,
       metrics,
     });
 
-    ensureBuilt(workspaceDir);
+    const buildResult = cli.coordMode === "faithful"
+      ? await ensureBuiltWithRepair({
+        workspaceDir,
+        config,
+        runDir,
+        metrics,
+        taskId: task.id,
+      })
+      : ensureBuilt(workspaceDir);
     const scorePath = path.join(runDir, `score-after-${task.id}.json`);
     const scored = runScore(workspaceDir, scorePath);
     metrics.recordScore({ phase: `after-${task.id}`, ...scored.report });
 
     metrics.recordTask({
       id: task.id,
-      status: workerResult.ok ? "done" : "failed",
+      status: workerResult.ok && buildResult.ok ? "done" : "failed",
       elapsedMs: Date.now() - started,
     });
-    return { task, ok: workerResult.ok };
+    return { task, ok: workerResult.ok && buildResult.ok };
   }
 
   const skeletonTask = tasks.find((t) => t.id === "task-01") || tasks[0];
@@ -462,7 +543,17 @@ async function main() {
 
   // Optional reviewer on final diff
   const diff = getDiff(workspaceDir);
-  ensureBuilt(workspaceDir);
+  if (cli.coordMode === "faithful") {
+    await ensureBuiltWithRepair({
+      workspaceDir,
+      config,
+      runDir,
+      metrics,
+      taskId: "final",
+    });
+  } else {
+    ensureBuilt(workspaceDir);
+  }
   const finalScorePath = path.join(runDir, "score-final.json");
   const finalScored = runScore(workspaceDir, finalScorePath);
   metrics.recordScore({ phase: "final", ...finalScored.report });

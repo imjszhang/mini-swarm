@@ -1,0 +1,130 @@
+[
+  {
+    "id": "task-01",
+    "title": "Core skeleton: AST, source normalization, block loop, HTML stub, CLI",
+    "spec_sections": [
+      "Blank lines",
+      "Textual content"
+    ],
+    "files_scope": [
+      "src/index.ts",
+      "src/cli.ts",
+      "src/ast.ts",
+      "src/source.ts",
+      "src/block-parser.ts",
+      "src/html-render.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "Wire renderMarkdown through normalize → parseBlocks → renderDocument. block-parser.ts: empty dispatch loop with paragraph fallback stub only if needed for compile. Do not recreate package.json/tsconfig."
+  },
+  {
+    "id": "task-02",
+    "title": "Paragraphs, blank lines, thematic breaks",
+    "spec_sections": [
+      "Paragraphs",
+      "Blank lines",
+      "Thematic breaks",
+      "Soft line breaks"
+    ],
+    "files_scope": [
+      "src/blocks/paragraph.ts",
+      "src/blocks/thematic-break.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "Export tryParse from each module; patch block-parser.ts dispatch to call them (minimal cross-scope). Paragraphs use parseInlines stub from inline/parser until task-06."
+  },
+  {
+    "id": "task-03",
+    "title": "ATX and Setext headings",
+    "spec_sections": [
+      "ATX headings",
+      "Setext headings"
+    ],
+    "files_scope": [
+      "src/blocks/heading.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "Setext may need block-parser hook to replace previous paragraph line; document behavior in DESIGN if interface changes."
+  },
+  {
+    "id": "task-04",
+    "title": "Indented and fenced code blocks",
+    "spec_sections": [
+      "Indented code blocks",
+      "Fenced code blocks"
+    ],
+    "files_scope": [
+      "src/blocks/code-block.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "Literal content only in AST; html-render.ts already escapes in task-01 scope—patch html-render if fenced info or trailing newline rules need tweaks."
+  },
+  {
+    "id": "task-05",
+    "title": "Block quotes and lists",
+    "spec_sections": [
+      "Block quotes",
+      "List items",
+      "Lists"
+    ],
+    "files_scope": [
+      "src/blocks/blockquote.ts",
+      "src/blocks/list.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "Container stack in block-parser must support nested blockquote/list; patch block-parser for stack push/pop."
+  },
+  {
+    "id": "task-06",
+    "title": "Inline foundation: tabs via source, escapes, text, line breaks",
+    "spec_sections": [
+      "Tabs",
+      "Backslash escapes",
+      "Hard line breaks",
+      "Textual content"
+    ],
+    "files_scope": [
+      "src/inline/parser.ts",
+      "src/inline/text.ts",
+      "src/inline/escape.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "Implement parseInlines; tabs primarily in source.ts (task-01)—extend source.ts only if tab expansion incomplete. Patch paragraph/heading to use real parseInlines."
+  },
+  {
+    "id": "task-07",
+    "title": "Emphasis, strong emphasis, code spans, precedence",
+    "spec_sections": [
+      "Emphasis and strong emphasis",
+      "Code spans",
+      "Precedence"
+    ],
+    "files_scope": [
+      "src/inline/emphasis.ts",
+      "src/inline/code-span.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "Delimiter stack; wire from inline/parser.ts. Precedence tests often combine emphasis with links—coordinate ordering with task-08."
+  },
+  {
+    "id": "task-08",
+    "title": "Links and images",
+    "spec_sections": [
+      "Links",
+      "Images"
+    ],
+    "files_scope": [
+      "src/inline/link.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "Inline and reference forms per spec; patch inline/parser.ts for link/image passes after emphasis delimiters processed."
+  }
+]

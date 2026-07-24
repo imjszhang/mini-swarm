@@ -44,6 +44,9 @@ export class MergeQueue {
       const item = this.queue.shift();
       try {
         const result = await this._mergeOne(item);
+        if (result.ok && item.afterMerge) {
+          result.postMerge = await item.afterMerge();
+        }
         item.resolve(result);
       } catch (err) {
         item.reject(err);
@@ -121,9 +124,12 @@ export class MergeQueue {
 // Side effects of the required build step (npm install / tsc), not code edits.
 const SCOPE_EXEMPT = new Set(["GUIDE.md", "package-lock.json", "npm-shrinkwrap.json"]);
 
-export function checkScopeViolation(changedFiles, allowedScope) {
+export function checkScopeViolation(changedFiles, allowedScope, { allowDesign = false } = {}) {
   const allowed = new Set(allowedScope || []);
   return changedFiles.filter(
-    (f) => !allowed.has(f) && !SCOPE_EXEMPT.has(f) && !f.startsWith("dist/"),
+    (f) => !allowed.has(f)
+      && !SCOPE_EXEMPT.has(f)
+      && !(allowDesign && f === "DESIGN.md")
+      && !f.startsWith("dist/"),
   );
 }

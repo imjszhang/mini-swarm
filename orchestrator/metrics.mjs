@@ -16,8 +16,12 @@ export function createMetricsCollector(runDir) {
     commits: 0,
     merge_conflicts: [],
     scope_violations: [],
+    cross_scope_changes: [],
+    integration_fixes: [],
     merge_conflict_count: 0,
     scope_violation_count: 0,
+    cross_scope_change_count: 0,
+    integration_fix_count: 0,
     conflict_count: 0,
     tasks: [],
     score_curve: [],
@@ -38,6 +42,14 @@ export function createMetricsCollector(runDir) {
     recordScopeViolation(entry) {
       data.scope_violations.push({ ...entry, at: new Date().toISOString() });
       recomputeConflictTotals(data);
+    },
+    recordCrossScopeChange(entry) {
+      data.cross_scope_changes.push({ ...entry, at: new Date().toISOString() });
+      data.cross_scope_change_count = data.cross_scope_changes.length;
+    },
+    recordIntegrationFix(entry) {
+      data.integration_fixes.push({ ...entry, at: new Date().toISOString() });
+      data.integration_fix_count = data.integration_fixes.length;
     },
     recordTask(entry) {
       const idx = data.tasks.findIndex((t) => t.id === entry.id);
@@ -91,8 +103,12 @@ export function normalizeMetrics(raw) {
   }
   m.merge_conflicts = m.merge_conflicts || [];
   m.scope_violations = m.scope_violations || [];
+  m.cross_scope_changes = m.cross_scope_changes || [];
+  m.integration_fixes = m.integration_fixes || [];
   m.merge_conflict_count = m.merge_conflicts.length;
   m.scope_violation_count = m.scope_violations.length;
+  m.cross_scope_change_count = m.cross_scope_changes.length;
+  m.integration_fix_count = m.integration_fixes.length;
   m.conflict_count = m.merge_conflict_count + m.scope_violation_count;
   return m;
 }

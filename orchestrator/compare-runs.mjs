@@ -27,12 +27,19 @@ function row(label, va, vb) {
 console.log("\n=== mini-swarm A/B comparison ===\n");
 row("Metric", "Run A", "Run B");
 row("coordination", a.coordination, b.coordination);
+row(
+  "coord mode",
+  a.coordination_mode ?? (a.coordination ? "strict" : "none"),
+  b.coordination_mode ?? (b.coordination ? "strict" : "none"),
+);
 row("planner_source", a.planner_source ?? "?", b.planner_source ?? "?");
 row("pass rate", `${(a.final_score?.rate * 100 || 0).toFixed(1)}%`, `${(b.final_score?.rate * 100 || 0).toFixed(1)}%`);
 row("passed/total", `${a.final_score?.passed}/${a.final_score?.total}`, `${b.final_score?.passed}/${b.final_score?.total}`);
 row("tasks done", `${countTasksDone(a.tasks)}/${a.tasks?.length ?? "?"}`, `${countTasksDone(b.tasks)}/${b.tasks?.length ?? "?"}`);
 row("merge conflicts", a.merge_conflict_count, b.merge_conflict_count);
 row("scope violations", a.scope_violation_count, b.scope_violation_count);
+row("cross-scope changes", a.cross_scope_change_count, b.cross_scope_change_count);
+row("integration fixes", a.integration_fix_count, b.integration_fix_count);
 row("commits", a.commits, b.commits);
 row("loc", a.loc, b.loc);
 row("agent calls", a.agent_calls?.length, b.agent_calls?.length);

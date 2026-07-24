@@ -10,6 +10,7 @@
   "taskTimeoutMinutes": 20,
   "maxMergeRetries": 2,
   "maxPlannerRetries": 2,
+  "maxIntegrationFixRetries": 2,
   "guideMaxLines": 80,
   "agentCommand": "cursor-agent"
 }

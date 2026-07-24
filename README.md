@@ -7,7 +7,8 @@ Minimal agent swarm orchestrator: reproduce Cursor's coordination-vs-throughput 
 Run A/B experiments comparing:
 
 - **Run A (bare swarm)**: planner + workers, no scope enforcement, workers resolve merge conflicts themselves
-- **Run B (coordinated swarm)**: disjoint file scopes, `DESIGN.md`, `GUIDE.md`, neutral merger on conflicts
+- **Run B strict**: disjoint hard file scopes, `DESIGN.md`, `GUIDE.md`, neutral merger
+- **Run B faithful**: scopes are primary ownership (targeted cross-scope patches allowed), living `DESIGN.md`, `GUIDE.md`, neutral merger, and build-failure integration repair
 
 Fixed model routing: planner and workers use `composer-2.5-fast` by default (`config.json`). Planner falls back to seed `tasks.json` if the LLM call fails.
 
@@ -25,6 +26,7 @@ npm run score                 # score workspace implementation (needs dist/cli.j
 npm run smoke:runner          # verify cursor-agent spawn works
 npm run run:quick             # Run A bare (3 tasks, concurrency 2)
 npm run run:quick:coordinated # Run B coordinated
+npm run run:faithful          # Run B faithful, full task set
 npm run run:serial -- --quick # serial minimal loop (no worktrees)
 npm run compare -- runs/run-a-bare-v3/metrics.json runs/run-b-coordinated-v3/metrics.json
 ```
@@ -58,9 +60,23 @@ Each run writes `runs/{runId}/metrics.json`:
 - `planner_source`: `llm` or `seed`
 - pass rate curve (`score_curve`)
 - `merge_conflict_count` vs `scope_violation_count` (separate)
+- `coordination_mode`: `none`, `strict`, or `faithful`
+- `cross_scope_change_count` and `integration_fix_count` (faithful mode)
 - `tasks_done` / per-task status
 - lines of code, agent call timing
 
 ## Article lineage
 
 Part of @js trilogy: loop → harness → **swarm**. Source blog: Cursor Agent Swarm Model Economics.
+
+## Fidelity boundary
+
+`faithful` reproduces a small, Git-backed subset of Cursor's newer swarm framework:
+
+- planner/worker context specialization
+- shared design decisions and a worker-maintained Field Guide
+- neutral third-party conflict resolution
+- targeted cross-scope patches instead of hard rejection
+- compiler failures feeding an integration-fix loop
+
+It does **not** reproduce Cursor's custom high-throughput VCS, multiple planner trees, compile-checked references from code to design decisions, bloated-file decomposition, or stacked multi-perspective review. Results measure this minimal reproduction, not Cursor's production swarm.
