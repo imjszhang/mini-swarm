@@ -3,12 +3,21 @@ import { spawnSync } from "node:child_process";
 import path from "node:path";
 import { projectRoot } from "./config.mjs";
 
-export function runScore(workspaceDir, jsonOut) {
-  const result = spawnSync(process.execPath, [
+/**
+ * @param {string} workspaceDir
+ * @param {string} jsonOut
+ * @param {{ sections?: string[] }} [opts]
+ */
+export function runScore(workspaceDir, jsonOut, opts = {}) {
+  const args = [
     path.join(projectRoot(), "scorer", "score.mjs"),
     "--workspace", workspaceDir,
     "--json", jsonOut,
-  ], { encoding: "utf8" });
+  ];
+  if (opts.sections?.length) {
+    args.push("--sections", opts.sections.join(","));
+  }
+  const result = spawnSync(process.execPath, args, { encoding: "utf8" });
 
   let report = null;
   try {

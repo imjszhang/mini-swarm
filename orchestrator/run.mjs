@@ -28,6 +28,7 @@ import {
   buildIntegrationFixPrompt,
   buildReviewerPrompt,
   buildWorkerPrompt,
+  buildWorkerScoreFixPrompt,
   loadPrompt,
 } from "./lib/prompts.mjs";
 import { runScore } from "./lib/score-run.mjs";
@@ -199,6 +200,120 @@ async function runWorkerTask({
     elapsedMs: result.elapsedMs,
   });
   return result;
+}
+
+/**
+ * Worker + optional section-scoped score feedback rounds (harness-level, both arms).
+ */
+async function runWorkerWithScoreFeedback({
+  task,
+  cwd,
+  config,
+  runDir,
+  coordination,
+  coordMode,
+  metrics,
+}) {
+  const initial = await runWorkerTask({
+    task,
+    cwd,
+    config,
+    runDir,
+    coordination,
+    coordMode,
+    metrics,
+  });
+
+  const maxRounds = config.maxScoreFeedbackRounds ?? 0;
+  const target = config.scoreFeedbackTarget ?? 1.0;
+  if (maxRounds <= 0) return initial;
+
+  const sections = task.spec_sections || [];
+  if (!sections.length) return initial;
+
+  let lastResult = initial;
+  let prevRate = null;
+
+  for (let round = 1; round <= maxRounds; round += 1) {
+    const build = ensureBuilt(cwd);
+    let rate = 0;
+    let failures = [];
+    let buildError = null;
+
+    if (!build.ok) {
+      buildError = build.stderr || "build failed";
+      rate = 0;
+      console.warn(`[run] ${task.id} feedback round ${round}: build failed`);
+    } else {
+      const scorePath = path.join(runDir, `score-feedback-${task.id}-${round}.json`);
+      const scored = runScore(cwd, scorePath, { sections });
+      rate = scored.report?.rate ?? 0;
+      failures = scored.report?.failures || [];
+      console.log(`[run] ${task.id} feedback round ${round}: section rate=${(rate * 100).toFixed(1)}%`);
+    }
+
+    metrics.recordScoreFeedback({
+      taskId: task.id,
+      round,
+      rate_before: prevRate,
+      rate_after: rate,
+      build_ok: build.ok,
+      failure_count: failures.length,
+    });
+
+    if (build.ok && rate >= target) break;
+
+    const fixPrompt = buildWorkerScoreFixPrompt({
+      task,
+      sections,
+      rate,
+      failures,
+      coordMode,
+      buildError,
+    });
+    const fixResult = await spawnAgent({
+      role: "worker",
+      prompt: fixPrompt,
+      cwd,
+      config,
+      runDir,
+      logKey: `worker-${task.id}-fix-${round}`,
+      timeoutMs: (config.taskTimeoutMinutes || 20) * 60 * 1000,
+    });
+    metrics.recordAgentCall({
+      role: "worker-fix",
+      taskId: task.id,
+      round,
+      ok: fixResult.ok,
+      elapsedMs: fixResult.elapsedMs,
+    });
+    lastResult = fixResult;
+    prevRate = rate;
+
+    // After the last fix, re-score once so metrics capture the final rate_after.
+    if (round === maxRounds) {
+      const buildFinal = ensureBuilt(cwd);
+      let finalRate = 0;
+      let finalFailures = 0;
+      if (buildFinal.ok) {
+        const scorePath = path.join(runDir, `score-feedback-${task.id}-final.json`);
+        const scored = runScore(cwd, scorePath, { sections });
+        finalRate = scored.report?.rate ?? 0;
+        finalFailures = (scored.report?.failures || []).length;
+        console.log(`[run] ${task.id} feedback final: section rate=${(finalRate * 100).toFixed(1)}%`);
+      }
+      metrics.recordScoreFeedback({
+        taskId: task.id,
+        round: `${round}-final`,
+        rate_before: prevRate,
+        rate_after: finalRate,
+        build_ok: buildFinal.ok,
+        failure_count: finalFailures,
+      });
+    }
+  }
+
+  return lastResult;
 }
 
 async function ensureBuiltWithRepair({ workspaceDir, config, runDir, metrics, taskId }) {
@@ -578,6 +693,9 @@ async function main() {
       integration_fix_time_ms: agentCalls
         .filter((c) => c.role === "integration-fix")
         .reduce((s, c) => s + (c.elapsedMs || 0), 0),
+      worker_fix_time_ms: agentCalls
+        .filter((c) => c.role === "worker-fix")
+        .reduce((s, c) => s + (c.elapsedMs || 0), 0),
     });
     console.log(`[run] mock complete rate=${(scored.report.rate * 100).toFixed(1)}%`);
     process.exit(0);
@@ -609,7 +727,7 @@ async function main() {
         return { task, ok: false };
       }
 
-      const workerResult = await runWorkerTask({
+      const workerResult = await runWorkerWithScoreFeedback({
         task,
         cwd: wt.path,
         config,
@@ -669,7 +787,7 @@ async function main() {
       };
     }
 
-    const workerResult = await runWorkerTask({
+    const workerResult = await runWorkerWithScoreFeedback({
       task,
       cwd: workspaceDir,
       config,
@@ -760,6 +878,9 @@ async function main() {
       .reduce((s, c) => s + (c.elapsedMs || 0), 0),
     integration_fix_time_ms: agentCalls
       .filter((c) => c.role === "integration-fix")
+      .reduce((s, c) => s + (c.elapsedMs || 0), 0),
+    worker_fix_time_ms: agentCalls
+      .filter((c) => c.role === "worker-fix")
       .reduce((s, c) => s + (c.elapsedMs || 0), 0),
   });
 

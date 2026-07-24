@@ -1,0 +1,234 @@
+{
+  "scored_at": "2026-07-24T16:10:41.283Z",
+  "workspace": "D:\\github\\projects\\mini-swarm\\runs\\run-a-bare-contention-v9b\\workspace",
+  "total": 525,
+  "passed": 56,
+  "rate": 0.10666666666666667,
+  "by_section": {
+    "Tabs": {
+      "passed": 1,
+      "total": 11,
+      "rate": 0.09090909090909091
+    },
+    "Backslash escapes": {
+      "passed": 2,
+      "total": 13,
+      "rate": 0.15384615384615385
+    },
+    "Precedence": {
+      "passed": 0,
+      "total": 1,
+      "rate": 0
+    },
+    "Thematic breaks": {
+      "passed": 8,
+      "total": 19,
+      "rate": 0.42105263157894735
+    },
+    "ATX headings": {
+      "passed": 2,
+      "total": 18,
+      "rate": 0.1111111111111111
+    },
+    "Setext headings": {
+      "passed": 3,
+      "total": 27,
+      "rate": 0.1111111111111111
+    },
+    "Indented code blocks": {
+      "passed": 7,
+      "total": 12,
+      "rate": 0.5833333333333334
+    },
+    "Fenced code blocks": {
+      "passed": 23,
+      "total": 29,
+      "rate": 0.7931034482758621
+    },
+    "Paragraphs": {
+      "passed": 0,
+      "total": 8,
+      "rate": 0
+    },
+    "Blank lines": {
+      "passed": 0,
+      "total": 1,
+      "rate": 0
+    },
+    "Block quotes": {
+      "passed": 4,
+      "total": 25,
+      "rate": 0.16
+    },
+    "List items": {
+      "passed": 2,
+      "total": 48,
+      "rate": 0.041666666666666664
+    },
+    "Lists": {
+      "passed": 0,
+      "total": 27,
+      "rate": 0
+    },
+    "Code spans": {
+      "passed": 4,
+      "total": 22,
+      "rate": 0.18181818181818182
+    },
+    "Emphasis and strong emphasis": {
+      "passed": 0,
+      "total": 132,
+      "rate": 0
+    },
+    "Links": {
+      "passed": 0,
+      "total": 90,
+      "rate": 0
+    },
+    "Images": {
+      "passed": 0,
+      "total": 22,
+      "rate": 0
+    },
+    "Hard line breaks": {
+      "passed": 0,
+      "total": 15,
+      "rate": 0
+    },
+    "Soft line breaks": {
+      "passed": 0,
+      "total": 2,
+      "rate": 0
+    },
+    "Textual content": {
+      "passed": 0,
+      "total": 3,
+      "rate": 0
+    }
+  },
+  "failures": [
+    {
+      "id": "ex-0001",
+      "section": "Tabs",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:211\r\n            const inlineCode = tryInlineCode(input, pos);\r\n                               ^\r\n\r\nReferenceError: tryInlineCode is not defined\r\n    at renderInlines (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:211:32)\r\n    at renderParagraphLines (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:264:12)\r\n    at renderParagraph (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:346:20)\r\n    at renderNode (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:351:20)\r\n    at Array.map (<anonymous>)\r\n    at renderMarkdown (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/index.js:33:36)\r\n    at Socket.<anonymous> (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/cli.js:5:54)\r\n    at Socket.emit (node:events:520:35)\r\n    at endReadableNT (node:internal/streams/readable:1701:12)\r\n    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)\r\n\r\nNode.js v24.6.0",
+      "markdown": "→foo→baz→→bim"
+    },
+    {
+      "id": "ex-0002",
+      "section": "Tabs",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:211\r\n            const inlineCode = tryInlineCode(input, pos);\r\n                               ^\r\n\r\nReferenceError: tryInlineCode is not defined\r\n    at renderInlines (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:211:32)\r\n    at renderParagraphLines (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:264:12)\r\n    at renderParagraph (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:346:20)\r\n    at renderNode (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:351:20)\r\n    at Array.map (<anonymous>)\r\n    at renderMarkdown (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/index.js:33:36)\r\n    at Socket.<anonymous> (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/cli.js:5:54)\r\n    at Socket.emit (node:events:520:35)\r\n    at endReadableNT (node:internal/streams/readable:1701:12)\r\n    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)\r\n\r\nNode.js v24.6.0",
+      "markdown": "  →foo→baz→→bim"
+    },
+    {
+      "id": "ex-0004",
+      "section": "Tabs",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:211\r\n            const inlineCode = tryInlineCode(input, pos);\r\n                               ^\r\n\r\nReferenceError: tryInlineCode is not defined\r\n    at renderInlines (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:211:32)\r\n    at renderListItemBlocks (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:276:33)\r\n    at file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:339:26\r\n    at Array.map (<anonymous>)\r\n    at renderListItems (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:339:10)\r\n    at renderNode (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:393:29)\r\n    at Array.map (<anonymous>)\r\n    at renderMarkdown (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/index.js:33:36)\r\n    at Socket.<anonymous> (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/cli.js:5:54)\r\n    at Socket.emit (node:events:520:35)\r\n\r\nNode.js v24.6.0",
+      "markdown": "  - foo\n\n→bar"
+    },
+    {
+      "id": "ex-0005",
+      "section": "Tabs",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:211\r\n            const inlineCode = tryInlineCode(input, pos);\r\n                               ^\r\n\r\nReferenceError: tryInlineCode is not defined\r\n    at renderInlines (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:211:32)\r\n    at renderListItemBlocks (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:276:33)\r\n    at file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:339:26\r\n    at Array.map (<anonymous>)\r\n    at renderListItems (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:339:10)\r\n    at renderNode (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:393:29)\r\n    at Array.map (<anonymous>)\r\n    at renderMarkdown (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/index.js:33:36)\r\n    at Socket.<anonymous> (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/cli.js:5:54)\r\n    at Socket.emit (node:events:520:35)\r\n\r\nNode.js v24.6.0",
+      "markdown": "- foo\n\n→→bar"
+    },
+    {
+      "id": "ex-0006",
+      "section": "Tabs",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:211\r\n            const inlineCode = tryInlineCode(input, pos);\r\n                               ^\r\n\r\nReferenceError: tryInlineCode is not defined\r\n    at renderInlines (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:211:32)\r\n    at renderParagraphLines (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:264:12)\r\n    at renderParagraph (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:346:20)\r\n    at renderNode (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:351:20)\r\n    at Array.map (<anonymous>)\r\n    at renderNode (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:414:36)\r\n    at Array.map (<anonymous>)\r\n    at renderMarkdown (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/index.js:33:36)\r\n    at Socket.<anonymous> (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/cli.js:5:54)\r\n    at Socket.emit (node:events:520:35)\r\n\r\nNode.js v24.6.0",
+      "markdown": ">→→foo"
+    },
+    {
+      "id": "ex-0007",
+      "section": "Tabs",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:211\r\n            const inlineCode = tryInlineCode(input, pos);\r\n                               ^\r\n\r\nReferenceError: tryInlineCode is not defined\r\n    at renderInlines (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:211:32)\r\n    at renderParagraphLines (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:264:12)\r\n    at renderParagraph (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:346:20)\r\n    at renderNode (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:351:20)\r\n    at Array.map (<anonymous>)\r\n    at renderMarkdown (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/index.js:33:36)\r\n    at Socket.<anonymous> (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/cli.js:5:54)\r\n    at Socket.emit (node:events:520:35)\r\n    at endReadableNT (node:internal/streams/readable:1701:12)\r\n    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)\r\n\r\nNode.js v24.6.0",
+      "markdown": "-→→foo"
+    },
+    {
+      "id": "ex-0008",
+      "section": "Tabs",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:211\r\n            const inlineCode = tryInlineCode(input, pos);\r\n                               ^\r\n\r\nReferenceError: tryInlineCode is not defined\r\n    at renderInlines (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:211:32)\r\n    at renderParagraphLines (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:264:12)\r\n    at renderParagraph (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:346:20)\r\n    at renderNode (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:351:20)\r\n    at Array.map (<anonymous>)\r\n    at renderMarkdown (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/index.js:33:36)\r\n    at Socket.<anonymous> (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/cli.js:5:54)\r\n    at Socket.emit (node:events:520:35)\r\n    at endReadableNT (node:internal/streams/readable:1701:12)\r\n    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)\r\n\r\nNode.js v24.6.0",
+      "markdown": "    foo\n→bar"
+    },
+    {
+      "id": "ex-0009",
+      "section": "Tabs",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:211\r\n            const inlineCode = tryInlineCode(input, pos);\r\n                               ^\r\n\r\nReferenceError: tryInlineCode is not defined\r\n    at renderInlines (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:211:32)\r\n    at renderParagraphLines (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:264:12)\r\n    at renderListItemBlocks (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:304:32)\r\n    at file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:339:26\r\n    at Array.map (<anonymous>)\r\n    at renderListItems (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:339:10)\r\n    at renderNode (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:393:29)\r\n    at Array.map (<anonymous>)\r\n    at renderMarkdown (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/index.js:33:36)\r\n    at Socket.<anonymous> (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/cli.js:5:54)\r\n\r\nNode.js v24.6.0",
+      "markdown": " - foo\n   - bar\n→ - baz"
+    },
+    {
+      "id": "ex-0010",
+      "section": "Tabs",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:211\r\n            const inlineCode = tryInlineCode(input, pos);\r\n                               ^\r\n\r\nReferenceError: tryInlineCode is not defined\r\n    at renderInlines (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:211:32)\r\n    at renderParagraphLines (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:264:12)\r\n    at renderParagraph (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:346:20)\r\n    at renderNode (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:351:20)\r\n    at Array.map (<anonymous>)\r\n    at renderMarkdown (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/index.js:33:36)\r\n    at Socket.<anonymous> (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/cli.js:5:54)\r\n    at Socket.emit (node:events:520:35)\r\n    at endReadableNT (node:internal/streams/readable:1701:12)\r\n    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)\r\n\r\nNode.js v24.6.0",
+      "markdown": "#→Foo"
+    },
+    {
+      "id": "ex-0011",
+      "section": "Tabs",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:211\r\n            const inlineCode = tryInlineCode(input, pos);\r\n                               ^\r\n\r\nReferenceError: tryInlineCode is not defined\r\n    at renderInlines (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:211:32)\r\n    at renderParagraphLines (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:264:12)\r\n    at renderParagraph (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:346:20)\r\n    at renderNode (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:351:20)\r\n    at Array.map (<anonymous>)\r\n    at renderMarkdown (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/index.js:33:36)\r\n    at Socket.<anonymous> (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/cli.js:5:54)\r\n    at Socket.emit (node:events:520:35)\r\n    at endReadableNT (node:internal/streams/readable:1701:12)\r\n    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)\r\n\r\nNode.js v24.6.0",
+      "markdown": "*→*→*→"
+    },
+    {
+      "id": "ex-0012",
+      "section": "Backslash escapes",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:211\r\n            const inlineCode = tryInlineCode(input, pos);\r\n                               ^\r\n\r\nReferenceError: tryInlineCode is not defined\r\n    at renderInlines (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:211:32)\r\n    at renderParagraphLines (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:264:12)\r\n    at renderParagraph (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:346:20)\r\n    at renderNode (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:351:20)\r\n    at Array.map (<anonymous>)\r\n    at renderMarkdown (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/index.js:33:36)\r\n    at Socket.<anonymous> (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/cli.js:5:54)\r\n    at Socket.emit (node:events:520:35)\r\n    at endReadableNT (node:internal/streams/readable:1701:12)\r\n    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)\r\n\r\nNode.js v24.6.0",
+      "markdown": "\\!\\\"\\#\\$\\%\\&\\'\\(\\)\\*\\+\\,\\-\\.\\/\\:\\;\\<\\=\\>\\?\\@\\[\\\\\\]\\^\\_\\`\\{\\|\\}\\~"
+    },
+    {
+      "id": "ex-0013",
+      "section": "Backslash escapes",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:211\r\n            const inlineCode = tryInlineCode(input, pos);\r\n                               ^\r\n\r\nReferenceError: tryInlineCode is not defined\r\n    at renderInlines (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:211:32)\r\n    at renderParagraphLines (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:264:12)\r\n    at renderParagraph (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:346:20)\r\n    at renderNode (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:351:20)\r\n    at Array.map (<anonymous>)\r\n    at renderMarkdown (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/index.js:33:36)\r\n    at Socket.<anonymous> (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/cli.js:5:54)\r\n    at Socket.emit (node:events:520:35)\r\n    at endReadableNT (node:internal/streams/readable:1701:12)\r\n    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)\r\n\r\nNode.js v24.6.0",
+      "markdown": "\\→\\A\\a\\ \\3\\φ\\«"
+    },
+    {
+      "id": "ex-0014",
+      "section": "Backslash escapes",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:211\r\n            const inlineCode = tryInlineCode(input, pos);\r\n                               ^\r\n\r\nReferenceError: tryInlineCode is not defined\r\n    at renderInlines (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:211:32)\r\n    at renderParagraphLines (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:264:12)\r\n    at renderParagraph (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:346:20)\r\n    at renderNode (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:351:20)\r\n    at Array.map (<anonymous>)\r\n    at renderMarkdown (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/index.js:33:36)\r\n    at Socket.<anonymous> (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/cli.js:5:54)\r\n    at Socket.emit (node:events:520:35)\r\n    at endReadableNT (node:internal/streams/readable:1701:12)\r\n    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)\r\n\r\nNode.js v24.6.0",
+      "markdown": "\\*not emphasized*\n\\<br/> not a tag\n\\[not a link](/foo)\n\\`not code`\n1\\. not a list\n\\* not a list\n\\# not a heading\n\\[foo]: /url \"not a reference\"\n\\&ouml; not a character entity"
+    },
+    {
+      "id": "ex-0015",
+      "section": "Backslash escapes",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:211\r\n            const inlineCode = tryInlineCode(input, pos);\r\n                               ^\r\n\r\nReferenceError: tryInlineCode is not defined\r\n    at renderInlines (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:211:32)\r\n    at renderParagraphLines (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:264:12)\r\n    at renderParagraph (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:346:20)\r\n    at renderNode (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:351:20)\r\n    at Array.map (<anonymous>)\r\n    at renderMarkdown (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/index.js:33:36)\r\n    at Socket.<anonymous> (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/cli.js:5:54)\r\n    at Socket.emit (node:events:520:35)\r\n    at endReadableNT (node:internal/streams/readable:1701:12)\r\n    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)\r\n\r\nNode.js v24.6.0",
+      "markdown": "\\\\*emphasis*"
+    },
+    {
+      "id": "ex-0016",
+      "section": "Backslash escapes",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:211\r\n            const inlineCode = tryInlineCode(input, pos);\r\n                               ^\r\n\r\nReferenceError: tryInlineCode is not defined\r\n    at renderInlines (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:211:32)\r\n    at renderParagraphLines (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:264:12)\r\n    at renderParagraph (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:346:20)\r\n    at renderNode (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:351:20)\r\n    at Array.map (<anonymous>)\r\n    at renderMarkdown (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/index.js:33:36)\r\n    at Socket.<anonymous> (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/cli.js:5:54)\r\n    at Socket.emit (node:events:520:35)\r\n    at endReadableNT (node:internal/streams/readable:1701:12)\r\n    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)\r\n\r\nNode.js v24.6.0",
+      "markdown": "foo\\\nbar"
+    },
+    {
+      "id": "ex-0017",
+      "section": "Backslash escapes",
+      "reason": "output mismatch",
+      "markdown": "`` \\[\\` ``",
+      "expected": "<p><code>\\[\\`</code></p>",
+      "actual": "<p><code> \\[\\` </code></p>"
+    },
+    {
+      "id": "ex-0020",
+      "section": "Backslash escapes",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:211\r\n            const inlineCode = tryInlineCode(input, pos);\r\n                               ^\r\n\r\nReferenceError: tryInlineCode is not defined\r\n    at renderInlines (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:211:32)\r\n    at renderParagraphLines (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:264:12)\r\n    at renderParagraph (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:346:20)\r\n    at renderNode (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:351:20)\r\n    at Array.map (<anonymous>)\r\n    at renderMarkdown (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/index.js:33:36)\r\n    at Socket.<anonymous> (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/cli.js:5:54)\r\n    at Socket.emit (node:events:520:35)\r\n    at endReadableNT (node:internal/streams/readable:1701:12)\r\n    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)\r\n\r\nNode.js v24.6.0",
+      "markdown": "<https://example.com?find=\\*>"
+    },
+    {
+      "id": "ex-0021",
+      "section": "Backslash escapes",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:211\r\n            const inlineCode = tryInlineCode(input, pos);\r\n                               ^\r\n\r\nReferenceError: tryInlineCode is not defined\r\n    at renderInlines (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:211:32)\r\n    at renderParagraphLines (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:264:12)\r\n    at renderParagraph (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:346:20)\r\n    at renderNode (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:351:20)\r\n    at Array.map (<anonymous>)\r\n    at renderMarkdown (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/index.js:33:36)\r\n    at Socket.<anonymous> (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/cli.js:5:54)\r\n    at Socket.emit (node:events:520:35)\r\n    at endReadableNT (node:internal/streams/readable:1701:12)\r\n    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)\r\n\r\nNode.js v24.6.0",
+      "markdown": "<a href=\"/bar\\/)\">"
+    },
+    {
+      "id": "ex-0022",
+      "section": "Backslash escapes",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:211\r\n            const inlineCode = tryInlineCode(input, pos);\r\n                               ^\r\n\r\nReferenceError: tryInlineCode is not defined\r\n    at renderInlines (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:211:32)\r\n    at renderParagraphLines (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:264:12)\r\n    at renderParagraph (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:346:20)\r\n    at renderNode (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:351:20)\r\n    at Array.map (<anonymous>)\r\n    at renderMarkdown (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/index.js:33:36)\r\n    at Socket.<anonymous> (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/cli.js:5:54)\r\n    at Socket.emit (node:events:520:35)\r\n    at endReadableNT (node:internal/streams/readable:1701:12)\r\n    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)\r\n\r\nNode.js v24.6.0",
+      "markdown": "[foo](/bar\\* \"ti\\*tle\")"
+    },
+    {
+      "id": "ex-0023",
+      "section": "Backslash escapes",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:211\r\n            const inlineCode = tryInlineCode(input, pos);\r\n                               ^\r\n\r\nReferenceError: tryInlineCode is not defined\r\n    at renderInlines (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:211:32)\r\n    at renderParagraphLines (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:264:12)\r\n    at renderParagraph (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:346:20)\r\n    at renderNode (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/render.js:351:20)\r\n    at Array.map (<anonymous>)\r\n    at renderMarkdown (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/index.js:33:36)\r\n    at Socket.<anonymous> (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v9b/workspace/dist/cli.js:5:54)\r\n    at Socket.emit (node:events:520:35)\r\n    at endReadableNT (node:internal/streams/readable:1701:12)\r\n    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)\r\n\r\nNode.js v24.6.0",
+      "markdown": "[foo]\n\n[foo]: /bar\\* \"ti\\*tle\""
+    }
+  ],
+  "failure_count": 469
+}

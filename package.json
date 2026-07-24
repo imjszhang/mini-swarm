@@ -17,6 +17,8 @@
     "run:serial": "node orchestrator/run.mjs --serial",
     "run:v8:bare": "node orchestrator/run.mjs --task-set=contention --concurrency=4",
     "run:v8:faithful": "node orchestrator/run.mjs --coordination --coord-mode=faithful --task-set=contention --concurrency=4",
+    "run:contention:bare": "node orchestrator/run.mjs --task-set=contention --concurrency=4",
+    "run:contention:faithful": "node orchestrator/run.mjs --coordination --coord-mode=faithful --task-set=contention --concurrency=4",
     "compare": "node orchestrator/compare-runs.mjs",
     "smoke:runner": "node orchestrator/smoke-runner.mjs"
   }

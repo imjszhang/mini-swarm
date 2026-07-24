@@ -14,14 +14,19 @@ const ROOT = path.resolve(__dirname, "..");
 const EXAMPLES_PATH = path.join(ROOT, "spec", "examples.json");
 
 function parseArgs(argv) {
-  const args = { workspace: path.join(ROOT, "workspace"), json: null, limit: null };
+  const args = { workspace: path.join(ROOT, "workspace"), json: null, limit: null, sections: null };
   for (let i = 0; i < argv.length; i += 1) {
     const a = argv[i];
     if (a === "--workspace" || a === "-w") args.workspace = path.resolve(argv[++i]);
     else if (a === "--json") args.json = path.resolve(argv[++i]);
     else if (a === "--limit") args.limit = Number(argv[++i]);
-    else if (a === "--help" || a === "-h") {
-      console.log(`Usage: node scorer/score.mjs [--workspace dir] [--json out.json] [--limit N]`);
+    else if (a === "--sections") {
+      args.sections = String(argv[++i] || "")
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
+    } else if (a === "--help" || a === "-h") {
+      console.log(`Usage: node scorer/score.mjs [--workspace dir] [--json out.json] [--limit N] [--sections "A,B"]`);
       process.exit(0);
     }
   }
@@ -62,7 +67,12 @@ function scoreWorkspace(workspaceDir, examples, limit) {
   for (const ex of subset) {
     const rendered = renderMarkdown(workspaceDir, ex.markdown);
     if (!rendered.ok) {
-      failures.push({ id: ex.id, section: ex.section, reason: rendered.error });
+      failures.push({
+        id: ex.id,
+        section: ex.section,
+        reason: rendered.error,
+        markdown: String(ex.markdown ?? "").slice(0, 300),
+      });
       sectionStats[ex.section] = sectionStats[ex.section] || { passed: 0, total: 0 };
       sectionStats[ex.section].total += 1;
       continue;
@@ -80,8 +90,9 @@ function scoreWorkspace(workspaceDir, examples, limit) {
         id: ex.id,
         section: ex.section,
         reason: "output mismatch",
-        expected: expected.slice(0, 200),
-        actual: actual.slice(0, 200),
+        markdown: String(ex.markdown ?? "").slice(0, 300),
+        expected: expected.slice(0, 300),
+        actual: actual.slice(0, 300),
       });
     }
   }
@@ -113,7 +124,11 @@ if (!existsSync(EXAMPLES_PATH)) {
   console.error("Missing spec/examples.json. Run: npm run spec:extract");
   process.exit(1);
 }
-const examples = JSON.parse(readFileSync(EXAMPLES_PATH, "utf8"));
+let examples = JSON.parse(readFileSync(EXAMPLES_PATH, "utf8"));
+if (args.sections?.length) {
+  const sectionSet = new Set(args.sections);
+  examples = examples.filter((e) => sectionSet.has(e.section));
+}
 const report = scoreWorkspace(args.workspace, examples, args.limit);
 
 if (args.json) {

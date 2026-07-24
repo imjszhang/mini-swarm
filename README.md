@@ -27,13 +27,13 @@ npm run smoke:runner          # verify cursor-agent spawn works
 npm run run:quick             # Run A bare (3 tasks, concurrency 2)
 npm run run:quick:coordinated # Run B coordinated
 npm run run:faithful          # Run B faithful, full task set
-npm run run:v8:bare           # high-contention bare (12 tasks, concurrency 4)
-npm run run:v8:faithful       # high-contention faithful (12 tasks, concurrency 4)
+npm run run:contention:bare   # high-contention bare (13 tasks, concurrency 4, score feedback)
+npm run run:contention:faithful
 npm run run:serial -- --quick # serial minimal loop (no worktrees)
-npm run compare -- runs/run-a-bare-contention-v8/metrics.json runs/run-b-faithful-contention-v8/metrics.json
+npm run compare -- runs/run-a-bare-contention-v9b/metrics.json runs/run-b-faithful-contention-v9/metrics.json
 ```
 
-CLI flags of note: `--task-set=default|contention` (contention uses a fixed seed planner for fair A/B), `--coord-mode=strict|faithful`, `--concurrency=N`.
+CLI flags of note: `--task-set=default|contention` (contention uses a fixed seed planner for fair A/B), `--coord-mode=strict|faithful`, `--concurrency=N`. Contension runs use harness score-feedback (`maxScoreFeedbackRounds` in `config.json`).
 
 ## Layout
 
@@ -68,6 +68,7 @@ Each run writes `runs/{runId}/metrics.json`:
 - `coordination_mode`: `none`, `strict`, or `faithful`
 - `cross_scope_change_count` and `integration_fix_count` (faithful mode)
 - `churn` (`total_added` / `total_deleted` / `churn_ratio`) and `merge_resolve_time_ms`
+- `score_feedback_count` / `worker_fix_time_ms` (section-scoped fix rounds)
 - `tasks_done` / per-task status
 - lines of code, agent call timing
 

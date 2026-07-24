@@ -74,3 +74,57 @@ export function buildIntegrationFixPrompt({ buildError, designMd, diff }) {
     DIFF: diff || "_No diff available._",
   });
 }
+
+function truncate(text, max = 300) {
+  const s = String(text ?? "");
+  return s.length <= max ? s : `${s.slice(0, max)}…`;
+}
+
+export function formatScoreFailures(failures, max = 8) {
+  const items = (failures || []).slice(0, max);
+  if (!items.length) return "_No failure details available._";
+  return items.map((f, i) => {
+    const lines = [
+      `### Failure ${i + 1}: ${f.id || "?"} [${f.section || "?"}]`,
+      `Reason: ${f.reason || "unknown"}`,
+    ];
+    if (f.markdown != null) lines.push(`IN:\n\`\`\`\n${truncate(f.markdown)}\n\`\`\``);
+    if (f.expected != null) lines.push(`EXP:\n\`\`\`\n${truncate(f.expected)}\n\`\`\``);
+    if (f.actual != null) lines.push(`GOT:\n\`\`\`\n${truncate(f.actual)}\n\`\`\``);
+    if (f.markdown == null && f.expected == null && f.reason) {
+      lines.push(`Detail: ${truncate(f.reason, 500)}`);
+    }
+    return lines.join("\n");
+  }).join("\n\n");
+}
+
+export function buildWorkerScoreFixPrompt({
+  task,
+  sections,
+  rate,
+  failures,
+  coordMode = "strict",
+  buildError = null,
+}) {
+  const modeRules = coordMode === "faithful"
+    ? `- Treat \`files_scope\` as your primary ownership area.
+- If integration or a core design correction genuinely requires another file, make the smallest targeted cross-scope patch and add \`cross-scope: <reason>\` to the commit message.
+- If you change an interface or design decision, update the relevant section of DESIGN.md. Do not rewrite unrelated design decisions.
+- DESIGN.md interface definitions live in \`src/contracts.ts\` and are compile-checked; if you change an interface, update \`contracts.ts\` and DESIGN.md together.
+- Append only surprising, reusable findings to GUIDE.md.`
+    : `- Only modify files listed in \`files_scope\` for this task (plus \`GUIDE.md\` append-only).
+- If task notes mention editing a file outside \`files_scope\`, ignore that instruction — scope wins.`;
+
+  let failureBlock = formatScoreFailures(failures, 8);
+  if (buildError) {
+    failureBlock = `### Build failed\n\`\`\`\n${truncate(buildError, 1500)}\n\`\`\`\n\n${failureBlock}`;
+  }
+
+  return fillTemplate(loadPrompt("worker-score-fix"), {
+    TASK_JSON: JSON.stringify(task, null, 2),
+    SECTIONS: (sections || task.spec_sections || []).join(", ") || "(none)",
+    RATE: typeof rate === "number" ? `${(rate * 100).toFixed(1)}%` : String(rate ?? "n/a"),
+    FAILURES: failureBlock,
+    COORDINATION_MODE_RULES: modeRules,
+  });
+}

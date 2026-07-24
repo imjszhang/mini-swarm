@@ -1,4 +1,4 @@
-# Design — Contention Task Set (v8)
+# Design — Contention Task Set (v8/v9)
 
 Living design document for the high-contention CommonMark renderer swarm.
 Workers that change an interface or design decision must update the relevant section here
@@ -28,6 +28,7 @@ src/
     emphasis.ts
     codespan.ts
     links.ts
+    text.ts             # escapes / hard+soft line breaks / tab expansion helpers
 ```
 
 ## Registration protocol
@@ -39,6 +40,8 @@ src/
 4. Prefer stable `type` names: `heading`, `setext_heading`, `paragraph`, `list`,
    `blockquote`, `thematic_break`, `code_block`, `emphasis`, `strong`, `code_span`,
    `link`, `image`.
+5. Container-block parsers (lists, blockquote) should recursively parse nested blocks
+   via `getBlockParsers()` / the registry — not flatten children into plain text.
 
 ## Rendering protocol
 
@@ -57,6 +60,13 @@ Expected minimal cross-scope patches:
 - update this DESIGN.md section when those interfaces change
 
 Mark intentional cross-scope commits with `cross-scope: <reason>` in the commit message.
+
+## Quality bar
+
+Each module is done only when it passes **all** CommonMark spec examples for its
+`spec_sections`. The harness scores those sections after your edit and may send
+failing IN/EXP/GOT examples back for fix rounds. Prefer correct edge cases over
+a happy-path stub.
 
 ## Shared pipeline contract
 

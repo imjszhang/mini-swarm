@@ -11,6 +11,8 @@
   "maxMergeRetries": 2,
   "maxPlannerRetries": 2,
   "maxIntegrationFixRetries": 2,
+  "maxScoreFeedbackRounds": 2,
+  "scoreFeedbackTarget": 1.0,
   "guideMaxLines": 80,
   "agentCommand": "cursor-agent"
 }

@@ -77,8 +77,11 @@ export const DEFAULT_TASKS = [
   },
 ];
 
+const QUALITY_NOTE =
+  "Your goal is to pass ALL CommonMark spec examples for your spec_sections (see spec/examples.json). Read the spec section carefully, including edge cases; the harness will score your sections and send failing examples back for fixes.";
+
 /**
- * High-contention task set for v8 scale-pressure experiments.
+ * High-contention task set for v8/v9 scale-pressure experiments.
  * @param {string} coordMode "none" | "strict" | "faithful"
  */
 export function contentionTasks(coordMode = "none") {
@@ -87,13 +90,14 @@ export function contentionTasks(coordMode = "none") {
   const blockShared = [...shared, "src/blocks/registry.ts"];
   const inlineShared = [...shared, "src/inline/registry.ts"];
 
-  const noteBare = "Implement parser and wire it into registry.ts and render.ts yourself.";
+  const noteBare = `Implement parser and wire it into registry.ts and render.ts yourself. ${QUALITY_NOTE}`;
   const noteBlockFaithful =
-    "Implement parser in your module; register it in src/blocks/registry.ts and add the render case in src/render.ts via minimal cross-scope patches (cross-scope: register <feature>).";
+    `Implement parser in your module; register it in src/blocks/registry.ts and add the render case in src/render.ts via minimal cross-scope patches (cross-scope: register <feature>). ${QUALITY_NOTE}`;
   const noteInlineFaithful =
-    "Implement parser in your module; register it in src/inline/registry.ts and add the render case in src/render.ts via minimal cross-scope patches (cross-scope: register <feature>).";
+    `Implement parser in your module; register it in src/inline/registry.ts and add the render case in src/render.ts via minimal cross-scope patches (cross-scope: register <feature>). ${QUALITY_NOTE}`;
 
-  function blockTask(id, title, spec_sections, modulePath) {
+  function blockTask(id, title, spec_sections, modulePath, extraNotes = "") {
+    const base = bare ? noteBare : noteBlockFaithful;
     return {
       id,
       title,
@@ -101,11 +105,12 @@ export function contentionTasks(coordMode = "none") {
       files_scope: bare ? [modulePath, ...blockShared] : [modulePath],
       status: "pending",
       attempts: 0,
-      notes: bare ? noteBare : noteBlockFaithful,
+      notes: extraNotes ? `${extraNotes} ${base}` : base,
     };
   }
 
-  function inlineTask(id, title, spec_sections, modulePath) {
+  function inlineTask(id, title, spec_sections, modulePath, extraNotes = "") {
+    const base = bare ? noteBare : noteInlineFaithful;
     return {
       id,
       title,
@@ -113,7 +118,7 @@ export function contentionTasks(coordMode = "none") {
       files_scope: bare ? [modulePath, ...inlineShared] : [modulePath],
       status: "pending",
       attempts: 0,
-      notes: bare ? noteBare : noteInlineFaithful,
+      notes: extraNotes ? `${extraNotes} ${base}` : base,
     };
   }
 
@@ -121,7 +126,7 @@ export function contentionTasks(coordMode = "none") {
     {
       id: "task-01",
       title: "Core pipeline: index, CLI, types, registries, render",
-      spec_sections: ["Paragraphs"],
+      spec_sections: ["Paragraphs", "Blank lines", "Precedence", "Textual content"],
       files_scope: [
         "src/index.ts",
         "src/cli.ts",
@@ -133,12 +138,18 @@ export function contentionTasks(coordMode = "none") {
       status: "pending",
       attempts: 0,
       notes:
-        "Improve the shared pipeline stub so later tasks can register parsers. Keep tsc green. Do not implement every CommonMark feature here.",
+        `Improve the shared pipeline stub so later tasks can register parsers. Keep tsc green. Own pipeline-level semantics (blank lines, precedence, textual content). Do not implement every CommonMark feature here. ${QUALITY_NOTE}`,
     },
     blockTask("task-02", "ATX headings", ["ATX headings"], "src/blocks/headings.ts"),
     blockTask("task-03", "Setext headings", ["Setext headings"], "src/blocks/setext.ts"),
     blockTask("task-04", "Paragraphs and blank lines", ["Paragraphs", "Blank lines"], "src/blocks/paragraphs.ts"),
-    blockTask("task-05", "Lists and list items", ["List items", "Lists"], "src/blocks/lists.ts"),
+    blockTask(
+      "task-05",
+      "Lists and list items",
+      ["List items", "Lists"],
+      "src/blocks/lists.ts",
+      "List items may contain nested blocks (paragraphs, code, quotes); recursive block parsing via the registry is expected.",
+    ),
     blockTask("task-06", "Block quotes", ["Block quotes"], "src/blocks/blockquote.ts"),
     blockTask("task-07", "Thematic breaks", ["Thematic breaks"], "src/blocks/thematic.ts"),
     blockTask("task-08", "Fenced code blocks", ["Fenced code blocks"], "src/blocks/fenced.ts"),
@@ -146,6 +157,13 @@ export function contentionTasks(coordMode = "none") {
     inlineTask("task-10", "Emphasis and strong emphasis", ["Emphasis and strong emphasis"], "src/inline/emphasis.ts"),
     inlineTask("task-11", "Code spans", ["Code spans"], "src/inline/codespan.ts"),
     inlineTask("task-12", "Links and images", ["Links", "Images"], "src/inline/links.ts"),
+    inlineTask(
+      "task-13",
+      "Text-level semantics: escapes, line breaks, tabs",
+      ["Backslash escapes", "Hard line breaks", "Soft line breaks", "Tabs"],
+      "src/inline/text.ts",
+      "Expose shared helpers for backslash escapes that other parsers can import. Tab expansion belongs at the block-parse entry (or a shared preprocess helper).",
+    ),
   ];
 }
 

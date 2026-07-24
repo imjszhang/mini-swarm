@@ -57,6 +57,12 @@ row(
   a.integration_fix_time_ms != null ? (a.integration_fix_time_ms / 60000).toFixed(1) : "-",
   b.integration_fix_time_ms != null ? (b.integration_fix_time_ms / 60000).toFixed(1) : "-",
 );
+row("score feedbacks", a.score_feedback_count ?? 0, b.score_feedback_count ?? 0);
+row(
+  "worker_fix_min",
+  a.worker_fix_time_ms != null ? (a.worker_fix_time_ms / 60000).toFixed(1) : "-",
+  b.worker_fix_time_ms != null ? (b.worker_fix_time_ms / 60000).toFixed(1) : "-",
+);
 row("loc", a.loc, b.loc);
 row("agent calls", a.agent_calls?.length, b.agent_calls?.length);
 const aMs = a.agent_calls?.reduce((s, c) => s + (c.elapsedMs || 0), 0) || 0;
