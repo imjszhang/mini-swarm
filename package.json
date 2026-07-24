@@ -15,6 +15,8 @@
     "run:quick:coordinated": "node orchestrator/run.mjs --quick --coordination",
     "run:mock": "node orchestrator/run.mjs --mock",
     "run:serial": "node orchestrator/run.mjs --serial",
+    "run:v8:bare": "node orchestrator/run.mjs --task-set=contention --concurrency=4",
+    "run:v8:faithful": "node orchestrator/run.mjs --coordination --coord-mode=faithful --task-set=contention --concurrency=4",
     "compare": "node orchestrator/compare-runs.mjs",
     "smoke:runner": "node orchestrator/smoke-runner.mjs"
   }

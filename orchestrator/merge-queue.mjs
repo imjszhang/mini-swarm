@@ -124,12 +124,15 @@ export class MergeQueue {
 // Side effects of the required build step (npm install / tsc), not code edits.
 const SCOPE_EXEMPT = new Set(["GUIDE.md", "package-lock.json", "npm-shrinkwrap.json"]);
 
+// Living design / compile-checked contracts (faithful mode).
+const CROSS_SCOPE_DOC_FILES = new Set(["DESIGN.md", "src/contracts.ts"]);
+
 export function checkScopeViolation(changedFiles, allowedScope, { allowDesign = false } = {}) {
   const allowed = new Set(allowedScope || []);
   return changedFiles.filter(
     (f) => !allowed.has(f)
       && !SCOPE_EXEMPT.has(f)
-      && !(allowDesign && f === "DESIGN.md")
+      && !(allowDesign && CROSS_SCOPE_DOC_FILES.has(f))
       && !f.startsWith("dist/"),
   );
 }

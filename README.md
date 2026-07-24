@@ -27,9 +27,13 @@ npm run smoke:runner          # verify cursor-agent spawn works
 npm run run:quick             # Run A bare (3 tasks, concurrency 2)
 npm run run:quick:coordinated # Run B coordinated
 npm run run:faithful          # Run B faithful, full task set
+npm run run:v8:bare           # high-contention bare (12 tasks, concurrency 4)
+npm run run:v8:faithful       # high-contention faithful (12 tasks, concurrency 4)
 npm run run:serial -- --quick # serial minimal loop (no worktrees)
-npm run compare -- runs/run-a-bare-v3/metrics.json runs/run-b-coordinated-v3/metrics.json
+npm run compare -- runs/run-a-bare-contention-v8/metrics.json runs/run-b-faithful-contention-v8/metrics.json
 ```
+
+CLI flags of note: `--task-set=default|contention` (contention uses a fixed seed planner for fair A/B), `--coord-mode=strict|faithful`, `--concurrency=N`.
 
 ## Layout
 
@@ -57,11 +61,13 @@ Scorer compares output to `spec/examples.json` (**525** core-subset cases; HTML 
 
 Each run writes `runs/{runId}/metrics.json`:
 
-- `planner_source`: `llm` or `seed`
+- `planner_source`: `llm`, `seed`, or `seed-contention`
+- `task_set`: `default` or `contention`
 - pass rate curve (`score_curve`)
 - `merge_conflict_count` vs `scope_violation_count` (separate)
 - `coordination_mode`: `none`, `strict`, or `faithful`
 - `cross_scope_change_count` and `integration_fix_count` (faithful mode)
+- `churn` (`total_added` / `total_deleted` / `churn_ratio`) and `merge_resolve_time_ms`
 - `tasks_done` / per-task status
 - lines of code, agent call timing
 
@@ -78,5 +84,6 @@ Part of @js trilogy: loop → harness → **swarm**. Source blog: Cursor Agent S
 - neutral third-party conflict resolution
 - targeted cross-scope patches instead of hard rejection
 - compiler failures feeding an integration-fix loop
+- compile-checked interface stubs via `src/contracts.ts` (contention / faithful)
 
-It does **not** reproduce Cursor's custom high-throughput VCS, multiple planner trees, compile-checked references from code to design decisions, bloated-file decomposition, or stacked multi-perspective review. Results measure this minimal reproduction, not Cursor's production swarm.
+It does **not** reproduce Cursor's custom high-throughput VCS, multiple planner trees, bloated-file decomposition, or stacked multi-perspective review. Results measure this minimal reproduction, not Cursor's production swarm.

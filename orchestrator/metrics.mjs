@@ -110,5 +110,9 @@ export function normalizeMetrics(raw) {
   m.cross_scope_change_count = m.cross_scope_changes.length;
   m.integration_fix_count = m.integration_fixes.length;
   m.conflict_count = m.merge_conflict_count + m.scope_violation_count;
+  m.churn = m.churn ?? null;
+  m.merge_resolve_time_ms = m.merge_resolve_time_ms ?? null;
+  m.integration_fix_time_ms = m.integration_fix_time_ms ?? null;
+  m.task_set = m.task_set ?? null;
   return m;
 }

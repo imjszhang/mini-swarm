@@ -25,6 +25,7 @@ export function buildPlannerPrompt({ coordination, coordMode = "strict" }) {
 - Do not force all integration into one final wiring task. Each task should integrate its feature when practical; shared integration files may be patched with an explicit justification.
 - Initialize \`GUIDE.md\` with a short header. Workers may append surprising findings for successors.
 - DESIGN.md is a living document. A worker that changes an interface or design decision must update the relevant section so later workers receive the new reality.
+- DESIGN.md interface definitions live in \`src/contracts.ts\` and are compile-checked; if you change an interface, update \`contracts.ts\` and DESIGN.md together.
 - Notes may mention a shared integration file outside primary scope only when they explicitly require a minimal cross-scope patch and explain why.`;
   const rules = coordination
     ? (coordMode === "faithful" ? faithfulRules : strictRules)
@@ -39,6 +40,7 @@ export function buildWorkerPrompt({ task, designMd, guideMd, coordMode = "strict
     ? `- Treat \`files_scope\` as your primary ownership area.
 - If integration or a core design correction genuinely requires another file, make the smallest targeted cross-scope patch and add \`cross-scope: <reason>\` to the commit message.
 - If you change an interface or design decision, update the relevant section of DESIGN.md. Do not rewrite unrelated design decisions.
+- DESIGN.md interface definitions live in \`src/contracts.ts\` and are compile-checked; if you change an interface, update \`contracts.ts\` and DESIGN.md together.
 - Append only surprising, reusable findings to GUIDE.md.`
     : `- Only modify files listed in \`files_scope\` for this task (plus \`GUIDE.md\` append-only).
 - If task notes mention editing a file outside \`files_scope\`, ignore that instruction — scope wins.`;

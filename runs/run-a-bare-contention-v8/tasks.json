@@ -1,0 +1,199 @@
+[
+  {
+    "id": "task-01",
+    "title": "Core pipeline: index, CLI, types, registries, render",
+    "spec_sections": [
+      "Paragraphs"
+    ],
+    "files_scope": [
+      "src/index.ts",
+      "src/cli.ts",
+      "src/types.ts",
+      "src/render.ts",
+      "src/blocks/registry.ts",
+      "src/inline/registry.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "Improve the shared pipeline stub so later tasks can register parsers. Keep tsc green. Do not implement every CommonMark feature here."
+  },
+  {
+    "id": "task-02",
+    "title": "ATX headings",
+    "spec_sections": [
+      "ATX headings"
+    ],
+    "files_scope": [
+      "src/blocks/headings.ts",
+      "src/types.ts",
+      "src/render.ts",
+      "src/blocks/registry.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "Implement parser and wire it into registry.ts and render.ts yourself."
+  },
+  {
+    "id": "task-03",
+    "title": "Setext headings",
+    "spec_sections": [
+      "Setext headings"
+    ],
+    "files_scope": [
+      "src/blocks/setext.ts",
+      "src/types.ts",
+      "src/render.ts",
+      "src/blocks/registry.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "Implement parser and wire it into registry.ts and render.ts yourself."
+  },
+  {
+    "id": "task-04",
+    "title": "Paragraphs and blank lines",
+    "spec_sections": [
+      "Paragraphs",
+      "Blank lines"
+    ],
+    "files_scope": [
+      "src/blocks/paragraphs.ts",
+      "src/types.ts",
+      "src/render.ts",
+      "src/blocks/registry.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "Implement parser and wire it into registry.ts and render.ts yourself."
+  },
+  {
+    "id": "task-05",
+    "title": "Lists and list items",
+    "spec_sections": [
+      "List items",
+      "Lists"
+    ],
+    "files_scope": [
+      "src/blocks/lists.ts",
+      "src/types.ts",
+      "src/render.ts",
+      "src/blocks/registry.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "Implement parser and wire it into registry.ts and render.ts yourself."
+  },
+  {
+    "id": "task-06",
+    "title": "Block quotes",
+    "spec_sections": [
+      "Block quotes"
+    ],
+    "files_scope": [
+      "src/blocks/blockquote.ts",
+      "src/types.ts",
+      "src/render.ts",
+      "src/blocks/registry.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "Implement parser and wire it into registry.ts and render.ts yourself."
+  },
+  {
+    "id": "task-07",
+    "title": "Thematic breaks",
+    "spec_sections": [
+      "Thematic breaks"
+    ],
+    "files_scope": [
+      "src/blocks/thematic.ts",
+      "src/types.ts",
+      "src/render.ts",
+      "src/blocks/registry.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "Implement parser and wire it into registry.ts and render.ts yourself."
+  },
+  {
+    "id": "task-08",
+    "title": "Fenced code blocks",
+    "spec_sections": [
+      "Fenced code blocks"
+    ],
+    "files_scope": [
+      "src/blocks/fenced.ts",
+      "src/types.ts",
+      "src/render.ts",
+      "src/blocks/registry.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "Implement parser and wire it into registry.ts and render.ts yourself."
+  },
+  {
+    "id": "task-09",
+    "title": "Indented code blocks",
+    "spec_sections": [
+      "Indented code blocks"
+    ],
+    "files_scope": [
+      "src/blocks/indented.ts",
+      "src/types.ts",
+      "src/render.ts",
+      "src/blocks/registry.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "Implement parser and wire it into registry.ts and render.ts yourself."
+  },
+  {
+    "id": "task-10",
+    "title": "Emphasis and strong emphasis",
+    "spec_sections": [
+      "Emphasis and strong emphasis"
+    ],
+    "files_scope": [
+      "src/inline/emphasis.ts",
+      "src/types.ts",
+      "src/render.ts",
+      "src/inline/registry.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "Implement parser and wire it into registry.ts and render.ts yourself."
+  },
+  {
+    "id": "task-11",
+    "title": "Code spans",
+    "spec_sections": [
+      "Code spans"
+    ],
+    "files_scope": [
+      "src/inline/codespan.ts",
+      "src/types.ts",
+      "src/render.ts",
+      "src/inline/registry.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "Implement parser and wire it into registry.ts and render.ts yourself."
+  },
+  {
+    "id": "task-12",
+    "title": "Links and images",
+    "spec_sections": [
+      "Links",
+      "Images"
+    ],
+    "files_scope": [
+      "src/inline/links.ts",
+      "src/types.ts",
+      "src/render.ts",
+      "src/inline/registry.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "Implement parser and wire it into registry.ts and render.ts yourself."
+  }
+]

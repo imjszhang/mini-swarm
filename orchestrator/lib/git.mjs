@@ -123,3 +123,42 @@ export function filesChangedInWorktree(wtDir) {
     }
   }
 }
+
+/**
+ * Approximate wasted-work / churn from git history.
+ * Counts added/deleted lines for TypeScript under src/ across all commits (excludes dist/).
+ * churn_ratio = total_deleted / max(total_added, 1).
+ */
+export function computeChurn(workspaceDir) {
+  try {
+    const out = execSync("git log --numstat --format=", {
+      cwd: workspaceDir,
+      encoding: "utf8",
+      stdio: "pipe",
+      shell: true,
+    });
+    let total_added = 0;
+    let total_deleted = 0;
+    for (const line of out.split("\n")) {
+      const trimmed = line.trim();
+      if (!trimmed) continue;
+      const parts = trimmed.split("\t");
+      if (parts.length < 3) continue;
+      const [addedStr, deletedStr, file] = parts;
+      if (!file || !/^src\/.+\.ts$/.test(file.replace(/\\/g, "/"))) continue;
+      if (addedStr === "-" || deletedStr === "-") continue;
+      const added = Number(addedStr);
+      const deleted = Number(deletedStr);
+      if (!Number.isFinite(added) || !Number.isFinite(deleted)) continue;
+      total_added += added;
+      total_deleted += deleted;
+    }
+    return {
+      total_added,
+      total_deleted,
+      churn_ratio: total_deleted / Math.max(total_added, 1),
+    };
+  } catch {
+    return { total_added: 0, total_deleted: 0, churn_ratio: 0 };
+  }
+}

@@ -38,9 +38,25 @@ row("passed/total", `${a.final_score?.passed}/${a.final_score?.total}`, `${b.fin
 row("tasks done", `${countTasksDone(a.tasks)}/${a.tasks?.length ?? "?"}`, `${countTasksDone(b.tasks)}/${b.tasks?.length ?? "?"}`);
 row("merge conflicts", a.merge_conflict_count, b.merge_conflict_count);
 row("scope violations", a.scope_violation_count, b.scope_violation_count);
+row("task_set", a.task_set ?? "-", b.task_set ?? "-");
 row("cross-scope changes", a.cross_scope_change_count, b.cross_scope_change_count);
 row("integration fixes", a.integration_fix_count, b.integration_fix_count);
 row("commits", a.commits, b.commits);
+row(
+  "churn_ratio",
+  a.churn?.churn_ratio != null ? `${(a.churn.churn_ratio * 100).toFixed(1)}%` : "-",
+  b.churn?.churn_ratio != null ? `${(b.churn.churn_ratio * 100).toFixed(1)}%` : "-",
+);
+row(
+  "merge_resolve_min",
+  a.merge_resolve_time_ms != null ? (a.merge_resolve_time_ms / 60000).toFixed(1) : "-",
+  b.merge_resolve_time_ms != null ? (b.merge_resolve_time_ms / 60000).toFixed(1) : "-",
+);
+row(
+  "integration_fix_min",
+  a.integration_fix_time_ms != null ? (a.integration_fix_time_ms / 60000).toFixed(1) : "-",
+  b.integration_fix_time_ms != null ? (b.integration_fix_time_ms / 60000).toFixed(1) : "-",
+);
 row("loc", a.loc, b.loc);
 row("agent calls", a.agent_calls?.length, b.agent_calls?.length);
 const aMs = a.agent_calls?.reduce((s, c) => s + (c.elapsedMs || 0), 0) || 0;

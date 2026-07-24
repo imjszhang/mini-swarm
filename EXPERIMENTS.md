@@ -5,13 +5,16 @@
 - **Run A (bare)**: `npm run run:quick -- --run-id=run-a-bare-v4`
 - **Run B (coordinated)**: `npm run run:quick:coordinated -- --run-id=run-b-coordinated-v4`
 - **Run B faithful**: `npm run run:faithful -- --run-id=run-b-faithful-v7`
+- **v8 high-contention A/B**: `npm run run:v8:bare` / `npm run run:v8:faithful` (`--task-set=contention`, concurrency 4, seed planner)
 - **Serial minimal loop**: `npm run run:serial -- --quick --run-id=run-a-serial-quick`
-- **Compare**: `npm run compare -- runs/run-a-bare-full-v6/metrics.json runs/run-b-faithful-v7/metrics.json`
+- **Compare**: `npm run compare -- runs/run-a-bare-contention-v8/metrics.json runs/run-b-faithful-contention-v8/metrics.json`
 
 ## Runs (2026-07-24) — composer planner re-run
 
 | Run ID | Mode | Coordination | planner | Notes |
 |---|---|---|---|---|
+| run-a-bare-contention-v8 | **contention 12 tasks**, concurrency 4 | false | **seed-contention** | **50.5%** pass (265/525), 12/12, **10 merge conflicts**, merge-resolve ~15.7 min, churn 2.7%, 1935 LOC, ~29 min wall / ~62.6 min agent |
+| run-b-faithful-contention-v8 | **contention 12 tasks**, concurrency 4 | **faithful** | **seed-contention** | **47.8%** pass (251/525), 12/12, **9 merge conflicts**, 11 cross-scope events, 0 build repairs, merge-resolve ~12.1 min, churn 3.0%, 1566 LOC, ~26.5 min wall / ~54.5 min agent |
 | run-b-faithful-v7 | **full 8 tasks**, concurrency 2 | **faithful** | **llm** | **76.6%** pass (402/525), 8/8, 7 cross-scope task events, 5 neutral-merger conflicts, 0 build repairs, 2644 LOC, ~43 min wall / ~64.5 min agent |
 | run-a-bare-full-v6 | **full 8 tasks**, concurrency 2 | false | **llm** | **76.8%** pass (403/525), **8/8 tasks**, **5 merge conflicts self-resolved by workers**, 2456 LOC, ~45 min wall / ~71.5 min agent |
 | run-a-bare-v4 | quick, concurrency 2 | false | **llm** | **24.2%** pass (127/525), 0 merge/scope, 463 LOC, 3/3 tasks, ~22 min |
@@ -21,6 +24,30 @@
 | run-b-coordinated-v4 | quick, concurrency 2 | true | seed | **INVALID** — cursor-agent auth expired mid-session |
 
 Compare v4 A vs v3 A: `npm run compare -- runs/run-a-bare-v4/metrics.json runs/run-a-bare-v3/metrics.json` (+4.6pp pass rate with LLM planner).
+
+### v8 high-contention pressure test: both arms drop; faithful still slightly cheaper
+
+Motivation: v6/v7 sat left of the cost-curve crossover (8 tasks, concurrency 2, cheap self-resolved conflicts). v8 pushes rightward with a **fixed seed contention task set** (12 tasks, concurrency 4) where every feature task must also touch shared `types` / `registry` / `render` files. Faithful scopes keep primary ownership disjoint and expect minimal cross-scope registration patches; bare puts the shared files in every task's `files_scope`. Planner is seed (not LLM) so both arms share identical task lists. Faithful also ships compile-checked `src/contracts.ts`.
+
+| Metric | Bare v6 | Bare v8 | Faithful v7 | Faithful v8 |
+|---|---|---|---|---|
+| Pass rate | 76.8% | **50.5%** | 76.6% | **47.8%** |
+| Tasks | 8/8 | 12/12 | 8/8 | 12/12 |
+| Merge conflicts | 5 | **10** | 5 | **9** |
+| Cross-scope events | n/a | n/a | 7 | 11 |
+| Merge-resolve time | (untracked) | 15.7 min | (untracked) | **12.1 min** |
+| Agent time | 71.5 min | 62.6 min | 64.5 min | **54.5 min** |
+| Churn ratio | — | 2.7% | — | 3.0% |
+| LOC | 2456 | 1935 | 2644 | 1566 |
+
+Direct v8 A/B (`npm run compare -- runs/run-a-bare-contention-v8/metrics.json runs/run-b-faithful-contention-v8/metrics.json`):
+
+- **Quality: bare 50.5% vs faithful 47.8%.** Contention collapsed both arms ~26–29pp vs the low-contention full runs; faithful did **not** stay flat while bare fell.
+- **Cost: faithful used ~13% less agent time** (54.5 vs 62.6 min) and ~23% less merge-resolve time (12.1 vs 15.7 min). Conflicts were similar in count (9 vs 10).
+- Bare logs showed repeated post-merge builds failing on leftover `<<<<<<<` conflict markers in shared files—workers "resolved" merges incompletely under concurrency 4. Faithful's neutral merger avoided that failure mode in the final workspace (0 integration-fix calls; build stayed green enough to score).
+- Churn ratios stayed low (~3%) for both; wasted-line churn was not the separating signal at this scale.
+
+Interpretation: raising file contention and concurrency **does** move the experiment into a regime where bare quality collapses (76.8% → 50.5%). Faithful collapses almost as much (76.6% → 47.8%), so at N=12 / concurrency 4 the curves drop together rather than diverging with coordination staying high. The coordination advantage that *did* show up is modest cost (agent + merge-resolve), not a quality floor. Still consistent with "coordination is a scale function"—but this Git-backed subset has not yet found a point where faithful clearly dominates bare on pass rate. Likely still missing Cursor-scale pieces (custom VCS throughput, stacked review, larger N / longer runs).
 
 ### v7 faithful coordination: quality recovered
 
@@ -73,4 +100,4 @@ Legacy failed runs (`run-a-bare`, `run-a-bare-v2`) had 0% pass due to missing po
 
 - Compare `merge_conflicts`, strict `scope_violations`, faithful `cross_scope_changes`, and `integration_fixes` separately.
 - `strict` is an intentionally rigid control, not a faithful reproduction of Cursor's newer swarm.
-- `faithful` remains a minimal Git-backed subset; it does not implement Cursor's custom VCS, multiple planner trees, compile-checked design references, bloated-file decomposition, or stacked review perspectives.
+- `faithful` remains a minimal Git-backed subset; v8 adds a compile-checked `src/contracts.ts` stub, but still does not implement Cursor's custom VCS, multiple planner trees, bloated-file decomposition, or stacked review perspectives.
