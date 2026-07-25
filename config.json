@@ -13,6 +13,11 @@
   "maxIntegrationFixRetries": 2,
   "maxScoreFeedbackRounds": 2,
   "scoreFeedbackTarget": 1.0,
+  "worktreeSync": true,
+  "maxGlobalRepairRounds": 2,
+  "globalRepairTopSections": 3,
+  "globalRepairTarget": 1.0,
+  "globalRepairMinGainPp": 0.5,
   "guideMaxLines": 80,
   "agentCommand": "cursor-agent"
 }

@@ -63,6 +63,18 @@ row(
   a.worker_fix_time_ms != null ? (a.worker_fix_time_ms / 60000).toFixed(1) : "-",
   b.worker_fix_time_ms != null ? (b.worker_fix_time_ms / 60000).toFixed(1) : "-",
 );
+row(
+  "worktree syncs",
+  `${a.worktree_sync_count ?? 0} (${a.worktree_sync_conflict_count ?? 0} conflict)`,
+  `${b.worktree_sync_count ?? 0} (${b.worktree_sync_conflict_count ?? 0} conflict)`,
+);
+row("merge gate rejections", a.merge_gate_rejection_count ?? 0, b.merge_gate_rejection_count ?? 0);
+row("global repairs", a.global_repair_count ?? 0, b.global_repair_count ?? 0);
+row(
+  "global_repair_min",
+  a.global_repair_time_ms != null ? (a.global_repair_time_ms / 60000).toFixed(1) : "-",
+  b.global_repair_time_ms != null ? (b.global_repair_time_ms / 60000).toFixed(1) : "-",
+);
 row("loc", a.loc, b.loc);
 row("agent calls", a.agent_calls?.length, b.agent_calls?.length);
 const aMs = a.agent_calls?.reduce((s, c) => s + (c.elapsedMs || 0), 0) || 0;

@@ -3,9 +3,11 @@
  * mini-swarm orchestrator: planner → workers → merge → score.
  */
 import { execSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import {
   existsSync,
   mkdirSync,
+  readFileSync,
   rmSync,
   writeFileSync,
 } from "node:fs";
@@ -13,18 +15,38 @@ import path from "node:path";
 import { loadConfig, projectRoot } from "./lib/config.mjs";
 import {
   abortMerge,
+  commitAll,
   commitCount,
   computeChurn,
   createWorktree,
+  deleteTaskBranches,
   filesChangedInWorktree,
+  findConflictMarkers,
   getDiff,
+  headSha,
   initRepo,
+  isBranchMergedInto,
+  isDirty,
+  listTaskBranches,
+  listTrackedFiles,
   readDesign,
   readGuide,
   removeWorktree,
+  resetHard,
+  revListCount,
+  syncWorktreeWithMain,
 } from "./lib/git.mjs";
 import {
+  createInitialProgress,
+  loadProgress,
+  markPhase,
+  markRepairRound,
+  markTask,
+  saveProgress,
+} from "./lib/progress.mjs";
+import {
   buildPlannerPrompt,
+  buildGlobalRepairPrompt,
   buildIntegrationFixPrompt,
   buildReviewerPrompt,
   buildWorkerPrompt,
@@ -46,9 +68,16 @@ import { spawnAgent } from "./runner.mjs";
 const ROOT = projectRoot();
 
 function ensureBuilt(workspaceDir) {
-  if (!existsSync(path.join(workspaceDir, "package.json"))) return { ok: true, stderr: "" };
+  const pkgPath = path.join(workspaceDir, "package.json");
+  if (!existsSync(pkgPath)) return { ok: true, stderr: "" };
   try {
-    execSync("npm install", { cwd: workspaceDir, stdio: "pipe", shell: true, encoding: "utf8" });
+    const hash = createHash("sha1").update(readFileSync(pkgPath, "utf8")).digest("hex");
+    const stamp = path.join(workspaceDir, "node_modules", ".pkg-hash");
+    const skipInstall = existsSync(stamp) && readFileSync(stamp, "utf8") === hash;
+    if (!skipInstall) {
+      execSync("npm install", { cwd: workspaceDir, stdio: "pipe", shell: true, encoding: "utf8" });
+      writeFileSync(stamp, hash, "utf8");
+    }
     execSync("npm run build", { cwd: workspaceDir, stdio: "pipe", shell: true, encoding: "utf8" });
     return { ok: true, stderr: "" };
   } catch (err) {
@@ -64,6 +93,7 @@ function parseArgs(argv) {
     quick: false,
     serial: false,
     mock: false,
+    resume: false,
     runId: null,
     concurrency: null,
     coordMode: "strict",
@@ -75,6 +105,7 @@ function parseArgs(argv) {
     else if (a === "--quick") args.quick = true;
     else if (a === "--serial") args.serial = true;
     else if (a === "--mock") args.mock = true;
+    else if (a === "--resume") args.resume = true;
     else if (a === "--help" || a === "-h") args.help = true;
     else if (a.startsWith("--run-id=")) args.runId = a.split("=")[1];
     else if (a.startsWith("--concurrency=")) args.concurrency = Number(a.split("=")[1]);
@@ -95,8 +126,76 @@ Options:
   --serial           Concurrency 1, no worktrees (minimal loop)
   --mock             Skip LLM agents; seed tasks + stub workspace only
   --run-id=ID        Custom run id (default: timestamp)
+  --resume           Resume an interrupted run (requires --run-id; needs progress.json, see npm run salvage)
   --concurrency=N    Override config concurrency
 `);
+}
+
+/**
+ * Win32: leftover orchestrator / cursor-agent processes for this runId.
+ * Only node/cursor-agent; excludes this process and its parent (npm wrapper).
+ */
+function findLeftoverRunProcesses(runId) {
+  if (process.platform !== "win32") return [];
+  try {
+    const self = process.pid;
+    const parent = process.ppid || 0;
+    const ps = [
+      "$procs = Get-CimInstance Win32_Process | Where-Object {",
+      `  $_.ProcessId -ne ${self} -and $_.ProcessId -ne ${parent}`,
+      "  -and ($_.Name -eq 'node.exe' -or $_.Name -like 'cursor-agent*')",
+      `  -and $_.CommandLine -like '*${runId}*'`,
+      "  -and (",
+      "    $_.CommandLine -like '*orchestrator*run.mjs*' -or",
+      "    $_.CommandLine -like '*cursor-agent*' -or",
+      `    $_.CommandLine -like '*runs*${runId}*workspace*'`,
+      "  )",
+      "};",
+      "$procs | ForEach-Object { \"$($_.ProcessId)`t$($_.Name)`t$($_.CommandLine)\" }",
+    ].join(" ");
+    const out = execSync(`powershell -NoProfile -Command ${JSON.stringify(ps)}`, {
+      encoding: "utf8",
+      stdio: "pipe",
+    }).trim();
+    if (!out) return [];
+    return out.split("\n").map((line) => {
+      const [pid, name, ...rest] = line.trim().split("\t");
+      return { pid, name, cmd: rest.join("\t") };
+    }).filter((p) => p.pid && Number(p.pid) !== self && Number(p.pid) !== parent);
+  } catch {
+    return [];
+  }
+}
+
+function assertFingerprintMatch(expected, actual) {
+  for (const key of ["task_set", "coordination_mode", "quick", "serial"]) {
+    if (expected[key] !== actual[key]) {
+      throw new Error(
+        `Fingerprint mismatch on ${key}: resume=${JSON.stringify(actual)} vs cli=${JSON.stringify(expected)}`,
+      );
+    }
+  }
+}
+
+function healWorkspace(workspaceDir) {
+  for (let i = 0; i < 15; i += 1) {
+    const files = listTrackedFiles(workspaceDir).filter((f) => {
+      const n = f.replace(/\\/g, "/");
+      return (n.startsWith("src/") && n.endsWith(".ts")) || n.endsWith(".md");
+    });
+    const hits = findConflictMarkers(workspaceDir, files);
+    const build = ensureBuilt(workspaceDir);
+    if (!hits.length && build.ok) {
+      console.log(`[run] workspace healthy after ${i} walkback(s)`);
+      return;
+    }
+    if (revListCount(workspaceDir) <= 2) {
+      throw new Error("Workspace unrecoverable: conflict markers or build failure near init");
+    }
+    console.warn(`[run] heal walkback ${i + 1}: markers=${hits.length} build_ok=${build.ok}`);
+    resetHard(workspaceDir, "HEAD~1");
+  }
+  throw new Error("Workspace unrecoverable after 15 walkbacks");
 }
 
 function writeContentionDesign(workspaceDir) {
@@ -204,6 +303,7 @@ async function runWorkerTask({
 
 /**
  * Worker + optional section-scoped score feedback rounds (harness-level, both arms).
+ * When syncWithMain is true, merge main into the worktree before each feedback round.
  */
 async function runWorkerWithScoreFeedback({
   task,
@@ -213,6 +313,7 @@ async function runWorkerWithScoreFeedback({
   coordination,
   coordMode,
   metrics,
+  syncWithMain = false,
 }) {
   const initial = await runWorkerTask({
     task,
@@ -235,21 +336,44 @@ async function runWorkerWithScoreFeedback({
   let prevRate = null;
 
   for (let round = 1; round <= maxRounds; round += 1) {
-    const build = ensureBuilt(cwd);
+    let syncConflictNote = null;
+    if (syncWithMain) {
+      const sync = syncWorktreeWithMain(cwd);
+      metrics.recordWorktreeSync({
+        taskId: task.id,
+        round,
+        conflict: !!sync.conflict,
+        files: sync.files || [],
+      });
+      if (sync.conflict) {
+        syncConflictNote = `An in-progress merge from main has CONFLICTS in: ${(sync.files || []).join(", ") || "(unknown)"}. First resolve every conflict (reconcile both sides' intent), remove all conflict markers, commit the merge. Then fix the failing examples.`;
+        console.warn(`[run] ${task.id} feedback round ${round}: sync conflict`);
+      }
+    }
+
     let rate = 0;
     let failures = [];
     let buildError = null;
+    let buildOk = false;
 
-    if (!build.ok) {
-      buildError = build.stderr || "build failed";
+    if (syncConflictNote) {
+      buildError = syncConflictNote;
       rate = 0;
-      console.warn(`[run] ${task.id} feedback round ${round}: build failed`);
+      buildOk = false;
     } else {
-      const scorePath = path.join(runDir, `score-feedback-${task.id}-${round}.json`);
-      const scored = runScore(cwd, scorePath, { sections });
-      rate = scored.report?.rate ?? 0;
-      failures = scored.report?.failures || [];
-      console.log(`[run] ${task.id} feedback round ${round}: section rate=${(rate * 100).toFixed(1)}%`);
+      const build = ensureBuilt(cwd);
+      buildOk = build.ok;
+      if (!build.ok) {
+        buildError = build.stderr || "build failed";
+        rate = 0;
+        console.warn(`[run] ${task.id} feedback round ${round}: build failed`);
+      } else {
+        const scorePath = path.join(runDir, `score-feedback-${task.id}-${round}.json`);
+        const scored = runScore(cwd, scorePath, { sections });
+        rate = scored.report?.rate ?? 0;
+        failures = scored.report?.failures || [];
+        console.log(`[run] ${task.id} feedback round ${round}: section rate=${(rate * 100).toFixed(1)}%`);
+      }
     }
 
     metrics.recordScoreFeedback({
@@ -257,11 +381,12 @@ async function runWorkerWithScoreFeedback({
       round,
       rate_before: prevRate,
       rate_after: rate,
-      build_ok: build.ok,
+      build_ok: buildOk,
       failure_count: failures.length,
+      sync_conflict: !!syncConflictNote,
     });
 
-    if (build.ok && rate >= target) break;
+    if (buildOk && rate >= target) break;
 
     const fixPrompt = buildWorkerScoreFixPrompt({
       task,
@@ -314,6 +439,121 @@ async function runWorkerWithScoreFeedback({
   }
 
   return lastResult;
+}
+
+function pickWorstSections(bySection, topN) {
+  return Object.entries(bySection || {})
+    .map(([name, st]) => ({
+      name,
+      passed: st.passed || 0,
+      total: st.total || 0,
+      rate: st.rate || 0,
+      failed: (st.total || 0) - (st.passed || 0),
+    }))
+    .filter((s) => s.failed > 0)
+    .sort((a, b) => b.failed - a.failed || a.rate - b.rate)
+    .slice(0, topN);
+}
+
+/**
+ * Final global repair phase: score full suite, fix worst sections, with regression guard.
+ */
+async function runGlobalRepairPhase({
+  workspaceDir,
+  config,
+  runDir,
+  coordMode,
+  metrics,
+  progress = null,
+}) {
+  const maxRounds = config.maxGlobalRepairRounds ?? 0;
+  if (config.mock || maxRounds <= 0) return;
+
+  const topN = config.globalRepairTopSections ?? 3;
+  const target = config.globalRepairTarget ?? 1.0;
+  const minGainPp = config.globalRepairMinGainPp ?? 0.5;
+  const startRound = (progress?.global_repair_rounds_done ?? 0) + 1;
+
+  for (let r = startRound; r <= maxRounds; r += 1) {
+    const build = ensureBuilt(workspaceDir);
+    if (!build.ok) {
+      console.warn(`[run] global repair round ${r}: build failed; skipping phase`);
+      return;
+    }
+
+    const beforePath = path.join(runDir, `score-global-before-${r}.json`);
+    const scored = runScore(workspaceDir, beforePath);
+    metrics.recordScore({ phase: `global-before-${r}`, ...scored.report });
+    const rateBefore = scored.report?.rate ?? 0;
+    console.log(`[run] global repair round ${r}: rate=${(rateBefore * 100).toFixed(1)}%`);
+    if (rateBefore >= target) break;
+
+    const worst = pickWorstSections(scored.report?.by_section, topN);
+    if (!worst.length) break;
+    const sections = worst.map((s) => s.name);
+    const detailPath = path.join(runDir, `score-global-${r}-sections.json`);
+    const detail = runScore(workspaceDir, detailPath, { sections });
+
+    commitAll(workspaceDir, `checkpoint: pre-repair ${r}`);
+    const checkpointSha = headSha(workspaceDir);
+
+    const prompt = buildGlobalRepairPrompt({
+      rate: rateBefore,
+      bySection: worst,
+      failures: detail.report?.failures || scored.report?.failures || [],
+      coordMode,
+    });
+    const result = await spawnAgent({
+      role: "worker",
+      prompt,
+      cwd: workspaceDir,
+      config,
+      runDir,
+      logKey: `global-repair-${r}`,
+      timeoutMs: (config.taskTimeoutMinutes || 20) * 60 * 1000,
+    });
+    metrics.recordAgentCall({
+      role: "global-repair",
+      round: r,
+      ok: result.ok,
+      elapsedMs: result.elapsedMs,
+    });
+
+    commitAll(workspaceDir, `global repair ${r}`);
+
+    const build2 = ensureBuilt(workspaceDir);
+    let rateAfter = rateBefore;
+    let reverted = false;
+    if (!build2.ok) {
+      resetHard(workspaceDir, checkpointSha);
+      reverted = true;
+      console.warn(`[run] global repair round ${r}: build broke; reverted`);
+    } else {
+      const afterPath = path.join(runDir, `score-global-after-${r}.json`);
+      const scored2 = runScore(workspaceDir, afterPath);
+      metrics.recordScore({ phase: `global-after-${r}`, ...scored2.report });
+      const nextRate = scored2.report?.rate ?? 0;
+      if (nextRate < rateBefore) {
+        resetHard(workspaceDir, checkpointSha);
+        reverted = true;
+        console.warn(`[run] global repair round ${r}: rate dropped; reverted`);
+      } else {
+        rateAfter = nextRate;
+        console.log(`[run] global repair round ${r}: rate=${(rateAfter * 100).toFixed(1)}%`);
+      }
+    }
+
+    metrics.recordGlobalRepair({
+      round: r,
+      sections,
+      rate_before: rateBefore,
+      rate_after: rateAfter,
+      reverted,
+    });
+    if (progress) markRepairRound(runDir, progress, r);
+
+    if ((rateAfter - rateBefore) * 100 < minGainPp) break;
+  }
 }
 
 async function ensureBuiltWithRepair({ workspaceDir, config, runDir, metrics, taskId }) {
@@ -603,11 +843,25 @@ async function main() {
   if (cli.coordination) config.coordination = true;
   if (cli.mock) config.mock = true;
 
+  if (cli.resume && !cli.runId) {
+    throw new Error("--resume requires --run-id=ID");
+  }
+  if (cli.resume && cli.mock) {
+    throw new Error("--resume cannot be combined with --mock");
+  }
+
   const runId = cli.runId || new Date().toISOString().replace(/[:.]/g, "-");
   const runDir = path.join(ROOT, "runs", runId);
   const workspaceDir = path.join(runDir, "workspace");
   const worktreesRoot = path.join(runDir, "worktrees");
   mkdirSync(runDir, { recursive: true });
+
+  const fingerprint = {
+    task_set: cli.taskSet,
+    coordination_mode: config.coordination ? cli.coordMode : "none",
+    quick: !!cli.quick,
+    serial: !!cli.serial,
+  };
 
   const metrics = createMetricsCollector(runDir);
   metrics.setMeta({
@@ -618,63 +872,146 @@ async function main() {
     mock: config.mock,
     models: config.models,
     concurrency: cli.serial ? 1 : (config.concurrency || 2),
-    coordination_mode: config.coordination ? cli.coordMode : "none",
+    coordination_mode: fingerprint.coordination_mode,
     task_set: cli.taskSet,
   });
 
-  console.log(`[run] id=${runId} coordination=${config.coordination} taskSet=${cli.taskSet} mock=${config.mock}`);
+  console.log(`[run] id=${runId} coordination=${config.coordination} taskSet=${cli.taskSet} mock=${config.mock} resume=${cli.resume}`);
 
-  initWorkspace(workspaceDir, config.coordination);
-  if (!config.mock) {
-    initSkeleton(workspaceDir, { taskSet: cli.taskSet, coordination: config.coordination });
-  }
+  let tasks;
+  let progress = null;
 
-  let tasks = await runPlanner({
-    workspaceDir,
-    config,
-    runDir,
-    coordination: config.coordination,
-    coordMode: cli.coordMode,
-    metrics,
-    taskSet: cli.taskSet,
-  });
+  if (cli.resume) {
+    if (!existsSync(runDir) || !existsSync(workspaceDir)) {
+      throw new Error(`Resume failed: missing run/workspace under ${runDir}`);
+    }
+    const tasksPath = path.join(runDir, "tasks.json");
+    if (!existsSync(tasksPath)) {
+      throw new Error(`Resume failed: missing ${tasksPath}`);
+    }
+    progress = loadProgress(runDir);
+    if (!progress) {
+      throw new Error(`Resume failed: missing progress.json — run: npm run salvage -- --run-id=${runId} ...`);
+    }
+    if (progress.phase === "finished") {
+      throw new Error(`Run ${runId} already finished (progress.phase=finished)`);
+    }
+    assertFingerprintMatch(fingerprint, progress.fingerprint || {});
 
-  if (cli.quick) {
-    tasks = tasks.slice(0, 3);
+    const leftovers = findLeftoverRunProcesses(runId);
+    if (leftovers.length) {
+      const list = leftovers.map((p) => `${p.pid} ${p.name}`).join(", ");
+      throw new Error(`Resume blocked: leftover processes for ${runId}: ${list}. Kill them first.`);
+    }
+
+    try {
+      execSync("git worktree prune", { cwd: workspaceDir, stdio: "pipe", shell: true });
+    } catch {
+      /* ignore */
+    }
+    rmSync(worktreesRoot, { recursive: true, force: true });
+    abortMerge(workspaceDir);
+    if (isDirty(workspaceDir)) resetHard(workspaceDir, "HEAD");
+
+    healWorkspace(workspaceDir);
+
+    const branches = new Set(listTaskBranches(workspaceDir));
+    for (const taskId of Object.keys(progress.tasks || {})) {
+      if (taskId === "task-01") continue;
+      const branch = `task/${taskId}`;
+      if (branches.has(branch) && isBranchMergedInto(workspaceDir, branch, "main")) {
+        progress.tasks[taskId] = "done";
+      } else if (branches.has(branch)) {
+        progress.tasks[taskId] = "pending";
+      }
+      // else: keep progress status (branch gone)
+    }
+    deleteTaskBranches(workspaceDir);
+    saveProgress(runDir, progress);
+
+    tasks = JSON.parse(readFileSync(tasksPath, "utf8"));
     saveTasks(workspaceDir, tasks);
-    console.log(`[run] quick mode: ${tasks.length} tasks`);
+
+    metrics.setMeta({
+      resumed: true,
+      resume_segment: (progress.segments?.length || 0) + 1,
+      planner_source: cli.taskSet === "contention" ? "seed-contention" : "seed",
+    });
+    for (const [taskId, status] of Object.entries(progress.tasks || {})) {
+      if (status === "done") {
+        metrics.recordTask({ id: taskId, status: "done", carried_over: true });
+      }
+    }
+    progress.segments = progress.segments || [];
+    progress.segments.push({ started_at: new Date().toISOString() });
+    saveProgress(runDir, progress);
+    console.log(`[run] resumed phase=${progress.phase} done=${Object.values(progress.tasks).filter((s) => s === "done").length}/${tasks.length}`);
+  } else {
+    initWorkspace(workspaceDir, config.coordination);
+    if (!config.mock) {
+      initSkeleton(workspaceDir, { taskSet: cli.taskSet, coordination: config.coordination });
+    }
+
+    tasks = await runPlanner({
+      workspaceDir,
+      config,
+      runDir,
+      coordination: config.coordination,
+      coordMode: cli.coordMode,
+      metrics,
+      taskSet: cli.taskSet,
+    });
+
+    if (cli.quick) {
+      tasks = tasks.slice(0, 3);
+      saveTasks(workspaceDir, tasks);
+      console.log(`[run] quick mode: ${tasks.length} tasks`);
+    }
+
+    if (config.coordination) {
+      // Contention: task-01 owns shared pipeline files and runs first; skip it in disjoint check.
+      const skipTaskIds = cli.taskSet === "contention" ? ["task-01"] : [];
+      let violations = validateDisjointScopes(tasks, { skipTaskIds });
+      let plannerRetries = 0;
+      // Seed-contention scopes are authored to be disjoint; skip LLM fix loop.
+      const allowPlannerFix = cli.taskSet !== "contention" && !config.mock;
+      while (violations.length && allowPlannerFix && plannerRetries < (config.maxPlannerRetries || 2)) {
+        console.warn("[run] scope violations:", violations);
+        const fixPrompt = `tasks.json has overlapping files_scope: ${JSON.stringify(violations)}. Fix tasks.json so scopes are disjoint. Say PLANNER_DONE.`;
+        await spawnAgent({
+          role: "planner",
+          prompt: fixPrompt,
+          cwd: workspaceDir,
+          config,
+          runDir,
+          logKey: `planner-retry-${plannerRetries + 1}`,
+          timeoutMs: (config.taskTimeoutMinutes || 20) * 60 * 1000,
+        });
+        tasks = loadTasks(workspaceDir) || tasks;
+        violations = validateDisjointScopes(tasks, { skipTaskIds });
+        plannerRetries += 1;
+      }
+      if (violations.length) {
+        console.warn("[run] remaining scope overlaps (continuing):", violations);
+      }
+    }
+
+    saveTasks(workspaceDir, tasks);
+    writeFileSync(path.join(runDir, "tasks.json"), `${JSON.stringify(tasks, null, 2)}\n`, "utf8");
+
+    if (!config.mock) {
+      progress = createInitialProgress({ runId, fingerprint, tasks });
+      saveProgress(runDir, progress);
+    }
   }
 
-  if (config.coordination) {
-    // Contention: task-01 owns shared pipeline files and runs first; skip it in disjoint check.
-    const skipTaskIds = cli.taskSet === "contention" ? ["task-01"] : [];
-    let violations = validateDisjointScopes(tasks, { skipTaskIds });
-    let plannerRetries = 0;
-    // Seed-contention scopes are authored to be disjoint; skip LLM fix loop.
-    const allowPlannerFix = cli.taskSet !== "contention" && !config.mock;
-    while (violations.length && allowPlannerFix && plannerRetries < (config.maxPlannerRetries || 2)) {
-      console.warn("[run] scope violations:", violations);
-      const fixPrompt = `tasks.json has overlapping files_scope: ${JSON.stringify(violations)}. Fix tasks.json so scopes are disjoint. Say PLANNER_DONE.`;
-      await spawnAgent({
-        role: "planner",
-        prompt: fixPrompt,
-        cwd: workspaceDir,
-        config,
-        runDir,
-        logKey: `planner-retry-${plannerRetries + 1}`,
-        timeoutMs: (config.taskTimeoutMinutes || 20) * 60 * 1000,
-      });
-      tasks = loadTasks(workspaceDir) || tasks;
-      violations = validateDisjointScopes(tasks, { skipTaskIds });
-      plannerRetries += 1;
-    }
-    if (violations.length) {
-      console.warn("[run] remaining scope overlaps (continuing):", violations);
-    }
+  if (progress) {
+    const flush = () => {
+      try { saveProgress(runDir, progress); } catch { /* ignore */ }
+    };
+    process.once("SIGINT", () => { flush(); process.exit(130); });
+    process.once("SIGTERM", () => { flush(); process.exit(143); });
   }
-
-  saveTasks(workspaceDir, tasks);
-  writeFileSync(path.join(runDir, "tasks.json"), `${JSON.stringify(tasks, null, 2)}\n`, "utf8");
 
   if (config.mock) {
     createMockSkeleton(workspaceDir, { taskSet: cli.taskSet, coordination: config.coordination });
@@ -696,12 +1033,16 @@ async function main() {
       worker_fix_time_ms: agentCalls
         .filter((c) => c.role === "worker-fix")
         .reduce((s, c) => s + (c.elapsedMs || 0), 0),
+      global_repair_time_ms: 0,
     });
     console.log(`[run] mock complete rate=${(scored.report.rate * 100).toFixed(1)}%`);
     process.exit(0);
   }
 
   const useWorktrees = !cli.serial && (config.concurrency || 2) > 1;
+  // Worktree sync is off for strict (freeze that control arm); on for bare + faithful.
+  const syncEnabled = (config.worktreeSync ?? true)
+    && !(config.coordination && cli.coordMode === "strict");
   const mergeQueue = new MergeQueue({
     mainDir: workspaceDir,
     config,
@@ -714,7 +1055,13 @@ async function main() {
   const concurrency = cli.serial ? 1 : (config.concurrency || 2);
 
   async function executeTask(task) {
+    if (progress && progress.tasks[task.id] === "done") {
+      console.log(`[run] skip ${task.id} (done in previous segment)`);
+      return { task, ok: true, skipped: true };
+    }
+
     metrics.recordTask({ id: task.id, status: "in_progress", started_at: new Date().toISOString() });
+    if (progress) markTask(runDir, progress, task.id, "in_progress");
     const started = Date.now();
 
     if (useWorktrees && task.id !== "task-01") {
@@ -724,6 +1071,7 @@ async function main() {
         wt = createWorktree(workspaceDir, worktreesRoot, task.id);
       } catch (err) {
         metrics.recordTask({ id: task.id, status: "failed", error: String(err.message) });
+        if (progress) markTask(runDir, progress, task.id, "failed");
         return { task, ok: false };
       }
 
@@ -735,6 +1083,7 @@ async function main() {
         coordination: config.coordination,
         coordMode: cli.coordMode,
         metrics,
+        syncWithMain: syncEnabled,
       });
 
       if (config.coordination) {
@@ -749,9 +1098,21 @@ async function main() {
             metrics.recordScopeViolation({ taskId: task.id, files: violations });
             removeWorktree(workspaceDir, wt.path);
             metrics.recordTask({ id: task.id, status: "failed", scope_violation: violations });
+            if (progress) markTask(runDir, progress, task.id, "failed");
             return { task, ok: false };
           }
         }
+      }
+
+      if (syncEnabled) {
+        const preSync = syncWorktreeWithMain(wt.path);
+        metrics.recordWorktreeSync({
+          taskId: task.id,
+          round: "pre-merge",
+          conflict: !!preSync.conflict,
+          files: preSync.files || [],
+        });
+        if (preSync.conflict) abortMerge(wt.path);
       }
 
       const mergeResult = await mergeQueue.enqueue({
@@ -774,13 +1135,15 @@ async function main() {
       const scored = runScore(workspaceDir, scorePath);
       metrics.recordScore({ phase: `after-${task.id}`, ...scored.report });
 
+      const status = mergeResult.ok && mergeResult.postMerge?.ok !== false ? "done" : "failed";
       metrics.recordTask({
         id: task.id,
-        status: mergeResult.ok && mergeResult.postMerge?.ok !== false ? "done" : "failed",
+        status,
         elapsedMs: Date.now() - started,
         worker_ok: workerResult.ok,
         merge: mergeResult,
       });
+      if (progress) markTask(runDir, progress, task.id, status);
       return {
         task,
         ok: mergeResult.ok && mergeResult.postMerge?.ok !== false && workerResult.ok,
@@ -795,6 +1158,7 @@ async function main() {
       coordination: config.coordination,
       coordMode: cli.coordMode,
       metrics,
+      syncWithMain: false,
     });
 
     const buildResult = cli.coordMode === "faithful"
@@ -810,11 +1174,13 @@ async function main() {
     const scored = runScore(workspaceDir, scorePath);
     metrics.recordScore({ phase: `after-${task.id}`, ...scored.report });
 
+    const status = workerResult.ok && buildResult.ok ? "done" : "failed";
     metrics.recordTask({
       id: task.id,
-      status: workerResult.ok && buildResult.ok ? "done" : "failed",
+      status,
       elapsedMs: Date.now() - started,
     });
+    if (progress) markTask(runDir, progress, task.id, status);
     return { task, ok: workerResult.ok && buildResult.ok };
   }
 
@@ -829,8 +1195,7 @@ async function main() {
   const poolTasks = useWorktrees ? restTasks : tasks;
   await runPool(poolTasks, concurrency, executeTask);
 
-  // Optional reviewer on final diff
-  const diff = getDiff(workspaceDir);
+  // Final build, then global repair (both arms), then final score + reviewer.
   if (cli.coordMode === "faithful") {
     await ensureBuiltWithRepair({
       workspaceDir,
@@ -842,10 +1207,22 @@ async function main() {
   } else {
     ensureBuilt(workspaceDir);
   }
+
+  if (progress) markPhase(runDir, progress, "global_repair");
+  await runGlobalRepairPhase({
+    workspaceDir,
+    config,
+    runDir,
+    coordMode: cli.coordMode,
+    metrics,
+    progress,
+  });
+
   const finalScorePath = path.join(runDir, "score-final.json");
   const finalScored = runScore(workspaceDir, finalScorePath);
   metrics.recordScore({ phase: "final", ...finalScored.report });
 
+  const diff = getDiff(workspaceDir);
   if (diff.trim()) {
     const reviewResult = await spawnAgent({
       role: "reviewer",
@@ -882,7 +1259,11 @@ async function main() {
     worker_fix_time_ms: agentCalls
       .filter((c) => c.role === "worker-fix")
       .reduce((s, c) => s + (c.elapsedMs || 0), 0),
+    global_repair_time_ms: agentCalls
+      .filter((c) => c.role === "global-repair")
+      .reduce((s, c) => s + (c.elapsedMs || 0), 0),
   });
+  if (progress) markPhase(runDir, progress, "finished");
 
   console.log(`[run] done metrics=${metricsPath}`);
   console.log(`[run] pass rate ${(finalScored.report.rate * 100).toFixed(1)}% (${finalScored.report.passed}/${finalScored.report.total})`);

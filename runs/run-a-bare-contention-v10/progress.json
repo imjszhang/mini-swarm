@@ -1,0 +1,39 @@
+{
+  "run_id": "run-a-bare-contention-v10",
+  "phase": "finished",
+  "fingerprint": {
+    "task_set": "contention",
+    "coordination_mode": "none",
+    "quick": false,
+    "serial": false
+  },
+  "tasks": {
+    "task-01": "done",
+    "task-02": "done",
+    "task-03": "done",
+    "task-04": "done",
+    "task-05": "done",
+    "task-06": "done",
+    "task-07": "done",
+    "task-08": "done",
+    "task-09": "done",
+    "task-10": "done",
+    "task-11": "done",
+    "task-12": "done",
+    "task-13": "done"
+  },
+  "global_repair_rounds_done": 2,
+  "segments": [
+    {
+      "started_at": "2026-07-25T05:40:10.205Z",
+      "salvaged": true
+    },
+    {
+      "started_at": "2026-07-25T07:30:09.364Z"
+    },
+    {
+      "started_at": "2026-07-25T09:46:58.444Z"
+    }
+  ],
+  "updated_at": "2026-07-25T09:58:25.333Z"
+}

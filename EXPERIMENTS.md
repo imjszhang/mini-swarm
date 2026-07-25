@@ -5,9 +5,18 @@
 - **Run A (bare)**: `npm run run:quick -- --run-id=run-a-bare-v4`
 - **Run B (coordinated)**: `npm run run:quick:coordinated -- --run-id=run-b-coordinated-v4`
 - **Run B faithful**: `npm run run:faithful -- --run-id=run-b-faithful-v7`
-- **v8/v9 high-contention A/B**: `npm run run:contention:bare` / `npm run run:contention:faithful` (`--task-set=contention`, concurrency 4, seed planner; v9 adds score-feedback rounds)
+- **v8/v9/v10 high-contention A/B**: `npm run run:contention:bare` / `npm run run:contention:faithful` (`--task-set=contention`, concurrency 4, seed planner; v9 adds score-feedback; v10 adds worktree sync + merge gate + global repair)
+- **Resume interrupted run**: `npm run salvage -- --run-id=RUN_ID --task-set=contention` then original command + `--resume` (task-level; agent/wall times in metrics cover last segment only — see README)
 - **Serial minimal loop**: `npm run run:serial -- --quick --run-id=run-a-serial-quick`
-- **Compare**: `npm run compare -- runs/run-a-bare-contention-v9b/metrics.json runs/run-b-faithful-contention-v9/metrics.json`
+- **Compare (v10)**: `npm run compare -- runs/run-a-bare-contention-v10/metrics.json runs/run-b-faithful-contention-v10/metrics.json`
+- **Compare (v9)**: `npm run compare -- runs/run-a-bare-contention-v9b/metrics.json runs/run-b-faithful-contention-v9/metrics.json`
+
+## Runs (2026-07-25) — v10 architecture + resume
+
+| Run ID | Mode | Coordination | planner | Notes |
+|---|---|---|---|---|
+| run-a-bare-contention-v10 | **contention 13 tasks**, concurrency 4 | false | **seed-contention** | **94.1%** pass (494/525), 13/13, **resumed** (interrupted mid global-repair; salvage + `--resume`); global repair 0%→91.0%→94.1%; metrics agent/wall = last segment only; 4610 LOC |
+| run-b-faithful-contention-v10 | **contention 13 tasks**, concurrency 4 | **faithful** | **seed-contention** | **97.9%** pass (514/525), 13/13, 1 conflict, 11 cross-scope, 32 worktree syncs (14 conflict), 26 score-feedbacks, global repair 78.1%→90.9%→97.9%, 3420 LOC, ~114 min wall / ~232.9 min agent |
 
 ## Runs (2026-07-24) — composer planner re-run
 
@@ -26,6 +35,38 @@
 | run-b-coordinated-v4 | quick, concurrency 2 | true | seed | **INVALID** — cursor-agent auth expired mid-session |
 
 Compare v4 A vs v3 A: `npm run compare -- runs/run-a-bare-v4/metrics.json runs/run-a-bare-v3/metrics.json` (+4.6pp pass rate with LLM planner).
+
+### v10 architecture: sync + merge gate + global repair (+ resume)
+
+Motivation: v9 still left ~12–15pp on the table vs low-contention v7 (~77%), with three harness wastes—stale worktrees, dirty merges with leftover `<<<<<<<` markers, and no agent accountable for the final suite score. v10 adds four **symmetric** (both-arm) infrastructure changes without changing models, concurrency, or the contention task set:
+
+1. **npm install hash cache** in `ensureBuilt` (skip repeated installs).
+2. **Worktree sync** with `main` before each score-feedback round and before enqueue (strict mode skips sync).
+3. **Merge validity gate**: reject merges that still contain conflict markers; retry then `reset --hard` to pre-merge.
+4. **Global repair phase** after the task pool: score full suite, fix worst sections (up to 2 rounds), with git checkpoint regression guard.
+
+Also shipped: task-level **`--resume`** + `npm run salvage` for interrupted runs (`progress.json`).
+
+| Metric | Bare v9b | Bare v10 (resumed) | Faithful v9 | Faithful v10 |
+|---|---|---|---|---|
+| Pass rate | 62.1% | **94.1%** | 65.0% | **97.9%** |
+| Tasks | 13/13 | 13/13 | 13/13 | 13/13 |
+| Merge conflicts | 11 | 0* | 10 | 1 |
+| Worktree syncs | 0 | 0* | 0 | 32 (14 conflict) |
+| Global repairs | 0 | 2 (0%→94.1%) | 0 | 2 (78.1%→97.9%) |
+| Agent time | 195.6 min | last-segment only* | 143.8 min | **232.9 min** |
+| LOC | 3987 | 4610 | 3710 | **3420** |
+
+\*Bare v10 was interrupted during the first global-repair attempt, then `salvage` + `--resume` skipped all 13 done tasks and continued repair. Segment metrics (agent/wall/merge-resolve/score-feedback/sync counts) cover the **last resume segment only**; pass rate / LOC / commits are cumulative.
+
+Direct v10 A/B (`npm run compare -- runs/run-a-bare-contention-v10/metrics.json runs/run-b-faithful-contention-v10/metrics.json`):
+
+- **Quality: faithful 97.9% > bare 94.1%** (+3.8pp) — both far above v9; global repair was the main lift (faithful 78.1%→97.9% post-pool; resumed bare 0% runtime-broken workspace →94.1%).
+- **Structure: faithful used fewer LOC** (3420 vs 4610) with similar feature coverage — closer to Cursor's "less churn / less duplication" signal.
+- **Cost: not apples-to-apples** for agent minutes (bare resumed). Faithful paid ~233 min agent for a clean full run including sync + repair; merge-resolve stayed cheap (1.4 min) thanks to early sync.
+- Resume path validated in production: kill → salvage (13/13 done, phase=global_repair) → `--resume` skip-all-tasks → repair to finish.
+
+Interpretation: same models, architecture alone moved high-contention pass rates from the ~62–65% band into the mid/high 90s. Coordination still wins on quality and compactness; the headline cost comparison should prefer the uninterrupted faithful arm, with bare's resume noted explicitly.
 
 ### v9 fix: score feedback + orphan sections → faithful beats bare under contention
 

@@ -98,6 +98,30 @@ export function formatScoreFailures(failures, max = 8) {
   }).join("\n\n");
 }
 
+export function buildGlobalRepairPrompt({
+  rate,
+  bySection,
+  failures,
+  coordMode = "strict",
+}) {
+  const modeRules = coordMode === "faithful"
+    ? `- If you change an interface or design decision, update the relevant section of DESIGN.md.
+- DESIGN.md interface definitions live in \`src/contracts.ts\` and are compile-checked; if you change an interface, update \`contracts.ts\` and DESIGN.md together.
+- Append only surprising, reusable findings to GUIDE.md.`
+    : `- No scope restrictions for this repair; edit whatever the root cause requires.`;
+
+  const sectionLines = (bySection || [])
+    .map((s) => `- ${s.name}: ${s.passed}/${s.total} (${((s.rate || 0) * 100).toFixed(1)}%)`)
+    .join("\n") || "_No section stats._";
+
+  return fillTemplate(loadPrompt("global-repair"), {
+    RATE: typeof rate === "number" ? `${(rate * 100).toFixed(1)}%` : String(rate ?? "n/a"),
+    BY_SECTION: sectionLines,
+    FAILURES: formatScoreFailures(failures, 12),
+    COORDINATION_MODE_RULES: modeRules,
+  });
+}
+
 export function buildWorkerScoreFixPrompt({
   task,
   sections,

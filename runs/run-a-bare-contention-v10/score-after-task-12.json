@@ -1,0 +1,232 @@
+{
+  "scored_at": "2026-07-25T07:24:33.463Z",
+  "workspace": "D:\\github\\projects\\mini-swarm\\runs\\run-a-bare-contention-v10\\workspace",
+  "total": 525,
+  "passed": 0,
+  "rate": 0,
+  "by_section": {
+    "Tabs": {
+      "passed": 0,
+      "total": 11,
+      "rate": 0
+    },
+    "Backslash escapes": {
+      "passed": 0,
+      "total": 13,
+      "rate": 0
+    },
+    "Precedence": {
+      "passed": 0,
+      "total": 1,
+      "rate": 0
+    },
+    "Thematic breaks": {
+      "passed": 0,
+      "total": 19,
+      "rate": 0
+    },
+    "ATX headings": {
+      "passed": 0,
+      "total": 18,
+      "rate": 0
+    },
+    "Setext headings": {
+      "passed": 0,
+      "total": 27,
+      "rate": 0
+    },
+    "Indented code blocks": {
+      "passed": 0,
+      "total": 12,
+      "rate": 0
+    },
+    "Fenced code blocks": {
+      "passed": 0,
+      "total": 29,
+      "rate": 0
+    },
+    "Paragraphs": {
+      "passed": 0,
+      "total": 8,
+      "rate": 0
+    },
+    "Blank lines": {
+      "passed": 0,
+      "total": 1,
+      "rate": 0
+    },
+    "Block quotes": {
+      "passed": 0,
+      "total": 25,
+      "rate": 0
+    },
+    "List items": {
+      "passed": 0,
+      "total": 48,
+      "rate": 0
+    },
+    "Lists": {
+      "passed": 0,
+      "total": 27,
+      "rate": 0
+    },
+    "Code spans": {
+      "passed": 0,
+      "total": 22,
+      "rate": 0
+    },
+    "Emphasis and strong emphasis": {
+      "passed": 0,
+      "total": 132,
+      "rate": 0
+    },
+    "Links": {
+      "passed": 0,
+      "total": 90,
+      "rate": 0
+    },
+    "Images": {
+      "passed": 0,
+      "total": 22,
+      "rate": 0
+    },
+    "Hard line breaks": {
+      "passed": 0,
+      "total": 15,
+      "rate": 0
+    },
+    "Soft line breaks": {
+      "passed": 0,
+      "total": 2,
+      "rate": 0
+    },
+    "Textual content": {
+      "passed": 0,
+      "total": 3,
+      "rate": 0
+    }
+  },
+  "failures": [
+    {
+      "id": "ex-0001",
+      "section": "Tabs",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/registry.js:113\r\n    parsers.push(p);\r\n    ^\r\n\r\nReferenceError: Cannot access 'parsers' before initialization\r\n    at registerInlineParser (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/registry.js:113:5)\r\n    at file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/links.js:914:1\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:371:25)\r\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:669:26)\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\r\n\r\nNode.js v24.6.0",
+      "markdown": "→foo→baz→→bim"
+    },
+    {
+      "id": "ex-0002",
+      "section": "Tabs",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/registry.js:113\r\n    parsers.push(p);\r\n    ^\r\n\r\nReferenceError: Cannot access 'parsers' before initialization\r\n    at registerInlineParser (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/registry.js:113:5)\r\n    at file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/links.js:914:1\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:371:25)\r\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:669:26)\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\r\n\r\nNode.js v24.6.0",
+      "markdown": "  →foo→baz→→bim"
+    },
+    {
+      "id": "ex-0003",
+      "section": "Tabs",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/registry.js:113\r\n    parsers.push(p);\r\n    ^\r\n\r\nReferenceError: Cannot access 'parsers' before initialization\r\n    at registerInlineParser (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/registry.js:113:5)\r\n    at file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/links.js:914:1\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:371:25)\r\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:669:26)\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\r\n\r\nNode.js v24.6.0",
+      "markdown": "    a→a\n    ὐ→a"
+    },
+    {
+      "id": "ex-0004",
+      "section": "Tabs",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/registry.js:113\r\n    parsers.push(p);\r\n    ^\r\n\r\nReferenceError: Cannot access 'parsers' before initialization\r\n    at registerInlineParser (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/registry.js:113:5)\r\n    at file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/links.js:914:1\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:371:25)\r\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:669:26)\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\r\n\r\nNode.js v24.6.0",
+      "markdown": "  - foo\n\n→bar"
+    },
+    {
+      "id": "ex-0005",
+      "section": "Tabs",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/registry.js:113\r\n    parsers.push(p);\r\n    ^\r\n\r\nReferenceError: Cannot access 'parsers' before initialization\r\n    at registerInlineParser (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/registry.js:113:5)\r\n    at file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/links.js:914:1\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:371:25)\r\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:669:26)\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\r\n\r\nNode.js v24.6.0",
+      "markdown": "- foo\n\n→→bar"
+    },
+    {
+      "id": "ex-0006",
+      "section": "Tabs",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/registry.js:113\r\n    parsers.push(p);\r\n    ^\r\n\r\nReferenceError: Cannot access 'parsers' before initialization\r\n    at registerInlineParser (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/registry.js:113:5)\r\n    at file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/links.js:914:1\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:371:25)\r\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:669:26)\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\r\n\r\nNode.js v24.6.0",
+      "markdown": ">→→foo"
+    },
+    {
+      "id": "ex-0007",
+      "section": "Tabs",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/registry.js:113\r\n    parsers.push(p);\r\n    ^\r\n\r\nReferenceError: Cannot access 'parsers' before initialization\r\n    at registerInlineParser (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/registry.js:113:5)\r\n    at file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/links.js:914:1\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:371:25)\r\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:669:26)\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\r\n\r\nNode.js v24.6.0",
+      "markdown": "-→→foo"
+    },
+    {
+      "id": "ex-0008",
+      "section": "Tabs",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/registry.js:113\r\n    parsers.push(p);\r\n    ^\r\n\r\nReferenceError: Cannot access 'parsers' before initialization\r\n    at registerInlineParser (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/registry.js:113:5)\r\n    at file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/links.js:914:1\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:371:25)\r\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:669:26)\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\r\n\r\nNode.js v24.6.0",
+      "markdown": "    foo\n→bar"
+    },
+    {
+      "id": "ex-0009",
+      "section": "Tabs",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/registry.js:113\r\n    parsers.push(p);\r\n    ^\r\n\r\nReferenceError: Cannot access 'parsers' before initialization\r\n    at registerInlineParser (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/registry.js:113:5)\r\n    at file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/links.js:914:1\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:371:25)\r\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:669:26)\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\r\n\r\nNode.js v24.6.0",
+      "markdown": " - foo\n   - bar\n→ - baz"
+    },
+    {
+      "id": "ex-0010",
+      "section": "Tabs",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/registry.js:113\r\n    parsers.push(p);\r\n    ^\r\n\r\nReferenceError: Cannot access 'parsers' before initialization\r\n    at registerInlineParser (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/registry.js:113:5)\r\n    at file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/links.js:914:1\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:371:25)\r\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:669:26)\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\r\n\r\nNode.js v24.6.0",
+      "markdown": "#→Foo"
+    },
+    {
+      "id": "ex-0011",
+      "section": "Tabs",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/registry.js:113\r\n    parsers.push(p);\r\n    ^\r\n\r\nReferenceError: Cannot access 'parsers' before initialization\r\n    at registerInlineParser (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/registry.js:113:5)\r\n    at file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/links.js:914:1\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:371:25)\r\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:669:26)\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\r\n\r\nNode.js v24.6.0",
+      "markdown": "*→*→*→"
+    },
+    {
+      "id": "ex-0012",
+      "section": "Backslash escapes",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/registry.js:113\r\n    parsers.push(p);\r\n    ^\r\n\r\nReferenceError: Cannot access 'parsers' before initialization\r\n    at registerInlineParser (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/registry.js:113:5)\r\n    at file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/links.js:914:1\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:371:25)\r\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:669:26)\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\r\n\r\nNode.js v24.6.0",
+      "markdown": "\\!\\\"\\#\\$\\%\\&\\'\\(\\)\\*\\+\\,\\-\\.\\/\\:\\;\\<\\=\\>\\?\\@\\[\\\\\\]\\^\\_\\`\\{\\|\\}\\~"
+    },
+    {
+      "id": "ex-0013",
+      "section": "Backslash escapes",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/registry.js:113\r\n    parsers.push(p);\r\n    ^\r\n\r\nReferenceError: Cannot access 'parsers' before initialization\r\n    at registerInlineParser (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/registry.js:113:5)\r\n    at file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/links.js:914:1\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:371:25)\r\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:669:26)\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\r\n\r\nNode.js v24.6.0",
+      "markdown": "\\→\\A\\a\\ \\3\\φ\\«"
+    },
+    {
+      "id": "ex-0014",
+      "section": "Backslash escapes",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/registry.js:113\r\n    parsers.push(p);\r\n    ^\r\n\r\nReferenceError: Cannot access 'parsers' before initialization\r\n    at registerInlineParser (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/registry.js:113:5)\r\n    at file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/links.js:914:1\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:371:25)\r\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:669:26)\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\r\n\r\nNode.js v24.6.0",
+      "markdown": "\\*not emphasized*\n\\<br/> not a tag\n\\[not a link](/foo)\n\\`not code`\n1\\. not a list\n\\* not a list\n\\# not a heading\n\\[foo]: /url \"not a reference\"\n\\&ouml; not a character entity"
+    },
+    {
+      "id": "ex-0015",
+      "section": "Backslash escapes",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/registry.js:113\r\n    parsers.push(p);\r\n    ^\r\n\r\nReferenceError: Cannot access 'parsers' before initialization\r\n    at registerInlineParser (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/registry.js:113:5)\r\n    at file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/links.js:914:1\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:371:25)\r\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:669:26)\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\r\n\r\nNode.js v24.6.0",
+      "markdown": "\\\\*emphasis*"
+    },
+    {
+      "id": "ex-0016",
+      "section": "Backslash escapes",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/registry.js:113\r\n    parsers.push(p);\r\n    ^\r\n\r\nReferenceError: Cannot access 'parsers' before initialization\r\n    at registerInlineParser (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/registry.js:113:5)\r\n    at file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/links.js:914:1\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:371:25)\r\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:669:26)\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\r\n\r\nNode.js v24.6.0",
+      "markdown": "foo\\\nbar"
+    },
+    {
+      "id": "ex-0017",
+      "section": "Backslash escapes",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/registry.js:113\r\n    parsers.push(p);\r\n    ^\r\n\r\nReferenceError: Cannot access 'parsers' before initialization\r\n    at registerInlineParser (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/registry.js:113:5)\r\n    at file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/links.js:914:1\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:371:25)\r\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:669:26)\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\r\n\r\nNode.js v24.6.0",
+      "markdown": "`` \\[\\` ``"
+    },
+    {
+      "id": "ex-0018",
+      "section": "Backslash escapes",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/registry.js:113\r\n    parsers.push(p);\r\n    ^\r\n\r\nReferenceError: Cannot access 'parsers' before initialization\r\n    at registerInlineParser (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/registry.js:113:5)\r\n    at file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/links.js:914:1\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:371:25)\r\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:669:26)\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\r\n\r\nNode.js v24.6.0",
+      "markdown": "    \\[\\]"
+    },
+    {
+      "id": "ex-0019",
+      "section": "Backslash escapes",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/registry.js:113\r\n    parsers.push(p);\r\n    ^\r\n\r\nReferenceError: Cannot access 'parsers' before initialization\r\n    at registerInlineParser (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/registry.js:113:5)\r\n    at file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/links.js:914:1\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:371:25)\r\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:669:26)\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\r\n\r\nNode.js v24.6.0",
+      "markdown": "~~~\n\\[\\]\n~~~"
+    },
+    {
+      "id": "ex-0020",
+      "section": "Backslash escapes",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/registry.js:113\r\n    parsers.push(p);\r\n    ^\r\n\r\nReferenceError: Cannot access 'parsers' before initialization\r\n    at registerInlineParser (file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/registry.js:113:5)\r\n    at file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v10/workspace/dist/inline/links.js:914:1\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:371:25)\r\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:669:26)\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\r\n\r\nNode.js v24.6.0",
+      "markdown": "<https://example.com?find=\\*>"
+    }
+  ],
+  "failure_count": 525
+}

@@ -20,6 +20,7 @@
     "run:contention:bare": "node orchestrator/run.mjs --task-set=contention --concurrency=4",
     "run:contention:faithful": "node orchestrator/run.mjs --coordination --coord-mode=faithful --task-set=contention --concurrency=4",
     "compare": "node orchestrator/compare-runs.mjs",
+    "salvage": "node orchestrator/salvage-progress.mjs",
     "smoke:runner": "node orchestrator/smoke-runner.mjs"
   }
 }

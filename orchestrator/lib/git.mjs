@@ -54,6 +54,97 @@ export function mergeBranch(mainDir, branchName) {
   }
 }
 
+/**
+ * Merge main into a worktree so the worker sees recent integrations.
+ */
+export function syncWorktreeWithMain(wtDir) {
+  try {
+    git(wtDir, ["merge", "main", "--no-edit"]);
+    return { ok: true, conflict: false, files: [] };
+  } catch (err) {
+    const msg = String(err.stderr || err.stdout || err.message || "");
+    const conflict = /CONFLICT|conflict/i.test(msg);
+    return {
+      ok: false,
+      conflict,
+      files: conflict ? listConflictFiles(wtDir) : [],
+      message: msg,
+    };
+  }
+}
+
+export function headSha(dir) {
+  try {
+    return git(dir, ["rev-parse", "HEAD"]);
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Scan files for leftover git conflict markers (<<<<<<< / >>>>>>> / |||||||).
+ * Deliberately skips ======= to avoid CommonMark setext-heading false positives.
+ */
+export function findConflictMarkers(dir, files) {
+  const hits = [];
+  for (const rel of files || []) {
+    const p = path.join(dir, rel);
+    if (!existsSync(p)) continue;
+    let text;
+    try {
+      text = readFileSync(p, "utf8");
+    } catch {
+      continue;
+    }
+    let count = 0;
+    for (const line of text.split("\n")) {
+      if (
+        line.startsWith("<<<<<<<")
+        || line.startsWith(">>>>>>>")
+        || line.startsWith("|||||||")
+      ) {
+        count += 1;
+      }
+    }
+    if (count > 0) hits.push({ file: rel, count });
+  }
+  return hits;
+}
+
+export function filesChangedSince(dir, sha) {
+  if (!sha) return [];
+  try {
+    const out = git(dir, ["diff", "--name-only", sha, "HEAD"]);
+    return out ? out.split("\n").filter(Boolean) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function resetHard(dir, sha) {
+  if (!sha) return;
+  try {
+    git(dir, ["reset", "--hard", sha]);
+  } catch {
+    /* ignore */
+  }
+}
+
+export function commitAll(dir, message) {
+  try {
+    git(dir, ["add", "-A"]);
+    try {
+      execSync("git diff --cached --quiet", { cwd: dir, stdio: "pipe", shell: true });
+      return false; // nothing staged
+    } catch {
+      git(dir, ["commit", "-m", message]);
+      return true;
+    }
+  } catch {
+    return false;
+  }
+}
+
 export function abortMerge(mainDir) {
   try {
     git(mainDir, ["merge", "--abort"]);
@@ -160,5 +251,59 @@ export function computeChurn(workspaceDir) {
     };
   } catch {
     return { total_added: 0, total_deleted: 0, churn_ratio: 0 };
+  }
+}
+
+export function isDirty(dir) {
+  try {
+    const out = git(dir, ["status", "--porcelain"]);
+    return Boolean(out && out.trim());
+  } catch {
+    return false;
+  }
+}
+
+export function listTaskBranches(dir) {
+  try {
+    const out = git(dir, ["branch", "--list", "task/*", "--format=%(refname:short)"]);
+    return out ? out.split("\n").map((s) => s.trim()).filter(Boolean) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function isBranchMergedInto(dir, branch, target = "main") {
+  try {
+    git(dir, ["merge-base", "--is-ancestor", branch, target]);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export function deleteTaskBranches(dir) {
+  for (const branch of listTaskBranches(dir)) {
+    try {
+      git(dir, ["branch", "-D", branch]);
+    } catch {
+      /* ignore */
+    }
+  }
+}
+
+export function revListCount(dir) {
+  try {
+    return Number(git(dir, ["rev-list", "--count", "HEAD"])) || 0;
+  } catch {
+    return 0;
+  }
+}
+
+export function listTrackedFiles(dir) {
+  try {
+    const out = git(dir, ["ls-files"]);
+    return out ? out.split("\n").filter(Boolean) : [];
+  } catch {
+    return [];
   }
 }

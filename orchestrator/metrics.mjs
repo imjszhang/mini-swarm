@@ -19,11 +19,18 @@ export function createMetricsCollector(runDir) {
     cross_scope_changes: [],
     integration_fixes: [],
     score_feedbacks: [],
+    worktree_syncs: [],
+    merge_gate_rejections: [],
+    global_repairs: [],
     merge_conflict_count: 0,
     scope_violation_count: 0,
     cross_scope_change_count: 0,
     integration_fix_count: 0,
     score_feedback_count: 0,
+    worktree_sync_count: 0,
+    worktree_sync_conflict_count: 0,
+    merge_gate_rejection_count: 0,
+    global_repair_count: 0,
     conflict_count: 0,
     tasks: [],
     score_curve: [],
@@ -56,6 +63,19 @@ export function createMetricsCollector(runDir) {
     recordScoreFeedback(entry) {
       data.score_feedbacks.push({ ...entry, at: new Date().toISOString() });
       data.score_feedback_count = data.score_feedbacks.length;
+    },
+    recordWorktreeSync(entry) {
+      data.worktree_syncs.push({ ...entry, at: new Date().toISOString() });
+      data.worktree_sync_count = data.worktree_syncs.length;
+      data.worktree_sync_conflict_count = data.worktree_syncs.filter((e) => e.conflict).length;
+    },
+    recordMergeGateRejection(entry) {
+      data.merge_gate_rejections.push({ ...entry, at: new Date().toISOString() });
+      data.merge_gate_rejection_count = data.merge_gate_rejections.length;
+    },
+    recordGlobalRepair(entry) {
+      data.global_repairs.push({ ...entry, at: new Date().toISOString() });
+      data.global_repair_count = data.global_repairs.length;
     },
     recordTask(entry) {
       const idx = data.tasks.findIndex((t) => t.id === entry.id);
@@ -112,16 +132,25 @@ export function normalizeMetrics(raw) {
   m.cross_scope_changes = m.cross_scope_changes || [];
   m.integration_fixes = m.integration_fixes || [];
   m.score_feedbacks = m.score_feedbacks || [];
+  m.worktree_syncs = m.worktree_syncs || [];
+  m.merge_gate_rejections = m.merge_gate_rejections || [];
+  m.global_repairs = m.global_repairs || [];
   m.merge_conflict_count = m.merge_conflicts.length;
   m.scope_violation_count = m.scope_violations.length;
   m.cross_scope_change_count = m.cross_scope_changes.length;
   m.integration_fix_count = m.integration_fixes.length;
   m.score_feedback_count = m.score_feedbacks.length;
+  m.worktree_sync_count = m.worktree_sync_count ?? m.worktree_syncs.length;
+  m.worktree_sync_conflict_count = m.worktree_sync_conflict_count
+    ?? m.worktree_syncs.filter((e) => e.conflict).length;
+  m.merge_gate_rejection_count = m.merge_gate_rejection_count ?? m.merge_gate_rejections.length;
+  m.global_repair_count = m.global_repair_count ?? m.global_repairs.length;
   m.conflict_count = m.merge_conflict_count + m.scope_violation_count;
   m.churn = m.churn ?? null;
   m.merge_resolve_time_ms = m.merge_resolve_time_ms ?? null;
   m.integration_fix_time_ms = m.integration_fix_time_ms ?? null;
   m.worker_fix_time_ms = m.worker_fix_time_ms ?? null;
+  m.global_repair_time_ms = m.global_repair_time_ms ?? null;
   m.task_set = m.task_set ?? null;
   return m;
 }

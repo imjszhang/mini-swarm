@@ -31,9 +31,19 @@ npm run run:contention:bare   # high-contention bare (13 tasks, concurrency 4, s
 npm run run:contention:faithful
 npm run run:serial -- --quick # serial minimal loop (no worktrees)
 npm run compare -- runs/run-a-bare-contention-v9b/metrics.json runs/run-b-faithful-contention-v9/metrics.json
+
+# Resume an interrupted run (task-level; requires progress.json)
+npm run salvage -- --run-id=RUN_ID --task-set=contention   # rebuild progress from wreckage
+npm run run:contention:bare -- --run-id=RUN_ID --resume    # continue skipped done tasks
 ```
 
-CLI flags of note: `--task-set=default|contention` (contention uses a fixed seed planner for fair A/B), `--coord-mode=strict|faithful`, `--concurrency=N`. Contension runs use harness score-feedback (`maxScoreFeedbackRounds` in `config.json`).
+CLI flags of note: `--task-set=default|contention` (contention uses a fixed seed planner for fair A/B), `--coord-mode=strict|faithful`, `--concurrency=N`, `--resume` (requires `--run-id` + `progress.json`; see `npm run salvage`). Contention runs use harness score-feedback (`maxScoreFeedbackRounds` in `config.json`).
+
+### Resume semantics
+
+- Granularity is **per task**: already-merged tasks are skipped; in-flight LLM turns are not resumed.
+- Interrupted runs without `progress.json` need `npm run salvage` first (fingerprint flags must match the original command).
+- Quality metrics (pass rate, LOC, churn, commits) are cumulative for the whole run; agent/wall time in `metrics.json` covers only the **last resume segment** (`resumed: true`, `resume_segment: N`).
 
 ## Layout
 
@@ -69,8 +79,12 @@ Each run writes `runs/{runId}/metrics.json`:
 - `cross_scope_change_count` and `integration_fix_count` (faithful mode)
 - `churn` (`total_added` / `total_deleted` / `churn_ratio`) and `merge_resolve_time_ms`
 - `score_feedback_count` / `worker_fix_time_ms` (section-scoped fix rounds)
+- `worktree_sync_count` / `merge_gate_rejection_count` / `global_repair_*` (v10 architecture)
+- `resumed` / `resume_segment` when continued via `--resume`
 - `tasks_done` / per-task status
 - lines of code, agent call timing
+
+Each live run also writes `progress.json` (task statuses + phase) for crash recovery.
 
 ## Article lineage
 
@@ -86,5 +100,7 @@ Part of @js trilogy: loop → harness → **swarm**. Source blog: Cursor Agent S
 - targeted cross-scope patches instead of hard rejection
 - compiler failures feeding an integration-fix loop
 - compile-checked interface stubs via `src/contracts.ts` (contention / faithful)
+
+v10 adds VCS-layer merge validity gating, worktree freshness sync, and a final global repair phase (both arms). Task-level `--resume` / `salvage` recover interrupted runs.
 
 It does **not** reproduce Cursor's custom high-throughput VCS, multiple planner trees, bloated-file decomposition, or stacked multi-perspective review. Results measure this minimal reproduction, not Cursor's production swarm.
