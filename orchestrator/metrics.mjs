@@ -13,6 +13,8 @@ function buildPhaseCostCurve(data) {
     feedback: { agent_ms: 0, passed_delta: 0 },
     "repair-rung1": { agent_ms: 0, passed_delta: 0 },
     "repair-rung2": { agent_ms: 0, passed_delta: 0 },
+    "repair-rung3": { agent_ms: 0, passed_delta: 0 },
+    "repair-stage-b": { agent_ms: 0, passed_delta: 0 },
   };
 
   for (const call of data.agent_calls || []) {
@@ -21,12 +23,17 @@ function buildPhaseCostCurve(data) {
     else if (call.role === "worker-fix") buckets.feedback.agent_ms += ms;
     else if (call.role === "repair") buckets["repair-rung1"].agent_ms += ms;
     else if (call.role === "repair-candidate") buckets["repair-rung2"].agent_ms += ms;
+    else if (call.role === "repair-strong") buckets["repair-rung3"].agent_ms += ms;
     else if (call.role === "global-repair") buckets["repair-rung1"].agent_ms += ms;
   }
 
   for (const rc of data.repair_clusters || []) {
-    const key = rc.rung === 2 ? "repair-rung2" : "repair-rung1";
+    const key = rc.rung === 3 ? "repair-rung3" : (rc.rung === 2 ? "repair-rung2" : "repair-rung1");
     if (rc.accepted) buckets[key].passed_delta += rc.gain_items || 0;
+  }
+  for (const rc of data.repair_stage_b || []) {
+    buckets["repair-stage-b"].agent_ms += rc.elapsedMs || 0;
+    if (rc.accepted) buckets["repair-stage-b"].passed_delta += rc.gain_full || 0;
   }
 
   // Score-curve deltas for pool/feedback (best-effort from after-task points).
@@ -60,6 +67,10 @@ export function createMetricsCollector(runDir) {
     merge_gate_rejections: [],
     global_repairs: [],
     repair_clusters: [],
+    repair_stage_b: [],
+    overfit_reviews: [],
+    decompositions: [],
+    gen_examples: null,
     adjudications: [],
     suspected_oracle_bugs: [],
     spec_ambiguities: [],
@@ -141,14 +152,18 @@ export function createMetricsCollector(runDir) {
       recomputeConflictTotals(data);
       const agentCalls = data.agent_calls || [];
       const repair_time_ms = agentCalls
-        .filter((c) => c.role === "repair" || c.role === "repair-candidate" || c.role === "global-repair")
+        .filter((c) => c.role === "repair" || c.role === "repair-candidate" || c.role === "repair-strong" || c.role === "global-repair")
         .reduce((s, c) => s + (c.elapsedMs || 0), 0);
       const adjudication_time_ms = agentCalls
         .filter((c) => c.role === "adjudicator" || c.role === "cluster")
         .reduce((s, c) => s + (c.elapsedMs || 0), 0);
+      const strong_model_time_ms = agentCalls
+        .filter((c) => ["repair-strong", "decomposer", "adjudicator", "cluster"].includes(c.role))
+        .reduce((s, c) => s + (c.elapsedMs || 0), 0);
       Object.assign(data, {
         repair_time_ms,
         adjudication_time_ms,
+        strong_model_time_ms,
         // Keep legacy alias for compare scripts.
         global_repair_time_ms: data.global_repair_time_ms ?? repair_time_ms,
         phase_cost_curve: buildPhaseCostCurve(data),
@@ -197,6 +212,10 @@ export function normalizeMetrics(raw) {
   m.merge_gate_rejections = m.merge_gate_rejections || [];
   m.global_repairs = m.global_repairs || [];
   m.repair_clusters = m.repair_clusters || [];
+  m.repair_stage_b = m.repair_stage_b || [];
+  m.overfit_reviews = m.overfit_reviews || [];
+  m.decompositions = m.decompositions || [];
+  m.gen_examples = m.gen_examples ?? null;
   m.adjudications = m.adjudications || [];
   m.suspected_oracle_bugs = m.suspected_oracle_bugs || [];
   m.spec_ambiguities = m.spec_ambiguities || [];
@@ -210,6 +229,7 @@ export function normalizeMetrics(raw) {
   m.phase_cost_curve = m.phase_cost_curve ?? null;
   m.repair_time_ms = m.repair_time_ms ?? m.global_repair_time_ms ?? null;
   m.adjudication_time_ms = m.adjudication_time_ms ?? null;
+  m.strong_model_time_ms = m.strong_model_time_ms ?? null;
   m.merge_conflict_count = m.merge_conflicts.length;
   m.scope_violation_count = m.scope_violations.length;
   m.cross_scope_change_count = m.cross_scope_changes.length;

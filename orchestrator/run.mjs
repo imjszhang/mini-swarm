@@ -5,6 +5,7 @@
 import { execSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import {
+  cpSync,
   existsSync,
   mkdirSync,
   readFileSync,
@@ -115,6 +116,8 @@ function parseArgs(argv) {
     serial: false,
     mock: false,
     resume: false,
+    repairOnly: false,
+    fromRun: null,
     runId: null,
     concurrency: null,
     coordMode: "strict",
@@ -128,8 +131,10 @@ function parseArgs(argv) {
     else if (a === "--serial") args.serial = true;
     else if (a === "--mock") args.mock = true;
     else if (a === "--resume") args.resume = true;
+    else if (a === "--repair-only") args.repairOnly = true;
     else if (a === "--help" || a === "-h") args.help = true;
     else if (a.startsWith("--run-id=")) args.runId = a.split("=")[1];
+    else if (a.startsWith("--from-run=")) args.fromRun = a.split("=")[1];
     else if (a.startsWith("--concurrency=")) args.concurrency = Number(a.split("=")[1]);
     else if (a.startsWith("--coord-mode=")) args.coordMode = a.split("=")[1];
     else if (a.startsWith("--task-set=")) args.taskSet = a.split("=")[1];
@@ -150,9 +155,147 @@ Options:
   --mock             Skip LLM agents; seed tasks + stub workspace only
   --run-id=ID        Custom run id (default: timestamp)
   --resume           Resume an interrupted run (requires --run-id; needs progress.json, see npm run salvage)
+  --repair-only      Skip planner/pool; run repair Stage A→B then final scores (requires --from-run + --run-id)
+  --from-run=ID      Source run to copy workspace/holdout/ledger from (with --repair-only)
   --concurrency=N    Override config concurrency
   --contention-report=PATH  Inject historical hot-file report into LLM planner (default task-set only)
 `);
+}
+
+/**
+ * Copy a finished (or interrupted) run's workspace + holdout/ledger into a new runDir
+ * and execute only the repair phase + final scoring.
+ */
+async function runRepairOnly({ cli, config, runId, runDir, workspaceDir, metrics }) {
+  const fromId = cli.fromRun;
+  if (!fromId) throw new Error("--repair-only requires --from-run=SOURCE_RUN_ID");
+  if (!cli.runId) throw new Error("--repair-only requires --run-id=NEW_RUN_ID");
+  if (fromId === runId) throw new Error("--from-run must differ from --run-id");
+
+  const srcDir = path.join(ROOT, "runs", fromId);
+  const srcWs = path.join(srcDir, "workspace");
+  if (!existsSync(srcWs)) throw new Error(`--from-run missing workspace: ${srcWs}`);
+
+  if (existsSync(workspaceDir)) {
+    throw new Error(`--repair-only target workspace already exists: ${workspaceDir}`);
+  }
+
+  console.log(`[run] repair-only: copying ${fromId} → ${runId}`);
+  mkdirSync(runDir, { recursive: true });
+  cpSync(srcWs, workspaceDir, { recursive: true });
+
+  for (const name of ["holdout.json", "ledger.json", "tasks.json"]) {
+    const src = path.join(srcDir, name);
+    if (existsSync(src)) {
+      cpSync(src, path.join(runDir, name));
+    }
+  }
+  if (!existsSync(holdoutFilePath(runDir))) {
+    throw new Error(`--from-run missing holdout.json (required to preserve split): ${srcDir}`);
+  }
+
+  // Fresh progress for repair-only segment (tasks marked done; phase=global_repair).
+  let tasks = [];
+  try {
+    tasks = JSON.parse(readFileSync(path.join(runDir, "tasks.json"), "utf8"));
+  } catch {
+    tasks = [];
+  }
+  const progress = createInitialProgress({
+    runId,
+    fingerprint: {
+      task_set: cli.taskSet,
+      coordination_mode: config.coordination ? cli.coordMode : "none",
+      quick: false,
+      serial: false,
+      repair_only: true,
+      from_run: fromId,
+    },
+    tasks,
+  });
+  for (const t of tasks) {
+    if (t?.id) progress.tasks[t.id] = "done";
+  }
+  progress.phase = "global_repair";
+  progress.global_repair_rounds_done = 0;
+  progress.generalization_rounds_done = 0;
+  saveProgress(runDir, progress);
+
+  metrics.setMeta({
+    repair_only: true,
+    from_run: fromId,
+    resumed: false,
+    planner_source: "repair-only-copy",
+  });
+
+  healWorkspace(workspaceDir);
+  ensureBuilt(workspaceDir);
+
+  markPhase(runDir, progress, "global_repair");
+  await runRepairPhase({
+    workspaceDir,
+    config,
+    runDir,
+    coordMode: cli.coordMode,
+    metrics,
+    progress,
+    ensureBuilt,
+  });
+
+  const hoFile = holdoutFilePath(runDir);
+  const visibleScored = scoreScope(workspaceDir, path.join(runDir, "score-visible.json"), {
+    holdoutFile: hoFile,
+    holdoutMode: "exclude",
+    maxFailures: 600,
+  });
+  const holdoutScored = scoreScope(workspaceDir, path.join(runDir, "score-holdout.json"), {
+    holdoutFile: hoFile,
+    holdoutMode: "only",
+    maxFailures: 600,
+  });
+  const finalScored = scoreScope(workspaceDir, path.join(runDir, "score-final.json"), {
+    holdoutMode: "include",
+    maxFailures: 600,
+  });
+  metrics.recordScore({ phase: "final", ...finalScored.report });
+
+  const holdoutGapPp = ((visibleScored.report.rate || 0) - (holdoutScored.report.rate || 0)) * 100;
+  const overfitAlarm = holdoutGapPp > (config.holdout?.alarmPp ?? 5);
+  if (overfitAlarm) {
+    console.warn(`[run] OVERFIT ALARM: holdout_gap_pp=${holdoutGapPp.toFixed(1)}`);
+  }
+
+  const oracleHits = scanForOracleLiterals(workspaceDir, loadExamples());
+  if (oracleHits.length) {
+    console.warn(`[run] oracle literal hits: ${oracleHits.length}`);
+  }
+
+  const ledger = loadLedger(runDir);
+  updateFromReport(ledger, finalScored.report, "final");
+  saveLedger(runDir, ledger);
+
+  const agentCalls = metrics.data.agent_calls || [];
+  const metricsPath = metrics.finish({
+    commits: commitCount(workspaceDir),
+    loc: countLoc(workspaceDir),
+    final_score: finalScored.report,
+    visible_score: visibleScored.report,
+    holdout_score: holdoutScored.report,
+    holdout_gap_pp: holdoutGapPp,
+    overfit_alarm: overfitAlarm,
+    oracle_literal_hits: oracleHits,
+    tasks_done: tasks.length,
+    churn: computeChurn(workspaceDir),
+    global_repair_time_ms: agentCalls
+      .filter((c) => c.role === "global-repair" || c.role === "repair" || c.role === "repair-candidate" || c.role === "repair-strong")
+      .reduce((s, c) => s + (c.elapsedMs || 0), 0),
+  });
+  markPhase(runDir, progress, "finished");
+
+  console.log(`[run] done metrics=${metricsPath}`);
+  console.log(`[run] pass rate ${(finalScored.report.rate * 100).toFixed(1)}% (${finalScored.report.passed}/${finalScored.report.total})`);
+  console.log(`[run] visible=${(visibleScored.report.rate * 100).toFixed(1)}% holdout=${(holdoutScored.report.rate * 100).toFixed(1)}% gap=${holdoutGapPp.toFixed(1)}pp`);
+  console.log(`[run] merge_conflicts=${metrics.data.merge_conflict_count} scope_violations=${metrics.data.scope_violation_count} loc=${countLoc(workspaceDir)}`);
 }
 
 /**
@@ -782,6 +925,12 @@ async function main() {
   if (cli.resume && cli.mock) {
     throw new Error("--resume cannot be combined with --mock");
   }
+  if (cli.repairOnly && cli.resume) {
+    throw new Error("--repair-only cannot be combined with --resume");
+  }
+  if (cli.repairOnly && cli.mock) {
+    throw new Error("--repair-only cannot be combined with --mock");
+  }
 
   const runId = cli.runId || new Date().toISOString().replace(/[:.]/g, "-");
   const runDir = path.join(ROOT, "runs", runId);
@@ -809,7 +958,12 @@ async function main() {
     task_set: cli.taskSet,
   });
 
-  console.log(`[run] id=${runId} coordination=${config.coordination} taskSet=${cli.taskSet} mock=${config.mock} resume=${cli.resume}`);
+  console.log(`[run] id=${runId} coordination=${config.coordination} taskSet=${cli.taskSet} mock=${config.mock} resume=${cli.resume} repairOnly=${cli.repairOnly}`);
+
+  if (cli.repairOnly) {
+    await runRepairOnly({ cli, config, runId, runDir, workspaceDir, metrics });
+    return;
+  }
 
   let tasks;
   let progress = null;

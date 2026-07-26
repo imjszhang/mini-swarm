@@ -3,7 +3,8 @@
     "planner": "composer-2.5-fast",
     "worker": "composer-2.5-fast",
     "merger": "composer-2.5-fast",
-    "reviewer": "composer-2.5-fast"
+    "reviewer": "composer-2.5-fast",
+    "strong": "cursor-grok-4.5-high-fast"
   },
   "concurrency": 2,
   "coordination": false,
@@ -29,8 +30,21 @@
     "maxClusters": 8,
     "candidates": 2,
     "minGainItems": 1,
-    "maxPhaseMinutes": 90,
-    "stuckThreshold": 2
+    "maxPhaseMinutes": 240,
+    "stuckThreshold": 2,
+    "plateauRounds": 2,
+    "rung3Enabled": true,
+    "decomposeThreshold": 12,
+    "rejectSuspicious": false,
+    "genExamples": {
+      "seed": "v12",
+      "count": 300,
+      "path": "spec/gen-examples-v12.json"
+    },
+    "generalization": {
+      "maxRounds": 3,
+      "plateauRounds": 2
+    }
   },
   "guideMaxLines": 80,
   "agentCommand": "cursor-agent"

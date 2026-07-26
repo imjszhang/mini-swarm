@@ -1,0 +1,2206 @@
+{
+  "started_at": "2026-07-26T11:29:29.838Z",
+  "finished_at": "2026-07-26T12:08:09.085Z",
+  "coordination": false,
+  "planner_source": "repair-only-copy",
+  "commits": 47,
+  "merge_conflicts": [],
+  "scope_violations": [],
+  "cross_scope_changes": [],
+  "integration_fixes": [],
+  "score_feedbacks": [],
+  "worktree_syncs": [],
+  "merge_gate_rejections": [],
+  "global_repairs": [],
+  "repair_clusters": [],
+  "repair_stage_b": [
+    {
+      "round": 1,
+      "group": "Links",
+      "cluster_id": "blind-Links",
+      "rung": 1,
+      "accepted": true,
+      "gain_full": 5,
+      "elapsedMs": 749738,
+      "reason": "ok",
+      "at": "2026-07-26T11:44:16.158Z"
+    },
+    {
+      "round": 1,
+      "group": "Backslash escapes",
+      "cluster_id": "blind-Backslash_escapes",
+      "rung": 1,
+      "accepted": true,
+      "gain_full": 1,
+      "elapsedMs": 470829,
+      "reason": "ok",
+      "at": "2026-07-26T11:52:23.484Z"
+    },
+    {
+      "round": 1,
+      "group": "Indented code blocks",
+      "cluster_id": "blind-Indented_code_blocks",
+      "rung": 1,
+      "accepted": true,
+      "gain_full": 1,
+      "elapsedMs": 384829,
+      "reason": "ok",
+      "at": "2026-07-26T11:59:52.893Z"
+    },
+    {
+      "round": 1,
+      "group": "Images",
+      "cluster_id": "blind-Images",
+      "rung": 1,
+      "accepted": true,
+      "gain_full": 1,
+      "elapsedMs": 287645,
+      "reason": "ok",
+      "at": "2026-07-26T12:04:56.634Z"
+    }
+  ],
+  "overfit_reviews": [
+    {
+      "cluster_id": "blind-Links",
+      "verdict": "general",
+      "reasons": [
+        "referenceDefLabelValid and linkReferenceLabelContentValid enforce balanced nested brackets and reject empty labels, matching normative reference-label rules rather than fixture output",
+        "parseReferenceLabel depth tracking and the tryBracketNestedLinkFallback [[ guard are structural parsing fixes for nested/reference syntax, not exact-input special cases",
+        "Re-parsing link labels with parseInlineContent when /[*_]/ matches is a marker-based inline rule, not hard-coded markdown strings or expected HTML",
+        "No literal acceptance inputs, destinations, or HTML fragments appear in the diff"
+      ],
+      "at": "2026-07-26T11:44:16.158Z"
+    },
+    {
+      "cluster_id": "blind-Backslash_escapes",
+      "verdict": "general",
+      "reasons": [
+        "Uses the standard odd-count-of-backslashes rule to detect an escaped tab, not a fixture-specific input or expected output string.",
+        "Extends tab-stop expansion with escape-aware behavior, which is a normative preprocessing concern rather than a one-off branch for listed examples.",
+        "The helper counts consecutive backslashes generically at any index and applies the same parity check for every tab on the line."
+      ],
+      "at": "2026-07-26T11:52:23.484Z"
+    },
+    {
+      "cluster_id": "blind-Indented_code_blocks",
+      "verdict": "general",
+      "reasons": [
+        "修复在 src/blocks/indented.ts 与 src/blocks/lists.ts 中按 CommonMark 缩进代码块规则处理空白行边界：跳过仅作分隔的四空格空白行，保留块内带额外缩进的空白行为字面内容，并统一文档级与列表内解析逻辑。",
+        "未硬编码验收用例的 HTML 或完整 markdown 输入，也无针对 ex-0165 等失败 id 的分支。",
+        "diff 中的 full-score.json、list-fail.json 仅为评分产物，不构成对样例的过拟合；核心变更为结构性规则而非样例特判。"
+      ],
+      "at": "2026-07-26T11:59:52.893Z"
+    },
+    {
+      "cluster_id": "blind-Images",
+      "verdict": "general",
+      "reasons": [
+        "在图片入口 `![` 处增加 `isEscaped(text, pos)`，与同文件内链接解析（如 `[` 前的转义检查，约 770、808 行）及参考链接扫描（约 262 行）的既有模式一致",
+        "符合 CommonMark 转义规则：反斜杠转义后的 `!` 不应触发 inline 图片语法，属于规范级行为而非针对特定用例字符串",
+        "未硬编码期望 HTML、未对特定 markdown 输入做分支，仅补齐此前图片路径缺失的通用守卫"
+      ],
+      "at": "2026-07-26T12:04:56.634Z"
+    }
+  ],
+  "decompositions": [],
+  "gen_examples": {
+    "path": "D:\\github\\projects\\mini-swarm\\spec\\gen-examples-v12.json",
+    "exists": true
+  },
+  "adjudications": [],
+  "suspected_oracle_bugs": [],
+  "spec_ambiguities": [],
+  "unowned_requirements": [],
+  "oracle_literal_hits": [],
+  "visible_score": {
+    "scored_at": "2026-07-26T12:07:12.948Z",
+    "workspace": "D:\\github\\projects\\mini-swarm\\runs\\run-a-bare-v12-repair\\workspace",
+    "total": 439,
+    "passed": 439,
+    "rate": 1,
+    "by_group": {
+      "Tabs": {
+        "passed": 9,
+        "total": 9,
+        "rate": 1
+      },
+      "Backslash escapes": {
+        "passed": 11,
+        "total": 11,
+        "rate": 1
+      },
+      "Precedence": {
+        "passed": 1,
+        "total": 1,
+        "rate": 1
+      },
+      "Thematic breaks": {
+        "passed": 16,
+        "total": 16,
+        "rate": 1
+      },
+      "ATX headings": {
+        "passed": 15,
+        "total": 15,
+        "rate": 1
+      },
+      "Setext headings": {
+        "passed": 22,
+        "total": 22,
+        "rate": 1
+      },
+      "Indented code blocks": {
+        "passed": 10,
+        "total": 10,
+        "rate": 1
+      },
+      "Fenced code blocks": {
+        "passed": 24,
+        "total": 24,
+        "rate": 1
+      },
+      "Paragraphs": {
+        "passed": 6,
+        "total": 6,
+        "rate": 1
+      },
+      "Blank lines": {
+        "passed": 1,
+        "total": 1,
+        "rate": 1
+      },
+      "Block quotes": {
+        "passed": 21,
+        "total": 21,
+        "rate": 1
+      },
+      "List items": {
+        "passed": 40,
+        "total": 40,
+        "rate": 1
+      },
+      "Lists": {
+        "passed": 22,
+        "total": 22,
+        "rate": 1
+      },
+      "Code spans": {
+        "passed": 18,
+        "total": 18,
+        "rate": 1
+      },
+      "Emphasis and strong emphasis": {
+        "passed": 112,
+        "total": 112,
+        "rate": 1
+      },
+      "Links": {
+        "passed": 76,
+        "total": 76,
+        "rate": 1
+      },
+      "Images": {
+        "passed": 18,
+        "total": 18,
+        "rate": 1
+      },
+      "Hard line breaks": {
+        "passed": 12,
+        "total": 12,
+        "rate": 1
+      },
+      "Soft line breaks": {
+        "passed": 2,
+        "total": 2,
+        "rate": 1
+      },
+      "Textual content": {
+        "passed": 3,
+        "total": 3,
+        "rate": 1
+      }
+    },
+    "by_section": {
+      "Tabs": {
+        "passed": 9,
+        "total": 9,
+        "rate": 1
+      },
+      "Backslash escapes": {
+        "passed": 11,
+        "total": 11,
+        "rate": 1
+      },
+      "Precedence": {
+        "passed": 1,
+        "total": 1,
+        "rate": 1
+      },
+      "Thematic breaks": {
+        "passed": 16,
+        "total": 16,
+        "rate": 1
+      },
+      "ATX headings": {
+        "passed": 15,
+        "total": 15,
+        "rate": 1
+      },
+      "Setext headings": {
+        "passed": 22,
+        "total": 22,
+        "rate": 1
+      },
+      "Indented code blocks": {
+        "passed": 10,
+        "total": 10,
+        "rate": 1
+      },
+      "Fenced code blocks": {
+        "passed": 24,
+        "total": 24,
+        "rate": 1
+      },
+      "Paragraphs": {
+        "passed": 6,
+        "total": 6,
+        "rate": 1
+      },
+      "Blank lines": {
+        "passed": 1,
+        "total": 1,
+        "rate": 1
+      },
+      "Block quotes": {
+        "passed": 21,
+        "total": 21,
+        "rate": 1
+      },
+      "List items": {
+        "passed": 40,
+        "total": 40,
+        "rate": 1
+      },
+      "Lists": {
+        "passed": 22,
+        "total": 22,
+        "rate": 1
+      },
+      "Code spans": {
+        "passed": 18,
+        "total": 18,
+        "rate": 1
+      },
+      "Emphasis and strong emphasis": {
+        "passed": 112,
+        "total": 112,
+        "rate": 1
+      },
+      "Links": {
+        "passed": 76,
+        "total": 76,
+        "rate": 1
+      },
+      "Images": {
+        "passed": 18,
+        "total": 18,
+        "rate": 1
+      },
+      "Hard line breaks": {
+        "passed": 12,
+        "total": 12,
+        "rate": 1
+      },
+      "Soft line breaks": {
+        "passed": 2,
+        "total": 2,
+        "rate": 1
+      },
+      "Textual content": {
+        "passed": 3,
+        "total": 3,
+        "rate": 1
+      }
+    },
+    "failures": [],
+    "failure_count": 0,
+    "parse_error": false
+  },
+  "holdout_score": {
+    "scored_at": "2026-07-26T12:07:21.377Z",
+    "workspace": "D:\\github\\projects\\mini-swarm\\runs\\run-a-bare-v12-repair\\workspace",
+    "total": 86,
+    "passed": 86,
+    "rate": 1,
+    "by_group": {
+      "Tabs": {
+        "passed": 2,
+        "total": 2,
+        "rate": 1
+      },
+      "Backslash escapes": {
+        "passed": 2,
+        "total": 2,
+        "rate": 1
+      },
+      "Thematic breaks": {
+        "passed": 3,
+        "total": 3,
+        "rate": 1
+      },
+      "ATX headings": {
+        "passed": 3,
+        "total": 3,
+        "rate": 1
+      },
+      "Setext headings": {
+        "passed": 5,
+        "total": 5,
+        "rate": 1
+      },
+      "Indented code blocks": {
+        "passed": 2,
+        "total": 2,
+        "rate": 1
+      },
+      "Fenced code blocks": {
+        "passed": 5,
+        "total": 5,
+        "rate": 1
+      },
+      "Paragraphs": {
+        "passed": 2,
+        "total": 2,
+        "rate": 1
+      },
+      "Block quotes": {
+        "passed": 4,
+        "total": 4,
+        "rate": 1
+      },
+      "List items": {
+        "passed": 8,
+        "total": 8,
+        "rate": 1
+      },
+      "Lists": {
+        "passed": 5,
+        "total": 5,
+        "rate": 1
+      },
+      "Code spans": {
+        "passed": 4,
+        "total": 4,
+        "rate": 1
+      },
+      "Emphasis and strong emphasis": {
+        "passed": 20,
+        "total": 20,
+        "rate": 1
+      },
+      "Links": {
+        "passed": 14,
+        "total": 14,
+        "rate": 1
+      },
+      "Images": {
+        "passed": 4,
+        "total": 4,
+        "rate": 1
+      },
+      "Hard line breaks": {
+        "passed": 3,
+        "total": 3,
+        "rate": 1
+      }
+    },
+    "by_section": {
+      "Tabs": {
+        "passed": 2,
+        "total": 2,
+        "rate": 1
+      },
+      "Backslash escapes": {
+        "passed": 2,
+        "total": 2,
+        "rate": 1
+      },
+      "Thematic breaks": {
+        "passed": 3,
+        "total": 3,
+        "rate": 1
+      },
+      "ATX headings": {
+        "passed": 3,
+        "total": 3,
+        "rate": 1
+      },
+      "Setext headings": {
+        "passed": 5,
+        "total": 5,
+        "rate": 1
+      },
+      "Indented code blocks": {
+        "passed": 2,
+        "total": 2,
+        "rate": 1
+      },
+      "Fenced code blocks": {
+        "passed": 5,
+        "total": 5,
+        "rate": 1
+      },
+      "Paragraphs": {
+        "passed": 2,
+        "total": 2,
+        "rate": 1
+      },
+      "Block quotes": {
+        "passed": 4,
+        "total": 4,
+        "rate": 1
+      },
+      "List items": {
+        "passed": 8,
+        "total": 8,
+        "rate": 1
+      },
+      "Lists": {
+        "passed": 5,
+        "total": 5,
+        "rate": 1
+      },
+      "Code spans": {
+        "passed": 4,
+        "total": 4,
+        "rate": 1
+      },
+      "Emphasis and strong emphasis": {
+        "passed": 20,
+        "total": 20,
+        "rate": 1
+      },
+      "Links": {
+        "passed": 14,
+        "total": 14,
+        "rate": 1
+      },
+      "Images": {
+        "passed": 4,
+        "total": 4,
+        "rate": 1
+      },
+      "Hard line breaks": {
+        "passed": 3,
+        "total": 3,
+        "rate": 1
+      }
+    },
+    "failures": [],
+    "failure_count": 0,
+    "parse_error": false
+  },
+  "holdout_gap_pp": 0,
+  "overfit_alarm": false,
+  "adjudication_parse_failures": 0,
+  "merge_conflict_count": 0,
+  "scope_violation_count": 0,
+  "cross_scope_change_count": 0,
+  "integration_fix_count": 0,
+  "score_feedback_count": 0,
+  "worktree_sync_count": 0,
+  "worktree_sync_conflict_count": 0,
+  "merge_gate_rejection_count": 0,
+  "global_repair_count": 0,
+  "conflict_count": 0,
+  "tasks": [],
+  "score_curve": [
+    {
+      "phase": "repair-before-1",
+      "scored_at": "2026-07-26T11:30:27.841Z",
+      "workspace": "D:\\github\\projects\\mini-swarm\\runs\\run-a-bare-v12-repair\\workspace",
+      "total": 439,
+      "passed": 439,
+      "rate": 1,
+      "by_group": {
+        "Tabs": {
+          "passed": 9,
+          "total": 9,
+          "rate": 1
+        },
+        "Backslash escapes": {
+          "passed": 11,
+          "total": 11,
+          "rate": 1
+        },
+        "Precedence": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Thematic breaks": {
+          "passed": 16,
+          "total": 16,
+          "rate": 1
+        },
+        "ATX headings": {
+          "passed": 15,
+          "total": 15,
+          "rate": 1
+        },
+        "Setext headings": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Indented code blocks": {
+          "passed": 10,
+          "total": 10,
+          "rate": 1
+        },
+        "Fenced code blocks": {
+          "passed": 24,
+          "total": 24,
+          "rate": 1
+        },
+        "Paragraphs": {
+          "passed": 6,
+          "total": 6,
+          "rate": 1
+        },
+        "Blank lines": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Block quotes": {
+          "passed": 21,
+          "total": 21,
+          "rate": 1
+        },
+        "List items": {
+          "passed": 40,
+          "total": 40,
+          "rate": 1
+        },
+        "Lists": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Code spans": {
+          "passed": 18,
+          "total": 18,
+          "rate": 1
+        },
+        "Emphasis and strong emphasis": {
+          "passed": 112,
+          "total": 112,
+          "rate": 1
+        },
+        "Links": {
+          "passed": 76,
+          "total": 76,
+          "rate": 1
+        },
+        "Images": {
+          "passed": 18,
+          "total": 18,
+          "rate": 1
+        },
+        "Hard line breaks": {
+          "passed": 12,
+          "total": 12,
+          "rate": 1
+        },
+        "Soft line breaks": {
+          "passed": 2,
+          "total": 2,
+          "rate": 1
+        },
+        "Textual content": {
+          "passed": 3,
+          "total": 3,
+          "rate": 1
+        }
+      },
+      "by_section": {
+        "Tabs": {
+          "passed": 9,
+          "total": 9,
+          "rate": 1
+        },
+        "Backslash escapes": {
+          "passed": 11,
+          "total": 11,
+          "rate": 1
+        },
+        "Precedence": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Thematic breaks": {
+          "passed": 16,
+          "total": 16,
+          "rate": 1
+        },
+        "ATX headings": {
+          "passed": 15,
+          "total": 15,
+          "rate": 1
+        },
+        "Setext headings": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Indented code blocks": {
+          "passed": 10,
+          "total": 10,
+          "rate": 1
+        },
+        "Fenced code blocks": {
+          "passed": 24,
+          "total": 24,
+          "rate": 1
+        },
+        "Paragraphs": {
+          "passed": 6,
+          "total": 6,
+          "rate": 1
+        },
+        "Blank lines": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Block quotes": {
+          "passed": 21,
+          "total": 21,
+          "rate": 1
+        },
+        "List items": {
+          "passed": 40,
+          "total": 40,
+          "rate": 1
+        },
+        "Lists": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Code spans": {
+          "passed": 18,
+          "total": 18,
+          "rate": 1
+        },
+        "Emphasis and strong emphasis": {
+          "passed": 112,
+          "total": 112,
+          "rate": 1
+        },
+        "Links": {
+          "passed": 76,
+          "total": 76,
+          "rate": 1
+        },
+        "Images": {
+          "passed": 18,
+          "total": 18,
+          "rate": 1
+        },
+        "Hard line breaks": {
+          "passed": 12,
+          "total": 12,
+          "rate": 1
+        },
+        "Soft line breaks": {
+          "passed": 2,
+          "total": 2,
+          "rate": 1
+        },
+        "Textual content": {
+          "passed": 3,
+          "total": 3,
+          "rate": 1
+        }
+      },
+      "failures": [],
+      "failure_count": 0,
+      "parse_error": false,
+      "at": "2026-07-26T11:30:27.854Z"
+    },
+    {
+      "phase": "global-before-1",
+      "scored_at": "2026-07-26T11:30:27.841Z",
+      "workspace": "D:\\github\\projects\\mini-swarm\\runs\\run-a-bare-v12-repair\\workspace",
+      "total": 439,
+      "passed": 439,
+      "rate": 1,
+      "by_group": {
+        "Tabs": {
+          "passed": 9,
+          "total": 9,
+          "rate": 1
+        },
+        "Backslash escapes": {
+          "passed": 11,
+          "total": 11,
+          "rate": 1
+        },
+        "Precedence": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Thematic breaks": {
+          "passed": 16,
+          "total": 16,
+          "rate": 1
+        },
+        "ATX headings": {
+          "passed": 15,
+          "total": 15,
+          "rate": 1
+        },
+        "Setext headings": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Indented code blocks": {
+          "passed": 10,
+          "total": 10,
+          "rate": 1
+        },
+        "Fenced code blocks": {
+          "passed": 24,
+          "total": 24,
+          "rate": 1
+        },
+        "Paragraphs": {
+          "passed": 6,
+          "total": 6,
+          "rate": 1
+        },
+        "Blank lines": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Block quotes": {
+          "passed": 21,
+          "total": 21,
+          "rate": 1
+        },
+        "List items": {
+          "passed": 40,
+          "total": 40,
+          "rate": 1
+        },
+        "Lists": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Code spans": {
+          "passed": 18,
+          "total": 18,
+          "rate": 1
+        },
+        "Emphasis and strong emphasis": {
+          "passed": 112,
+          "total": 112,
+          "rate": 1
+        },
+        "Links": {
+          "passed": 76,
+          "total": 76,
+          "rate": 1
+        },
+        "Images": {
+          "passed": 18,
+          "total": 18,
+          "rate": 1
+        },
+        "Hard line breaks": {
+          "passed": 12,
+          "total": 12,
+          "rate": 1
+        },
+        "Soft line breaks": {
+          "passed": 2,
+          "total": 2,
+          "rate": 1
+        },
+        "Textual content": {
+          "passed": 3,
+          "total": 3,
+          "rate": 1
+        }
+      },
+      "by_section": {
+        "Tabs": {
+          "passed": 9,
+          "total": 9,
+          "rate": 1
+        },
+        "Backslash escapes": {
+          "passed": 11,
+          "total": 11,
+          "rate": 1
+        },
+        "Precedence": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Thematic breaks": {
+          "passed": 16,
+          "total": 16,
+          "rate": 1
+        },
+        "ATX headings": {
+          "passed": 15,
+          "total": 15,
+          "rate": 1
+        },
+        "Setext headings": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Indented code blocks": {
+          "passed": 10,
+          "total": 10,
+          "rate": 1
+        },
+        "Fenced code blocks": {
+          "passed": 24,
+          "total": 24,
+          "rate": 1
+        },
+        "Paragraphs": {
+          "passed": 6,
+          "total": 6,
+          "rate": 1
+        },
+        "Blank lines": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Block quotes": {
+          "passed": 21,
+          "total": 21,
+          "rate": 1
+        },
+        "List items": {
+          "passed": 40,
+          "total": 40,
+          "rate": 1
+        },
+        "Lists": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Code spans": {
+          "passed": 18,
+          "total": 18,
+          "rate": 1
+        },
+        "Emphasis and strong emphasis": {
+          "passed": 112,
+          "total": 112,
+          "rate": 1
+        },
+        "Links": {
+          "passed": 76,
+          "total": 76,
+          "rate": 1
+        },
+        "Images": {
+          "passed": 18,
+          "total": 18,
+          "rate": 1
+        },
+        "Hard line breaks": {
+          "passed": 12,
+          "total": 12,
+          "rate": 1
+        },
+        "Soft line breaks": {
+          "passed": 2,
+          "total": 2,
+          "rate": 1
+        },
+        "Textual content": {
+          "passed": 3,
+          "total": 3,
+          "rate": 1
+        }
+      },
+      "failures": [],
+      "failure_count": 0,
+      "parse_error": false,
+      "at": "2026-07-26T11:30:27.854Z"
+    },
+    {
+      "phase": "stageb-before-1",
+      "scored_at": "2026-07-26T11:31:21.341Z",
+      "workspace": "D:\\github\\projects\\mini-swarm\\runs\\run-a-bare-v12-repair\\workspace",
+      "total": 525,
+      "passed": 517,
+      "rate": 0.9847619047619047,
+      "by_group": {
+        "Tabs": {
+          "passed": 11,
+          "total": 11,
+          "rate": 1
+        },
+        "Backslash escapes": {
+          "passed": 12,
+          "total": 13,
+          "rate": 0.9230769230769231
+        },
+        "Precedence": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Thematic breaks": {
+          "passed": 19,
+          "total": 19,
+          "rate": 1
+        },
+        "ATX headings": {
+          "passed": 18,
+          "total": 18,
+          "rate": 1
+        },
+        "Setext headings": {
+          "passed": 27,
+          "total": 27,
+          "rate": 1
+        },
+        "Indented code blocks": {
+          "passed": 11,
+          "total": 12,
+          "rate": 0.9166666666666666
+        },
+        "Fenced code blocks": {
+          "passed": 29,
+          "total": 29,
+          "rate": 1
+        },
+        "Paragraphs": {
+          "passed": 8,
+          "total": 8,
+          "rate": 1
+        },
+        "Blank lines": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Block quotes": {
+          "passed": 25,
+          "total": 25,
+          "rate": 1
+        },
+        "List items": {
+          "passed": 48,
+          "total": 48,
+          "rate": 1
+        },
+        "Lists": {
+          "passed": 27,
+          "total": 27,
+          "rate": 1
+        },
+        "Code spans": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Emphasis and strong emphasis": {
+          "passed": 132,
+          "total": 132,
+          "rate": 1
+        },
+        "Links": {
+          "passed": 85,
+          "total": 90,
+          "rate": 0.9444444444444444
+        },
+        "Images": {
+          "passed": 21,
+          "total": 22,
+          "rate": 0.9545454545454546
+        },
+        "Hard line breaks": {
+          "passed": 15,
+          "total": 15,
+          "rate": 1
+        },
+        "Soft line breaks": {
+          "passed": 2,
+          "total": 2,
+          "rate": 1
+        },
+        "Textual content": {
+          "passed": 3,
+          "total": 3,
+          "rate": 1
+        }
+      },
+      "by_section": {
+        "Tabs": {
+          "passed": 11,
+          "total": 11,
+          "rate": 1
+        },
+        "Backslash escapes": {
+          "passed": 12,
+          "total": 13,
+          "rate": 0.9230769230769231
+        },
+        "Precedence": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Thematic breaks": {
+          "passed": 19,
+          "total": 19,
+          "rate": 1
+        },
+        "ATX headings": {
+          "passed": 18,
+          "total": 18,
+          "rate": 1
+        },
+        "Setext headings": {
+          "passed": 27,
+          "total": 27,
+          "rate": 1
+        },
+        "Indented code blocks": {
+          "passed": 11,
+          "total": 12,
+          "rate": 0.9166666666666666
+        },
+        "Fenced code blocks": {
+          "passed": 29,
+          "total": 29,
+          "rate": 1
+        },
+        "Paragraphs": {
+          "passed": 8,
+          "total": 8,
+          "rate": 1
+        },
+        "Blank lines": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Block quotes": {
+          "passed": 25,
+          "total": 25,
+          "rate": 1
+        },
+        "List items": {
+          "passed": 48,
+          "total": 48,
+          "rate": 1
+        },
+        "Lists": {
+          "passed": 27,
+          "total": 27,
+          "rate": 1
+        },
+        "Code spans": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Emphasis and strong emphasis": {
+          "passed": 132,
+          "total": 132,
+          "rate": 1
+        },
+        "Links": {
+          "passed": 85,
+          "total": 90,
+          "rate": 0.9444444444444444
+        },
+        "Images": {
+          "passed": 21,
+          "total": 22,
+          "rate": 0.9545454545454546
+        },
+        "Hard line breaks": {
+          "passed": 15,
+          "total": 15,
+          "rate": 1
+        },
+        "Soft line breaks": {
+          "passed": 2,
+          "total": 2,
+          "rate": 1
+        },
+        "Textual content": {
+          "passed": 3,
+          "total": 3,
+          "rate": 1
+        }
+      },
+      "failures": [
+        {
+          "id": "ex-0013",
+          "group": "Backslash escapes",
+          "reason": "output mismatch",
+          "input": "\\\t\\A\\a\\ \\3\\φ\\«",
+          "expected": "<p>\\\t\\A\\a\\ \\3\\φ\\«</p>",
+          "actual": "<p>\\   \\A\\a\\ \\3\\φ\\«</p>"
+        },
+        {
+          "id": "ex-0100",
+          "group": "Indented code blocks",
+          "reason": "output mismatch",
+          "input": "\n    \n    foo\n    \n",
+          "expected": "<pre><code>foo\n</code></pre>",
+          "actual": "<pre><code>foo\n\n</code></pre>"
+        },
+        {
+          "id": "ex-0428",
+          "group": "Links",
+          "reason": "output mismatch",
+          "input": "[link *foo **bar** `#`*](/uri)",
+          "expected": "<p><a href=\"/uri\">link <em>foo <strong>bar</strong> <code>#</code></em></a></p>",
+          "actual": "<p><a href=\"/uri\">link *foo <strong>bar</strong> <code>#</code>*</a></p>"
+        },
+        {
+          "id": "ex-0458",
+          "group": "Links",
+          "reason": "output mismatch",
+          "input": "[foo][ref[]\n\n[ref[]: /uri",
+          "expected": "<p>[foo][ref[]</p>\n<p>[ref[]: /uri</p>",
+          "actual": "<p><a href=\"/uri\">foo</a></p>"
+        },
+        {
+          "id": "ex-0463",
+          "group": "Links",
+          "reason": "output mismatch",
+          "input": "[]\n\n[]: /uri",
+          "expected": "<p>[]</p>\n<p>[]: /uri</p>",
+          "actual": "<p><a href=\"/uri\"></a></p>"
+        },
+        {
+          "id": "ex-0470",
+          "group": "Links",
+          "reason": "output mismatch",
+          "input": "[*foo* bar]\n\n[*foo* bar]: /url \"title\"",
+          "expected": "<p><a href=\"/url\" title=\"title\"><em>foo</em> bar</a></p>",
+          "actual": "<p><a href=\"/url\" title=\"title\">*foo* bar</a></p>"
+        },
+        {
+          "id": "ex-0471",
+          "group": "Links",
+          "reason": "output mismatch",
+          "input": "[[*foo* bar]]\n\n[*foo* bar]: /url \"title\"",
+          "expected": "<p>[<a href=\"/url\" title=\"title\"><em>foo</em> bar</a>]</p>",
+          "actual": "<p>[[<em>foo</em> bar]]</p>"
+        },
+        {
+          "id": "ex-0505",
+          "group": "Images",
+          "reason": "output mismatch",
+          "input": "\\![foo]\n\n[foo]: /url \"title\"",
+          "expected": "<p>!<a href=\"/url\" title=\"title\">foo</a></p>",
+          "actual": "<p>\\<img src=\"/url\" alt=\"foo\" title=\"title\" /></p>"
+        }
+      ],
+      "failure_count": 8,
+      "parse_error": false,
+      "at": "2026-07-26T11:31:21.364Z"
+    },
+    {
+      "phase": "stageb-after-1",
+      "scored_at": "2026-07-26T12:05:41.838Z",
+      "workspace": "D:\\github\\projects\\mini-swarm\\runs\\run-a-bare-v12-repair\\workspace",
+      "total": 525,
+      "passed": 525,
+      "rate": 1,
+      "by_group": {
+        "Tabs": {
+          "passed": 11,
+          "total": 11,
+          "rate": 1
+        },
+        "Backslash escapes": {
+          "passed": 13,
+          "total": 13,
+          "rate": 1
+        },
+        "Precedence": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Thematic breaks": {
+          "passed": 19,
+          "total": 19,
+          "rate": 1
+        },
+        "ATX headings": {
+          "passed": 18,
+          "total": 18,
+          "rate": 1
+        },
+        "Setext headings": {
+          "passed": 27,
+          "total": 27,
+          "rate": 1
+        },
+        "Indented code blocks": {
+          "passed": 12,
+          "total": 12,
+          "rate": 1
+        },
+        "Fenced code blocks": {
+          "passed": 29,
+          "total": 29,
+          "rate": 1
+        },
+        "Paragraphs": {
+          "passed": 8,
+          "total": 8,
+          "rate": 1
+        },
+        "Blank lines": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Block quotes": {
+          "passed": 25,
+          "total": 25,
+          "rate": 1
+        },
+        "List items": {
+          "passed": 48,
+          "total": 48,
+          "rate": 1
+        },
+        "Lists": {
+          "passed": 27,
+          "total": 27,
+          "rate": 1
+        },
+        "Code spans": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Emphasis and strong emphasis": {
+          "passed": 132,
+          "total": 132,
+          "rate": 1
+        },
+        "Links": {
+          "passed": 90,
+          "total": 90,
+          "rate": 1
+        },
+        "Images": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Hard line breaks": {
+          "passed": 15,
+          "total": 15,
+          "rate": 1
+        },
+        "Soft line breaks": {
+          "passed": 2,
+          "total": 2,
+          "rate": 1
+        },
+        "Textual content": {
+          "passed": 3,
+          "total": 3,
+          "rate": 1
+        }
+      },
+      "by_section": {
+        "Tabs": {
+          "passed": 11,
+          "total": 11,
+          "rate": 1
+        },
+        "Backslash escapes": {
+          "passed": 13,
+          "total": 13,
+          "rate": 1
+        },
+        "Precedence": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Thematic breaks": {
+          "passed": 19,
+          "total": 19,
+          "rate": 1
+        },
+        "ATX headings": {
+          "passed": 18,
+          "total": 18,
+          "rate": 1
+        },
+        "Setext headings": {
+          "passed": 27,
+          "total": 27,
+          "rate": 1
+        },
+        "Indented code blocks": {
+          "passed": 12,
+          "total": 12,
+          "rate": 1
+        },
+        "Fenced code blocks": {
+          "passed": 29,
+          "total": 29,
+          "rate": 1
+        },
+        "Paragraphs": {
+          "passed": 8,
+          "total": 8,
+          "rate": 1
+        },
+        "Blank lines": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Block quotes": {
+          "passed": 25,
+          "total": 25,
+          "rate": 1
+        },
+        "List items": {
+          "passed": 48,
+          "total": 48,
+          "rate": 1
+        },
+        "Lists": {
+          "passed": 27,
+          "total": 27,
+          "rate": 1
+        },
+        "Code spans": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Emphasis and strong emphasis": {
+          "passed": 132,
+          "total": 132,
+          "rate": 1
+        },
+        "Links": {
+          "passed": 90,
+          "total": 90,
+          "rate": 1
+        },
+        "Images": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Hard line breaks": {
+          "passed": 15,
+          "total": 15,
+          "rate": 1
+        },
+        "Soft line breaks": {
+          "passed": 2,
+          "total": 2,
+          "rate": 1
+        },
+        "Textual content": {
+          "passed": 3,
+          "total": 3,
+          "rate": 1
+        }
+      },
+      "failures": [],
+      "failure_count": 0,
+      "parse_error": false,
+      "at": "2026-07-26T12:05:41.853Z"
+    },
+    {
+      "phase": "stageb-before-2",
+      "scored_at": "2026-07-26T12:06:33.263Z",
+      "workspace": "D:\\github\\projects\\mini-swarm\\runs\\run-a-bare-v12-repair\\workspace",
+      "total": 525,
+      "passed": 525,
+      "rate": 1,
+      "by_group": {
+        "Tabs": {
+          "passed": 11,
+          "total": 11,
+          "rate": 1
+        },
+        "Backslash escapes": {
+          "passed": 13,
+          "total": 13,
+          "rate": 1
+        },
+        "Precedence": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Thematic breaks": {
+          "passed": 19,
+          "total": 19,
+          "rate": 1
+        },
+        "ATX headings": {
+          "passed": 18,
+          "total": 18,
+          "rate": 1
+        },
+        "Setext headings": {
+          "passed": 27,
+          "total": 27,
+          "rate": 1
+        },
+        "Indented code blocks": {
+          "passed": 12,
+          "total": 12,
+          "rate": 1
+        },
+        "Fenced code blocks": {
+          "passed": 29,
+          "total": 29,
+          "rate": 1
+        },
+        "Paragraphs": {
+          "passed": 8,
+          "total": 8,
+          "rate": 1
+        },
+        "Blank lines": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Block quotes": {
+          "passed": 25,
+          "total": 25,
+          "rate": 1
+        },
+        "List items": {
+          "passed": 48,
+          "total": 48,
+          "rate": 1
+        },
+        "Lists": {
+          "passed": 27,
+          "total": 27,
+          "rate": 1
+        },
+        "Code spans": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Emphasis and strong emphasis": {
+          "passed": 132,
+          "total": 132,
+          "rate": 1
+        },
+        "Links": {
+          "passed": 90,
+          "total": 90,
+          "rate": 1
+        },
+        "Images": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Hard line breaks": {
+          "passed": 15,
+          "total": 15,
+          "rate": 1
+        },
+        "Soft line breaks": {
+          "passed": 2,
+          "total": 2,
+          "rate": 1
+        },
+        "Textual content": {
+          "passed": 3,
+          "total": 3,
+          "rate": 1
+        }
+      },
+      "by_section": {
+        "Tabs": {
+          "passed": 11,
+          "total": 11,
+          "rate": 1
+        },
+        "Backslash escapes": {
+          "passed": 13,
+          "total": 13,
+          "rate": 1
+        },
+        "Precedence": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Thematic breaks": {
+          "passed": 19,
+          "total": 19,
+          "rate": 1
+        },
+        "ATX headings": {
+          "passed": 18,
+          "total": 18,
+          "rate": 1
+        },
+        "Setext headings": {
+          "passed": 27,
+          "total": 27,
+          "rate": 1
+        },
+        "Indented code blocks": {
+          "passed": 12,
+          "total": 12,
+          "rate": 1
+        },
+        "Fenced code blocks": {
+          "passed": 29,
+          "total": 29,
+          "rate": 1
+        },
+        "Paragraphs": {
+          "passed": 8,
+          "total": 8,
+          "rate": 1
+        },
+        "Blank lines": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Block quotes": {
+          "passed": 25,
+          "total": 25,
+          "rate": 1
+        },
+        "List items": {
+          "passed": 48,
+          "total": 48,
+          "rate": 1
+        },
+        "Lists": {
+          "passed": 27,
+          "total": 27,
+          "rate": 1
+        },
+        "Code spans": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Emphasis and strong emphasis": {
+          "passed": 132,
+          "total": 132,
+          "rate": 1
+        },
+        "Links": {
+          "passed": 90,
+          "total": 90,
+          "rate": 1
+        },
+        "Images": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Hard line breaks": {
+          "passed": 15,
+          "total": 15,
+          "rate": 1
+        },
+        "Soft line breaks": {
+          "passed": 2,
+          "total": 2,
+          "rate": 1
+        },
+        "Textual content": {
+          "passed": 3,
+          "total": 3,
+          "rate": 1
+        }
+      },
+      "failures": [],
+      "failure_count": 0,
+      "parse_error": false,
+      "at": "2026-07-26T12:06:33.263Z"
+    },
+    {
+      "phase": "final",
+      "scored_at": "2026-07-26T12:08:08.833Z",
+      "workspace": "D:\\github\\projects\\mini-swarm\\runs\\run-a-bare-v12-repair\\workspace",
+      "total": 525,
+      "passed": 525,
+      "rate": 1,
+      "by_group": {
+        "Tabs": {
+          "passed": 11,
+          "total": 11,
+          "rate": 1
+        },
+        "Backslash escapes": {
+          "passed": 13,
+          "total": 13,
+          "rate": 1
+        },
+        "Precedence": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Thematic breaks": {
+          "passed": 19,
+          "total": 19,
+          "rate": 1
+        },
+        "ATX headings": {
+          "passed": 18,
+          "total": 18,
+          "rate": 1
+        },
+        "Setext headings": {
+          "passed": 27,
+          "total": 27,
+          "rate": 1
+        },
+        "Indented code blocks": {
+          "passed": 12,
+          "total": 12,
+          "rate": 1
+        },
+        "Fenced code blocks": {
+          "passed": 29,
+          "total": 29,
+          "rate": 1
+        },
+        "Paragraphs": {
+          "passed": 8,
+          "total": 8,
+          "rate": 1
+        },
+        "Blank lines": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Block quotes": {
+          "passed": 25,
+          "total": 25,
+          "rate": 1
+        },
+        "List items": {
+          "passed": 48,
+          "total": 48,
+          "rate": 1
+        },
+        "Lists": {
+          "passed": 27,
+          "total": 27,
+          "rate": 1
+        },
+        "Code spans": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Emphasis and strong emphasis": {
+          "passed": 132,
+          "total": 132,
+          "rate": 1
+        },
+        "Links": {
+          "passed": 90,
+          "total": 90,
+          "rate": 1
+        },
+        "Images": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Hard line breaks": {
+          "passed": 15,
+          "total": 15,
+          "rate": 1
+        },
+        "Soft line breaks": {
+          "passed": 2,
+          "total": 2,
+          "rate": 1
+        },
+        "Textual content": {
+          "passed": 3,
+          "total": 3,
+          "rate": 1
+        }
+      },
+      "by_section": {
+        "Tabs": {
+          "passed": 11,
+          "total": 11,
+          "rate": 1
+        },
+        "Backslash escapes": {
+          "passed": 13,
+          "total": 13,
+          "rate": 1
+        },
+        "Precedence": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Thematic breaks": {
+          "passed": 19,
+          "total": 19,
+          "rate": 1
+        },
+        "ATX headings": {
+          "passed": 18,
+          "total": 18,
+          "rate": 1
+        },
+        "Setext headings": {
+          "passed": 27,
+          "total": 27,
+          "rate": 1
+        },
+        "Indented code blocks": {
+          "passed": 12,
+          "total": 12,
+          "rate": 1
+        },
+        "Fenced code blocks": {
+          "passed": 29,
+          "total": 29,
+          "rate": 1
+        },
+        "Paragraphs": {
+          "passed": 8,
+          "total": 8,
+          "rate": 1
+        },
+        "Blank lines": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Block quotes": {
+          "passed": 25,
+          "total": 25,
+          "rate": 1
+        },
+        "List items": {
+          "passed": 48,
+          "total": 48,
+          "rate": 1
+        },
+        "Lists": {
+          "passed": 27,
+          "total": 27,
+          "rate": 1
+        },
+        "Code spans": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Emphasis and strong emphasis": {
+          "passed": 132,
+          "total": 132,
+          "rate": 1
+        },
+        "Links": {
+          "passed": 90,
+          "total": 90,
+          "rate": 1
+        },
+        "Images": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Hard line breaks": {
+          "passed": 15,
+          "total": 15,
+          "rate": 1
+        },
+        "Soft line breaks": {
+          "passed": 2,
+          "total": 2,
+          "rate": 1
+        },
+        "Textual content": {
+          "passed": 3,
+          "total": 3,
+          "rate": 1
+        }
+      },
+      "failures": [],
+      "failure_count": 0,
+      "parse_error": false,
+      "at": "2026-07-26T12:08:08.845Z"
+    }
+  ],
+  "agent_calls": [
+    {
+      "role": "repair",
+      "cluster_id": "blind-Links",
+      "ok": true,
+      "elapsedMs": 702749,
+      "at": "2026-07-26T11:43:05.272Z"
+    },
+    {
+      "role": "overfit-reviewer",
+      "cluster_id": "blind-Links",
+      "ok": true,
+      "elapsedMs": 24085,
+      "at": "2026-07-26T11:44:16.157Z"
+    },
+    {
+      "role": "repair",
+      "cluster_id": "blind-Backslash_escapes",
+      "ok": true,
+      "elapsedMs": 417841,
+      "at": "2026-07-26T11:51:14.311Z"
+    },
+    {
+      "role": "overfit-reviewer",
+      "cluster_id": "blind-Backslash_escapes",
+      "ok": true,
+      "elapsedMs": 16254,
+      "at": "2026-07-26T11:52:23.484Z"
+    },
+    {
+      "role": "repair",
+      "cluster_id": "blind-Indented_code_blocks",
+      "ok": true,
+      "elapsedMs": 334140,
+      "at": "2026-07-26T11:57:57.940Z"
+    },
+    {
+      "role": "overfit-reviewer",
+      "cluster_id": "blind-Indented_code_blocks",
+      "ok": true,
+      "elapsedMs": 64338,
+      "at": "2026-07-26T11:59:52.893Z"
+    },
+    {
+      "role": "repair",
+      "cluster_id": "blind-Images",
+      "ok": true,
+      "elapsedMs": 236949,
+      "at": "2026-07-26T12:03:50.211Z"
+    },
+    {
+      "role": "overfit-reviewer",
+      "cluster_id": "blind-Images",
+      "ok": true,
+      "elapsedMs": 15831,
+      "at": "2026-07-26T12:04:56.634Z"
+    }
+  ],
+  "loc": 4859,
+  "final_score": {
+    "scored_at": "2026-07-26T12:08:08.833Z",
+    "workspace": "D:\\github\\projects\\mini-swarm\\runs\\run-a-bare-v12-repair\\workspace",
+    "total": 525,
+    "passed": 525,
+    "rate": 1,
+    "by_group": {
+      "Tabs": {
+        "passed": 11,
+        "total": 11,
+        "rate": 1
+      },
+      "Backslash escapes": {
+        "passed": 13,
+        "total": 13,
+        "rate": 1
+      },
+      "Precedence": {
+        "passed": 1,
+        "total": 1,
+        "rate": 1
+      },
+      "Thematic breaks": {
+        "passed": 19,
+        "total": 19,
+        "rate": 1
+      },
+      "ATX headings": {
+        "passed": 18,
+        "total": 18,
+        "rate": 1
+      },
+      "Setext headings": {
+        "passed": 27,
+        "total": 27,
+        "rate": 1
+      },
+      "Indented code blocks": {
+        "passed": 12,
+        "total": 12,
+        "rate": 1
+      },
+      "Fenced code blocks": {
+        "passed": 29,
+        "total": 29,
+        "rate": 1
+      },
+      "Paragraphs": {
+        "passed": 8,
+        "total": 8,
+        "rate": 1
+      },
+      "Blank lines": {
+        "passed": 1,
+        "total": 1,
+        "rate": 1
+      },
+      "Block quotes": {
+        "passed": 25,
+        "total": 25,
+        "rate": 1
+      },
+      "List items": {
+        "passed": 48,
+        "total": 48,
+        "rate": 1
+      },
+      "Lists": {
+        "passed": 27,
+        "total": 27,
+        "rate": 1
+      },
+      "Code spans": {
+        "passed": 22,
+        "total": 22,
+        "rate": 1
+      },
+      "Emphasis and strong emphasis": {
+        "passed": 132,
+        "total": 132,
+        "rate": 1
+      },
+      "Links": {
+        "passed": 90,
+        "total": 90,
+        "rate": 1
+      },
+      "Images": {
+        "passed": 22,
+        "total": 22,
+        "rate": 1
+      },
+      "Hard line breaks": {
+        "passed": 15,
+        "total": 15,
+        "rate": 1
+      },
+      "Soft line breaks": {
+        "passed": 2,
+        "total": 2,
+        "rate": 1
+      },
+      "Textual content": {
+        "passed": 3,
+        "total": 3,
+        "rate": 1
+      }
+    },
+    "by_section": {
+      "Tabs": {
+        "passed": 11,
+        "total": 11,
+        "rate": 1
+      },
+      "Backslash escapes": {
+        "passed": 13,
+        "total": 13,
+        "rate": 1
+      },
+      "Precedence": {
+        "passed": 1,
+        "total": 1,
+        "rate": 1
+      },
+      "Thematic breaks": {
+        "passed": 19,
+        "total": 19,
+        "rate": 1
+      },
+      "ATX headings": {
+        "passed": 18,
+        "total": 18,
+        "rate": 1
+      },
+      "Setext headings": {
+        "passed": 27,
+        "total": 27,
+        "rate": 1
+      },
+      "Indented code blocks": {
+        "passed": 12,
+        "total": 12,
+        "rate": 1
+      },
+      "Fenced code blocks": {
+        "passed": 29,
+        "total": 29,
+        "rate": 1
+      },
+      "Paragraphs": {
+        "passed": 8,
+        "total": 8,
+        "rate": 1
+      },
+      "Blank lines": {
+        "passed": 1,
+        "total": 1,
+        "rate": 1
+      },
+      "Block quotes": {
+        "passed": 25,
+        "total": 25,
+        "rate": 1
+      },
+      "List items": {
+        "passed": 48,
+        "total": 48,
+        "rate": 1
+      },
+      "Lists": {
+        "passed": 27,
+        "total": 27,
+        "rate": 1
+      },
+      "Code spans": {
+        "passed": 22,
+        "total": 22,
+        "rate": 1
+      },
+      "Emphasis and strong emphasis": {
+        "passed": 132,
+        "total": 132,
+        "rate": 1
+      },
+      "Links": {
+        "passed": 90,
+        "total": 90,
+        "rate": 1
+      },
+      "Images": {
+        "passed": 22,
+        "total": 22,
+        "rate": 1
+      },
+      "Hard line breaks": {
+        "passed": 15,
+        "total": 15,
+        "rate": 1
+      },
+      "Soft line breaks": {
+        "passed": 2,
+        "total": 2,
+        "rate": 1
+      },
+      "Textual content": {
+        "passed": 3,
+        "total": 3,
+        "rate": 1
+      }
+    },
+    "failures": [],
+    "failure_count": 0,
+    "parse_error": false
+  },
+  "run_id": "run-a-bare-v12-repair",
+  "quick": false,
+  "serial": false,
+  "mock": false,
+  "models": {
+    "planner": "composer-2.5-fast",
+    "worker": "composer-2.5-fast",
+    "merger": "composer-2.5-fast",
+    "reviewer": "composer-2.5-fast",
+    "strong": "cursor-grok-4.5-high-fast"
+  },
+  "concurrency": 2,
+  "coordination_mode": "none",
+  "task_set": "contention",
+  "repair_only": true,
+  "from_run": "run-a-bare-contention-v11",
+  "resumed": false,
+  "repair_time_ms": 1691679,
+  "adjudication_time_ms": 0,
+  "strong_model_time_ms": 0,
+  "global_repair_time_ms": 1691679,
+  "phase_cost_curve": {
+    "pool": {
+      "agent_ms": 0,
+      "passed_delta": 0
+    },
+    "feedback": {
+      "agent_ms": 0,
+      "passed_delta": 0
+    },
+    "repair-rung1": {
+      "agent_ms": 1691679,
+      "passed_delta": 0
+    },
+    "repair-rung2": {
+      "agent_ms": 0,
+      "passed_delta": 0
+    },
+    "repair-rung3": {
+      "agent_ms": 0,
+      "passed_delta": 0
+    },
+    "repair-stage-b": {
+      "agent_ms": 1893041,
+      "passed_delta": 8
+    }
+  },
+  "tasks_done": 13,
+  "churn": {
+    "total_added": 5672,
+    "total_deleted": 508,
+    "churn_ratio": 0.08956276445698166
+  }
+}

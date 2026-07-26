@@ -1,11 +1,12 @@
 /**
- * v11 repair engine: ledger + adjudication + adaptive clustering +
- * monotonic changeset acceptance + best-of-N candidate search.
+ * v12 repair engine: Stage A (visible) + Stage B (blind generalization),
+ * ledger + adjudication + adaptive clustering + monotonic changeset acceptance +
+ * best-of-N + rung3 strong model + decompose + overfit review + lessons.
  *
  * Mechanism code: no task-specific vocabulary beyond opaque "group" labels
  * coming from the verifier facade.
  */
-import { mkdirSync } from "node:fs";
+import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import {
   abortMerge,
@@ -13,6 +14,7 @@ import {
   createWorktree,
   deleteBranchesByPrefix,
   findConflictMarkers,
+  getDiff,
   headSha,
   listTrackedFiles,
   mergeBranchNoFf,
@@ -29,14 +31,17 @@ import {
   saveLedger,
   updateFromReport,
 } from "./lib/ledger.mjs";
-import { markRepairRound } from "./lib/progress.mjs";
+import { markGeneralizationRound, markRepairRound } from "./lib/progress.mjs";
 import {
   buildAdjudicatePrompt,
   buildClusterPrompt,
+  buildDecomposePrompt,
+  buildOverfitReviewPrompt,
+  buildRepairBlindPrompt,
   buildRepairClusterPrompt,
 } from "./lib/prompts.mjs";
 import { projectRoot } from "./lib/config.mjs";
-import { getReferenceText, scoreScope } from "./lib/verifier.mjs";
+import { getReferenceText, loadExamples, scanForOracleLiterals, scoreScope } from "./lib/verifier.mjs";
 import { holdoutFilePath } from "./lib/holdout.mjs";
 import { spawnAgent } from "./runner.mjs";
 
@@ -47,6 +52,20 @@ function buildVerifyCmd(itemIds, holdoutFile) {
     "--workspace .",
     `--ids ${itemIds.join(",")}`,
   ];
+  if (holdoutFile) {
+    parts.push(`--holdout-file ${JSON.stringify(holdoutFile)}`, "--holdout-mode exclude");
+  }
+  return parts.join(" ");
+}
+
+function buildGroupVerifyCmd(group, holdoutFile, examplesFile = null) {
+  const scorer = path.join(projectRoot(), "scorer", "score.mjs");
+  const parts = [
+    `node ${JSON.stringify(scorer)}`,
+    "--workspace .",
+    `--sections ${JSON.stringify(group)}`,
+  ];
+  if (examplesFile) parts.push(`--examples ${JSON.stringify(examplesFile)}`);
   if (holdoutFile) {
     parts.push(`--holdout-file ${JSON.stringify(holdoutFile)}`, "--holdout-mode exclude");
   }
@@ -71,29 +90,121 @@ function failingIdSet(report) {
   return new Set((report.failures || []).map((f) => f.id));
 }
 
-/**
- * Accept when build ok, passed count did not drop, and no previously-passing
- * item became failing.
- */
 function acceptsChangeset(before, after) {
   if ((after.passed || 0) < (before.passed || 0)) return false;
   const beforeFail = failingIdSet(before);
   const afterFail = failingIdSet(after);
   for (const id of afterFail) {
-    if (!beforeFail.has(id)) return false; // regression of a previously-passing item
+    if (!beforeFail.has(id)) return false;
   }
   return true;
 }
 
 async function parseAgentJson(result, retryFn) {
-  let parsed = extractJsonObject(result.stdout || "");
+  // spawnAgent resolves { output, stderr } — never .stdout
+  let parsed = extractJsonObject(result.output || result.stdout || "");
   if (parsed) return parsed;
   if (retryFn) {
     const retry = await retryFn();
-    parsed = extractJsonObject(retry.stdout || "");
+    parsed = extractJsonObject(retry.output || retry.stdout || "");
     if (parsed) return parsed;
   }
   return null;
+}
+
+function lessonsPath(runDir) {
+  return path.join(runDir, "lessons.md");
+}
+
+function appendLesson(runDir, line) {
+  const p = lessonsPath(runDir);
+  if (!existsSync(p)) {
+    writeFileSync(p, "# Repair lessons (harness-generated)\n\n", "utf8");
+  }
+  appendFileSync(p, `${line}\n`, "utf8");
+}
+
+function recentLessons(runDir, n = 15) {
+  const p = lessonsPath(runDir);
+  if (!existsSync(p)) return "_None yet._";
+  const lines = readFileSync(p, "utf8")
+    .split("\n")
+    .map((l) => l.trim())
+    .filter((l) => l && !l.startsWith("#"));
+  return lines.slice(-n).join("\n") || "_None yet._";
+}
+
+function resolveGenExamplesPath(config) {
+  const rel = config.repair?.genExamples?.path || "spec/gen-examples-v12.json";
+  return path.isAbsolute(rel) ? rel : path.join(projectRoot(), rel);
+}
+
+function scoreVisible(workspaceDir, jsonOut, holdoutFile) {
+  return scoreScope(workspaceDir, jsonOut, {
+    holdoutFile,
+    holdoutMode: holdoutFile ? "exclude" : "include",
+    truncate: 2000,
+    maxFailures: 600,
+  });
+}
+
+function scoreFull(workspaceDir, jsonOut) {
+  return scoreScope(workspaceDir, jsonOut, {
+    holdoutMode: "include",
+    truncate: 2000,
+    maxFailures: 600,
+  });
+}
+
+async function runOverfitReview({
+  workspaceDir,
+  config,
+  runDir,
+  metrics,
+  checkpointSha,
+  clusterId,
+}) {
+  const diff = getDiff(workspaceDir, checkpointSha) || "";
+  const prompt = buildOverfitReviewPrompt({ diff });
+  const result = await spawnAgent({
+    role: "overfit-reviewer",
+    prompt,
+    cwd: workspaceDir,
+    config,
+    runDir,
+    logKey: `overfit-${String(clusterId).replace(/[^\w.-]+/g, "_")}`,
+    timeoutMs: Math.min((config.taskTimeoutMinutes || 20) * 60 * 1000, 10 * 60 * 1000),
+  });
+  metrics.recordAgentCall({
+    role: "overfit-reviewer",
+    cluster_id: clusterId,
+    ok: result.ok,
+    elapsedMs: result.elapsedMs,
+  });
+
+  let parsed = extractJsonObject(result.output || "");
+  if (!parsed) {
+    const entry = {
+      cluster_id: clusterId,
+      verdict: "general",
+      reasons: ["parse_fallback"],
+      at: new Date().toISOString(),
+    };
+    metrics.data.overfit_reviews.push(entry);
+    return entry;
+  }
+  const verdict = parsed.verdict === "suspicious" ? "suspicious" : "general";
+  const entry = {
+    cluster_id: clusterId,
+    verdict,
+    reasons: Array.isArray(parsed.reasons) ? parsed.reasons.map(String) : [],
+    at: new Date().toISOString(),
+  };
+  metrics.data.overfit_reviews.push(entry);
+  if (verdict === "suspicious") {
+    console.warn(`[repair] overfit review suspicious for ${clusterId}: ${entry.reasons.join("; ")}`);
+  }
+  return entry;
 }
 
 async function runAdjudication({
@@ -122,7 +233,7 @@ async function runAdjudication({
 
   const prompt = buildAdjudicatePrompt({ items: dossiers });
   const spawnOnce = () => spawnAgent({
-    role: "worker",
+    role: "adjudicator",
     prompt,
     cwd: workspaceDir,
     config,
@@ -196,7 +307,6 @@ async function buildClusters({
   const topGroups = repairCfg.topGroups ?? 3;
 
   const failing = (report.failures || []).filter((f) => repairableIds.includes(f.id));
-
   if (failing.length === 0) return [];
 
   if (failing.length > threshold) {
@@ -208,12 +318,9 @@ async function buildClusters({
     })).filter((c) => c.item_ids.length);
   }
 
-  const prompt = buildClusterPrompt({
-    failures: failing,
-    maxClusters,
-  });
+  const prompt = buildClusterPrompt({ failures: failing, maxClusters });
   const spawnOnce = () => spawnAgent({
-    role: "worker",
+    role: "cluster",
     prompt,
     cwd: workspaceDir,
     config,
@@ -266,8 +373,6 @@ async function buildClusters({
     if (clusters.length) return clusters;
   }
 
-  // Fallback: one cluster per group
-  metrics.data.adjudication_parse_failures = metrics.data.adjudication_parse_failures; // no-op keep field
   const byG = new Map();
   for (const f of failing) {
     const g = f.group || "default";
@@ -281,13 +386,151 @@ async function buildClusters({
   }));
 }
 
-function scoreVisible(workspaceDir, jsonOut, holdoutFile) {
-  return scoreScope(workspaceDir, jsonOut, {
-    holdoutFile,
-    holdoutMode: holdoutFile ? "exclude" : "include",
-    truncate: 2000,
-    maxFailures: 600,
+async function maybeDecomposeCluster({
+  workspaceDir,
+  config,
+  runDir,
+  metrics,
+  cluster,
+  beforeReport,
+}) {
+  const threshold = config.repair?.decomposeThreshold ?? 12;
+  if (cluster.item_ids.length <= threshold) return [cluster];
+
+  const failures = (beforeReport.failures || []).filter((f) => cluster.item_ids.includes(f.id));
+  const groups = [...new Set(failures.map((f) => f.group).filter(Boolean))];
+  const reference = groups.map((g) => getReferenceText(g)).filter(Boolean).join("\n\n---\n\n");
+  const prompt = buildDecomposePrompt({
+    clusterId: cluster.cluster_id,
+    hypothesis: cluster.hypothesis,
+    itemCount: cluster.item_ids.length,
+    failures,
+    reference,
   });
+
+  const spawnOnce = () => spawnAgent({
+    role: "decomposer",
+    prompt,
+    cwd: workspaceDir,
+    config,
+    runDir,
+    logKey: `decompose-${String(cluster.cluster_id).replace(/[^\w.-]+/g, "_")}`,
+    timeoutMs: (config.taskTimeoutMinutes || 20) * 60 * 1000,
+  });
+
+  const result = await spawnOnce();
+  metrics.recordAgentCall({
+    role: "decomposer",
+    cluster_id: cluster.cluster_id,
+    ok: result.ok,
+    elapsedMs: result.elapsedMs,
+  });
+
+  const parsed = await parseAgentJson(result, async () => {
+    const retry = await spawnOnce();
+    metrics.recordAgentCall({
+      role: "decomposer",
+      cluster_id: cluster.cluster_id,
+      ok: retry.ok,
+      elapsedMs: retry.elapsedMs,
+      retry: true,
+    });
+    return retry;
+  });
+
+  if (!parsed?.subclusters || !Array.isArray(parsed.subclusters)) {
+    metrics.data.decompositions.push({
+      cluster_id: cluster.cluster_id,
+      ok: false,
+      reason: "parse_fallback",
+      at: new Date().toISOString(),
+    });
+    return [cluster];
+  }
+
+  const idSet = new Set(cluster.item_ids);
+  const used = new Set();
+  const designNote = String(parsed.design_note || "");
+  const designPath = path.join(runDir, `repair-design-${String(cluster.cluster_id).replace(/[^\w.-]+/g, "_")}.md`);
+  if (designNote) writeFileSync(designPath, `${designNote}\n`, "utf8");
+
+  const sub = [];
+  for (const c of parsed.subclusters) {
+    const ids = (c.item_ids || []).filter((id) => idSet.has(id) && !used.has(id));
+    for (const id of ids) used.add(id);
+    if (ids.length) {
+      sub.push({
+        cluster_id: `${cluster.cluster_id}/${c.cluster_id || `s${sub.length + 1}`}`,
+        hypothesis: String(c.hypothesis || cluster.hypothesis),
+        item_ids: ids,
+        design_note: designNote,
+      });
+    }
+  }
+  const leftover = cluster.item_ids.filter((id) => !used.has(id));
+  if (leftover.length) {
+    sub.push({
+      cluster_id: `${cluster.cluster_id}/leftover`,
+      hypothesis: cluster.hypothesis,
+      item_ids: leftover,
+      design_note: designNote,
+    });
+  }
+
+  metrics.data.decompositions.push({
+    cluster_id: cluster.cluster_id,
+    ok: true,
+    subclusters: sub.length,
+    design_path: designNote ? designPath : null,
+    at: new Date().toISOString(),
+  });
+
+  return sub.length ? sub : [cluster];
+}
+
+async function finalizeAccept({
+  workspaceDir,
+  config,
+  runDir,
+  metrics,
+  checkpointSha,
+  clusterId,
+  after,
+  beforeReport,
+  gain,
+  elapsedMs,
+  rung,
+  stage,
+}) {
+  const review = await runOverfitReview({
+    workspaceDir,
+    config,
+    runDir,
+    metrics,
+    checkpointSha,
+    clusterId,
+  });
+  if (review.verdict === "suspicious" && config.repair?.rejectSuspicious) {
+    resetHard(workspaceDir, checkpointSha);
+    appendLesson(runDir, `${stage} | ${clusterId} | r${rung} | rejected | 0 | overfit-suspicious`);
+    return {
+      accepted: false,
+      after: beforeReport,
+      gain: 0,
+      elapsedMs,
+      rung,
+      reason: "overfit-suspicious",
+    };
+  }
+  appendLesson(runDir, `${stage} | ${clusterId} | r${rung} | accepted | ${gain} | ok`);
+  return {
+    accepted: true,
+    after,
+    gain,
+    elapsedMs,
+    rung,
+    reason: "ok",
+  };
 }
 
 async function tryRung1({
@@ -300,34 +543,23 @@ async function tryRung1({
   beforeReport,
   holdoutFile,
   ensureBuilt,
+  scoreFn,
+  promptBuilder,
+  stage,
 }) {
   const started = Date.now();
   commitAll(workspaceDir, `checkpoint: pre-repair ${cluster.cluster_id}`);
   const checkpointSha = headSha(workspaceDir);
 
-  const failures = (beforeReport.failures || []).filter((f) => cluster.item_ids.includes(f.id));
-  const groups = [...new Set(failures.map((f) => f.group).filter(Boolean))];
-  const reference = groups.map((g) => getReferenceText(g)).filter(Boolean).join("\n\n---\n\n");
-  const verifyCmd = buildVerifyCmd(cluster.item_ids, holdoutFile);
-
-  const prompt = buildRepairClusterPrompt({
-    rate: beforeReport.rate,
-    clusterId: cluster.cluster_id,
-    hypothesis: cluster.hypothesis,
-    failures,
-    reference,
-    verifyCmd,
-    coordMode,
-  });
-
+  const prompt = promptBuilder({ strategySuffix: "" });
   const safeKey = String(cluster.cluster_id).replace(/[^\w.-]+/g, "_");
   const result = await spawnAgent({
-    role: "worker",
+    role: "repair",
     prompt,
     cwd: workspaceDir,
     config,
     runDir,
-    logKey: `repair-${safeKey}`,
+    logKey: `repair-${stage}-${safeKey}`,
     timeoutMs: (config.taskTimeoutMinutes || 20) * 60 * 1000,
   });
   metrics.recordAgentCall({
@@ -341,34 +573,26 @@ async function tryRung1({
   const build = ensureBuilt(workspaceDir);
   if (!build.ok) {
     resetHard(workspaceDir, checkpointSha);
-    return {
-      accepted: false,
-      after: beforeReport,
-      gain: 0,
-      elapsedMs: Date.now() - started,
-      rung: 1,
-    };
+    appendLesson(runDir, `${stage} | ${cluster.cluster_id} | r1 | rejected | 0 | build-fail`);
+    return { accepted: false, after: beforeReport, gain: 0, elapsedMs: Date.now() - started, rung: 1, reason: "build-fail" };
   }
 
-  const afterPath = path.join(runDir, `score-repair-${safeKey}-rung1.json`);
-  const after = scoreVisible(workspaceDir, afterPath, holdoutFile).report;
-  if (!acceptsChangeset(beforeReport, after)) {
+  const afterPath = path.join(runDir, `score-repair-${stage}-${safeKey}-rung1.json`);
+  const after = scoreFn(workspaceDir, afterPath).report;
+  const gain = (after.passed || 0) - (beforeReport.passed || 0);
+  // Stage B requires strict full-suite gain; Stage A allows non-decreasing visible.
+  const ok = acceptsChangeset(beforeReport, after) && (stage !== "B" || gain > 0);
+  if (!ok) {
     resetHard(workspaceDir, checkpointSha);
-    return {
-      accepted: false,
-      after: beforeReport,
-      gain: 0,
-      elapsedMs: Date.now() - started,
-      rung: 1,
-    };
+    const reason = !acceptsChangeset(beforeReport, after) ? "regression" : "no-gain";
+    appendLesson(runDir, `${stage} | ${cluster.cluster_id} | r1 | rejected | 0 | ${reason}`);
+    return { accepted: false, after: beforeReport, gain: 0, elapsedMs: Date.now() - started, rung: 1, reason };
   }
-  return {
-    accepted: true,
-    after,
-    gain: (after.passed || 0) - (beforeReport.passed || 0),
-    elapsedMs: Date.now() - started,
-    rung: 1,
-  };
+  return finalizeAccept({
+    workspaceDir, config, runDir, metrics, checkpointSha,
+    clusterId: cluster.cluster_id, after, beforeReport, gain,
+    elapsedMs: Date.now() - started, rung: 1, stage,
+  });
 }
 
 async function tryRung2({
@@ -381,16 +605,14 @@ async function tryRung2({
   beforeReport,
   holdoutFile,
   ensureBuilt,
+  scoreFn,
+  promptBuilder,
+  stage,
 }) {
   const started = Date.now();
   const n = config.repair?.candidates ?? 2;
   const worktreesRoot = path.join(runDir, "worktrees-repair");
   mkdirSync(worktreesRoot, { recursive: true });
-
-  const failures = (beforeReport.failures || []).filter((f) => cluster.item_ids.includes(f.id));
-  const groups = [...new Set(failures.map((f) => f.group).filter(Boolean))];
-  const reference = groups.map((g) => getReferenceText(g)).filter(Boolean).join("\n\n---\n\n");
-  const verifyCmd = buildVerifyCmd(cluster.item_ids, holdoutFile);
   const safeKey = String(cluster.cluster_id).replace(/[^\w.-]+/g, "_");
 
   const strategies = [
@@ -413,28 +635,14 @@ async function tryRung2({
       continue;
     }
 
-    const prompt = `${buildRepairClusterPrompt({
-      rate: beforeReport.rate,
-      clusterId: cluster.cluster_id,
-      hypothesis: cluster.hypothesis,
-      failures,
-      reference,
-      verifyCmd,
-      coordMode,
-    })}
-
-## Candidate strategy
-
-${strategies[k] || strategies[0]}
-`;
-
+    const prompt = promptBuilder({ strategySuffix: strategies[k] || strategies[0] });
     const result = await spawnAgent({
-      role: "worker",
+      role: "repair-candidate",
       prompt,
       cwd: wt.path,
       config,
       runDir,
-      logKey: `repair-cand-${safeKey}-${k + 1}`,
+      logKey: `repair-cand-${stage}-${safeKey}-${k + 1}`,
       timeoutMs: (config.taskTimeoutMinutes || 20) * 60 * 1000,
     });
     metrics.recordAgentCall({
@@ -451,13 +659,14 @@ ${strategies[k] || strategies[0]}
       removeWorktree(workspaceDir, wt.path);
       continue;
     }
-    const scorePath = path.join(runDir, `score-repair-${safeKey}-cand${k + 1}.json`);
-    const after = scoreVisible(wt.path, scorePath, holdoutFile).report;
+    const scorePath = path.join(runDir, `score-repair-${stage}-${safeKey}-cand${k + 1}.json`);
+    const after = scoreFn(wt.path, scorePath).report;
+    const gain = (after.passed || 0) - (beforeReport.passed || 0);
     candidates.push({
       branch: wt.branch,
       path: wt.path,
       after,
-      accepted: acceptsChangeset(beforeReport, after),
+      accepted: acceptsChangeset(beforeReport, after) && (stage !== "B" || gain > 0),
       passed: after.passed || 0,
     });
   }
@@ -472,6 +681,7 @@ ${strategies[k] || strategies[0]}
     gain: 0,
     elapsedMs: Date.now() - started,
     rung: 2,
+    reason: "no-winner",
   };
 
   if (winners.length) {
@@ -485,26 +695,31 @@ ${strategies[k] || strategies[0]}
     if (!merge.ok || markers.length) {
       abortMerge(workspaceDir);
       resetHard(workspaceDir, checkpointSha);
+      appendLesson(runDir, `${stage} | ${cluster.cluster_id} | r2 | rejected | 0 | merge-fail`);
     } else {
       const build = ensureBuilt(workspaceDir);
       if (build.ok) {
-        const afterPath = path.join(runDir, `score-repair-${safeKey}-rung2.json`);
-        const after = scoreVisible(workspaceDir, afterPath, holdoutFile).report;
-        if (acceptsChangeset(beforeReport, after)) {
-          outcome = {
-            accepted: true,
-            after,
-            gain: (after.passed || 0) - (beforeReport.passed || 0),
-            elapsedMs: Date.now() - started,
-            rung: 2,
-          };
+        const afterPath = path.join(runDir, `score-repair-${stage}-${safeKey}-rung2.json`);
+        const after = scoreFn(workspaceDir, afterPath).report;
+        const gain = (after.passed || 0) - (beforeReport.passed || 0);
+        const ok = acceptsChangeset(beforeReport, after) && (stage !== "B" || gain > 0);
+        if (ok) {
+          outcome = await finalizeAccept({
+            workspaceDir, config, runDir, metrics, checkpointSha,
+            clusterId: cluster.cluster_id, after, beforeReport, gain,
+            elapsedMs: Date.now() - started, rung: 2, stage,
+          });
         } else {
           resetHard(workspaceDir, checkpointSha);
+          appendLesson(runDir, `${stage} | ${cluster.cluster_id} | r2 | rejected | 0 | regression`);
         }
       } else {
         resetHard(workspaceDir, checkpointSha);
+        appendLesson(runDir, `${stage} | ${cluster.cluster_id} | r2 | rejected | 0 | build-fail`);
       }
     }
+  } else {
+    appendLesson(runDir, `${stage} | ${cluster.cluster_id} | r2 | rejected | 0 | no-winner`);
   }
 
   for (const c of candidates) {
@@ -513,6 +728,459 @@ ${strategies[k] || strategies[0]}
   deleteBranchesByPrefix(workspaceDir, "repair/");
 
   return outcome;
+}
+
+async function tryRung3({
+  workspaceDir,
+  config,
+  runDir,
+  coordMode,
+  metrics,
+  cluster,
+  beforeReport,
+  ensureBuilt,
+  scoreFn,
+  promptBuilder,
+  stage,
+}) {
+  if (config.repair?.rung3Enabled === false) {
+    return { accepted: false, after: beforeReport, gain: 0, elapsedMs: 0, rung: 3, reason: "disabled" };
+  }
+  const started = Date.now();
+  commitAll(workspaceDir, `checkpoint: pre-rung3 ${cluster.cluster_id}`);
+  const checkpointSha = headSha(workspaceDir);
+
+  const prompt = promptBuilder({
+    strategySuffix:
+      "Strategy (strong model, design authority): you may refactor implicated modules to match the normative reference. Prefer structural correctness over local patches. Still do not hard-code suite strings.",
+  });
+  const safeKey = String(cluster.cluster_id).replace(/[^\w.-]+/g, "_");
+  const result = await spawnAgent({
+    role: "repair-strong",
+    prompt,
+    cwd: workspaceDir,
+    config,
+    runDir,
+    logKey: `repair-strong-${stage}-${safeKey}`,
+    timeoutMs: (config.taskTimeoutMinutes || 20) * 60 * 1000,
+  });
+  metrics.recordAgentCall({
+    role: "repair-strong",
+    cluster_id: cluster.cluster_id,
+    ok: result.ok,
+    elapsedMs: result.elapsedMs,
+  });
+  commitAll(workspaceDir, `repair-strong ${cluster.cluster_id}`);
+
+  const build = ensureBuilt(workspaceDir);
+  if (!build.ok) {
+    resetHard(workspaceDir, checkpointSha);
+    appendLesson(runDir, `${stage} | ${cluster.cluster_id} | r3 | rejected | 0 | build-fail`);
+    return { accepted: false, after: beforeReport, gain: 0, elapsedMs: Date.now() - started, rung: 3, reason: "build-fail" };
+  }
+
+  const afterPath = path.join(runDir, `score-repair-${stage}-${safeKey}-rung3.json`);
+  const after = scoreFn(workspaceDir, afterPath).report;
+  const gain = (after.passed || 0) - (beforeReport.passed || 0);
+  const ok = acceptsChangeset(beforeReport, after) && (stage !== "B" || gain > 0);
+  if (!ok) {
+    resetHard(workspaceDir, checkpointSha);
+    appendLesson(runDir, `${stage} | ${cluster.cluster_id} | r3 | rejected | 0 | regression`);
+    return { accepted: false, after: beforeReport, gain: 0, elapsedMs: Date.now() - started, rung: 3, reason: "regression" };
+  }
+  return finalizeAccept({
+    workspaceDir, config, runDir, metrics, checkpointSha,
+    clusterId: cluster.cluster_id, after, beforeReport, gain,
+    elapsedMs: Date.now() - started, rung: 3, stage,
+  });
+}
+
+async function runClusterLadder({
+  workspaceDir,
+  config,
+  runDir,
+  coordMode,
+  metrics,
+  cluster,
+  beforeReport,
+  holdoutFile,
+  ensureBuilt,
+  scoreFn,
+  promptBuilder,
+  stage,
+}) {
+  let outcome = await tryRung1({
+    workspaceDir, config, runDir, coordMode, metrics, cluster,
+    beforeReport, holdoutFile, ensureBuilt, scoreFn, promptBuilder, stage,
+  });
+  if (!outcome.accepted) {
+    outcome = await tryRung2({
+      workspaceDir, config, runDir, coordMode, metrics, cluster,
+      beforeReport, holdoutFile, ensureBuilt, scoreFn, promptBuilder, stage,
+    });
+  }
+  if (!outcome.accepted) {
+    outcome = await tryRung3({
+      workspaceDir, config, runDir, coordMode, metrics, cluster,
+      beforeReport, ensureBuilt, scoreFn, promptBuilder, stage,
+    });
+  }
+  return outcome;
+}
+
+async function runStageA({
+  workspaceDir,
+  config,
+  runDir,
+  coordMode,
+  metrics,
+  progress,
+  ensureBuilt,
+  holdoutFile,
+  phaseStarted,
+  maxPhaseMs,
+}) {
+  const repairCfg = config.repair || {};
+  const maxRounds = repairCfg.maxRounds ?? 0;
+  if (maxRounds <= 0) return { stopped: "disabled" };
+
+  const target = repairCfg.target ?? 1.0;
+  const minGainItems = repairCfg.minGainItems ?? 1;
+  const plateauRounds = repairCfg.plateauRounds ?? 2;
+  const startRound = (progress?.global_repair_rounds_done ?? 0) + 1;
+  let ledger = loadLedger(runDir);
+  let consecutiveNoGain = 0;
+
+  for (let r = startRound; r <= maxRounds; r += 1) {
+    if (Date.now() - phaseStarted > maxPhaseMs) {
+      console.warn(`[repair] phase time budget exhausted after stage-A round ${r - 1}`);
+      return { stopped: "budget" };
+    }
+
+    const build = ensureBuilt(workspaceDir);
+    if (!build.ok) {
+      console.warn(`[repair] stage-A round ${r}: build failed; skipping`);
+      return { stopped: "build" };
+    }
+
+    const beforePath = path.join(runDir, `score-repair-before-${r}.json`);
+    const scored = scoreVisible(workspaceDir, beforePath, holdoutFile);
+    metrics.recordScore({ phase: `repair-before-${r}`, ...scored.report });
+    metrics.recordScore({ phase: `global-before-${r}`, ...scored.report });
+
+    const rateBefore = scored.report?.rate ?? 0;
+    const passedBefore = scored.report?.passed ?? 0;
+    console.log(`[repair] stage-A round ${r}: visible rate=${(rateBefore * 100).toFixed(1)}% (${passedBefore}/${scored.report.total})`);
+
+    updateFromReport(ledger, scored.report, `repair-before-${r}`);
+    saveLedger(runDir, ledger);
+
+    if (rateBefore >= target) {
+      console.log(`[repair] stage-A target reached`);
+      if (progress) markRepairRound(runDir, progress, r);
+      return { stopped: "target" };
+    }
+
+    await runAdjudication({
+      workspaceDir, config, runDir, metrics, ledger, report: scored.report,
+    });
+    ledger = loadLedger(runDir);
+
+    const repairableIds = repairableFailingIds(ledger, scored.report);
+    if (!repairableIds.length) {
+      console.log(`[repair] stage-A round ${r}: no repairable failures`);
+      if (progress) markRepairRound(runDir, progress, r);
+      return { stopped: "routed-out" };
+    }
+
+    let clusters = await buildClusters({
+      workspaceDir, config, runDir, metrics, report: scored.report, repairableIds,
+    });
+    clusters = clusters.sort((a, b) => b.item_ids.length - a.item_ids.length);
+
+    let currentReport = scored.report;
+
+    for (const rawCluster of clusters) {
+      if (Date.now() - phaseStarted > maxPhaseMs) {
+        console.warn(`[repair] time budget hit mid stage-A round ${r}`);
+        break;
+      }
+
+      const subclusters = await maybeDecomposeCluster({
+        workspaceDir, config, runDir, metrics, cluster: rawCluster, beforeReport: currentReport,
+      });
+
+      for (const cluster of subclusters) {
+        if (Date.now() - phaseStarted > maxPhaseMs) break;
+        console.log(`[repair] stage-A cluster ${cluster.cluster_id}: ${cluster.item_ids.length} items — ${cluster.hypothesis}`);
+
+        commitAll(workspaceDir, `checkpoint: pre-cluster ${cluster.cluster_id}`);
+        const clusterCheckpoint = headSha(workspaceDir);
+
+        const failures = (currentReport.failures || []).filter((f) => cluster.item_ids.includes(f.id));
+        const groups = [...new Set(failures.map((f) => f.group).filter(Boolean))];
+        const reference = groups.map((g) => getReferenceText(g)).filter(Boolean).join("\n\n---\n\n");
+        const verifyCmd = buildVerifyCmd(cluster.item_ids, holdoutFile);
+        const lessons = recentLessons(runDir);
+
+        const promptBuilder = ({ strategySuffix }) => buildRepairClusterPrompt({
+          rate: currentReport.rate,
+          clusterId: cluster.cluster_id,
+          hypothesis: cluster.hypothesis,
+          failures,
+          reference,
+          verifyCmd,
+          coordMode,
+          lessons,
+          designNote: cluster.design_note || "",
+          strategySuffix,
+        });
+
+        let outcome = await runClusterLadder({
+          workspaceDir, config, runDir, coordMode, metrics, cluster,
+          beforeReport: currentReport, holdoutFile, ensureBuilt,
+          scoreFn: (dir, out) => scoreVisible(dir, out, holdoutFile),
+          promptBuilder,
+          stage: "A",
+        });
+
+        if (!outcome.accepted) {
+          resetHard(workspaceDir, clusterCheckpoint);
+        }
+
+        metrics.data.repair_clusters.push({
+          round: r,
+          cluster_id: cluster.cluster_id,
+          hypothesis: cluster.hypothesis,
+          item_ids: cluster.item_ids,
+          rung: outcome.rung,
+          accepted: outcome.accepted,
+          gain_items: outcome.gain,
+          elapsedMs: outcome.elapsedMs,
+          reason: outcome.reason,
+          stage: "A",
+          at: new Date().toISOString(),
+        });
+        metrics.recordGlobalRepair({
+          round: r,
+          sections: cluster.item_ids,
+          rate_before: currentReport.rate,
+          rate_after: outcome.after?.rate ?? currentReport.rate,
+          reverted: !outcome.accepted,
+          cluster_id: cluster.cluster_id,
+          rung: outcome.rung,
+        });
+
+        if (outcome.accepted) {
+          currentReport = outcome.after;
+          updateFromReport(ledger, currentReport, `repair-${cluster.cluster_id}`, {
+            targetedIds: cluster.item_ids,
+          });
+        } else {
+          updateFromReport(ledger, currentReport, `repair-${cluster.cluster_id}:stuck`, {
+            targetedIds: cluster.item_ids,
+          });
+        }
+        saveLedger(runDir, ledger);
+      }
+    }
+
+    const afterPath = path.join(runDir, `score-repair-after-${r}.json`);
+    const afterScored = scoreVisible(workspaceDir, afterPath, holdoutFile);
+    metrics.recordScore({ phase: `repair-after-${r}`, ...afterScored.report });
+    metrics.recordScore({ phase: `global-after-${r}`, ...afterScored.report });
+
+    const hits = scanForOracleLiterals(workspaceDir, loadExamples());
+    if (hits.length) {
+      console.warn(`[repair] stage-A round ${r}: oracle literal hits=${hits.length}`);
+      metrics.data.oracle_literal_hits = hits;
+    }
+
+    if (progress) markRepairRound(runDir, progress, r);
+
+    const gain = (afterScored.report.passed || 0) - passedBefore;
+    console.log(`[repair] stage-A round ${r} done: +${gain} items → ${(afterScored.report.rate * 100).toFixed(1)}%`);
+    if (gain < minGainItems) {
+      consecutiveNoGain += 1;
+      if (consecutiveNoGain >= plateauRounds) {
+        console.log(`[repair] stage-A plateau (${consecutiveNoGain} rounds < ${minGainItems}); stopping stage-A`);
+        return { stopped: "plateau" };
+      }
+    } else {
+      consecutiveNoGain = 0;
+    }
+  }
+  return { stopped: "max-rounds" };
+}
+
+async function runStageB({
+  workspaceDir,
+  config,
+  runDir,
+  coordMode,
+  metrics,
+  progress,
+  ensureBuilt,
+  holdoutFile,
+  phaseStarted,
+  maxPhaseMs,
+}) {
+  const genCfg = config.repair?.generalization || {};
+  const maxRounds = genCfg.maxRounds ?? 3;
+  if (maxRounds <= 0) return { stopped: "disabled" };
+
+  const plateauRounds = genCfg.plateauRounds ?? 2;
+  const minGainItems = config.repair?.minGainItems ?? 1;
+  const genPath = resolveGenExamplesPath(config);
+  const genExists = existsSync(genPath);
+  metrics.data.gen_examples = {
+    path: genPath,
+    exists: genExists,
+  };
+  if (!genExists) {
+    console.warn(`[repair] stage-B: missing gen examples at ${genPath}; VERIFY_GEN_CMD will still be emitted`);
+  }
+
+  const startRound = (progress?.generalization_rounds_done ?? 0) + 1;
+  let consecutiveNoGain = 0;
+  let ledger = loadLedger(runDir);
+
+  for (let r = startRound; r <= maxRounds; r += 1) {
+    if (Date.now() - phaseStarted > maxPhaseMs) {
+      console.warn(`[repair] phase time budget exhausted during stage-B round ${r}`);
+      return { stopped: "budget" };
+    }
+
+    const build = ensureBuilt(workspaceDir);
+    if (!build.ok) {
+      console.warn(`[repair] stage-B round ${r}: build failed`);
+      return { stopped: "build" };
+    }
+
+    const beforePath = path.join(runDir, `score-stageb-before-${r}.json`);
+    const scored = scoreFull(workspaceDir, beforePath);
+    metrics.recordScore({ phase: `stageb-before-${r}`, ...scored.report });
+
+    const passedBefore = scored.report.passed || 0;
+    const rateBefore = scored.report.rate || 0;
+    console.log(`[repair] stage-B round ${r}: full rate=${(rateBefore * 100).toFixed(1)}% (${passedBefore}/${scored.report.total})`);
+
+    updateFromReport(ledger, scored.report, `stageb-before-${r}`);
+    saveLedger(runDir, ledger);
+
+    if (rateBefore >= (config.repair?.target ?? 1.0)) {
+      console.log(`[repair] stage-B target reached (full suite)`);
+      if (progress) markGeneralizationRound(runDir, progress, r);
+      return { stopped: "target" };
+    }
+
+    const failing = scored.report.failures || [];
+    if (!failing.length) {
+      if (progress) markGeneralizationRound(runDir, progress, r);
+      return { stopped: "target" };
+    }
+
+    // One cluster per failing group (opaque counts only in agent dossier).
+    const byGroup = new Map();
+    for (const f of failing) {
+      const g = f.group || "default";
+      if (!byGroup.has(g)) byGroup.set(g, []);
+      byGroup.get(g).push(f);
+    }
+    const groups = [...byGroup.entries()]
+      .sort((a, b) => b[1].length - a[1].length);
+
+    let currentReport = scored.report;
+
+    for (const [group, groupFails] of groups) {
+      if (Date.now() - phaseStarted > maxPhaseMs) break;
+
+      const cluster = {
+        cluster_id: `blind-${group.replace(/[^\w.-]+/g, "_")}`,
+        hypothesis: `Blind fix for group ${group}`,
+        item_ids: groupFails.map((f) => f.id),
+        group,
+      };
+      console.log(`[repair] stage-B cluster ${cluster.cluster_id}: ${cluster.item_ids.length} failures (blind)`);
+
+      commitAll(workspaceDir, `checkpoint: pre-stageb ${cluster.cluster_id}`);
+      const clusterCheckpoint = headSha(workspaceDir);
+
+      const reference = getReferenceText(group);
+      const lessons = recentLessons(runDir);
+      const verifyGenCmd = buildGroupVerifyCmd(group, null, genExists ? genPath : null);
+      const verifyVisibleCmd = buildGroupVerifyCmd(group, holdoutFile, null);
+
+      const promptBuilder = ({ strategySuffix }) => buildRepairBlindPrompt({
+        rate: currentReport.rate,
+        group,
+        failCount: groupFails.length,
+        reference,
+        verifyGenCmd,
+        verifyVisibleCmd,
+        coordMode,
+        lessons,
+        strategySuffix,
+      });
+
+      let outcome = await runClusterLadder({
+        workspaceDir, config, runDir, coordMode, metrics, cluster,
+        beforeReport: currentReport, holdoutFile, ensureBuilt,
+        scoreFn: (dir, out) => scoreFull(dir, out),
+        promptBuilder,
+        stage: "B",
+      });
+
+      if (!outcome.accepted) {
+        resetHard(workspaceDir, clusterCheckpoint);
+      }
+
+      metrics.data.repair_stage_b.push({
+        round: r,
+        group,
+        cluster_id: cluster.cluster_id,
+        rung: outcome.rung,
+        accepted: outcome.accepted,
+        gain_full: outcome.gain,
+        elapsedMs: outcome.elapsedMs,
+        reason: outcome.reason,
+        at: new Date().toISOString(),
+      });
+
+      if (outcome.accepted) {
+        currentReport = outcome.after;
+        updateFromReport(ledger, currentReport, `stageb-${cluster.cluster_id}`, {
+          targetedIds: cluster.item_ids,
+        });
+        saveLedger(runDir, ledger);
+      }
+    }
+
+    const afterPath = path.join(runDir, `score-stageb-after-${r}.json`);
+    const afterScored = scoreFull(workspaceDir, afterPath);
+    metrics.recordScore({ phase: `stageb-after-${r}`, ...afterScored.report });
+
+    const hits = scanForOracleLiterals(workspaceDir, loadExamples());
+    if (hits.length) {
+      console.warn(`[repair] stage-B round ${r}: oracle literal hits=${hits.length}`);
+      metrics.data.oracle_literal_hits = hits;
+    }
+
+    if (progress) markGeneralizationRound(runDir, progress, r);
+
+    const gain = (afterScored.report.passed || 0) - passedBefore;
+    console.log(`[repair] stage-B round ${r} done: +${gain} full items → ${(afterScored.report.rate * 100).toFixed(1)}%`);
+    if (gain < minGainItems) {
+      consecutiveNoGain += 1;
+      if (consecutiveNoGain >= plateauRounds) {
+        console.log(`[repair] stage-B plateau; stopping`);
+        return { stopped: "plateau" };
+      }
+    } else {
+      consecutiveNoGain = 0;
+    }
+  }
+  return { stopped: "max-rounds" };
 }
 
 /**
@@ -536,167 +1204,32 @@ export async function runRepairPhase({
   ensureBuilt,
 }) {
   const repairCfg = config.repair || {};
-  const maxRounds = repairCfg.maxRounds ?? 0;
-  if (config.mock || maxRounds <= 0) return;
+  if (config.mock) return;
 
   const holdoutFile = holdoutFilePath(runDir);
   const phaseStarted = Date.now();
-  const maxPhaseMs = (repairCfg.maxPhaseMinutes ?? 90) * 60 * 1000;
-  const target = repairCfg.target ?? 1.0;
-  const minGainItems = repairCfg.minGainItems ?? 1;
-  const startRound = (progress?.global_repair_rounds_done ?? 0) + 1;
+  const maxPhaseMs = (repairCfg.maxPhaseMinutes ?? 240) * 60 * 1000;
 
-  let ledger = loadLedger(runDir);
+  // Ensure arrays exist even if metrics collector is older.
+  metrics.data.repair_clusters = metrics.data.repair_clusters || [];
+  metrics.data.repair_stage_b = metrics.data.repair_stage_b || [];
+  metrics.data.overfit_reviews = metrics.data.overfit_reviews || [];
+  metrics.data.decompositions = metrics.data.decompositions || [];
 
-  for (let r = startRound; r <= maxRounds; r += 1) {
-    if (Date.now() - phaseStarted > maxPhaseMs) {
-      console.warn(`[repair] phase time budget exhausted after round ${r - 1}`);
-      break;
-    }
+  console.log("[repair] Stage A — visible repair");
+  await runStageA({
+    workspaceDir, config, runDir, coordMode, metrics, progress, ensureBuilt,
+    holdoutFile, phaseStarted, maxPhaseMs,
+  });
 
-    const build = ensureBuilt(workspaceDir);
-    if (!build.ok) {
-      console.warn(`[repair] round ${r}: build failed; skipping phase`);
-      return;
-    }
-
-    const beforePath = path.join(runDir, `score-repair-before-${r}.json`);
-    const scored = scoreVisible(workspaceDir, beforePath, holdoutFile);
-    metrics.recordScore({ phase: `repair-before-${r}`, ...scored.report });
-    // Keep legacy phase labels for continuity in score_curve readers.
-    metrics.recordScore({ phase: `global-before-${r}`, ...scored.report });
-
-    const rateBefore = scored.report?.rate ?? 0;
-    const passedBefore = scored.report?.passed ?? 0;
-    console.log(`[repair] round ${r}: visible rate=${(rateBefore * 100).toFixed(1)}% (${passedBefore}/${scored.report.total})`);
-
-    updateFromReport(ledger, scored.report, `repair-before-${r}`);
-    saveLedger(runDir, ledger);
-
-    if (rateBefore >= target) break;
-
-    await runAdjudication({
-      workspaceDir,
-      config,
-      runDir,
-      metrics,
-      ledger,
-      report: scored.report,
+  if (Date.now() - phaseStarted > maxPhaseMs) {
+    console.warn("[repair] skipping Stage B — phase budget exhausted");
+  } else {
+    console.log("[repair] Stage B — blind generalization (full-suite acceptance)");
+    await runStageB({
+      workspaceDir, config, runDir, coordMode, metrics, progress, ensureBuilt,
+      holdoutFile, phaseStarted, maxPhaseMs,
     });
-    ledger = loadLedger(runDir);
-
-    const repairableIds = repairableFailingIds(ledger, scored.report);
-    if (!repairableIds.length) {
-      console.log(`[repair] round ${r}: no repairable failures (all routed out or none)`);
-      break;
-    }
-
-    let clusters = await buildClusters({
-      workspaceDir,
-      config,
-      runDir,
-      metrics,
-      report: scored.report,
-      repairableIds,
-    });
-    clusters = clusters.sort((a, b) => b.item_ids.length - a.item_ids.length);
-
-    let roundPassed = passedBefore;
-    let currentReport = scored.report;
-
-    for (const cluster of clusters) {
-      if (Date.now() - phaseStarted > maxPhaseMs) {
-        console.warn(`[repair] time budget hit mid-round ${r}`);
-        break;
-      }
-
-      console.log(`[repair] cluster ${cluster.cluster_id}: ${cluster.item_ids.length} items — ${cluster.hypothesis}`);
-
-      // Checkpoint before any rung so rung2 merge can be rolled back.
-      commitAll(workspaceDir, `checkpoint: pre-cluster ${cluster.cluster_id}`);
-      const clusterCheckpoint = headSha(workspaceDir);
-
-      let outcome = await tryRung1({
-        workspaceDir,
-        config,
-        runDir,
-        coordMode,
-        metrics,
-        cluster,
-        beforeReport: currentReport,
-        holdoutFile,
-        ensureBuilt,
-      });
-
-      if (!outcome.accepted) {
-        resetHard(workspaceDir, clusterCheckpoint);
-        outcome = await tryRung2({
-          workspaceDir,
-          config,
-          runDir,
-          coordMode,
-          metrics,
-          cluster,
-          beforeReport: currentReport,
-          holdoutFile,
-          ensureBuilt,
-        });
-        if (!outcome.accepted) {
-          resetHard(workspaceDir, clusterCheckpoint);
-        }
-      }
-
-      metrics.data.repair_clusters.push({
-        round: r,
-        cluster_id: cluster.cluster_id,
-        hypothesis: cluster.hypothesis,
-        item_ids: cluster.item_ids,
-        rung: outcome.rung,
-        accepted: outcome.accepted,
-        gain_items: outcome.gain,
-        elapsedMs: outcome.elapsedMs,
-        at: new Date().toISOString(),
-      });
-
-      // Also record in legacy-shaped global_repairs for compare continuity.
-      metrics.recordGlobalRepair({
-        round: r,
-        sections: cluster.item_ids,
-        rate_before: currentReport.rate,
-        rate_after: outcome.after?.rate ?? currentReport.rate,
-        reverted: !outcome.accepted,
-        cluster_id: cluster.cluster_id,
-        rung: outcome.rung,
-      });
-
-      if (outcome.accepted) {
-        currentReport = outcome.after;
-        roundPassed = outcome.after.passed || roundPassed;
-        updateFromReport(ledger, currentReport, `repair-${cluster.cluster_id}`, {
-          targetedIds: cluster.item_ids,
-        });
-        saveLedger(runDir, ledger);
-      } else {
-        updateFromReport(ledger, currentReport, `repair-${cluster.cluster_id}:stuck`, {
-          targetedIds: cluster.item_ids,
-        });
-        saveLedger(runDir, ledger);
-      }
-    }
-
-    const afterPath = path.join(runDir, `score-repair-after-${r}.json`);
-    const afterScored = scoreVisible(workspaceDir, afterPath, holdoutFile);
-    metrics.recordScore({ phase: `repair-after-${r}`, ...afterScored.report });
-    metrics.recordScore({ phase: `global-after-${r}`, ...afterScored.report });
-
-    if (progress) markRepairRound(runDir, progress, r);
-
-    const gain = (afterScored.report.passed || 0) - passedBefore;
-    console.log(`[repair] round ${r} done: +${gain} items → ${(afterScored.report.rate * 100).toFixed(1)}%`);
-    if (gain < minGainItems) {
-      console.log(`[repair] plateau (gain ${gain} < ${minGainItems}); stopping`);
-      break;
-    }
   }
 
   const routed = routedOutSummary(loadLedger(runDir));

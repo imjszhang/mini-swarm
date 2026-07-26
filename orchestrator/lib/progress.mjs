@@ -39,6 +39,7 @@ export function createInitialProgress({ runId, fingerprint, tasks }) {
     fingerprint: { ...fingerprint },
     tasks: taskMap,
     global_repair_rounds_done: 0,
+    generalization_rounds_done: 0,
     segments: [{ started_at: new Date().toISOString() }],
     updated_at: new Date().toISOString(),
   };
@@ -60,5 +61,11 @@ export function markPhase(runDir, progress, phase) {
 export function markRepairRound(runDir, progress, r) {
   if (!progress) return null;
   progress.global_repair_rounds_done = r;
+  return saveProgress(runDir, progress);
+}
+
+export function markGeneralizationRound(runDir, progress, r) {
+  if (!progress) return null;
+  progress.generalization_rounds_done = r;
   return saveProgress(runDir, progress);
 }

@@ -6,8 +6,10 @@
   "description": "Minimal agent swarm orchestrator for CommonMark renderer A/B coordination experiments",
   "scripts": {
     "spec:extract": "node spec/extract.mjs",
+    "spec:generate": "node spec/generate-examples.mjs",
     "score": "node scorer/score.mjs",
     "score:validate": "node scorer/validate-scorer.mjs",
+    "preflight:models": "node orchestrator/preflight-models.mjs",
     "run": "node orchestrator/run.mjs",
     "run:coordinated": "node orchestrator/run.mjs --coordination",
     "run:faithful": "node orchestrator/run.mjs --coordination --coord-mode=faithful",

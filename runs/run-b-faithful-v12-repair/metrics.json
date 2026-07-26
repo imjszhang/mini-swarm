@@ -1,0 +1,4991 @@
+{
+  "started_at": "2026-07-26T12:08:23.155Z",
+  "finished_at": "2026-07-26T16:11:22.770Z",
+  "coordination": true,
+  "planner_source": "repair-only-copy",
+  "commits": 52,
+  "merge_conflicts": [],
+  "scope_violations": [],
+  "cross_scope_changes": [],
+  "integration_fixes": [],
+  "score_feedbacks": [],
+  "worktree_syncs": [],
+  "merge_gate_rejections": [],
+  "global_repairs": [
+    {
+      "round": 1,
+      "sections": [
+        "ex-0269",
+        "ex-0276",
+        "ex-0285",
+        "ex-0288",
+        "ex-0289",
+        "ex-0294",
+        "ex-0301",
+        "ex-0302",
+        "ex-0311",
+        "ex-0314",
+        "ex-0315",
+        "ex-0318",
+        "ex-0319",
+        "ex-0320",
+        "ex-0336"
+      ],
+      "rate_before": 0.8154897494305239,
+      "rate_after": 0.8154897494305239,
+      "reverted": true,
+      "cluster_id": "group-1/group-1a",
+      "rung": 3,
+      "at": "2026-07-26T13:03:43.060Z"
+    },
+    {
+      "round": 1,
+      "sections": [
+        "ex-0290",
+        "ex-0293",
+        "ex-0306",
+        "ex-0307",
+        "ex-0308",
+        "ex-0322",
+        "ex-0323",
+        "ex-0332",
+        "ex-0333",
+        "ex-0334",
+        "ex-0335"
+      ],
+      "rate_before": 0.8154897494305239,
+      "rate_after": 0.9977220956719818,
+      "reverted": false,
+      "cluster_id": "group-1/group-1b",
+      "rung": 2,
+      "at": "2026-07-26T13:46:01.320Z"
+    },
+    {
+      "round": 1,
+      "sections": [
+        "ex-0263",
+        "ex-0278",
+        "ex-0279",
+        "ex-0291"
+      ],
+      "rate_before": 0.9977220956719818,
+      "rate_after": 0.9977220956719818,
+      "reverted": false,
+      "cluster_id": "group-1/group-1c",
+      "rung": 1,
+      "at": "2026-07-26T13:59:06.558Z"
+    },
+    {
+      "round": 1,
+      "sections": [
+        "ex-0280",
+        "ex-0304"
+      ],
+      "rate_before": 0.9977220956719818,
+      "rate_after": 0.9977220956719818,
+      "reverted": false,
+      "cluster_id": "group-1/group-1d",
+      "rung": 1,
+      "at": "2026-07-26T14:08:07.249Z"
+    },
+    {
+      "round": 1,
+      "sections": [
+        "ex-0321",
+        "ex-0324",
+        "ex-0325",
+        "ex-0326",
+        "ex-0327",
+        "ex-0328",
+        "ex-0330"
+      ],
+      "rate_before": 0.9977220956719818,
+      "rate_after": 1,
+      "reverted": false,
+      "cluster_id": "group-1/group-1e",
+      "rung": 1,
+      "at": "2026-07-26T14:18:10.039Z"
+    },
+    {
+      "round": 1,
+      "sections": [
+        "ex-0331"
+      ],
+      "rate_before": 1,
+      "rate_after": 1,
+      "reverted": false,
+      "cluster_id": "group-1/group-1f",
+      "rung": 1,
+      "at": "2026-07-26T14:21:45.655Z"
+    },
+    {
+      "round": 1,
+      "sections": [
+        "ex-0337",
+        "ex-0338",
+        "ex-0341",
+        "ex-0342",
+        "ex-0343",
+        "ex-0344",
+        "ex-0345",
+        "ex-0348",
+        "ex-0351",
+        "ex-0352",
+        "ex-0353",
+        "ex-0354",
+        "ex-0355",
+        "ex-0356",
+        "ex-0357",
+        "ex-0358",
+        "ex-0361",
+        "ex-0362",
+        "ex-0364",
+        "ex-0365",
+        "ex-0367",
+        "ex-0368",
+        "ex-0369",
+        "ex-0370",
+        "ex-0371",
+        "ex-0372",
+        "ex-0373",
+        "ex-0374",
+        "ex-0376",
+        "ex-0377",
+        "ex-0378",
+        "ex-0379",
+        "ex-0380",
+        "ex-0382",
+        "ex-0383",
+        "ex-0387",
+        "ex-0388",
+        "ex-0391",
+        "ex-0392"
+      ],
+      "rate_before": 1,
+      "rate_after": 1,
+      "reverted": false,
+      "cluster_id": "group-1/leftover",
+      "rung": 1,
+      "at": "2026-07-26T14:25:34.003Z"
+    },
+    {
+      "round": 1,
+      "sections": [
+        "ex-0064",
+        "ex-0076"
+      ],
+      "rate_before": 1,
+      "rate_after": 1,
+      "reverted": false,
+      "cluster_id": "group-2",
+      "rung": 1,
+      "at": "2026-07-26T14:29:33.427Z"
+    }
+  ],
+  "repair_clusters": [
+    {
+      "round": 1,
+      "cluster_id": "group-1/group-1a",
+      "hypothesis": "Underscore `_`/`__` delimiter runs are never recognized as emphasis openers/closers and are always left literal",
+      "item_ids": [
+        "ex-0269",
+        "ex-0276",
+        "ex-0285",
+        "ex-0288",
+        "ex-0289",
+        "ex-0294",
+        "ex-0301",
+        "ex-0302",
+        "ex-0311",
+        "ex-0314",
+        "ex-0315",
+        "ex-0318",
+        "ex-0319",
+        "ex-0320",
+        "ex-0336"
+      ],
+      "rung": 3,
+      "accepted": false,
+      "gain_items": 0,
+      "elapsedMs": 374709,
+      "reason": "regression",
+      "stage": "A",
+      "at": "2026-07-26T13:03:43.060Z"
+    },
+    {
+      "round": 1,
+      "cluster_id": "group-1/group-1b",
+      "hypothesis": "`*` runs of length≥2 are not consumed as strong; adjacent singles pair into empty `<em></em>` instead of `<strong>`",
+      "item_ids": [
+        "ex-0290",
+        "ex-0293",
+        "ex-0306",
+        "ex-0307",
+        "ex-0308",
+        "ex-0322",
+        "ex-0323",
+        "ex-0332",
+        "ex-0333",
+        "ex-0334",
+        "ex-0335"
+      ],
+      "rung": 2,
+      "accepted": true,
+      "gain_items": 80,
+      "elapsedMs": 1272900,
+      "reason": "ok",
+      "stage": "A",
+      "at": "2026-07-26T13:46:01.320Z"
+    },
+    {
+      "round": 1,
+      "cluster_id": "group-1/group-1c",
+      "hypothesis": "Left/right-flanking ignores Unicode whitespace, so `*` opens after space or closes before space/newline",
+      "item_ids": [
+        "ex-0263",
+        "ex-0278",
+        "ex-0279",
+        "ex-0291"
+      ],
+      "rung": 1,
+      "accepted": true,
+      "gain_items": 0,
+      "elapsedMs": 763912,
+      "reason": "ok",
+      "stage": "A",
+      "at": "2026-07-26T13:59:06.558Z"
+    },
+    {
+      "round": 1,
+      "cluster_id": "group-1/group-1d",
+      "hypothesis": "Punctuation-aware flanking and same-run open/close bans for `*`/`**` are wrong, allowing invalid empty or interior matches",
+      "item_ids": [
+        "ex-0280",
+        "ex-0304"
+      ],
+      "rung": 1,
+      "accepted": true,
+      "gain_items": 0,
+      "elapsedMs": 524842,
+      "reason": "ok",
+      "stage": "A",
+      "at": "2026-07-26T14:08:07.249Z"
+    },
+    {
+      "round": 1,
+      "cluster_id": "group-1/group-1e",
+      "hypothesis": "Nested `*`/`**`/`***` matching lacks run-length consumption, multiple-of-3 (rules 9–10), and nest-minimization/precedence (rules 13–16)",
+      "item_ids": [
+        "ex-0321",
+        "ex-0324",
+        "ex-0325",
+        "ex-0326",
+        "ex-0327",
+        "ex-0328",
+        "ex-0330"
+      ],
+      "rung": 1,
+      "accepted": true,
+      "gain_items": 1,
+      "elapsedMs": 581499,
+      "reason": "ok",
+      "stage": "A",
+      "at": "2026-07-26T14:18:10.039Z"
+    },
+    {
+      "round": 1,
+      "cluster_id": "group-1/group-1f",
+      "hypothesis": "Emphasis pairing splits link syntax; links must bind tighter than emphasis (rule 17)",
+      "item_ids": [
+        "ex-0331"
+      ],
+      "rung": 1,
+      "accepted": true,
+      "gain_items": 0,
+      "elapsedMs": 195355,
+      "reason": "ok",
+      "stage": "A",
+      "at": "2026-07-26T14:21:45.655Z"
+    },
+    {
+      "round": 1,
+      "cluster_id": "group-1/leftover",
+      "hypothesis": "Worst group: Emphasis and strong emphasis",
+      "item_ids": [
+        "ex-0337",
+        "ex-0338",
+        "ex-0341",
+        "ex-0342",
+        "ex-0343",
+        "ex-0344",
+        "ex-0345",
+        "ex-0348",
+        "ex-0351",
+        "ex-0352",
+        "ex-0353",
+        "ex-0354",
+        "ex-0355",
+        "ex-0356",
+        "ex-0357",
+        "ex-0358",
+        "ex-0361",
+        "ex-0362",
+        "ex-0364",
+        "ex-0365",
+        "ex-0367",
+        "ex-0368",
+        "ex-0369",
+        "ex-0370",
+        "ex-0371",
+        "ex-0372",
+        "ex-0373",
+        "ex-0374",
+        "ex-0376",
+        "ex-0377",
+        "ex-0378",
+        "ex-0379",
+        "ex-0380",
+        "ex-0382",
+        "ex-0383",
+        "ex-0387",
+        "ex-0388",
+        "ex-0391",
+        "ex-0392"
+      ],
+      "rung": 1,
+      "accepted": true,
+      "gain_items": 0,
+      "elapsedMs": 211067,
+      "reason": "ok",
+      "stage": "A",
+      "at": "2026-07-26T14:25:34.003Z"
+    },
+    {
+      "round": 1,
+      "cluster_id": "group-2",
+      "hypothesis": "Worst group: Setext headings",
+      "item_ids": [
+        "ex-0064",
+        "ex-0076"
+      ],
+      "rung": 1,
+      "accepted": true,
+      "gain_items": 0,
+      "elapsedMs": 220990,
+      "reason": "ok",
+      "stage": "A",
+      "at": "2026-07-26T14:29:33.427Z"
+    }
+  ],
+  "repair_stage_b": [
+    {
+      "round": 1,
+      "group": "Backslash escapes",
+      "cluster_id": "blind-Backslash_escapes",
+      "rung": 1,
+      "accepted": true,
+      "gain_full": 2,
+      "elapsedMs": 363367,
+      "reason": "ok",
+      "at": "2026-07-26T14:38:46.938Z"
+    },
+    {
+      "round": 1,
+      "group": "Tabs",
+      "cluster_id": "blind-Tabs",
+      "rung": 2,
+      "accepted": true,
+      "gain_full": 1,
+      "elapsedMs": 2153963,
+      "reason": "ok",
+      "at": "2026-07-26T15:36:09.457Z"
+    },
+    {
+      "round": 1,
+      "group": "ATX headings",
+      "cluster_id": "blind-ATX_headings",
+      "rung": 1,
+      "accepted": true,
+      "gain_full": 1,
+      "elapsedMs": 342214,
+      "reason": "ok",
+      "at": "2026-07-26T15:42:19.423Z"
+    },
+    {
+      "round": 1,
+      "group": "Fenced code blocks",
+      "cluster_id": "blind-Fenced_code_blocks",
+      "rung": 1,
+      "accepted": true,
+      "gain_full": 1,
+      "elapsedMs": 465738,
+      "reason": "ok",
+      "at": "2026-07-26T15:50:23.890Z"
+    },
+    {
+      "round": 1,
+      "group": "Block quotes",
+      "cluster_id": "blind-Block_quotes",
+      "rung": 1,
+      "accepted": true,
+      "gain_full": 1,
+      "elapsedMs": 291759,
+      "reason": "ok",
+      "at": "2026-07-26T15:55:46.280Z"
+    },
+    {
+      "round": 1,
+      "group": "Lists",
+      "cluster_id": "blind-Lists",
+      "rung": 1,
+      "accepted": true,
+      "gain_full": 1,
+      "elapsedMs": 411624,
+      "reason": "ok",
+      "at": "2026-07-26T16:02:57.632Z"
+    },
+    {
+      "round": 1,
+      "group": "Hard line breaks",
+      "cluster_id": "blind-Hard_line_breaks",
+      "rung": 1,
+      "accepted": true,
+      "gain_full": 1,
+      "elapsedMs": 299948,
+      "reason": "ok",
+      "at": "2026-07-26T16:08:23.980Z"
+    }
+  ],
+  "overfit_reviews": [
+    {
+      "cluster_id": "group-1/group-1b",
+      "verdict": "general",
+      "reasons": [
+        "emphasis.ts 实现 CommonMark 定界符扫描（左右 flanking、can_open/can_close）与规则 9–17 的栈式配对，未硬编码验收用例的输入或 HTML 输出",
+        "scanSpecial 的 dryRun 用于扩展纯文本 run 时探测下一特殊 token 而不提前写入 AST，属于行内解析顺序的结构化修复，而非针对 **foo [bar](u)** 的字符串分支",
+        "词内且既不能 open 也不能 close 的下划线整段作为 literal text 输出，对应规范对 intraword 定界符的处理，不是仅服务于 ex. 0298 的特殊逻辑",
+        "children 重命名为 inlines、parseInlinesWithEmphasis 与 render 侧 buildParagraphInlineSource 为多行强调提供统一源文本，属于规则级/架构级改动",
+        "GUIDE/DESIGN 虽引用具体用例编号作说明，代码路径中未见与这些编号或固定 markdown 片段绑定的条件分支"
+      ],
+      "at": "2026-07-26T13:46:00.911Z"
+    },
+    {
+      "cluster_id": "group-1/group-1c",
+      "verdict": "general",
+      "reasons": [
+        "将 RE_UNICODE_WHITESPACE 从 JS \\s 收窄为 CommonMark 规定的 unicode 空白（tab/LF/FF/CR/VT 与 \\p{Zs}），属于规范层面的 flanking 判定修复，而非针对某条样例字符串",
+        "diff 未引入硬编码 HTML/输出、未对具体 markdown 输入做分支特殊处理",
+        "GUIDE.md 补充的是通用规则说明，与 emphasis.ts 中的正则变更一致，不体现仅服务于验收用例的分支逻辑"
+      ],
+      "at": "2026-07-26T13:59:06.557Z"
+    },
+    {
+      "cluster_id": "group-1/group-1d",
+      "verdict": "general",
+      "reasons": [
+        "Implements CommonMark-style Rule 17 using structural identity (opener.pieceIndex === closer.pieceIndex), not suite-specific markdown or HTML strings.",
+        "Same delimiter run cannot act as both opener and closer; skipping that candidate and walking to opener.previous is standard stack matching behavior.",
+        "Condition applies to all emphasis delimiter matching in processEmphasisPieces, not a one-off branch for listed acceptance examples."
+      ],
+      "at": "2026-07-26T14:08:07.249Z"
+    },
+    {
+      "cluster_id": "group-1/group-1e",
+      "verdict": "general",
+      "reasons": [
+        "通过 parse-range 中的 blockquoteParseDepth 与 inBlockquoteBlockContext() 区分引用块与普通容器解析上下文，属于结构性/parser 设计变更，而非匹配具体测试输入字符串",
+        "在 setext 解析入口与段落续行/截断逻辑中统一禁用引用块内的 setext，并允许列表项容器内仍走 parseBlockRangeInContainer，与 CommonMark 中引用块 lazy continuation 与列表项内容规则的差异一致",
+        "GUIDE/DESIGN 中提到的用例编号仅作说明，代码路径未出现硬编码 markdown 片段或期望 HTML 输出",
+        "未观察到针对单条 acceptance 样例的 brittle 分支；变更面向“引用块内不形成 setext、下划线形续行保持段落文本”这一规范级行为"
+      ],
+      "at": "2026-07-26T14:18:10.038Z"
+    },
+    {
+      "cluster_id": "group-1/group-1f",
+      "verdict": "general",
+      "reasons": [
+        "Diff from checkpoint to HEAD is empty; no code changes to assess for example-specific hard-coding or brittle branches."
+      ],
+      "at": "2026-07-26T14:21:45.654Z"
+    },
+    {
+      "cluster_id": "group-1/leftover",
+      "verdict": "general",
+      "reasons": [
+        "检查点与 HEAD 之间无代码差异，无从判定针对验收样例的过拟合",
+        "未出现硬编码期望输出、针对特定输入 markdown 的分支或仅服务于列举例子的脆弱逻辑"
+      ],
+      "at": "2026-07-26T14:25:34.002Z"
+    },
+    {
+      "cluster_id": "group-2",
+      "verdict": "general",
+      "reasons": [
+        "Diff is empty; no changes to hard-code suite outputs, special-case example markdown, or add example-only branches."
+      ],
+      "at": "2026-07-26T14:29:33.427Z"
+    },
+    {
+      "cluster_id": "blind-Backslash_escapes",
+      "verdict": "general",
+      "reasons": [
+        "将 isEscapedAt 集中到 text.ts，并在 emphasis/links 中复用，属于结构化的规则层整理，而非针对单个用例的分支",
+        "emphasis 与 links 中把「仅看前一个字符是否为 \\」改为奇数个反斜杠判定，符合 CommonMark 转义语义，属于规范级修正",
+        "isBackslashEscapeAt 使用与 unescapeBackslashes 一致的 ESCAPABLE_PUNCT，区分标点转义与硬换行，未硬编码特定 markdown 输入或期望 HTML 输出",
+        "links.ts 对 isEscapedAt 的 re-export 保持对外 API，无仅服务于验收样例的特殊字符串匹配"
+      ],
+      "at": "2026-07-26T14:38:46.938Z"
+    },
+    {
+      "cluster_id": "blind-Tabs",
+      "verdict": "general",
+      "reasons": [
+        "在缩进代码块解析前用 isListMarkerLine 排除列表标记行，属于块类型歧义的一般规则，未绑定具体输入字符串或期望 HTML",
+        "parseListMarker 将 contentStart（字符偏移 off）与 contentColumn（列宽语义）分离，并仅在列对齐路径使用 contentColumn，属于解析模型修正而非示例补丁",
+        "indentPrefixHasTab 放宽「列宽≥4 则非列表」的判断，对应 CommonMark 中 tab 扩展导致列宽与纯空格前缀不一致的规范情形，非针对单一 fixture 的分支"
+      ],
+      "at": "2026-07-26T15:36:08.999Z"
+    },
+    {
+      "cluster_id": "blind-ATX_headings",
+      "verdict": "general",
+      "reasons": [
+        "在块级解析与渲染前移除 unescapeBackslashes，使 ATX/Setext 标题内联与段落、代码 span 一致：在 CommonMark 内联解析阶段再处理反斜杠转义，而非提前把 \\* 变成 * 破坏强调定界符识别。",
+        "变更未硬编码预期 HTML、未针对特定输入字符串分支，仅调整解析管线中转义处理的时机。",
+        "GUIDE 补充的是规范级说明（保留原始反斜杠至内联解析），示例编号仅作文档引用而非实现特判。"
+      ],
+      "at": "2026-07-26T15:42:19.422Z"
+    },
+    {
+      "cluster_id": "blind-Fenced_code_blocks",
+      "verdict": "general",
+      "reasons": [
+        "空白行后若下一非空行没有引用标记则结束引用，符合常见块引用边界规则，而非针对特定输入字符串",
+        "变更仅重构终止条件（文档末尾、无 >、标记层数与开头一致），未硬编码 HTML 或验收用例中的字面量",
+        "旧逻辑在无 > 的后续行时仍 innerLines.push('') 并继续，新逻辑在结构上修正了错误延续引用块的行为"
+      ],
+      "at": "2026-07-26T15:50:23.889Z"
+    },
+    {
+      "cluster_id": "blind-Block_quotes",
+      "verdict": "general",
+      "reasons": [
+        "在 isInParagraphContext 中排除以引用标记开头的块运行，与已有的 ATX 标题、列表项排除同一抽象层级",
+        "复用 isBlockquoteMarkerLine（^ {0,3}>），对应 CommonMark 块级引用语法而非特定测试输入",
+        "避免将引用块内的续行误判为段落上下文，属于结构/规则修复，未硬编码 HTML 或示例字符串"
+      ],
+      "at": "2026-07-26T15:55:46.280Z"
+    },
+    {
+      "cluster_id": "blind-Lists",
+      "verdict": "general",
+      "reasons": [
+        "修复针对列表 tight/loose 判定：围栏代码块内部的空行不应算作列表项内的块间空行，属于规范级语义而非针对单个样例。",
+        "围栏内外判定复用与 parseListItemBlocks 相同的 ```/~~~ 正则与 contentColumn 缩进规则，未出现硬编码的 Markdown 片段或期望 HTML。",
+        "删除首段围栏扫描遇到空行即 break 的行为，与同文件内另一处围栏收集循环一致，使含空行的围栏内容能完整纳入，属于结构性对齐。"
+      ],
+      "at": "2026-07-26T16:02:57.632Z"
+    },
+    {
+      "cluster_id": "blind-Hard_line_breaks",
+      "verdict": "general",
+      "reasons": [
+        "仅在段落后续仍有内容、行末硬换行成立且行内代码 span 未打开时剥离反斜杠硬换行，与 hardBreakAfter 的判定条件一致，属于解析语义而非针对样例",
+        "变更通过 stripBackslashHardBreak / hardBreakActive 与 codeOpenRun、paragraphContinues 等既有结构状态联动，未出现硬编码 HTML、固定输入串或仅服务于单个 acceptance 的分支",
+        "将无条件剥离行尾反斜杠改为“硬换行在该行实际生效时才剥离”，符合 CommonMark 硬换行与段落拼接的规则级行为"
+      ],
+      "at": "2026-07-26T16:08:23.980Z"
+    }
+  ],
+  "decompositions": [
+    {
+      "cluster_id": "group-1",
+      "ok": true,
+      "subclusters": 7,
+      "design_path": "D:\\github\\projects\\mini-swarm\\runs\\run-b-faithful-v12-repair\\repair-design-group-1.md",
+      "at": "2026-07-26T12:10:48.510Z"
+    }
+  ],
+  "gen_examples": {
+    "path": "D:\\github\\projects\\mini-swarm\\spec\\gen-examples-v12.json",
+    "exists": true
+  },
+  "adjudications": [
+    {
+      "id": "ex-0314",
+      "class": "implementation_bug",
+      "rationale": "按 CommonMark，开闭 `__` 可形成 strong，词内中间 `__` 不闭合；实现把整串当字面量，未正确处理下划线强调。",
+      "at": "2026-07-26T12:10:08.285Z"
+    },
+    {
+      "id": "ex-0315",
+      "class": "implementation_bug",
+      "rationale": "`__(bar)__` 两侧均为合法 flanking 分隔符，应产出 strong；实现未识别下划线 strong。",
+      "at": "2026-07-26T12:10:08.285Z"
+    },
+    {
+      "id": "ex-0318",
+      "class": "implementation_bug",
+      "rationale": "规范要求外层 `_…_` 为 em、内层 `__bar__` 为 strong；实现未解析任何下划线强调。",
+      "at": "2026-07-26T12:10:08.285Z"
+    },
+    {
+      "id": "ex-0319",
+      "class": "implementation_bug",
+      "rationale": "嵌套 `_foo _bar_ baz_` 应为双重 em；实现未处理下划线 delimiter pairing。",
+      "at": "2026-07-26T12:10:08.285Z"
+    },
+    {
+      "id": "ex-0320",
+      "class": "implementation_bug",
+      "rationale": "`__foo_ bar_` 按规则拆为嵌套 em；实现原样输出，缺少下划线强调逻辑。",
+      "at": "2026-07-26T12:10:08.285Z"
+    },
+    {
+      "id": "ex-0321",
+      "class": "implementation_bug",
+      "rationale": "`*foo *bar**` 应匹配为外层 em 包内层 em；GOT 错误配对并产生空 `<em></em>`。",
+      "at": "2026-07-26T12:10:08.285Z"
+    },
+    {
+      "id": "ex-0322",
+      "class": "implementation_bug",
+      "rationale": "`**bar**` 应为 strong，不是两个空 em；GOT 把 `**` 当成成对单 `*`。",
+      "at": "2026-07-26T12:10:08.285Z"
+    },
+    {
+      "id": "ex-0323",
+      "class": "implementation_bug",
+      "rationale": "词内 `*foo**bar**baz*` 应为 em 包 strong；GOT 同样把 strong 误拆成空 em。",
+      "at": "2026-07-26T12:10:08.285Z"
+    },
+    {
+      "id": "ex-0324",
+      "class": "implementation_bug",
+      "rationale": "奇数长度规则下内部 `**` 不得成对，应保留字面量 `*foo**bar*`；GOT 错误插入空 em。",
+      "at": "2026-07-26T12:10:08.285Z"
+    },
+    {
+      "id": "ex-0325",
+      "class": "implementation_bug",
+      "rationale": "`***foo** bar*` 应为 em 包 strong；GOT 把三重/双重分隔符误拆成空 em。",
+      "at": "2026-07-26T12:10:08.285Z"
+    },
+    {
+      "id": "ex-0326",
+      "class": "implementation_bug",
+      "rationale": "`*foo **bar***` 应为 em 包 strong；GOT 配对错乱且留下字面 `*`。",
+      "at": "2026-07-26T12:10:08.285Z"
+    },
+    {
+      "id": "ex-0327",
+      "class": "implementation_bug",
+      "rationale": "`*foo**bar***` 同规范嵌套 strong；GOT 未正确消费多字符 delimiter run。",
+      "at": "2026-07-26T12:10:08.285Z"
+    },
+    {
+      "id": "ex-0328",
+      "class": "implementation_bug",
+      "rationale": "`foo***bar***baz` 应为 em+strong；GOT 拆坏三重分隔符并产生空 em。",
+      "at": "2026-07-26T12:10:08.285Z"
+    },
+    {
+      "id": "ex-0330",
+      "class": "implementation_bug",
+      "rationale": "多层嵌套 `*…**…*…*…**…*` 期望明确；GOT 的 pairing 与空 em 均与规范不符。",
+      "at": "2026-07-26T12:10:08.285Z"
+    },
+    {
+      "id": "ex-0331",
+      "class": "implementation_bug",
+      "rationale": "强调应包裹链接节点；GOT 在 `[` 前过早闭合 em，破坏链接解析（链接本身在其他用例可用）。",
+      "at": "2026-07-26T12:10:08.285Z"
+    },
+    {
+      "id": "ex-0332",
+      "class": "implementation_bug",
+      "rationale": "`**` 后接空白不能形成空强调，应原样输出；GOT 错误产出 `<em></em>`。",
+      "at": "2026-07-26T12:10:08.285Z"
+    },
+    {
+      "id": "ex-0333",
+      "class": "implementation_bug",
+      "rationale": "`****` 同理不得形成空 strong/em；GOT 仍配对出空 em。",
+      "at": "2026-07-26T12:10:08.285Z"
+    },
+    {
+      "id": "ex-0334",
+      "class": "implementation_bug",
+      "rationale": "`**…**` 应为 strong（可含链接）；GOT 把每端 `**` 变成空 em。",
+      "at": "2026-07-26T12:10:08.285Z"
+    },
+    {
+      "id": "ex-0335",
+      "class": "implementation_bug",
+      "rationale": "跨行 `**foo\\nbar**` 应为单一 strong；GOT 同样把 `**` 误当空 em。",
+      "at": "2026-07-26T12:10:08.285Z"
+    },
+    {
+      "id": "ex-0336",
+      "class": "implementation_bug",
+      "rationale": "`__foo _bar_ baz__` 应为 strong 包 em；实现完全未解析下划线强调。",
+      "at": "2026-07-26T12:10:08.285Z"
+    }
+  ],
+  "suspected_oracle_bugs": [],
+  "spec_ambiguities": [],
+  "unowned_requirements": [],
+  "oracle_literal_hits": [],
+  "visible_score": {
+    "scored_at": "2026-07-26T16:10:12.551Z",
+    "workspace": "D:\\github\\projects\\mini-swarm\\runs\\run-b-faithful-v12-repair\\workspace",
+    "total": 439,
+    "passed": 439,
+    "rate": 1,
+    "by_group": {
+      "Tabs": {
+        "passed": 9,
+        "total": 9,
+        "rate": 1
+      },
+      "Backslash escapes": {
+        "passed": 11,
+        "total": 11,
+        "rate": 1
+      },
+      "Precedence": {
+        "passed": 1,
+        "total": 1,
+        "rate": 1
+      },
+      "Thematic breaks": {
+        "passed": 16,
+        "total": 16,
+        "rate": 1
+      },
+      "ATX headings": {
+        "passed": 15,
+        "total": 15,
+        "rate": 1
+      },
+      "Setext headings": {
+        "passed": 22,
+        "total": 22,
+        "rate": 1
+      },
+      "Indented code blocks": {
+        "passed": 10,
+        "total": 10,
+        "rate": 1
+      },
+      "Fenced code blocks": {
+        "passed": 24,
+        "total": 24,
+        "rate": 1
+      },
+      "Paragraphs": {
+        "passed": 6,
+        "total": 6,
+        "rate": 1
+      },
+      "Blank lines": {
+        "passed": 1,
+        "total": 1,
+        "rate": 1
+      },
+      "Block quotes": {
+        "passed": 21,
+        "total": 21,
+        "rate": 1
+      },
+      "List items": {
+        "passed": 40,
+        "total": 40,
+        "rate": 1
+      },
+      "Lists": {
+        "passed": 22,
+        "total": 22,
+        "rate": 1
+      },
+      "Code spans": {
+        "passed": 18,
+        "total": 18,
+        "rate": 1
+      },
+      "Emphasis and strong emphasis": {
+        "passed": 112,
+        "total": 112,
+        "rate": 1
+      },
+      "Links": {
+        "passed": 76,
+        "total": 76,
+        "rate": 1
+      },
+      "Images": {
+        "passed": 18,
+        "total": 18,
+        "rate": 1
+      },
+      "Hard line breaks": {
+        "passed": 12,
+        "total": 12,
+        "rate": 1
+      },
+      "Soft line breaks": {
+        "passed": 2,
+        "total": 2,
+        "rate": 1
+      },
+      "Textual content": {
+        "passed": 3,
+        "total": 3,
+        "rate": 1
+      }
+    },
+    "by_section": {
+      "Tabs": {
+        "passed": 9,
+        "total": 9,
+        "rate": 1
+      },
+      "Backslash escapes": {
+        "passed": 11,
+        "total": 11,
+        "rate": 1
+      },
+      "Precedence": {
+        "passed": 1,
+        "total": 1,
+        "rate": 1
+      },
+      "Thematic breaks": {
+        "passed": 16,
+        "total": 16,
+        "rate": 1
+      },
+      "ATX headings": {
+        "passed": 15,
+        "total": 15,
+        "rate": 1
+      },
+      "Setext headings": {
+        "passed": 22,
+        "total": 22,
+        "rate": 1
+      },
+      "Indented code blocks": {
+        "passed": 10,
+        "total": 10,
+        "rate": 1
+      },
+      "Fenced code blocks": {
+        "passed": 24,
+        "total": 24,
+        "rate": 1
+      },
+      "Paragraphs": {
+        "passed": 6,
+        "total": 6,
+        "rate": 1
+      },
+      "Blank lines": {
+        "passed": 1,
+        "total": 1,
+        "rate": 1
+      },
+      "Block quotes": {
+        "passed": 21,
+        "total": 21,
+        "rate": 1
+      },
+      "List items": {
+        "passed": 40,
+        "total": 40,
+        "rate": 1
+      },
+      "Lists": {
+        "passed": 22,
+        "total": 22,
+        "rate": 1
+      },
+      "Code spans": {
+        "passed": 18,
+        "total": 18,
+        "rate": 1
+      },
+      "Emphasis and strong emphasis": {
+        "passed": 112,
+        "total": 112,
+        "rate": 1
+      },
+      "Links": {
+        "passed": 76,
+        "total": 76,
+        "rate": 1
+      },
+      "Images": {
+        "passed": 18,
+        "total": 18,
+        "rate": 1
+      },
+      "Hard line breaks": {
+        "passed": 12,
+        "total": 12,
+        "rate": 1
+      },
+      "Soft line breaks": {
+        "passed": 2,
+        "total": 2,
+        "rate": 1
+      },
+      "Textual content": {
+        "passed": 3,
+        "total": 3,
+        "rate": 1
+      }
+    },
+    "failures": [],
+    "failure_count": 0,
+    "parse_error": false
+  },
+  "holdout_score": {
+    "scored_at": "2026-07-26T16:10:21.799Z",
+    "workspace": "D:\\github\\projects\\mini-swarm\\runs\\run-b-faithful-v12-repair\\workspace",
+    "total": 86,
+    "passed": 86,
+    "rate": 1,
+    "by_group": {
+      "Tabs": {
+        "passed": 2,
+        "total": 2,
+        "rate": 1
+      },
+      "Backslash escapes": {
+        "passed": 2,
+        "total": 2,
+        "rate": 1
+      },
+      "Thematic breaks": {
+        "passed": 3,
+        "total": 3,
+        "rate": 1
+      },
+      "ATX headings": {
+        "passed": 3,
+        "total": 3,
+        "rate": 1
+      },
+      "Setext headings": {
+        "passed": 5,
+        "total": 5,
+        "rate": 1
+      },
+      "Indented code blocks": {
+        "passed": 2,
+        "total": 2,
+        "rate": 1
+      },
+      "Fenced code blocks": {
+        "passed": 5,
+        "total": 5,
+        "rate": 1
+      },
+      "Paragraphs": {
+        "passed": 2,
+        "total": 2,
+        "rate": 1
+      },
+      "Block quotes": {
+        "passed": 4,
+        "total": 4,
+        "rate": 1
+      },
+      "List items": {
+        "passed": 8,
+        "total": 8,
+        "rate": 1
+      },
+      "Lists": {
+        "passed": 5,
+        "total": 5,
+        "rate": 1
+      },
+      "Code spans": {
+        "passed": 4,
+        "total": 4,
+        "rate": 1
+      },
+      "Emphasis and strong emphasis": {
+        "passed": 20,
+        "total": 20,
+        "rate": 1
+      },
+      "Links": {
+        "passed": 14,
+        "total": 14,
+        "rate": 1
+      },
+      "Images": {
+        "passed": 4,
+        "total": 4,
+        "rate": 1
+      },
+      "Hard line breaks": {
+        "passed": 3,
+        "total": 3,
+        "rate": 1
+      }
+    },
+    "by_section": {
+      "Tabs": {
+        "passed": 2,
+        "total": 2,
+        "rate": 1
+      },
+      "Backslash escapes": {
+        "passed": 2,
+        "total": 2,
+        "rate": 1
+      },
+      "Thematic breaks": {
+        "passed": 3,
+        "total": 3,
+        "rate": 1
+      },
+      "ATX headings": {
+        "passed": 3,
+        "total": 3,
+        "rate": 1
+      },
+      "Setext headings": {
+        "passed": 5,
+        "total": 5,
+        "rate": 1
+      },
+      "Indented code blocks": {
+        "passed": 2,
+        "total": 2,
+        "rate": 1
+      },
+      "Fenced code blocks": {
+        "passed": 5,
+        "total": 5,
+        "rate": 1
+      },
+      "Paragraphs": {
+        "passed": 2,
+        "total": 2,
+        "rate": 1
+      },
+      "Block quotes": {
+        "passed": 4,
+        "total": 4,
+        "rate": 1
+      },
+      "List items": {
+        "passed": 8,
+        "total": 8,
+        "rate": 1
+      },
+      "Lists": {
+        "passed": 5,
+        "total": 5,
+        "rate": 1
+      },
+      "Code spans": {
+        "passed": 4,
+        "total": 4,
+        "rate": 1
+      },
+      "Emphasis and strong emphasis": {
+        "passed": 20,
+        "total": 20,
+        "rate": 1
+      },
+      "Links": {
+        "passed": 14,
+        "total": 14,
+        "rate": 1
+      },
+      "Images": {
+        "passed": 4,
+        "total": 4,
+        "rate": 1
+      },
+      "Hard line breaks": {
+        "passed": 3,
+        "total": 3,
+        "rate": 1
+      }
+    },
+    "failures": [],
+    "failure_count": 0,
+    "parse_error": false
+  },
+  "holdout_gap_pp": 0,
+  "overfit_alarm": false,
+  "adjudication_parse_failures": 0,
+  "merge_conflict_count": 0,
+  "scope_violation_count": 0,
+  "cross_scope_change_count": 0,
+  "integration_fix_count": 0,
+  "score_feedback_count": 0,
+  "worktree_sync_count": 0,
+  "worktree_sync_conflict_count": 0,
+  "merge_gate_rejection_count": 0,
+  "global_repair_count": 8,
+  "conflict_count": 0,
+  "tasks": [],
+  "score_curve": [
+    {
+      "phase": "repair-before-1",
+      "scored_at": "2026-07-26T12:09:26.266Z",
+      "workspace": "D:\\github\\projects\\mini-swarm\\runs\\run-b-faithful-v12-repair\\workspace",
+      "total": 439,
+      "passed": 358,
+      "rate": 0.8154897494305239,
+      "by_group": {
+        "Tabs": {
+          "passed": 9,
+          "total": 9,
+          "rate": 1
+        },
+        "Backslash escapes": {
+          "passed": 11,
+          "total": 11,
+          "rate": 1
+        },
+        "Precedence": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Thematic breaks": {
+          "passed": 16,
+          "total": 16,
+          "rate": 1
+        },
+        "ATX headings": {
+          "passed": 15,
+          "total": 15,
+          "rate": 1
+        },
+        "Setext headings": {
+          "passed": 20,
+          "total": 22,
+          "rate": 0.9090909090909091
+        },
+        "Indented code blocks": {
+          "passed": 10,
+          "total": 10,
+          "rate": 1
+        },
+        "Fenced code blocks": {
+          "passed": 24,
+          "total": 24,
+          "rate": 1
+        },
+        "Paragraphs": {
+          "passed": 6,
+          "total": 6,
+          "rate": 1
+        },
+        "Blank lines": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Block quotes": {
+          "passed": 21,
+          "total": 21,
+          "rate": 1
+        },
+        "List items": {
+          "passed": 40,
+          "total": 40,
+          "rate": 1
+        },
+        "Lists": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Code spans": {
+          "passed": 18,
+          "total": 18,
+          "rate": 1
+        },
+        "Emphasis and strong emphasis": {
+          "passed": 33,
+          "total": 112,
+          "rate": 0.29464285714285715
+        },
+        "Links": {
+          "passed": 76,
+          "total": 76,
+          "rate": 1
+        },
+        "Images": {
+          "passed": 18,
+          "total": 18,
+          "rate": 1
+        },
+        "Hard line breaks": {
+          "passed": 12,
+          "total": 12,
+          "rate": 1
+        },
+        "Soft line breaks": {
+          "passed": 2,
+          "total": 2,
+          "rate": 1
+        },
+        "Textual content": {
+          "passed": 3,
+          "total": 3,
+          "rate": 1
+        }
+      },
+      "by_section": {
+        "Tabs": {
+          "passed": 9,
+          "total": 9,
+          "rate": 1
+        },
+        "Backslash escapes": {
+          "passed": 11,
+          "total": 11,
+          "rate": 1
+        },
+        "Precedence": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Thematic breaks": {
+          "passed": 16,
+          "total": 16,
+          "rate": 1
+        },
+        "ATX headings": {
+          "passed": 15,
+          "total": 15,
+          "rate": 1
+        },
+        "Setext headings": {
+          "passed": 20,
+          "total": 22,
+          "rate": 0.9090909090909091
+        },
+        "Indented code blocks": {
+          "passed": 10,
+          "total": 10,
+          "rate": 1
+        },
+        "Fenced code blocks": {
+          "passed": 24,
+          "total": 24,
+          "rate": 1
+        },
+        "Paragraphs": {
+          "passed": 6,
+          "total": 6,
+          "rate": 1
+        },
+        "Blank lines": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Block quotes": {
+          "passed": 21,
+          "total": 21,
+          "rate": 1
+        },
+        "List items": {
+          "passed": 40,
+          "total": 40,
+          "rate": 1
+        },
+        "Lists": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Code spans": {
+          "passed": 18,
+          "total": 18,
+          "rate": 1
+        },
+        "Emphasis and strong emphasis": {
+          "passed": 33,
+          "total": 112,
+          "rate": 0.29464285714285715
+        },
+        "Links": {
+          "passed": 76,
+          "total": 76,
+          "rate": 1
+        },
+        "Images": {
+          "passed": 18,
+          "total": 18,
+          "rate": 1
+        },
+        "Hard line breaks": {
+          "passed": 12,
+          "total": 12,
+          "rate": 1
+        },
+        "Soft line breaks": {
+          "passed": 2,
+          "total": 2,
+          "rate": 1
+        },
+        "Textual content": {
+          "passed": 3,
+          "total": 3,
+          "rate": 1
+        }
+      },
+      "failures": [
+        {
+          "id": "ex-0064",
+          "group": "Setext headings",
+          "reason": "output mismatch",
+          "input": "Foo *bar\nbaz*\n====",
+          "expected": "<h1>Foo <em>bar\nbaz</em></h1>",
+          "actual": "<h1>Foo *bar\nbaz*</h1>"
+        },
+        {
+          "id": "ex-0076",
+          "group": "Setext headings",
+          "reason": "output mismatch",
+          "input": "> foo\nbar\n===",
+          "expected": "<blockquote>\n<p>foo\nbar\n===</p>\n</blockquote>",
+          "actual": "<blockquote>\n<h1>foo\nbar</h1>\n</blockquote>"
+        },
+        {
+          "id": "ex-0263",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "a * foo bar*",
+          "expected": "<p>a * foo bar*</p>",
+          "actual": "<p>a <em> foo bar</em></p>"
+        },
+        {
+          "id": "ex-0269",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "_foo bar_",
+          "expected": "<p><em>foo bar</em></p>",
+          "actual": "<p>_foo bar_</p>"
+        },
+        {
+          "id": "ex-0276",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "foo-_(bar)_",
+          "expected": "<p>foo-<em>(bar)</em></p>",
+          "actual": "<p>foo-_(bar)_</p>"
+        },
+        {
+          "id": "ex-0278",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "*foo bar *",
+          "expected": "<p>*foo bar *</p>",
+          "actual": "<p><em>foo bar </em></p>"
+        },
+        {
+          "id": "ex-0279",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "*foo bar\n*",
+          "expected": "<p>*foo bar\n*</p>",
+          "actual": "<p><em>foo bar\n</em></p>"
+        },
+        {
+          "id": "ex-0280",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "*(*foo)",
+          "expected": "<p>*(*foo)</p>",
+          "actual": "<p><em>(</em>foo)</p>"
+        },
+        {
+          "id": "ex-0285",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "_(_foo_)_",
+          "expected": "<p><em>(<em>foo</em>)</em></p>",
+          "actual": "<p>_(_foo_)_</p>"
+        },
+        {
+          "id": "ex-0288",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "_foo_bar_baz_",
+          "expected": "<p><em>foo_bar_baz</em></p>",
+          "actual": "<p>_foo_bar_baz_</p>"
+        },
+        {
+          "id": "ex-0289",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "_(bar)_.",
+          "expected": "<p><em>(bar)</em>.</p>",
+          "actual": "<p>_(bar)_.</p>"
+        },
+        {
+          "id": "ex-0290",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "**foo bar**",
+          "expected": "<p><strong>foo bar</strong></p>",
+          "actual": "<p><em></em>foo bar<em></em></p>"
+        },
+        {
+          "id": "ex-0291",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "** foo bar**",
+          "expected": "<p>** foo bar**</p>",
+          "actual": "<p><em></em> foo bar<em></em></p>"
+        },
+        {
+          "id": "ex-0293",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "foo**bar**",
+          "expected": "<p>foo<strong>bar</strong></p>",
+          "actual": "<p>foo<em></em>bar<em></em></p>"
+        },
+        {
+          "id": "ex-0294",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "__foo bar__",
+          "expected": "<p><strong>foo bar</strong></p>",
+          "actual": "<p>__foo bar__</p>"
+        },
+        {
+          "id": "ex-0301",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "__foo, __bar__, baz__",
+          "expected": "<p><strong>foo, <strong>bar</strong>, baz</strong></p>",
+          "actual": "<p>__foo, __bar__, baz__</p>"
+        },
+        {
+          "id": "ex-0302",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "foo-__(bar)__",
+          "expected": "<p>foo-<strong>(bar)</strong></p>",
+          "actual": "<p>foo-__(bar)__</p>"
+        },
+        {
+          "id": "ex-0304",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "**(**foo)",
+          "expected": "<p>**(**foo)</p>",
+          "actual": "<p><em></em>(<em></em>foo)</p>"
+        },
+        {
+          "id": "ex-0306",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "**Gomphocarpus (*Gomphocarpus physocarpus*, syn.\n*Asclepias physocarpa*)**",
+          "expected": "<p><strong>Gomphocarpus (<em>Gomphocarpus physocarpus</em>, syn.\n<em>Asclepias physocarpa</em>)</strong></p>",
+          "actual": "<p><em></em>Gomphocarpus (<em>Gomphocarpus physocarpus</em>, syn.\n<em>Asclepias physocarpa</em>)<em></em></p>"
+        },
+        {
+          "id": "ex-0307",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "**foo \"*bar*\" foo**",
+          "expected": "<p><strong>foo &quot;<em>bar</em>&quot; foo</strong></p>",
+          "actual": "<p><em></em>foo &quot;<em>bar</em>&quot; foo<em></em></p>"
+        },
+        {
+          "id": "ex-0308",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "**foo**bar",
+          "expected": "<p><strong>foo</strong>bar</p>",
+          "actual": "<p><em></em>foo<em></em>bar</p>"
+        },
+        {
+          "id": "ex-0311",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "_(__foo__)_",
+          "expected": "<p><em>(<strong>foo</strong>)</em></p>",
+          "actual": "<p>_(__foo__)_</p>"
+        },
+        {
+          "id": "ex-0314",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "__foo__bar__baz__",
+          "expected": "<p><strong>foo__bar__baz</strong></p>",
+          "actual": "<p>__foo__bar__baz__</p>"
+        },
+        {
+          "id": "ex-0315",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "__(bar)__.",
+          "expected": "<p><strong>(bar)</strong>.</p>",
+          "actual": "<p>__(bar)__.</p>"
+        },
+        {
+          "id": "ex-0318",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "_foo __bar__ baz_",
+          "expected": "<p><em>foo <strong>bar</strong> baz</em></p>",
+          "actual": "<p>_foo __bar__ baz_</p>"
+        },
+        {
+          "id": "ex-0319",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "_foo _bar_ baz_",
+          "expected": "<p><em>foo <em>bar</em> baz</em></p>",
+          "actual": "<p>_foo _bar_ baz_</p>"
+        },
+        {
+          "id": "ex-0320",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "__foo_ bar_",
+          "expected": "<p><em><em>foo</em> bar</em></p>",
+          "actual": "<p>__foo_ bar_</p>"
+        },
+        {
+          "id": "ex-0321",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "*foo *bar**",
+          "expected": "<p><em>foo <em>bar</em></em></p>",
+          "actual": "<p><em>foo </em>bar<em></em></p>"
+        },
+        {
+          "id": "ex-0322",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "*foo **bar** baz*",
+          "expected": "<p><em>foo <strong>bar</strong> baz</em></p>",
+          "actual": "<p><em>foo <em></em>bar<em></em> baz</em></p>"
+        },
+        {
+          "id": "ex-0323",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "*foo**bar**baz*",
+          "expected": "<p><em>foo<strong>bar</strong>baz</em></p>",
+          "actual": "<p><em>foo<em></em>bar<em></em>baz</em></p>"
+        },
+        {
+          "id": "ex-0324",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "*foo**bar*",
+          "expected": "<p><em>foo**bar</em></p>",
+          "actual": "<p><em>foo<em></em>bar</em></p>"
+        },
+        {
+          "id": "ex-0325",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "***foo** bar*",
+          "expected": "<p><em><strong>foo</strong> bar</em></p>",
+          "actual": "<p><em><em></em>foo<em></em> bar</em></p>"
+        },
+        {
+          "id": "ex-0326",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "*foo **bar***",
+          "expected": "<p><em>foo <strong>bar</strong></em></p>",
+          "actual": "<p>*foo <em></em>bar*<em></em></p>"
+        },
+        {
+          "id": "ex-0327",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "*foo**bar***",
+          "expected": "<p><em>foo<strong>bar</strong></em></p>",
+          "actual": "<p>*foo<em></em>bar*<em></em></p>"
+        },
+        {
+          "id": "ex-0328",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "foo***bar***baz",
+          "expected": "<p>foo<em><strong>bar</strong></em>baz</p>",
+          "actual": "<p>foo*<em></em>bar*<em></em>baz</p>"
+        },
+        {
+          "id": "ex-0330",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "*foo **bar *baz* bim** bop*",
+          "expected": "<p><em>foo <strong>bar <em>baz</em> bim</strong> bop</em></p>",
+          "actual": "<p><em>foo <em></em>bar </em>baz<em> bim<em></em> bop</em></p>"
+        },
+        {
+          "id": "ex-0331",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "*foo [*bar*](/url)*",
+          "expected": "<p><em>foo <a href=\"/url\"><em>bar</em></a></em></p>",
+          "actual": "<p><em>foo [</em>bar<em>](/url)</em></p>"
+        },
+        {
+          "id": "ex-0332",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "** is not an empty emphasis",
+          "expected": "<p>** is not an empty emphasis</p>",
+          "actual": "<p><em></em> is not an empty emphasis</p>"
+        },
+        {
+          "id": "ex-0333",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "**** is not an empty strong emphasis",
+          "expected": "<p>**** is not an empty strong emphasis</p>",
+          "actual": "<p>**<em></em> is not an empty strong emphasis</p>"
+        },
+        {
+          "id": "ex-0334",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "**foo [bar](/url)**",
+          "expected": "<p><strong>foo <a href=\"/url\">bar</a></strong></p>",
+          "actual": "<p><em></em>foo <a href=\"/url\">bar</a><em></em></p>"
+        },
+        {
+          "id": "ex-0335",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "**foo\nbar**",
+          "expected": "<p><strong>foo\nbar</strong></p>",
+          "actual": "<p><em></em>foo\nbar<em></em></p>"
+        },
+        {
+          "id": "ex-0336",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "__foo _bar_ baz__",
+          "expected": "<p><strong>foo <em>bar</em> baz</strong></p>",
+          "actual": "<p>__foo _bar_ baz__</p>"
+        },
+        {
+          "id": "ex-0337",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "__foo __bar__ baz__",
+          "expected": "<p><strong>foo <strong>bar</strong> baz</strong></p>",
+          "actual": "<p>__foo __bar__ baz__</p>"
+        },
+        {
+          "id": "ex-0338",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "____foo__ bar__",
+          "expected": "<p><strong><strong>foo</strong> bar</strong></p>",
+          "actual": "<p>____foo__ bar__</p>"
+        },
+        {
+          "id": "ex-0341",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "**foo*bar*baz**",
+          "expected": "<p><strong>foo<em>bar</em>baz</strong></p>",
+          "actual": "<p><em></em>foo<em>bar</em>baz<em></em></p>"
+        },
+        {
+          "id": "ex-0342",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "***foo* bar**",
+          "expected": "<p><strong><em>foo</em> bar</strong></p>",
+          "actual": "<p><em><em></em>foo</em> bar<em></em></p>"
+        },
+        {
+          "id": "ex-0343",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "**foo *bar***",
+          "expected": "<p><strong>foo <em>bar</em></strong></p>",
+          "actual": "<p><em></em>foo *bar*<em></em></p>"
+        },
+        {
+          "id": "ex-0344",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "**foo *bar **baz**\nbim* bop**",
+          "expected": "<p><strong>foo <em>bar <strong>baz</strong>\nbim</em> bop</strong></p>",
+          "actual": "<p><em></em>foo <em>bar <em></em>baz<em></em>\nbim</em> bop<em></em></p>"
+        },
+        {
+          "id": "ex-0345",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "**foo [*bar*](/url)**",
+          "expected": "<p><strong>foo <a href=\"/url\"><em>bar</em></a></strong></p>",
+          "actual": "<p><em></em>foo <a href=\"/url\"><em>bar</em></a><em></em></p>"
+        },
+        {
+          "id": "ex-0348",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "foo ***",
+          "expected": "<p>foo ***</p>",
+          "actual": "<p>foo *<em></em></p>"
+        },
+        {
+          "id": "ex-0351",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "foo *****",
+          "expected": "<p>foo *****</p>",
+          "actual": "<p>foo ***<em></em></p>"
+        },
+        {
+          "id": "ex-0352",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "foo **\\***",
+          "expected": "<p>foo <strong>*</strong></p>",
+          "actual": "<p>foo <em></em>*<em></em></p>"
+        },
+        {
+          "id": "ex-0353",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "foo **_**",
+          "expected": "<p>foo <strong>_</strong></p>",
+          "actual": "<p>foo <em></em>_<em></em></p>"
+        },
+        {
+          "id": "ex-0354",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "**foo*",
+          "expected": "<p>*<em>foo</em></p>",
+          "actual": "<p><em></em>foo*</p>"
+        },
+        {
+          "id": "ex-0355",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "*foo**",
+          "expected": "<p><em>foo</em>*</p>",
+          "actual": "<p>*foo<em></em></p>"
+        },
+        {
+          "id": "ex-0356",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "***foo**",
+          "expected": "<p>*<strong>foo</strong></p>",
+          "actual": "<p>*<em></em>foo<em></em></p>"
+        },
+        {
+          "id": "ex-0357",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "****foo*",
+          "expected": "<p>***<em>foo</em></p>",
+          "actual": "<p><em>*<em></em>foo</em></p>"
+        },
+        {
+          "id": "ex-0358",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "**foo***",
+          "expected": "<p><strong>foo</strong>*</p>",
+          "actual": "<p><em></em>foo*<em></em></p>"
+        },
+        {
+          "id": "ex-0361",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "foo _\\__",
+          "expected": "<p>foo <em>_</em></p>",
+          "actual": "<p>foo ___</p>"
+        },
+        {
+          "id": "ex-0362",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "foo _*_",
+          "expected": "<p>foo <em>*</em></p>",
+          "actual": "<p>foo _*_</p>"
+        },
+        {
+          "id": "ex-0364",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "foo __\\___",
+          "expected": "<p>foo <strong>_</strong></p>",
+          "actual": "<p>foo _____</p>"
+        },
+        {
+          "id": "ex-0365",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "foo __*__",
+          "expected": "<p>foo <strong>*</strong></p>",
+          "actual": "<p>foo __*__</p>"
+        },
+        {
+          "id": "ex-0367",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "_foo__",
+          "expected": "<p><em>foo</em>_</p>",
+          "actual": "<p>_foo__</p>"
+        },
+        {
+          "id": "ex-0368",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "___foo__",
+          "expected": "<p>_<strong>foo</strong></p>",
+          "actual": "<p>___foo__</p>"
+        },
+        {
+          "id": "ex-0369",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "____foo_",
+          "expected": "<p>___<em>foo</em></p>",
+          "actual": "<p>____foo_</p>"
+        },
+        {
+          "id": "ex-0370",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "__foo___",
+          "expected": "<p><strong>foo</strong>_</p>",
+          "actual": "<p>__foo___</p>"
+        },
+        {
+          "id": "ex-0371",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "_foo____",
+          "expected": "<p><em>foo</em>___</p>",
+          "actual": "<p>_foo____</p>"
+        },
+        {
+          "id": "ex-0372",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "**foo**",
+          "expected": "<p><strong>foo</strong></p>",
+          "actual": "<p><em></em>foo<em></em></p>"
+        },
+        {
+          "id": "ex-0373",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "*_foo_*",
+          "expected": "<p><em><em>foo</em></em></p>",
+          "actual": "<p><em>_foo_</em></p>"
+        },
+        {
+          "id": "ex-0374",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "__foo__",
+          "expected": "<p><strong>foo</strong></p>",
+          "actual": "<p>__foo__</p>"
+        },
+        {
+          "id": "ex-0376",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "****foo****",
+          "expected": "<p><strong><strong>foo</strong></strong></p>",
+          "actual": "<p>**<em></em>foo**<em></em></p>"
+        },
+        {
+          "id": "ex-0377",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "____foo____",
+          "expected": "<p><strong><strong>foo</strong></strong></p>",
+          "actual": "<p>____foo____</p>"
+        },
+        {
+          "id": "ex-0378",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "******foo******",
+          "expected": "<p><strong><strong><strong>foo</strong></strong></strong></p>",
+          "actual": "<p>****<em></em>foo****<em></em></p>"
+        },
+        {
+          "id": "ex-0379",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "***foo***",
+          "expected": "<p><em><strong>foo</strong></em></p>",
+          "actual": "<p>*<em></em>foo*<em></em></p>"
+        },
+        {
+          "id": "ex-0380",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "_____foo_____",
+          "expected": "<p><em><strong><strong>foo</strong></strong></em></p>",
+          "actual": "<p>_____foo_____</p>"
+        },
+        {
+          "id": "ex-0382",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "*foo __bar *baz bim__ bam*",
+          "expected": "<p><em>foo <strong>bar *baz bim</strong> bam</em></p>",
+          "actual": "<p><em>foo __bar </em>baz bim__ bam*</p>"
+        },
+        {
+          "id": "ex-0383",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "**foo **bar baz**",
+          "expected": "<p>**foo <strong>bar baz</strong></p>",
+          "actual": "<p><em></em>foo <em></em>bar baz<em></em></p>"
+        },
+        {
+          "id": "ex-0387",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "*<img src=\"foo\" title=\"*\"/>",
+          "expected": "<p>*<img src=\"foo\" title=\"*\"/></p>",
+          "actual": "<p><em>&lt;img src=&quot;foo&quot; title=&quot;</em>&quot;/&gt;</p>"
+        },
+        {
+          "id": "ex-0388",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "**<a href=\"**\">",
+          "expected": "<p>**<a href=\"**\"></p>",
+          "actual": "<p><em></em><a href=\"**\"></p>"
+        },
+        {
+          "id": "ex-0391",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "_a `_`_",
+          "expected": "<p><em>a <code>_</code></em></p>",
+          "actual": "<p>_a <code>_</code>_</p>"
+        },
+        {
+          "id": "ex-0392",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "**a<https://foo.bar/?q=**>",
+          "expected": "<p>**a<a href=\"https://foo.bar/?q=**\">https://foo.bar/?q=**</a></p>",
+          "actual": "<p><em></em>a<a href=\"https://foo.bar/?q=**\">https://foo.bar/?q=**</a></p>"
+        }
+      ],
+      "failure_count": 81,
+      "parse_error": false,
+      "at": "2026-07-26T12:09:26.292Z"
+    },
+    {
+      "phase": "global-before-1",
+      "scored_at": "2026-07-26T12:09:26.266Z",
+      "workspace": "D:\\github\\projects\\mini-swarm\\runs\\run-b-faithful-v12-repair\\workspace",
+      "total": 439,
+      "passed": 358,
+      "rate": 0.8154897494305239,
+      "by_group": {
+        "Tabs": {
+          "passed": 9,
+          "total": 9,
+          "rate": 1
+        },
+        "Backslash escapes": {
+          "passed": 11,
+          "total": 11,
+          "rate": 1
+        },
+        "Precedence": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Thematic breaks": {
+          "passed": 16,
+          "total": 16,
+          "rate": 1
+        },
+        "ATX headings": {
+          "passed": 15,
+          "total": 15,
+          "rate": 1
+        },
+        "Setext headings": {
+          "passed": 20,
+          "total": 22,
+          "rate": 0.9090909090909091
+        },
+        "Indented code blocks": {
+          "passed": 10,
+          "total": 10,
+          "rate": 1
+        },
+        "Fenced code blocks": {
+          "passed": 24,
+          "total": 24,
+          "rate": 1
+        },
+        "Paragraphs": {
+          "passed": 6,
+          "total": 6,
+          "rate": 1
+        },
+        "Blank lines": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Block quotes": {
+          "passed": 21,
+          "total": 21,
+          "rate": 1
+        },
+        "List items": {
+          "passed": 40,
+          "total": 40,
+          "rate": 1
+        },
+        "Lists": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Code spans": {
+          "passed": 18,
+          "total": 18,
+          "rate": 1
+        },
+        "Emphasis and strong emphasis": {
+          "passed": 33,
+          "total": 112,
+          "rate": 0.29464285714285715
+        },
+        "Links": {
+          "passed": 76,
+          "total": 76,
+          "rate": 1
+        },
+        "Images": {
+          "passed": 18,
+          "total": 18,
+          "rate": 1
+        },
+        "Hard line breaks": {
+          "passed": 12,
+          "total": 12,
+          "rate": 1
+        },
+        "Soft line breaks": {
+          "passed": 2,
+          "total": 2,
+          "rate": 1
+        },
+        "Textual content": {
+          "passed": 3,
+          "total": 3,
+          "rate": 1
+        }
+      },
+      "by_section": {
+        "Tabs": {
+          "passed": 9,
+          "total": 9,
+          "rate": 1
+        },
+        "Backslash escapes": {
+          "passed": 11,
+          "total": 11,
+          "rate": 1
+        },
+        "Precedence": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Thematic breaks": {
+          "passed": 16,
+          "total": 16,
+          "rate": 1
+        },
+        "ATX headings": {
+          "passed": 15,
+          "total": 15,
+          "rate": 1
+        },
+        "Setext headings": {
+          "passed": 20,
+          "total": 22,
+          "rate": 0.9090909090909091
+        },
+        "Indented code blocks": {
+          "passed": 10,
+          "total": 10,
+          "rate": 1
+        },
+        "Fenced code blocks": {
+          "passed": 24,
+          "total": 24,
+          "rate": 1
+        },
+        "Paragraphs": {
+          "passed": 6,
+          "total": 6,
+          "rate": 1
+        },
+        "Blank lines": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Block quotes": {
+          "passed": 21,
+          "total": 21,
+          "rate": 1
+        },
+        "List items": {
+          "passed": 40,
+          "total": 40,
+          "rate": 1
+        },
+        "Lists": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Code spans": {
+          "passed": 18,
+          "total": 18,
+          "rate": 1
+        },
+        "Emphasis and strong emphasis": {
+          "passed": 33,
+          "total": 112,
+          "rate": 0.29464285714285715
+        },
+        "Links": {
+          "passed": 76,
+          "total": 76,
+          "rate": 1
+        },
+        "Images": {
+          "passed": 18,
+          "total": 18,
+          "rate": 1
+        },
+        "Hard line breaks": {
+          "passed": 12,
+          "total": 12,
+          "rate": 1
+        },
+        "Soft line breaks": {
+          "passed": 2,
+          "total": 2,
+          "rate": 1
+        },
+        "Textual content": {
+          "passed": 3,
+          "total": 3,
+          "rate": 1
+        }
+      },
+      "failures": [
+        {
+          "id": "ex-0064",
+          "group": "Setext headings",
+          "reason": "output mismatch",
+          "input": "Foo *bar\nbaz*\n====",
+          "expected": "<h1>Foo <em>bar\nbaz</em></h1>",
+          "actual": "<h1>Foo *bar\nbaz*</h1>"
+        },
+        {
+          "id": "ex-0076",
+          "group": "Setext headings",
+          "reason": "output mismatch",
+          "input": "> foo\nbar\n===",
+          "expected": "<blockquote>\n<p>foo\nbar\n===</p>\n</blockquote>",
+          "actual": "<blockquote>\n<h1>foo\nbar</h1>\n</blockquote>"
+        },
+        {
+          "id": "ex-0263",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "a * foo bar*",
+          "expected": "<p>a * foo bar*</p>",
+          "actual": "<p>a <em> foo bar</em></p>"
+        },
+        {
+          "id": "ex-0269",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "_foo bar_",
+          "expected": "<p><em>foo bar</em></p>",
+          "actual": "<p>_foo bar_</p>"
+        },
+        {
+          "id": "ex-0276",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "foo-_(bar)_",
+          "expected": "<p>foo-<em>(bar)</em></p>",
+          "actual": "<p>foo-_(bar)_</p>"
+        },
+        {
+          "id": "ex-0278",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "*foo bar *",
+          "expected": "<p>*foo bar *</p>",
+          "actual": "<p><em>foo bar </em></p>"
+        },
+        {
+          "id": "ex-0279",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "*foo bar\n*",
+          "expected": "<p>*foo bar\n*</p>",
+          "actual": "<p><em>foo bar\n</em></p>"
+        },
+        {
+          "id": "ex-0280",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "*(*foo)",
+          "expected": "<p>*(*foo)</p>",
+          "actual": "<p><em>(</em>foo)</p>"
+        },
+        {
+          "id": "ex-0285",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "_(_foo_)_",
+          "expected": "<p><em>(<em>foo</em>)</em></p>",
+          "actual": "<p>_(_foo_)_</p>"
+        },
+        {
+          "id": "ex-0288",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "_foo_bar_baz_",
+          "expected": "<p><em>foo_bar_baz</em></p>",
+          "actual": "<p>_foo_bar_baz_</p>"
+        },
+        {
+          "id": "ex-0289",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "_(bar)_.",
+          "expected": "<p><em>(bar)</em>.</p>",
+          "actual": "<p>_(bar)_.</p>"
+        },
+        {
+          "id": "ex-0290",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "**foo bar**",
+          "expected": "<p><strong>foo bar</strong></p>",
+          "actual": "<p><em></em>foo bar<em></em></p>"
+        },
+        {
+          "id": "ex-0291",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "** foo bar**",
+          "expected": "<p>** foo bar**</p>",
+          "actual": "<p><em></em> foo bar<em></em></p>"
+        },
+        {
+          "id": "ex-0293",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "foo**bar**",
+          "expected": "<p>foo<strong>bar</strong></p>",
+          "actual": "<p>foo<em></em>bar<em></em></p>"
+        },
+        {
+          "id": "ex-0294",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "__foo bar__",
+          "expected": "<p><strong>foo bar</strong></p>",
+          "actual": "<p>__foo bar__</p>"
+        },
+        {
+          "id": "ex-0301",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "__foo, __bar__, baz__",
+          "expected": "<p><strong>foo, <strong>bar</strong>, baz</strong></p>",
+          "actual": "<p>__foo, __bar__, baz__</p>"
+        },
+        {
+          "id": "ex-0302",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "foo-__(bar)__",
+          "expected": "<p>foo-<strong>(bar)</strong></p>",
+          "actual": "<p>foo-__(bar)__</p>"
+        },
+        {
+          "id": "ex-0304",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "**(**foo)",
+          "expected": "<p>**(**foo)</p>",
+          "actual": "<p><em></em>(<em></em>foo)</p>"
+        },
+        {
+          "id": "ex-0306",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "**Gomphocarpus (*Gomphocarpus physocarpus*, syn.\n*Asclepias physocarpa*)**",
+          "expected": "<p><strong>Gomphocarpus (<em>Gomphocarpus physocarpus</em>, syn.\n<em>Asclepias physocarpa</em>)</strong></p>",
+          "actual": "<p><em></em>Gomphocarpus (<em>Gomphocarpus physocarpus</em>, syn.\n<em>Asclepias physocarpa</em>)<em></em></p>"
+        },
+        {
+          "id": "ex-0307",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "**foo \"*bar*\" foo**",
+          "expected": "<p><strong>foo &quot;<em>bar</em>&quot; foo</strong></p>",
+          "actual": "<p><em></em>foo &quot;<em>bar</em>&quot; foo<em></em></p>"
+        },
+        {
+          "id": "ex-0308",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "**foo**bar",
+          "expected": "<p><strong>foo</strong>bar</p>",
+          "actual": "<p><em></em>foo<em></em>bar</p>"
+        },
+        {
+          "id": "ex-0311",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "_(__foo__)_",
+          "expected": "<p><em>(<strong>foo</strong>)</em></p>",
+          "actual": "<p>_(__foo__)_</p>"
+        },
+        {
+          "id": "ex-0314",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "__foo__bar__baz__",
+          "expected": "<p><strong>foo__bar__baz</strong></p>",
+          "actual": "<p>__foo__bar__baz__</p>"
+        },
+        {
+          "id": "ex-0315",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "__(bar)__.",
+          "expected": "<p><strong>(bar)</strong>.</p>",
+          "actual": "<p>__(bar)__.</p>"
+        },
+        {
+          "id": "ex-0318",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "_foo __bar__ baz_",
+          "expected": "<p><em>foo <strong>bar</strong> baz</em></p>",
+          "actual": "<p>_foo __bar__ baz_</p>"
+        },
+        {
+          "id": "ex-0319",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "_foo _bar_ baz_",
+          "expected": "<p><em>foo <em>bar</em> baz</em></p>",
+          "actual": "<p>_foo _bar_ baz_</p>"
+        },
+        {
+          "id": "ex-0320",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "__foo_ bar_",
+          "expected": "<p><em><em>foo</em> bar</em></p>",
+          "actual": "<p>__foo_ bar_</p>"
+        },
+        {
+          "id": "ex-0321",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "*foo *bar**",
+          "expected": "<p><em>foo <em>bar</em></em></p>",
+          "actual": "<p><em>foo </em>bar<em></em></p>"
+        },
+        {
+          "id": "ex-0322",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "*foo **bar** baz*",
+          "expected": "<p><em>foo <strong>bar</strong> baz</em></p>",
+          "actual": "<p><em>foo <em></em>bar<em></em> baz</em></p>"
+        },
+        {
+          "id": "ex-0323",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "*foo**bar**baz*",
+          "expected": "<p><em>foo<strong>bar</strong>baz</em></p>",
+          "actual": "<p><em>foo<em></em>bar<em></em>baz</em></p>"
+        },
+        {
+          "id": "ex-0324",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "*foo**bar*",
+          "expected": "<p><em>foo**bar</em></p>",
+          "actual": "<p><em>foo<em></em>bar</em></p>"
+        },
+        {
+          "id": "ex-0325",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "***foo** bar*",
+          "expected": "<p><em><strong>foo</strong> bar</em></p>",
+          "actual": "<p><em><em></em>foo<em></em> bar</em></p>"
+        },
+        {
+          "id": "ex-0326",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "*foo **bar***",
+          "expected": "<p><em>foo <strong>bar</strong></em></p>",
+          "actual": "<p>*foo <em></em>bar*<em></em></p>"
+        },
+        {
+          "id": "ex-0327",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "*foo**bar***",
+          "expected": "<p><em>foo<strong>bar</strong></em></p>",
+          "actual": "<p>*foo<em></em>bar*<em></em></p>"
+        },
+        {
+          "id": "ex-0328",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "foo***bar***baz",
+          "expected": "<p>foo<em><strong>bar</strong></em>baz</p>",
+          "actual": "<p>foo*<em></em>bar*<em></em>baz</p>"
+        },
+        {
+          "id": "ex-0330",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "*foo **bar *baz* bim** bop*",
+          "expected": "<p><em>foo <strong>bar <em>baz</em> bim</strong> bop</em></p>",
+          "actual": "<p><em>foo <em></em>bar </em>baz<em> bim<em></em> bop</em></p>"
+        },
+        {
+          "id": "ex-0331",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "*foo [*bar*](/url)*",
+          "expected": "<p><em>foo <a href=\"/url\"><em>bar</em></a></em></p>",
+          "actual": "<p><em>foo [</em>bar<em>](/url)</em></p>"
+        },
+        {
+          "id": "ex-0332",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "** is not an empty emphasis",
+          "expected": "<p>** is not an empty emphasis</p>",
+          "actual": "<p><em></em> is not an empty emphasis</p>"
+        },
+        {
+          "id": "ex-0333",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "**** is not an empty strong emphasis",
+          "expected": "<p>**** is not an empty strong emphasis</p>",
+          "actual": "<p>**<em></em> is not an empty strong emphasis</p>"
+        },
+        {
+          "id": "ex-0334",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "**foo [bar](/url)**",
+          "expected": "<p><strong>foo <a href=\"/url\">bar</a></strong></p>",
+          "actual": "<p><em></em>foo <a href=\"/url\">bar</a><em></em></p>"
+        },
+        {
+          "id": "ex-0335",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "**foo\nbar**",
+          "expected": "<p><strong>foo\nbar</strong></p>",
+          "actual": "<p><em></em>foo\nbar<em></em></p>"
+        },
+        {
+          "id": "ex-0336",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "__foo _bar_ baz__",
+          "expected": "<p><strong>foo <em>bar</em> baz</strong></p>",
+          "actual": "<p>__foo _bar_ baz__</p>"
+        },
+        {
+          "id": "ex-0337",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "__foo __bar__ baz__",
+          "expected": "<p><strong>foo <strong>bar</strong> baz</strong></p>",
+          "actual": "<p>__foo __bar__ baz__</p>"
+        },
+        {
+          "id": "ex-0338",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "____foo__ bar__",
+          "expected": "<p><strong><strong>foo</strong> bar</strong></p>",
+          "actual": "<p>____foo__ bar__</p>"
+        },
+        {
+          "id": "ex-0341",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "**foo*bar*baz**",
+          "expected": "<p><strong>foo<em>bar</em>baz</strong></p>",
+          "actual": "<p><em></em>foo<em>bar</em>baz<em></em></p>"
+        },
+        {
+          "id": "ex-0342",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "***foo* bar**",
+          "expected": "<p><strong><em>foo</em> bar</strong></p>",
+          "actual": "<p><em><em></em>foo</em> bar<em></em></p>"
+        },
+        {
+          "id": "ex-0343",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "**foo *bar***",
+          "expected": "<p><strong>foo <em>bar</em></strong></p>",
+          "actual": "<p><em></em>foo *bar*<em></em></p>"
+        },
+        {
+          "id": "ex-0344",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "**foo *bar **baz**\nbim* bop**",
+          "expected": "<p><strong>foo <em>bar <strong>baz</strong>\nbim</em> bop</strong></p>",
+          "actual": "<p><em></em>foo <em>bar <em></em>baz<em></em>\nbim</em> bop<em></em></p>"
+        },
+        {
+          "id": "ex-0345",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "**foo [*bar*](/url)**",
+          "expected": "<p><strong>foo <a href=\"/url\"><em>bar</em></a></strong></p>",
+          "actual": "<p><em></em>foo <a href=\"/url\"><em>bar</em></a><em></em></p>"
+        },
+        {
+          "id": "ex-0348",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "foo ***",
+          "expected": "<p>foo ***</p>",
+          "actual": "<p>foo *<em></em></p>"
+        },
+        {
+          "id": "ex-0351",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "foo *****",
+          "expected": "<p>foo *****</p>",
+          "actual": "<p>foo ***<em></em></p>"
+        },
+        {
+          "id": "ex-0352",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "foo **\\***",
+          "expected": "<p>foo <strong>*</strong></p>",
+          "actual": "<p>foo <em></em>*<em></em></p>"
+        },
+        {
+          "id": "ex-0353",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "foo **_**",
+          "expected": "<p>foo <strong>_</strong></p>",
+          "actual": "<p>foo <em></em>_<em></em></p>"
+        },
+        {
+          "id": "ex-0354",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "**foo*",
+          "expected": "<p>*<em>foo</em></p>",
+          "actual": "<p><em></em>foo*</p>"
+        },
+        {
+          "id": "ex-0355",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "*foo**",
+          "expected": "<p><em>foo</em>*</p>",
+          "actual": "<p>*foo<em></em></p>"
+        },
+        {
+          "id": "ex-0356",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "***foo**",
+          "expected": "<p>*<strong>foo</strong></p>",
+          "actual": "<p>*<em></em>foo<em></em></p>"
+        },
+        {
+          "id": "ex-0357",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "****foo*",
+          "expected": "<p>***<em>foo</em></p>",
+          "actual": "<p><em>*<em></em>foo</em></p>"
+        },
+        {
+          "id": "ex-0358",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "**foo***",
+          "expected": "<p><strong>foo</strong>*</p>",
+          "actual": "<p><em></em>foo*<em></em></p>"
+        },
+        {
+          "id": "ex-0361",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "foo _\\__",
+          "expected": "<p>foo <em>_</em></p>",
+          "actual": "<p>foo ___</p>"
+        },
+        {
+          "id": "ex-0362",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "foo _*_",
+          "expected": "<p>foo <em>*</em></p>",
+          "actual": "<p>foo _*_</p>"
+        },
+        {
+          "id": "ex-0364",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "foo __\\___",
+          "expected": "<p>foo <strong>_</strong></p>",
+          "actual": "<p>foo _____</p>"
+        },
+        {
+          "id": "ex-0365",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "foo __*__",
+          "expected": "<p>foo <strong>*</strong></p>",
+          "actual": "<p>foo __*__</p>"
+        },
+        {
+          "id": "ex-0367",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "_foo__",
+          "expected": "<p><em>foo</em>_</p>",
+          "actual": "<p>_foo__</p>"
+        },
+        {
+          "id": "ex-0368",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "___foo__",
+          "expected": "<p>_<strong>foo</strong></p>",
+          "actual": "<p>___foo__</p>"
+        },
+        {
+          "id": "ex-0369",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "____foo_",
+          "expected": "<p>___<em>foo</em></p>",
+          "actual": "<p>____foo_</p>"
+        },
+        {
+          "id": "ex-0370",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "__foo___",
+          "expected": "<p><strong>foo</strong>_</p>",
+          "actual": "<p>__foo___</p>"
+        },
+        {
+          "id": "ex-0371",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "_foo____",
+          "expected": "<p><em>foo</em>___</p>",
+          "actual": "<p>_foo____</p>"
+        },
+        {
+          "id": "ex-0372",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "**foo**",
+          "expected": "<p><strong>foo</strong></p>",
+          "actual": "<p><em></em>foo<em></em></p>"
+        },
+        {
+          "id": "ex-0373",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "*_foo_*",
+          "expected": "<p><em><em>foo</em></em></p>",
+          "actual": "<p><em>_foo_</em></p>"
+        },
+        {
+          "id": "ex-0374",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "__foo__",
+          "expected": "<p><strong>foo</strong></p>",
+          "actual": "<p>__foo__</p>"
+        },
+        {
+          "id": "ex-0376",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "****foo****",
+          "expected": "<p><strong><strong>foo</strong></strong></p>",
+          "actual": "<p>**<em></em>foo**<em></em></p>"
+        },
+        {
+          "id": "ex-0377",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "____foo____",
+          "expected": "<p><strong><strong>foo</strong></strong></p>",
+          "actual": "<p>____foo____</p>"
+        },
+        {
+          "id": "ex-0378",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "******foo******",
+          "expected": "<p><strong><strong><strong>foo</strong></strong></strong></p>",
+          "actual": "<p>****<em></em>foo****<em></em></p>"
+        },
+        {
+          "id": "ex-0379",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "***foo***",
+          "expected": "<p><em><strong>foo</strong></em></p>",
+          "actual": "<p>*<em></em>foo*<em></em></p>"
+        },
+        {
+          "id": "ex-0380",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "_____foo_____",
+          "expected": "<p><em><strong><strong>foo</strong></strong></em></p>",
+          "actual": "<p>_____foo_____</p>"
+        },
+        {
+          "id": "ex-0382",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "*foo __bar *baz bim__ bam*",
+          "expected": "<p><em>foo <strong>bar *baz bim</strong> bam</em></p>",
+          "actual": "<p><em>foo __bar </em>baz bim__ bam*</p>"
+        },
+        {
+          "id": "ex-0383",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "**foo **bar baz**",
+          "expected": "<p>**foo <strong>bar baz</strong></p>",
+          "actual": "<p><em></em>foo <em></em>bar baz<em></em></p>"
+        },
+        {
+          "id": "ex-0387",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "*<img src=\"foo\" title=\"*\"/>",
+          "expected": "<p>*<img src=\"foo\" title=\"*\"/></p>",
+          "actual": "<p><em>&lt;img src=&quot;foo&quot; title=&quot;</em>&quot;/&gt;</p>"
+        },
+        {
+          "id": "ex-0388",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "**<a href=\"**\">",
+          "expected": "<p>**<a href=\"**\"></p>",
+          "actual": "<p><em></em><a href=\"**\"></p>"
+        },
+        {
+          "id": "ex-0391",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "_a `_`_",
+          "expected": "<p><em>a <code>_</code></em></p>",
+          "actual": "<p>_a <code>_</code>_</p>"
+        },
+        {
+          "id": "ex-0392",
+          "group": "Emphasis and strong emphasis",
+          "reason": "output mismatch",
+          "input": "**a<https://foo.bar/?q=**>",
+          "expected": "<p>**a<a href=\"https://foo.bar/?q=**\">https://foo.bar/?q=**</a></p>",
+          "actual": "<p><em></em>a<a href=\"https://foo.bar/?q=**\">https://foo.bar/?q=**</a></p>"
+        }
+      ],
+      "failure_count": 81,
+      "parse_error": false,
+      "at": "2026-07-26T12:09:26.292Z"
+    },
+    {
+      "phase": "repair-after-1",
+      "scored_at": "2026-07-26T14:30:24.024Z",
+      "workspace": "D:\\github\\projects\\mini-swarm\\runs\\run-b-faithful-v12-repair\\workspace",
+      "total": 439,
+      "passed": 439,
+      "rate": 1,
+      "by_group": {
+        "Tabs": {
+          "passed": 9,
+          "total": 9,
+          "rate": 1
+        },
+        "Backslash escapes": {
+          "passed": 11,
+          "total": 11,
+          "rate": 1
+        },
+        "Precedence": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Thematic breaks": {
+          "passed": 16,
+          "total": 16,
+          "rate": 1
+        },
+        "ATX headings": {
+          "passed": 15,
+          "total": 15,
+          "rate": 1
+        },
+        "Setext headings": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Indented code blocks": {
+          "passed": 10,
+          "total": 10,
+          "rate": 1
+        },
+        "Fenced code blocks": {
+          "passed": 24,
+          "total": 24,
+          "rate": 1
+        },
+        "Paragraphs": {
+          "passed": 6,
+          "total": 6,
+          "rate": 1
+        },
+        "Blank lines": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Block quotes": {
+          "passed": 21,
+          "total": 21,
+          "rate": 1
+        },
+        "List items": {
+          "passed": 40,
+          "total": 40,
+          "rate": 1
+        },
+        "Lists": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Code spans": {
+          "passed": 18,
+          "total": 18,
+          "rate": 1
+        },
+        "Emphasis and strong emphasis": {
+          "passed": 112,
+          "total": 112,
+          "rate": 1
+        },
+        "Links": {
+          "passed": 76,
+          "total": 76,
+          "rate": 1
+        },
+        "Images": {
+          "passed": 18,
+          "total": 18,
+          "rate": 1
+        },
+        "Hard line breaks": {
+          "passed": 12,
+          "total": 12,
+          "rate": 1
+        },
+        "Soft line breaks": {
+          "passed": 2,
+          "total": 2,
+          "rate": 1
+        },
+        "Textual content": {
+          "passed": 3,
+          "total": 3,
+          "rate": 1
+        }
+      },
+      "by_section": {
+        "Tabs": {
+          "passed": 9,
+          "total": 9,
+          "rate": 1
+        },
+        "Backslash escapes": {
+          "passed": 11,
+          "total": 11,
+          "rate": 1
+        },
+        "Precedence": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Thematic breaks": {
+          "passed": 16,
+          "total": 16,
+          "rate": 1
+        },
+        "ATX headings": {
+          "passed": 15,
+          "total": 15,
+          "rate": 1
+        },
+        "Setext headings": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Indented code blocks": {
+          "passed": 10,
+          "total": 10,
+          "rate": 1
+        },
+        "Fenced code blocks": {
+          "passed": 24,
+          "total": 24,
+          "rate": 1
+        },
+        "Paragraphs": {
+          "passed": 6,
+          "total": 6,
+          "rate": 1
+        },
+        "Blank lines": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Block quotes": {
+          "passed": 21,
+          "total": 21,
+          "rate": 1
+        },
+        "List items": {
+          "passed": 40,
+          "total": 40,
+          "rate": 1
+        },
+        "Lists": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Code spans": {
+          "passed": 18,
+          "total": 18,
+          "rate": 1
+        },
+        "Emphasis and strong emphasis": {
+          "passed": 112,
+          "total": 112,
+          "rate": 1
+        },
+        "Links": {
+          "passed": 76,
+          "total": 76,
+          "rate": 1
+        },
+        "Images": {
+          "passed": 18,
+          "total": 18,
+          "rate": 1
+        },
+        "Hard line breaks": {
+          "passed": 12,
+          "total": 12,
+          "rate": 1
+        },
+        "Soft line breaks": {
+          "passed": 2,
+          "total": 2,
+          "rate": 1
+        },
+        "Textual content": {
+          "passed": 3,
+          "total": 3,
+          "rate": 1
+        }
+      },
+      "failures": [],
+      "failure_count": 0,
+      "parse_error": false,
+      "at": "2026-07-26T14:30:24.028Z"
+    },
+    {
+      "phase": "global-after-1",
+      "scored_at": "2026-07-26T14:30:24.024Z",
+      "workspace": "D:\\github\\projects\\mini-swarm\\runs\\run-b-faithful-v12-repair\\workspace",
+      "total": 439,
+      "passed": 439,
+      "rate": 1,
+      "by_group": {
+        "Tabs": {
+          "passed": 9,
+          "total": 9,
+          "rate": 1
+        },
+        "Backslash escapes": {
+          "passed": 11,
+          "total": 11,
+          "rate": 1
+        },
+        "Precedence": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Thematic breaks": {
+          "passed": 16,
+          "total": 16,
+          "rate": 1
+        },
+        "ATX headings": {
+          "passed": 15,
+          "total": 15,
+          "rate": 1
+        },
+        "Setext headings": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Indented code blocks": {
+          "passed": 10,
+          "total": 10,
+          "rate": 1
+        },
+        "Fenced code blocks": {
+          "passed": 24,
+          "total": 24,
+          "rate": 1
+        },
+        "Paragraphs": {
+          "passed": 6,
+          "total": 6,
+          "rate": 1
+        },
+        "Blank lines": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Block quotes": {
+          "passed": 21,
+          "total": 21,
+          "rate": 1
+        },
+        "List items": {
+          "passed": 40,
+          "total": 40,
+          "rate": 1
+        },
+        "Lists": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Code spans": {
+          "passed": 18,
+          "total": 18,
+          "rate": 1
+        },
+        "Emphasis and strong emphasis": {
+          "passed": 112,
+          "total": 112,
+          "rate": 1
+        },
+        "Links": {
+          "passed": 76,
+          "total": 76,
+          "rate": 1
+        },
+        "Images": {
+          "passed": 18,
+          "total": 18,
+          "rate": 1
+        },
+        "Hard line breaks": {
+          "passed": 12,
+          "total": 12,
+          "rate": 1
+        },
+        "Soft line breaks": {
+          "passed": 2,
+          "total": 2,
+          "rate": 1
+        },
+        "Textual content": {
+          "passed": 3,
+          "total": 3,
+          "rate": 1
+        }
+      },
+      "by_section": {
+        "Tabs": {
+          "passed": 9,
+          "total": 9,
+          "rate": 1
+        },
+        "Backslash escapes": {
+          "passed": 11,
+          "total": 11,
+          "rate": 1
+        },
+        "Precedence": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Thematic breaks": {
+          "passed": 16,
+          "total": 16,
+          "rate": 1
+        },
+        "ATX headings": {
+          "passed": 15,
+          "total": 15,
+          "rate": 1
+        },
+        "Setext headings": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Indented code blocks": {
+          "passed": 10,
+          "total": 10,
+          "rate": 1
+        },
+        "Fenced code blocks": {
+          "passed": 24,
+          "total": 24,
+          "rate": 1
+        },
+        "Paragraphs": {
+          "passed": 6,
+          "total": 6,
+          "rate": 1
+        },
+        "Blank lines": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Block quotes": {
+          "passed": 21,
+          "total": 21,
+          "rate": 1
+        },
+        "List items": {
+          "passed": 40,
+          "total": 40,
+          "rate": 1
+        },
+        "Lists": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Code spans": {
+          "passed": 18,
+          "total": 18,
+          "rate": 1
+        },
+        "Emphasis and strong emphasis": {
+          "passed": 112,
+          "total": 112,
+          "rate": 1
+        },
+        "Links": {
+          "passed": 76,
+          "total": 76,
+          "rate": 1
+        },
+        "Images": {
+          "passed": 18,
+          "total": 18,
+          "rate": 1
+        },
+        "Hard line breaks": {
+          "passed": 12,
+          "total": 12,
+          "rate": 1
+        },
+        "Soft line breaks": {
+          "passed": 2,
+          "total": 2,
+          "rate": 1
+        },
+        "Textual content": {
+          "passed": 3,
+          "total": 3,
+          "rate": 1
+        }
+      },
+      "failures": [],
+      "failure_count": 0,
+      "parse_error": false,
+      "at": "2026-07-26T14:30:24.028Z"
+    },
+    {
+      "phase": "repair-before-2",
+      "scored_at": "2026-07-26T14:31:19.670Z",
+      "workspace": "D:\\github\\projects\\mini-swarm\\runs\\run-b-faithful-v12-repair\\workspace",
+      "total": 439,
+      "passed": 439,
+      "rate": 1,
+      "by_group": {
+        "Tabs": {
+          "passed": 9,
+          "total": 9,
+          "rate": 1
+        },
+        "Backslash escapes": {
+          "passed": 11,
+          "total": 11,
+          "rate": 1
+        },
+        "Precedence": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Thematic breaks": {
+          "passed": 16,
+          "total": 16,
+          "rate": 1
+        },
+        "ATX headings": {
+          "passed": 15,
+          "total": 15,
+          "rate": 1
+        },
+        "Setext headings": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Indented code blocks": {
+          "passed": 10,
+          "total": 10,
+          "rate": 1
+        },
+        "Fenced code blocks": {
+          "passed": 24,
+          "total": 24,
+          "rate": 1
+        },
+        "Paragraphs": {
+          "passed": 6,
+          "total": 6,
+          "rate": 1
+        },
+        "Blank lines": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Block quotes": {
+          "passed": 21,
+          "total": 21,
+          "rate": 1
+        },
+        "List items": {
+          "passed": 40,
+          "total": 40,
+          "rate": 1
+        },
+        "Lists": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Code spans": {
+          "passed": 18,
+          "total": 18,
+          "rate": 1
+        },
+        "Emphasis and strong emphasis": {
+          "passed": 112,
+          "total": 112,
+          "rate": 1
+        },
+        "Links": {
+          "passed": 76,
+          "total": 76,
+          "rate": 1
+        },
+        "Images": {
+          "passed": 18,
+          "total": 18,
+          "rate": 1
+        },
+        "Hard line breaks": {
+          "passed": 12,
+          "total": 12,
+          "rate": 1
+        },
+        "Soft line breaks": {
+          "passed": 2,
+          "total": 2,
+          "rate": 1
+        },
+        "Textual content": {
+          "passed": 3,
+          "total": 3,
+          "rate": 1
+        }
+      },
+      "by_section": {
+        "Tabs": {
+          "passed": 9,
+          "total": 9,
+          "rate": 1
+        },
+        "Backslash escapes": {
+          "passed": 11,
+          "total": 11,
+          "rate": 1
+        },
+        "Precedence": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Thematic breaks": {
+          "passed": 16,
+          "total": 16,
+          "rate": 1
+        },
+        "ATX headings": {
+          "passed": 15,
+          "total": 15,
+          "rate": 1
+        },
+        "Setext headings": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Indented code blocks": {
+          "passed": 10,
+          "total": 10,
+          "rate": 1
+        },
+        "Fenced code blocks": {
+          "passed": 24,
+          "total": 24,
+          "rate": 1
+        },
+        "Paragraphs": {
+          "passed": 6,
+          "total": 6,
+          "rate": 1
+        },
+        "Blank lines": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Block quotes": {
+          "passed": 21,
+          "total": 21,
+          "rate": 1
+        },
+        "List items": {
+          "passed": 40,
+          "total": 40,
+          "rate": 1
+        },
+        "Lists": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Code spans": {
+          "passed": 18,
+          "total": 18,
+          "rate": 1
+        },
+        "Emphasis and strong emphasis": {
+          "passed": 112,
+          "total": 112,
+          "rate": 1
+        },
+        "Links": {
+          "passed": 76,
+          "total": 76,
+          "rate": 1
+        },
+        "Images": {
+          "passed": 18,
+          "total": 18,
+          "rate": 1
+        },
+        "Hard line breaks": {
+          "passed": 12,
+          "total": 12,
+          "rate": 1
+        },
+        "Soft line breaks": {
+          "passed": 2,
+          "total": 2,
+          "rate": 1
+        },
+        "Textual content": {
+          "passed": 3,
+          "total": 3,
+          "rate": 1
+        }
+      },
+      "failures": [],
+      "failure_count": 0,
+      "parse_error": false,
+      "at": "2026-07-26T14:31:19.705Z"
+    },
+    {
+      "phase": "global-before-2",
+      "scored_at": "2026-07-26T14:31:19.670Z",
+      "workspace": "D:\\github\\projects\\mini-swarm\\runs\\run-b-faithful-v12-repair\\workspace",
+      "total": 439,
+      "passed": 439,
+      "rate": 1,
+      "by_group": {
+        "Tabs": {
+          "passed": 9,
+          "total": 9,
+          "rate": 1
+        },
+        "Backslash escapes": {
+          "passed": 11,
+          "total": 11,
+          "rate": 1
+        },
+        "Precedence": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Thematic breaks": {
+          "passed": 16,
+          "total": 16,
+          "rate": 1
+        },
+        "ATX headings": {
+          "passed": 15,
+          "total": 15,
+          "rate": 1
+        },
+        "Setext headings": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Indented code blocks": {
+          "passed": 10,
+          "total": 10,
+          "rate": 1
+        },
+        "Fenced code blocks": {
+          "passed": 24,
+          "total": 24,
+          "rate": 1
+        },
+        "Paragraphs": {
+          "passed": 6,
+          "total": 6,
+          "rate": 1
+        },
+        "Blank lines": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Block quotes": {
+          "passed": 21,
+          "total": 21,
+          "rate": 1
+        },
+        "List items": {
+          "passed": 40,
+          "total": 40,
+          "rate": 1
+        },
+        "Lists": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Code spans": {
+          "passed": 18,
+          "total": 18,
+          "rate": 1
+        },
+        "Emphasis and strong emphasis": {
+          "passed": 112,
+          "total": 112,
+          "rate": 1
+        },
+        "Links": {
+          "passed": 76,
+          "total": 76,
+          "rate": 1
+        },
+        "Images": {
+          "passed": 18,
+          "total": 18,
+          "rate": 1
+        },
+        "Hard line breaks": {
+          "passed": 12,
+          "total": 12,
+          "rate": 1
+        },
+        "Soft line breaks": {
+          "passed": 2,
+          "total": 2,
+          "rate": 1
+        },
+        "Textual content": {
+          "passed": 3,
+          "total": 3,
+          "rate": 1
+        }
+      },
+      "by_section": {
+        "Tabs": {
+          "passed": 9,
+          "total": 9,
+          "rate": 1
+        },
+        "Backslash escapes": {
+          "passed": 11,
+          "total": 11,
+          "rate": 1
+        },
+        "Precedence": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Thematic breaks": {
+          "passed": 16,
+          "total": 16,
+          "rate": 1
+        },
+        "ATX headings": {
+          "passed": 15,
+          "total": 15,
+          "rate": 1
+        },
+        "Setext headings": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Indented code blocks": {
+          "passed": 10,
+          "total": 10,
+          "rate": 1
+        },
+        "Fenced code blocks": {
+          "passed": 24,
+          "total": 24,
+          "rate": 1
+        },
+        "Paragraphs": {
+          "passed": 6,
+          "total": 6,
+          "rate": 1
+        },
+        "Blank lines": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Block quotes": {
+          "passed": 21,
+          "total": 21,
+          "rate": 1
+        },
+        "List items": {
+          "passed": 40,
+          "total": 40,
+          "rate": 1
+        },
+        "Lists": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Code spans": {
+          "passed": 18,
+          "total": 18,
+          "rate": 1
+        },
+        "Emphasis and strong emphasis": {
+          "passed": 112,
+          "total": 112,
+          "rate": 1
+        },
+        "Links": {
+          "passed": 76,
+          "total": 76,
+          "rate": 1
+        },
+        "Images": {
+          "passed": 18,
+          "total": 18,
+          "rate": 1
+        },
+        "Hard line breaks": {
+          "passed": 12,
+          "total": 12,
+          "rate": 1
+        },
+        "Soft line breaks": {
+          "passed": 2,
+          "total": 2,
+          "rate": 1
+        },
+        "Textual content": {
+          "passed": 3,
+          "total": 3,
+          "rate": 1
+        }
+      },
+      "failures": [],
+      "failure_count": 0,
+      "parse_error": false,
+      "at": "2026-07-26T14:31:19.705Z"
+    },
+    {
+      "phase": "stageb-before-1",
+      "scored_at": "2026-07-26T14:32:26.408Z",
+      "workspace": "D:\\github\\projects\\mini-swarm\\runs\\run-b-faithful-v12-repair\\workspace",
+      "total": 525,
+      "passed": 517,
+      "rate": 0.9847619047619047,
+      "by_group": {
+        "Tabs": {
+          "passed": 10,
+          "total": 11,
+          "rate": 0.9090909090909091
+        },
+        "Backslash escapes": {
+          "passed": 11,
+          "total": 13,
+          "rate": 0.8461538461538461
+        },
+        "Precedence": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Thematic breaks": {
+          "passed": 19,
+          "total": 19,
+          "rate": 1
+        },
+        "ATX headings": {
+          "passed": 17,
+          "total": 18,
+          "rate": 0.9444444444444444
+        },
+        "Setext headings": {
+          "passed": 27,
+          "total": 27,
+          "rate": 1
+        },
+        "Indented code blocks": {
+          "passed": 12,
+          "total": 12,
+          "rate": 1
+        },
+        "Fenced code blocks": {
+          "passed": 28,
+          "total": 29,
+          "rate": 0.9655172413793104
+        },
+        "Paragraphs": {
+          "passed": 8,
+          "total": 8,
+          "rate": 1
+        },
+        "Blank lines": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Block quotes": {
+          "passed": 24,
+          "total": 25,
+          "rate": 0.96
+        },
+        "List items": {
+          "passed": 48,
+          "total": 48,
+          "rate": 1
+        },
+        "Lists": {
+          "passed": 26,
+          "total": 27,
+          "rate": 0.9629629629629629
+        },
+        "Code spans": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Emphasis and strong emphasis": {
+          "passed": 132,
+          "total": 132,
+          "rate": 1
+        },
+        "Links": {
+          "passed": 90,
+          "total": 90,
+          "rate": 1
+        },
+        "Images": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Hard line breaks": {
+          "passed": 14,
+          "total": 15,
+          "rate": 0.9333333333333333
+        },
+        "Soft line breaks": {
+          "passed": 2,
+          "total": 2,
+          "rate": 1
+        },
+        "Textual content": {
+          "passed": 3,
+          "total": 3,
+          "rate": 1
+        }
+      },
+      "by_section": {
+        "Tabs": {
+          "passed": 10,
+          "total": 11,
+          "rate": 0.9090909090909091
+        },
+        "Backslash escapes": {
+          "passed": 11,
+          "total": 13,
+          "rate": 0.8461538461538461
+        },
+        "Precedence": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Thematic breaks": {
+          "passed": 19,
+          "total": 19,
+          "rate": 1
+        },
+        "ATX headings": {
+          "passed": 17,
+          "total": 18,
+          "rate": 0.9444444444444444
+        },
+        "Setext headings": {
+          "passed": 27,
+          "total": 27,
+          "rate": 1
+        },
+        "Indented code blocks": {
+          "passed": 12,
+          "total": 12,
+          "rate": 1
+        },
+        "Fenced code blocks": {
+          "passed": 28,
+          "total": 29,
+          "rate": 0.9655172413793104
+        },
+        "Paragraphs": {
+          "passed": 8,
+          "total": 8,
+          "rate": 1
+        },
+        "Blank lines": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Block quotes": {
+          "passed": 24,
+          "total": 25,
+          "rate": 0.96
+        },
+        "List items": {
+          "passed": 48,
+          "total": 48,
+          "rate": 1
+        },
+        "Lists": {
+          "passed": 26,
+          "total": 27,
+          "rate": 0.9629629629629629
+        },
+        "Code spans": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Emphasis and strong emphasis": {
+          "passed": 132,
+          "total": 132,
+          "rate": 1
+        },
+        "Links": {
+          "passed": 90,
+          "total": 90,
+          "rate": 1
+        },
+        "Images": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Hard line breaks": {
+          "passed": 14,
+          "total": 15,
+          "rate": 0.9333333333333333
+        },
+        "Soft line breaks": {
+          "passed": 2,
+          "total": 2,
+          "rate": 1
+        },
+        "Textual content": {
+          "passed": 3,
+          "total": 3,
+          "rate": 1
+        }
+      },
+      "failures": [
+        {
+          "id": "ex-0009",
+          "group": "Tabs",
+          "reason": "output mismatch",
+          "input": " - foo\n   - bar\n\t - baz",
+          "expected": "<ul>\n<li>foo\n<ul>\n<li>bar\n<ul>\n<li>baz</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>",
+          "actual": "<ul>\n<li>foo\n<ul>\n<li>bar\n<pre><code>    - baz\n</code></pre>\n</li>\n</ul>\n</li>\n</ul>"
+        },
+        {
+          "id": "ex-0013",
+          "group": "Backslash escapes",
+          "reason": "output mismatch",
+          "input": "\\\t\\A\\a\\ \\3\\φ\\«",
+          "expected": "<p>\\\t\\A\\a\\ \\3\\φ\\«</p>",
+          "actual": "<p>\tAa 3φ«</p>"
+        },
+        {
+          "id": "ex-0015",
+          "group": "Backslash escapes",
+          "reason": "output mismatch",
+          "input": "\\\\*emphasis*",
+          "expected": "<p>\\<em>emphasis</em></p>",
+          "actual": "<p>\\*emphasis*</p>"
+        },
+        {
+          "id": "ex-0049",
+          "group": "ATX headings",
+          "reason": "output mismatch",
+          "input": "# foo *bar* \\*baz\\*",
+          "expected": "<h1>foo <em>bar</em> *baz*</h1>",
+          "actual": "<h1>foo <em>bar</em> <em>baz</em></h1>"
+        },
+        {
+          "id": "ex-0111",
+          "group": "Fenced code blocks",
+          "reason": "output mismatch",
+          "input": "> ```\n> aaa\n\nbbb",
+          "expected": "<blockquote>\n<pre><code>aaa\n</code></pre>\n</blockquote>\n<p>bbb</p>",
+          "actual": "<blockquote>\n<pre><code>aaa\n\n</code></pre>\n</blockquote>\n<p>bbb</p>"
+        },
+        {
+          "id": "ex-0148",
+          "group": "Block quotes",
+          "reason": "output mismatch",
+          "input": ">     foo\n    bar",
+          "expected": "<blockquote>\n<pre><code>foo\n</code></pre>\n</blockquote>\n<pre><code>bar\n</code></pre>",
+          "actual": "<blockquote>\n<pre><code>foo\n</code></pre>\n</blockquote>\n<p> bar</p>"
+        },
+        {
+          "id": "ex-0230",
+          "group": "Lists",
+          "reason": "output mismatch",
+          "input": "- a\n- ```\n  b\n\n\n  ```\n- c",
+          "expected": "<ul>\n<li>a</li>\n<li>\n<pre><code>b\n\n\n</code></pre>\n</li>\n<li>c</li>\n</ul>",
+          "actual": "<ul>\n<li>\n<p>a</p>\n</li>\n<li>\n<pre><code>b\n</code></pre>\n<pre><code></code></pre>\n</li>\n<li>\n<p>c</p>\n</li>\n</ul>"
+        },
+        {
+          "id": "ex-0517",
+          "group": "Hard line breaks",
+          "reason": "output mismatch",
+          "input": "foo\\",
+          "expected": "<p>foo\\</p>",
+          "actual": "<p>foo</p>"
+        }
+      ],
+      "failure_count": 8,
+      "parse_error": false,
+      "at": "2026-07-26T14:32:26.424Z"
+    },
+    {
+      "phase": "stageb-after-1",
+      "scored_at": "2026-07-26T16:09:22.454Z",
+      "workspace": "D:\\github\\projects\\mini-swarm\\runs\\run-b-faithful-v12-repair\\workspace",
+      "total": 525,
+      "passed": 525,
+      "rate": 1,
+      "by_group": {
+        "Tabs": {
+          "passed": 11,
+          "total": 11,
+          "rate": 1
+        },
+        "Backslash escapes": {
+          "passed": 13,
+          "total": 13,
+          "rate": 1
+        },
+        "Precedence": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Thematic breaks": {
+          "passed": 19,
+          "total": 19,
+          "rate": 1
+        },
+        "ATX headings": {
+          "passed": 18,
+          "total": 18,
+          "rate": 1
+        },
+        "Setext headings": {
+          "passed": 27,
+          "total": 27,
+          "rate": 1
+        },
+        "Indented code blocks": {
+          "passed": 12,
+          "total": 12,
+          "rate": 1
+        },
+        "Fenced code blocks": {
+          "passed": 29,
+          "total": 29,
+          "rate": 1
+        },
+        "Paragraphs": {
+          "passed": 8,
+          "total": 8,
+          "rate": 1
+        },
+        "Blank lines": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Block quotes": {
+          "passed": 25,
+          "total": 25,
+          "rate": 1
+        },
+        "List items": {
+          "passed": 48,
+          "total": 48,
+          "rate": 1
+        },
+        "Lists": {
+          "passed": 27,
+          "total": 27,
+          "rate": 1
+        },
+        "Code spans": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Emphasis and strong emphasis": {
+          "passed": 132,
+          "total": 132,
+          "rate": 1
+        },
+        "Links": {
+          "passed": 90,
+          "total": 90,
+          "rate": 1
+        },
+        "Images": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Hard line breaks": {
+          "passed": 15,
+          "total": 15,
+          "rate": 1
+        },
+        "Soft line breaks": {
+          "passed": 2,
+          "total": 2,
+          "rate": 1
+        },
+        "Textual content": {
+          "passed": 3,
+          "total": 3,
+          "rate": 1
+        }
+      },
+      "by_section": {
+        "Tabs": {
+          "passed": 11,
+          "total": 11,
+          "rate": 1
+        },
+        "Backslash escapes": {
+          "passed": 13,
+          "total": 13,
+          "rate": 1
+        },
+        "Precedence": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Thematic breaks": {
+          "passed": 19,
+          "total": 19,
+          "rate": 1
+        },
+        "ATX headings": {
+          "passed": 18,
+          "total": 18,
+          "rate": 1
+        },
+        "Setext headings": {
+          "passed": 27,
+          "total": 27,
+          "rate": 1
+        },
+        "Indented code blocks": {
+          "passed": 12,
+          "total": 12,
+          "rate": 1
+        },
+        "Fenced code blocks": {
+          "passed": 29,
+          "total": 29,
+          "rate": 1
+        },
+        "Paragraphs": {
+          "passed": 8,
+          "total": 8,
+          "rate": 1
+        },
+        "Blank lines": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Block quotes": {
+          "passed": 25,
+          "total": 25,
+          "rate": 1
+        },
+        "List items": {
+          "passed": 48,
+          "total": 48,
+          "rate": 1
+        },
+        "Lists": {
+          "passed": 27,
+          "total": 27,
+          "rate": 1
+        },
+        "Code spans": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Emphasis and strong emphasis": {
+          "passed": 132,
+          "total": 132,
+          "rate": 1
+        },
+        "Links": {
+          "passed": 90,
+          "total": 90,
+          "rate": 1
+        },
+        "Images": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Hard line breaks": {
+          "passed": 15,
+          "total": 15,
+          "rate": 1
+        },
+        "Soft line breaks": {
+          "passed": 2,
+          "total": 2,
+          "rate": 1
+        },
+        "Textual content": {
+          "passed": 3,
+          "total": 3,
+          "rate": 1
+        }
+      },
+      "failures": [],
+      "failure_count": 0,
+      "parse_error": false,
+      "at": "2026-07-26T16:09:22.470Z"
+    },
+    {
+      "phase": "final",
+      "scored_at": "2026-07-26T16:11:22.458Z",
+      "workspace": "D:\\github\\projects\\mini-swarm\\runs\\run-b-faithful-v12-repair\\workspace",
+      "total": 525,
+      "passed": 525,
+      "rate": 1,
+      "by_group": {
+        "Tabs": {
+          "passed": 11,
+          "total": 11,
+          "rate": 1
+        },
+        "Backslash escapes": {
+          "passed": 13,
+          "total": 13,
+          "rate": 1
+        },
+        "Precedence": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Thematic breaks": {
+          "passed": 19,
+          "total": 19,
+          "rate": 1
+        },
+        "ATX headings": {
+          "passed": 18,
+          "total": 18,
+          "rate": 1
+        },
+        "Setext headings": {
+          "passed": 27,
+          "total": 27,
+          "rate": 1
+        },
+        "Indented code blocks": {
+          "passed": 12,
+          "total": 12,
+          "rate": 1
+        },
+        "Fenced code blocks": {
+          "passed": 29,
+          "total": 29,
+          "rate": 1
+        },
+        "Paragraphs": {
+          "passed": 8,
+          "total": 8,
+          "rate": 1
+        },
+        "Blank lines": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Block quotes": {
+          "passed": 25,
+          "total": 25,
+          "rate": 1
+        },
+        "List items": {
+          "passed": 48,
+          "total": 48,
+          "rate": 1
+        },
+        "Lists": {
+          "passed": 27,
+          "total": 27,
+          "rate": 1
+        },
+        "Code spans": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Emphasis and strong emphasis": {
+          "passed": 132,
+          "total": 132,
+          "rate": 1
+        },
+        "Links": {
+          "passed": 90,
+          "total": 90,
+          "rate": 1
+        },
+        "Images": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Hard line breaks": {
+          "passed": 15,
+          "total": 15,
+          "rate": 1
+        },
+        "Soft line breaks": {
+          "passed": 2,
+          "total": 2,
+          "rate": 1
+        },
+        "Textual content": {
+          "passed": 3,
+          "total": 3,
+          "rate": 1
+        }
+      },
+      "by_section": {
+        "Tabs": {
+          "passed": 11,
+          "total": 11,
+          "rate": 1
+        },
+        "Backslash escapes": {
+          "passed": 13,
+          "total": 13,
+          "rate": 1
+        },
+        "Precedence": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Thematic breaks": {
+          "passed": 19,
+          "total": 19,
+          "rate": 1
+        },
+        "ATX headings": {
+          "passed": 18,
+          "total": 18,
+          "rate": 1
+        },
+        "Setext headings": {
+          "passed": 27,
+          "total": 27,
+          "rate": 1
+        },
+        "Indented code blocks": {
+          "passed": 12,
+          "total": 12,
+          "rate": 1
+        },
+        "Fenced code blocks": {
+          "passed": 29,
+          "total": 29,
+          "rate": 1
+        },
+        "Paragraphs": {
+          "passed": 8,
+          "total": 8,
+          "rate": 1
+        },
+        "Blank lines": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "Block quotes": {
+          "passed": 25,
+          "total": 25,
+          "rate": 1
+        },
+        "List items": {
+          "passed": 48,
+          "total": 48,
+          "rate": 1
+        },
+        "Lists": {
+          "passed": 27,
+          "total": 27,
+          "rate": 1
+        },
+        "Code spans": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Emphasis and strong emphasis": {
+          "passed": 132,
+          "total": 132,
+          "rate": 1
+        },
+        "Links": {
+          "passed": 90,
+          "total": 90,
+          "rate": 1
+        },
+        "Images": {
+          "passed": 22,
+          "total": 22,
+          "rate": 1
+        },
+        "Hard line breaks": {
+          "passed": 15,
+          "total": 15,
+          "rate": 1
+        },
+        "Soft line breaks": {
+          "passed": 2,
+          "total": 2,
+          "rate": 1
+        },
+        "Textual content": {
+          "passed": 3,
+          "total": 3,
+          "rate": 1
+        }
+      },
+      "failures": [],
+      "failure_count": 0,
+      "parse_error": false,
+      "at": "2026-07-26T16:11:22.466Z"
+    }
+  ],
+  "agent_calls": [
+    {
+      "role": "adjudicator",
+      "ok": true,
+      "elapsedMs": 41963,
+      "at": "2026-07-26T12:10:08.284Z"
+    },
+    {
+      "role": "decomposer",
+      "cluster_id": "group-1",
+      "ok": true,
+      "elapsedMs": 40209,
+      "at": "2026-07-26T12:10:48.509Z"
+    },
+    {
+      "role": "repair",
+      "cluster_id": "group-1/group-1a",
+      "ok": true,
+      "elapsedMs": 821103,
+      "at": "2026-07-26T12:24:30.145Z"
+    },
+    {
+      "role": "repair-candidate",
+      "cluster_id": "group-1/group-1a",
+      "candidate": 1,
+      "ok": true,
+      "elapsedMs": 617109,
+      "at": "2026-07-26T12:35:43.061Z"
+    },
+    {
+      "role": "repair-candidate",
+      "cluster_id": "group-1/group-1a",
+      "candidate": 2,
+      "ok": false,
+      "elapsedMs": 1200391,
+      "at": "2026-07-26T12:56:40.163Z"
+    },
+    {
+      "role": "repair-strong",
+      "cluster_id": "group-1/group-1a",
+      "ok": true,
+      "elapsedMs": 333952,
+      "at": "2026-07-26T13:03:02.243Z"
+    },
+    {
+      "role": "repair",
+      "cluster_id": "group-1/group-1b",
+      "ok": false,
+      "elapsedMs": 1200361,
+      "at": "2026-07-26T13:23:43.848Z"
+    },
+    {
+      "role": "repair-candidate",
+      "cluster_id": "group-1/group-1b",
+      "candidate": 1,
+      "ok": true,
+      "elapsedMs": 256869,
+      "at": "2026-07-26T13:28:37.263Z"
+    },
+    {
+      "role": "repair-candidate",
+      "cluster_id": "group-1/group-1b",
+      "candidate": 2,
+      "ok": true,
+      "elapsedMs": 877051,
+      "at": "2026-07-26T13:43:51.100Z"
+    },
+    {
+      "role": "overfit-reviewer",
+      "cluster_id": "group-1/group-1b",
+      "ok": true,
+      "elapsedMs": 27990,
+      "at": "2026-07-26T13:46:00.911Z"
+    },
+    {
+      "role": "repair",
+      "cluster_id": "group-1/group-1c",
+      "ok": true,
+      "elapsedMs": 713160,
+      "at": "2026-07-26T13:57:54.694Z"
+    },
+    {
+      "role": "overfit-reviewer",
+      "cluster_id": "group-1/group-1c",
+      "ok": true,
+      "elapsedMs": 21136,
+      "at": "2026-07-26T13:59:06.557Z"
+    },
+    {
+      "role": "repair",
+      "cluster_id": "group-1/group-1d",
+      "ok": true,
+      "elapsedMs": 474914,
+      "at": "2026-07-26T14:07:01.769Z"
+    },
+    {
+      "role": "overfit-reviewer",
+      "cluster_id": "group-1/group-1d",
+      "ok": true,
+      "elapsedMs": 15634,
+      "at": "2026-07-26T14:08:07.249Z"
+    },
+    {
+      "role": "repair",
+      "cluster_id": "group-1/group-1e",
+      "ok": true,
+      "elapsedMs": 522282,
+      "at": "2026-07-26T14:16:49.740Z"
+    },
+    {
+      "role": "overfit-reviewer",
+      "cluster_id": "group-1/group-1e",
+      "ok": true,
+      "elapsedMs": 21091,
+      "at": "2026-07-26T14:18:10.038Z"
+    },
+    {
+      "role": "repair",
+      "cluster_id": "group-1/group-1f",
+      "ok": true,
+      "elapsedMs": 141964,
+      "at": "2026-07-26T14:20:32.320Z"
+    },
+    {
+      "role": "overfit-reviewer",
+      "cluster_id": "group-1/group-1f",
+      "ok": true,
+      "elapsedMs": 20022,
+      "at": "2026-07-26T14:21:45.653Z"
+    },
+    {
+      "role": "repair",
+      "cluster_id": "group-1/leftover",
+      "ok": true,
+      "elapsedMs": 158681,
+      "at": "2026-07-26T14:24:24.642Z"
+    },
+    {
+      "role": "overfit-reviewer",
+      "cluster_id": "group-1/leftover",
+      "ok": true,
+      "elapsedMs": 17057,
+      "at": "2026-07-26T14:25:34.002Z"
+    },
+    {
+      "role": "repair",
+      "cluster_id": "group-2",
+      "ok": true,
+      "elapsedMs": 166279,
+      "at": "2026-07-26T14:28:20.583Z"
+    },
+    {
+      "role": "overfit-reviewer",
+      "cluster_id": "group-2",
+      "ok": true,
+      "elapsedMs": 18212,
+      "at": "2026-07-26T14:29:33.427Z"
+    },
+    {
+      "role": "repair",
+      "cluster_id": "blind-Backslash_escapes",
+      "ok": true,
+      "elapsedMs": 296770,
+      "at": "2026-07-26T14:37:23.510Z"
+    },
+    {
+      "role": "overfit-reviewer",
+      "cluster_id": "blind-Backslash_escapes",
+      "ok": true,
+      "elapsedMs": 16908,
+      "at": "2026-07-26T14:38:46.938Z"
+    },
+    {
+      "role": "repair",
+      "cluster_id": "blind-Tabs",
+      "ok": false,
+      "elapsedMs": 1200393,
+      "at": "2026-07-26T14:58:47.563Z"
+    },
+    {
+      "role": "repair-candidate",
+      "cluster_id": "blind-Tabs",
+      "candidate": 1,
+      "ok": true,
+      "elapsedMs": 747961,
+      "at": "2026-07-26T15:12:18.880Z"
+    },
+    {
+      "role": "repair-candidate",
+      "cluster_id": "blind-Tabs",
+      "candidate": 2,
+      "ok": false,
+      "elapsedMs": 1200447,
+      "at": "2026-07-26T15:33:33.925Z"
+    },
+    {
+      "role": "overfit-reviewer",
+      "cluster_id": "blind-Tabs",
+      "ok": true,
+      "elapsedMs": 24487,
+      "at": "2026-07-26T15:36:08.999Z"
+    },
+    {
+      "role": "repair",
+      "cluster_id": "blind-ATX_headings",
+      "ok": true,
+      "elapsedMs": 281131,
+      "at": "2026-07-26T15:40:50.872Z"
+    },
+    {
+      "role": "overfit-reviewer",
+      "cluster_id": "blind-ATX_headings",
+      "ok": true,
+      "elapsedMs": 27528,
+      "at": "2026-07-26T15:42:19.422Z"
+    },
+    {
+      "role": "repair",
+      "cluster_id": "blind-Fenced_code_blocks",
+      "ok": true,
+      "elapsedMs": 403973,
+      "at": "2026-07-26T15:49:03.609Z"
+    },
+    {
+      "role": "overfit-reviewer",
+      "cluster_id": "blind-Fenced_code_blocks",
+      "ok": true,
+      "elapsedMs": 18551,
+      "at": "2026-07-26T15:50:23.889Z"
+    },
+    {
+      "role": "repair",
+      "cluster_id": "blind-Block_quotes",
+      "ok": true,
+      "elapsedMs": 229227,
+      "at": "2026-07-26T15:54:13.370Z"
+    },
+    {
+      "role": "overfit-reviewer",
+      "cluster_id": "blind-Block_quotes",
+      "ok": true,
+      "elapsedMs": 30422,
+      "at": "2026-07-26T15:55:46.279Z"
+    },
+    {
+      "role": "repair",
+      "cluster_id": "blind-Lists",
+      "ok": true,
+      "elapsedMs": 338231,
+      "at": "2026-07-26T16:01:24.746Z"
+    },
+    {
+      "role": "overfit-reviewer",
+      "cluster_id": "blind-Lists",
+      "ok": true,
+      "elapsedMs": 19516,
+      "at": "2026-07-26T16:02:57.632Z"
+    },
+    {
+      "role": "repair",
+      "cluster_id": "blind-Hard_line_breaks",
+      "ok": true,
+      "elapsedMs": 237406,
+      "at": "2026-07-26T16:06:55.305Z"
+    },
+    {
+      "role": "overfit-reviewer",
+      "cluster_id": "blind-Hard_line_breaks",
+      "ok": true,
+      "elapsedMs": 26172,
+      "at": "2026-07-26T16:08:23.979Z"
+    }
+  ],
+  "loc": 3964,
+  "final_score": {
+    "scored_at": "2026-07-26T16:11:22.458Z",
+    "workspace": "D:\\github\\projects\\mini-swarm\\runs\\run-b-faithful-v12-repair\\workspace",
+    "total": 525,
+    "passed": 525,
+    "rate": 1,
+    "by_group": {
+      "Tabs": {
+        "passed": 11,
+        "total": 11,
+        "rate": 1
+      },
+      "Backslash escapes": {
+        "passed": 13,
+        "total": 13,
+        "rate": 1
+      },
+      "Precedence": {
+        "passed": 1,
+        "total": 1,
+        "rate": 1
+      },
+      "Thematic breaks": {
+        "passed": 19,
+        "total": 19,
+        "rate": 1
+      },
+      "ATX headings": {
+        "passed": 18,
+        "total": 18,
+        "rate": 1
+      },
+      "Setext headings": {
+        "passed": 27,
+        "total": 27,
+        "rate": 1
+      },
+      "Indented code blocks": {
+        "passed": 12,
+        "total": 12,
+        "rate": 1
+      },
+      "Fenced code blocks": {
+        "passed": 29,
+        "total": 29,
+        "rate": 1
+      },
+      "Paragraphs": {
+        "passed": 8,
+        "total": 8,
+        "rate": 1
+      },
+      "Blank lines": {
+        "passed": 1,
+        "total": 1,
+        "rate": 1
+      },
+      "Block quotes": {
+        "passed": 25,
+        "total": 25,
+        "rate": 1
+      },
+      "List items": {
+        "passed": 48,
+        "total": 48,
+        "rate": 1
+      },
+      "Lists": {
+        "passed": 27,
+        "total": 27,
+        "rate": 1
+      },
+      "Code spans": {
+        "passed": 22,
+        "total": 22,
+        "rate": 1
+      },
+      "Emphasis and strong emphasis": {
+        "passed": 132,
+        "total": 132,
+        "rate": 1
+      },
+      "Links": {
+        "passed": 90,
+        "total": 90,
+        "rate": 1
+      },
+      "Images": {
+        "passed": 22,
+        "total": 22,
+        "rate": 1
+      },
+      "Hard line breaks": {
+        "passed": 15,
+        "total": 15,
+        "rate": 1
+      },
+      "Soft line breaks": {
+        "passed": 2,
+        "total": 2,
+        "rate": 1
+      },
+      "Textual content": {
+        "passed": 3,
+        "total": 3,
+        "rate": 1
+      }
+    },
+    "by_section": {
+      "Tabs": {
+        "passed": 11,
+        "total": 11,
+        "rate": 1
+      },
+      "Backslash escapes": {
+        "passed": 13,
+        "total": 13,
+        "rate": 1
+      },
+      "Precedence": {
+        "passed": 1,
+        "total": 1,
+        "rate": 1
+      },
+      "Thematic breaks": {
+        "passed": 19,
+        "total": 19,
+        "rate": 1
+      },
+      "ATX headings": {
+        "passed": 18,
+        "total": 18,
+        "rate": 1
+      },
+      "Setext headings": {
+        "passed": 27,
+        "total": 27,
+        "rate": 1
+      },
+      "Indented code blocks": {
+        "passed": 12,
+        "total": 12,
+        "rate": 1
+      },
+      "Fenced code blocks": {
+        "passed": 29,
+        "total": 29,
+        "rate": 1
+      },
+      "Paragraphs": {
+        "passed": 8,
+        "total": 8,
+        "rate": 1
+      },
+      "Blank lines": {
+        "passed": 1,
+        "total": 1,
+        "rate": 1
+      },
+      "Block quotes": {
+        "passed": 25,
+        "total": 25,
+        "rate": 1
+      },
+      "List items": {
+        "passed": 48,
+        "total": 48,
+        "rate": 1
+      },
+      "Lists": {
+        "passed": 27,
+        "total": 27,
+        "rate": 1
+      },
+      "Code spans": {
+        "passed": 22,
+        "total": 22,
+        "rate": 1
+      },
+      "Emphasis and strong emphasis": {
+        "passed": 132,
+        "total": 132,
+        "rate": 1
+      },
+      "Links": {
+        "passed": 90,
+        "total": 90,
+        "rate": 1
+      },
+      "Images": {
+        "passed": 22,
+        "total": 22,
+        "rate": 1
+      },
+      "Hard line breaks": {
+        "passed": 15,
+        "total": 15,
+        "rate": 1
+      },
+      "Soft line breaks": {
+        "passed": 2,
+        "total": 2,
+        "rate": 1
+      },
+      "Textual content": {
+        "passed": 3,
+        "total": 3,
+        "rate": 1
+      }
+    },
+    "failures": [],
+    "failure_count": 0,
+    "parse_error": false
+  },
+  "run_id": "run-b-faithful-v12-repair",
+  "quick": false,
+  "serial": false,
+  "mock": false,
+  "models": {
+    "planner": "composer-2.5-fast",
+    "worker": "composer-2.5-fast",
+    "merger": "composer-2.5-fast",
+    "reviewer": "composer-2.5-fast",
+    "strong": "cursor-grok-4.5-high-fast"
+  },
+  "concurrency": 2,
+  "coordination_mode": "faithful",
+  "task_set": "contention",
+  "repair_only": true,
+  "from_run": "run-b-faithful-contention-v11",
+  "resumed": false,
+  "repair_time_ms": 12419655,
+  "adjudication_time_ms": 41963,
+  "strong_model_time_ms": 416124,
+  "global_repair_time_ms": 12419655,
+  "phase_cost_curve": {
+    "pool": {
+      "agent_ms": 0,
+      "passed_delta": 0
+    },
+    "feedback": {
+      "agent_ms": 0,
+      "passed_delta": 0
+    },
+    "repair-rung1": {
+      "agent_ms": 7185875,
+      "passed_delta": 1
+    },
+    "repair-rung2": {
+      "agent_ms": 4899828,
+      "passed_delta": 80
+    },
+    "repair-rung3": {
+      "agent_ms": 333952,
+      "passed_delta": 0
+    },
+    "repair-stage-b": {
+      "agent_ms": 4328613,
+      "passed_delta": 8
+    }
+  },
+  "tasks_done": 13,
+  "churn": {
+    "total_added": 5289,
+    "total_deleted": 832,
+    "churn_ratio": 0.15730761958782377
+  }
+}

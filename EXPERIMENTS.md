@@ -5,12 +5,58 @@
 - **Run A (bare)**: `npm run run:quick -- --run-id=run-a-bare-v4`
 - **Run B (coordinated)**: `npm run run:quick:coordinated -- --run-id=run-b-coordinated-v4`
 - **Run B faithful**: `npm run run:faithful -- --run-id=run-b-faithful-v7`
-- **v8/v9/v10/v11 high-contention A/B**: `npm run run:contention:bare` / `npm run run:contention:faithful` (`--task-set=contention`, concurrency 4, seed planner; v9 score-feedback; v10 sync+gate+global repair; v11 holdout+ledger+adaptive repair)
+- **v8/v9/v10/v11/v12 high-contention A/B**: `npm run run:contention:bare` / `npm run run:contention:faithful` (`--task-set=contention`, concurrency 4, seed planner; v9 score-feedback; v10 sync+gate+global repair; v11 holdout+ledger+adaptive repair; v12 Stage B + strong ladder)
 - **Resume interrupted run**: `npm run salvage -- --run-id=RUN_ID --task-set=contention` then original command + `--resume` (task-level; agent/wall times in metrics cover last segment only — see README)
+- **Repair-only continuation**: `npm run run -- --repair-only --from-run=PRIOR --run-id=NEW --task-set=contention [--coord-mode=faithful]`
 - **Serial minimal loop**: `npm run run:serial -- --quick --run-id=run-a-serial-quick`
+- **Compare (v12 repair arms)**: `npm run compare -- runs/run-a-bare-v12-repair/metrics.json runs/run-b-faithful-v12-repair/metrics.json`
+- **Compare (v12 fresh faithful vs bare repair)**: `npm run compare -- runs/run-a-bare-v12-repair/metrics.json runs/run-b-faithful-contention-v12/metrics.json`
 - **Compare (v11)**: `npm run compare -- runs/run-a-bare-contention-v11/metrics.json runs/run-b-faithful-contention-v11/metrics.json`
 - **Compare (v10)**: `npm run compare -- runs/run-a-bare-contention-v10/metrics.json runs/run-b-faithful-contention-v10/metrics.json`
 - **Compare (v9)**: `npm run compare -- runs/run-a-bare-contention-v9b/metrics.json runs/run-b-faithful-contention-v9/metrics.json`
+
+## Runs (2026-07-26) — v12 generalization loop
+
+| Run ID | Mode | Coordination | planner | Notes |
+|---|---|---|---|---|
+| run-a-bare-v12-repair | repair-only from bare v11 | false | repair-only-copy | **100%** full/visible/holdout (525/525, 439/439, 86/86); Stage B +8; 4859 LOC; ~39 min wall / ~28 min repair |
+| run-b-faithful-v12-repair | repair-only from faithful v11 | **faithful** | repair-only-copy | **100%** full/visible/holdout; Stage A from **81.5%** visible (source rebuild) → 100%; Stage B +8; 3964 LOC; ~243 min wall; strong ~6.9 min |
+| run-b-faithful-contention-v12 | **contention 13 tasks**, concurrency 4 | **faithful** | **seed-contention** | Fresh e2e: **93.0%** full (488/525); visible **93.8%** (412/439); holdout **88.4%** (76/86); Stage A +117 then **budget stop** (skipped Stage B); 16/18 clusters; 3377 LOC; ~324 min wall; strong ~25.8 min |
+
+Strong model: `cursor-grok-4.5-high-fast` (adjudicator / cluster / decomposer / rung3). Workers + rung1/2 remain `composer-2.5-fast`.
+
+Honesty note: Stage B uses full-suite monotonic acceptance (holdout-guided). Agents never see holdout IN/EXP/GOT; gen-examples are synthetic.
+
+### v12 architecture: Stage B + strong ladder
+
+Builds on v11 with:
+
+1. **Parse fix** — `parseAgentJson` reads `spawnAgent` `output` (v11 silently fell back).
+2. **Model tiering** — cheap workers/rung1–2; strong model for adjudicator / cluster / decomposer / rung3.
+3. **Gen-examples** — `npm run spec:generate` → synthetic checks (reference commonmark oracle).
+4. **Stage B blind repair** — after visible Stage A, agents see group name + fail count + normative refs only; harness accepts on full-suite monotonic gain.
+5. **Overfit reviewer** — post-accept diff scan (record-only by default).
+6. **Plateau / phase budget** — `maxPhaseMinutes` backstop (default 240).
+
+| Metric | Bare v12-repair | Faithful v12-repair | Faithful v12 fresh |
+|---|---|---|---|
+| Full pass rate | **100%** (525/525) | **100%** (525/525) | 93.0% (488/525) |
+| Visible | **100%** (439/439) | **100%** (439/439) | 93.8% (412/439) |
+| Holdout | **100%** (86/86) | **100%** (86/86) | 88.4% (76/86) |
+| holdout_gap_pp | 0.0 | 0.0 | 5.5 (alarm) |
+| Stage B gain | +8 (4 clusters) | +8 (7 clusters) | skipped (budget) |
+| Strong model time | ~0 min | ~6.9 min | ~25.8 min |
+| LOC | 4859 | **3964** | **3377** |
+| Wall | ~39 min (repair-only) | ~243 min (repair-only) | ~324 min (full e2e) |
+
+Three-way compare notes:
+
+- **Continuation arms both hit 100%** on full/visible/holdout. Stage B closed the v11 holdout gap when started from a near-complete workspace with enough repair budget.
+- **Fresh faithful e2e stopped at Stage A 93.8%** (`maxPhaseMinutes` exhausted; Stage B skipped). Cost curve: pool ~138 min agent, feedback ~93 min, repair rung1–3 ~205 min total repair; strong ladder used (~26 min) mainly on hard Stage A clusters.
+- **Structure: faithful still leaner** (3377 fresh / 3964 repair vs bare repair 4859).
+- **Strong-model cost**: cheap path alone can finish Stage B from a high baseline (bare repair strong≈0); climbing from mid-60s visible burns strong time (fresh ~26 min) and still may hit the wall-clock budget before Stage B.
+
+**Erratum (v11 dist vs source):** Rebuilding `run-b-faithful-contention-v11` workspace from tracked source (not the frozen `dist/` that produced the v11 headline) scored only **~81.5% visible** before v12 repair-only. The v11 faithful headline (99.3% visible / 97.9% full) remains the dual-track record of that run's scored dist; continuation correctly repaired from the real source state. Do not silently rewrite v11 table numbers.
 
 ## Runs (2026-07-26) — v11 generic quality loop
 
@@ -61,6 +107,8 @@ Direct v11 A/B (`npm run compare -- runs/run-a-bare-contention-v11/metrics.json 
 - Ops lesson: Windows `SIGTERM` does not kill `cursor-agent` trees; v11 adds `taskkill /T /F` on timeout.
 
 Interpretation: v11 proves the generic loop (oracle audit, holdout, ledger, adaptive repair, best-of-N) is runnable and catches overfitting that v10's single final score hid. Pushing past ~98% full requires either longer repair budget + holdout-aware acceptance, or treating holdout failures as first-class repair targets (without leaking them into worker prompts). Coordination's remaining edge is compactness, not the full-suite headline in this run.
+
+**Erratum (found in v12 prep):** `parseAgentJson` in the v11 repair engine read `result.stdout`, but `spawnAgent` returns `output`. LLM clustering and adjudication therefore fell back every time (bare clusters are all `fb-*` / `group-*` heuristics; faithful adjudications are all `parse_fallback`). Group-level repair still worked; the adaptive LLM path did not.
 
 ## Runs (2026-07-25) — v10 architecture + resume
 

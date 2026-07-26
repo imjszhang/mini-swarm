@@ -24,6 +24,7 @@ function parseArgs(argv) {
     holdoutMode: "include",
     truncate: 300,
     maxFailures: 20,
+    examples: null,
   };
   for (let i = 0; i < argv.length; i += 1) {
     const a = argv[i];
@@ -48,10 +49,12 @@ function parseArgs(argv) {
       args.truncate = Number(argv[++i]);
     } else if (a === "--max-failures") {
       args.maxFailures = Number(argv[++i]);
+    } else if (a === "--examples") {
+      args.examples = path.resolve(argv[++i]);
     } else if (a === "--help" || a === "-h") {
       console.log(`Usage: node scorer/score.mjs [--workspace dir] [--json out.json] [--limit N]
   [--sections "A,B"] [--ids a,b] [--holdout-file path] [--holdout-mode exclude|only|include]
-  [--truncate N] [--max-failures N]`);
+  [--examples path] [--truncate N] [--max-failures N]`);
       process.exit(0);
     }
   }
@@ -155,11 +158,13 @@ function scoreWorkspace(workspaceDir, examples, { limit, truncateChars, maxFailu
 }
 
 const args = parseArgs(process.argv.slice(2));
-if (!existsSync(EXAMPLES_PATH)) {
-  console.error("Missing spec/examples.json. Run: npm run spec:extract");
+const examplesPath = args.examples || EXAMPLES_PATH;
+if (!existsSync(examplesPath)) {
+  console.error(`Missing examples file: ${examplesPath}`);
+  if (!args.examples) console.error("Run: npm run spec:extract");
   process.exit(1);
 }
-let examples = JSON.parse(readFileSync(EXAMPLES_PATH, "utf8"));
+let examples = JSON.parse(readFileSync(examplesPath, "utf8"));
 if (args.sections?.length) {
   const sectionSet = new Set(args.sections);
   examples = examples.filter((e) => sectionSet.has(e.section));

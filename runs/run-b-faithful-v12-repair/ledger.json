@@ -1,0 +1,5885 @@
+{
+  "items": {
+    "ex-0032": {
+      "group": "Thematic breaks",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1:resolved",
+          "at": "2026-07-26T07:49:04.062Z"
+        }
+      ],
+      "stuck_count": 0,
+      "verdict": null
+    },
+    "ex-0040": {
+      "group": "Thematic breaks",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1:resolved",
+          "at": "2026-07-26T07:49:04.062Z"
+        }
+      ],
+      "stuck_count": 0,
+      "verdict": null
+    },
+    "ex-0043": {
+      "group": "Thematic breaks",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1:resolved",
+          "at": "2026-07-26T07:49:04.062Z"
+        }
+      ],
+      "stuck_count": 0,
+      "verdict": null
+    },
+    "ex-0044": {
+      "group": "Thematic breaks",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1:resolved",
+          "at": "2026-07-26T07:49:04.062Z"
+        }
+      ],
+      "stuck_count": 0,
+      "verdict": null
+    },
+    "ex-0064": {
+      "group": "Setext headings",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 0,
+      "verdict": null
+    },
+    "ex-0076": {
+      "group": "Setext headings",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b",
+          "at": "2026-07-26T13:46:01.320Z"
+        },
+        {
+          "phase": "repair-group-1/group-1c",
+          "at": "2026-07-26T13:59:06.558Z"
+        },
+        {
+          "phase": "repair-group-1/group-1d",
+          "at": "2026-07-26T14:08:07.249Z"
+        },
+        {
+          "phase": "repair-group-1/group-1e:resolved",
+          "at": "2026-07-26T14:18:10.039Z"
+        }
+      ],
+      "stuck_count": 0,
+      "verdict": null
+    },
+    "ex-0082": {
+      "group": "Setext headings",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1:resolved",
+          "at": "2026-07-26T07:49:04.062Z"
+        }
+      ],
+      "stuck_count": 0,
+      "verdict": null
+    },
+    "ex-0150": {
+      "group": "Block quotes",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3:resolved",
+          "at": "2026-07-26T08:59:52.928Z"
+        }
+      ],
+      "stuck_count": 0,
+      "verdict": null
+    },
+    "ex-0151": {
+      "group": "Block quotes",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3:resolved",
+          "at": "2026-07-26T08:59:52.928Z"
+        }
+      ],
+      "stuck_count": 0,
+      "verdict": null
+    },
+    "ex-0152": {
+      "group": "Block quotes",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3:resolved",
+          "at": "2026-07-26T08:59:52.928Z"
+        }
+      ],
+      "stuck_count": 0,
+      "verdict": null
+    },
+    "ex-0164": {
+      "group": "Block quotes",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2:resolved",
+          "at": "2026-07-26T03:18:37.021Z"
+        }
+      ],
+      "stuck_count": 0,
+      "verdict": null
+    },
+    "ex-0176": {
+      "group": "List items",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2:resolved",
+          "at": "2026-07-26T03:18:37.021Z"
+        }
+      ],
+      "stuck_count": 0,
+      "verdict": null
+    },
+    "ex-0182": {
+      "group": "List items",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2:resolved",
+          "at": "2026-07-26T03:18:37.021Z"
+        }
+      ],
+      "stuck_count": 0,
+      "verdict": null
+    },
+    "ex-0183": {
+      "group": "List items",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2:resolved",
+          "at": "2026-07-26T03:18:37.021Z"
+        }
+      ],
+      "stuck_count": 0,
+      "verdict": null
+    },
+    "ex-0185": {
+      "group": "List items",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2:resolved",
+          "at": "2026-07-26T03:18:37.021Z"
+        }
+      ],
+      "stuck_count": 0,
+      "verdict": null
+    },
+    "ex-0186": {
+      "group": "List items",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2:resolved",
+          "at": "2026-07-26T03:18:37.021Z"
+        }
+      ],
+      "stuck_count": 0,
+      "verdict": null
+    },
+    "ex-0199": {
+      "group": "List items",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2:resolved",
+          "at": "2026-07-26T03:18:37.021Z"
+        }
+      ],
+      "stuck_count": 0,
+      "verdict": null
+    },
+    "ex-0202": {
+      "group": "List items",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2:resolved",
+          "at": "2026-07-26T03:18:37.021Z"
+        }
+      ],
+      "stuck_count": 0,
+      "verdict": null
+    },
+    "ex-0248": {
+      "group": "Code spans",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2:resolved",
+          "at": "2026-07-26T08:48:03.588Z"
+        }
+      ],
+      "stuck_count": 0,
+      "verdict": null
+    },
+    "ex-0249": {
+      "group": "Code spans",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2:resolved",
+          "at": "2026-07-26T08:48:03.588Z"
+        }
+      ],
+      "stuck_count": 0,
+      "verdict": null
+    },
+    "ex-0253": {
+      "group": "Code spans",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2:resolved",
+          "at": "2026-07-26T08:48:03.588Z"
+        }
+      ],
+      "stuck_count": 0,
+      "verdict": null
+    },
+    "ex-0259": {
+      "group": "Code spans",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2:resolved",
+          "at": "2026-07-26T08:48:03.588Z"
+        }
+      ],
+      "stuck_count": 0,
+      "verdict": null
+    },
+    "ex-0263": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": {
+        "class": "implementation_bug",
+        "rationale": "parse_fallback",
+        "at": "2026-07-26T09:02:37.563Z"
+      }
+    },
+    "ex-0269": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 4,
+      "verdict": {
+        "class": "implementation_bug",
+        "rationale": "parse_fallback",
+        "at": "2026-07-26T09:02:37.563Z"
+      }
+    },
+    "ex-0276": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 4,
+      "verdict": {
+        "class": "implementation_bug",
+        "rationale": "parse_fallback",
+        "at": "2026-07-26T09:02:37.563Z"
+      }
+    },
+    "ex-0278": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": {
+        "class": "implementation_bug",
+        "rationale": "parse_fallback",
+        "at": "2026-07-26T09:02:37.563Z"
+      }
+    },
+    "ex-0279": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": {
+        "class": "implementation_bug",
+        "rationale": "parse_fallback",
+        "at": "2026-07-26T09:02:37.563Z"
+      }
+    },
+    "ex-0280": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": {
+        "class": "implementation_bug",
+        "rationale": "parse_fallback",
+        "at": "2026-07-26T09:02:37.563Z"
+      }
+    },
+    "ex-0285": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 4,
+      "verdict": {
+        "class": "implementation_bug",
+        "rationale": "parse_fallback",
+        "at": "2026-07-26T09:02:37.563Z"
+      }
+    },
+    "ex-0288": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 4,
+      "verdict": {
+        "class": "implementation_bug",
+        "rationale": "parse_fallback",
+        "at": "2026-07-26T09:02:37.563Z"
+      }
+    },
+    "ex-0289": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 4,
+      "verdict": {
+        "class": "implementation_bug",
+        "rationale": "parse_fallback",
+        "at": "2026-07-26T09:02:37.563Z"
+      }
+    },
+    "ex-0290": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": {
+        "class": "implementation_bug",
+        "rationale": "parse_fallback",
+        "at": "2026-07-26T09:02:37.563Z"
+      }
+    },
+    "ex-0291": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": {
+        "class": "implementation_bug",
+        "rationale": "parse_fallback",
+        "at": "2026-07-26T09:02:37.563Z"
+      }
+    },
+    "ex-0293": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": {
+        "class": "implementation_bug",
+        "rationale": "parse_fallback",
+        "at": "2026-07-26T09:02:37.563Z"
+      }
+    },
+    "ex-0294": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 4,
+      "verdict": {
+        "class": "implementation_bug",
+        "rationale": "parse_fallback",
+        "at": "2026-07-26T09:02:37.563Z"
+      }
+    },
+    "ex-0301": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 4,
+      "verdict": {
+        "class": "implementation_bug",
+        "rationale": "parse_fallback",
+        "at": "2026-07-26T09:02:37.563Z"
+      }
+    },
+    "ex-0302": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 4,
+      "verdict": {
+        "class": "implementation_bug",
+        "rationale": "parse_fallback",
+        "at": "2026-07-26T09:02:37.563Z"
+      }
+    },
+    "ex-0304": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": {
+        "class": "implementation_bug",
+        "rationale": "parse_fallback",
+        "at": "2026-07-26T09:02:37.563Z"
+      }
+    },
+    "ex-0306": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": {
+        "class": "implementation_bug",
+        "rationale": "parse_fallback",
+        "at": "2026-07-26T09:02:37.563Z"
+      }
+    },
+    "ex-0307": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": {
+        "class": "implementation_bug",
+        "rationale": "parse_fallback",
+        "at": "2026-07-26T09:02:37.563Z"
+      }
+    },
+    "ex-0308": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": {
+        "class": "implementation_bug",
+        "rationale": "parse_fallback",
+        "at": "2026-07-26T09:02:37.563Z"
+      }
+    },
+    "ex-0311": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 4,
+      "verdict": {
+        "class": "implementation_bug",
+        "rationale": "parse_fallback",
+        "at": "2026-07-26T09:02:37.563Z"
+      }
+    },
+    "ex-0314": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 4,
+      "verdict": {
+        "class": "implementation_bug",
+        "rationale": "按 CommonMark，开闭 `__` 可形成 strong，词内中间 `__` 不闭合；实现把整串当字面量，未正确处理下划线强调。",
+        "at": "2026-07-26T12:10:08.284Z"
+      }
+    },
+    "ex-0315": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 4,
+      "verdict": {
+        "class": "implementation_bug",
+        "rationale": "`__(bar)__` 两侧均为合法 flanking 分隔符，应产出 strong；实现未识别下划线 strong。",
+        "at": "2026-07-26T12:10:08.284Z"
+      }
+    },
+    "ex-0318": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 4,
+      "verdict": {
+        "class": "implementation_bug",
+        "rationale": "规范要求外层 `_…_` 为 em、内层 `__bar__` 为 strong；实现未解析任何下划线强调。",
+        "at": "2026-07-26T12:10:08.284Z"
+      }
+    },
+    "ex-0319": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 4,
+      "verdict": {
+        "class": "implementation_bug",
+        "rationale": "嵌套 `_foo _bar_ baz_` 应为双重 em；实现未处理下划线 delimiter pairing。",
+        "at": "2026-07-26T12:10:08.284Z"
+      }
+    },
+    "ex-0320": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 4,
+      "verdict": {
+        "class": "implementation_bug",
+        "rationale": "`__foo_ bar_` 按规则拆为嵌套 em；实现原样输出，缺少下划线强调逻辑。",
+        "at": "2026-07-26T12:10:08.284Z"
+      }
+    },
+    "ex-0321": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": {
+        "class": "implementation_bug",
+        "rationale": "`*foo *bar**` 应匹配为外层 em 包内层 em；GOT 错误配对并产生空 `<em></em>`。",
+        "at": "2026-07-26T12:10:08.284Z"
+      }
+    },
+    "ex-0322": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": {
+        "class": "implementation_bug",
+        "rationale": "`**bar**` 应为 strong，不是两个空 em；GOT 把 `**` 当成成对单 `*`。",
+        "at": "2026-07-26T12:10:08.284Z"
+      }
+    },
+    "ex-0323": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": {
+        "class": "implementation_bug",
+        "rationale": "词内 `*foo**bar**baz*` 应为 em 包 strong；GOT 同样把 strong 误拆成空 em。",
+        "at": "2026-07-26T12:10:08.284Z"
+      }
+    },
+    "ex-0324": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": {
+        "class": "implementation_bug",
+        "rationale": "奇数长度规则下内部 `**` 不得成对，应保留字面量 `*foo**bar*`；GOT 错误插入空 em。",
+        "at": "2026-07-26T12:10:08.284Z"
+      }
+    },
+    "ex-0325": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": {
+        "class": "implementation_bug",
+        "rationale": "`***foo** bar*` 应为 em 包 strong；GOT 把三重/双重分隔符误拆成空 em。",
+        "at": "2026-07-26T12:10:08.284Z"
+      }
+    },
+    "ex-0326": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": {
+        "class": "implementation_bug",
+        "rationale": "`*foo **bar***` 应为 em 包 strong；GOT 配对错乱且留下字面 `*`。",
+        "at": "2026-07-26T12:10:08.284Z"
+      }
+    },
+    "ex-0327": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": {
+        "class": "implementation_bug",
+        "rationale": "`*foo**bar***` 同规范嵌套 strong；GOT 未正确消费多字符 delimiter run。",
+        "at": "2026-07-26T12:10:08.284Z"
+      }
+    },
+    "ex-0328": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": {
+        "class": "implementation_bug",
+        "rationale": "`foo***bar***baz` 应为 em+strong；GOT 拆坏三重分隔符并产生空 em。",
+        "at": "2026-07-26T12:10:08.284Z"
+      }
+    },
+    "ex-0330": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": {
+        "class": "implementation_bug",
+        "rationale": "多层嵌套 `*…**…*…*…**…*` 期望明确；GOT 的 pairing 与空 em 均与规范不符。",
+        "at": "2026-07-26T12:10:08.284Z"
+      }
+    },
+    "ex-0331": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": {
+        "class": "implementation_bug",
+        "rationale": "强调应包裹链接节点；GOT 在 `[` 前过早闭合 em，破坏链接解析（链接本身在其他用例可用）。",
+        "at": "2026-07-26T12:10:08.284Z"
+      }
+    },
+    "ex-0332": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": {
+        "class": "implementation_bug",
+        "rationale": "`**` 后接空白不能形成空强调，应原样输出；GOT 错误产出 `<em></em>`。",
+        "at": "2026-07-26T12:10:08.284Z"
+      }
+    },
+    "ex-0333": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": {
+        "class": "implementation_bug",
+        "rationale": "`****` 同理不得形成空 strong/em；GOT 仍配对出空 em。",
+        "at": "2026-07-26T12:10:08.284Z"
+      }
+    },
+    "ex-0334": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": {
+        "class": "implementation_bug",
+        "rationale": "`**…**` 应为 strong（可含链接）；GOT 把每端 `**` 变成空 em。",
+        "at": "2026-07-26T12:10:08.284Z"
+      }
+    },
+    "ex-0335": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": {
+        "class": "implementation_bug",
+        "rationale": "跨行 `**foo\\nbar**` 应为单一 strong；GOT 同样把 `**` 误当空 em。",
+        "at": "2026-07-26T12:10:08.284Z"
+      }
+    },
+    "ex-0336": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 4,
+      "verdict": {
+        "class": "implementation_bug",
+        "rationale": "`__foo _bar_ baz__` 应为 strong 包 em；实现完全未解析下划线强调。",
+        "at": "2026-07-26T12:10:08.284Z"
+      }
+    },
+    "ex-0337": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": null
+    },
+    "ex-0338": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": null
+    },
+    "ex-0341": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": null
+    },
+    "ex-0342": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": null
+    },
+    "ex-0343": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": null
+    },
+    "ex-0344": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": null
+    },
+    "ex-0345": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": null
+    },
+    "ex-0348": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": null
+    },
+    "ex-0351": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": null
+    },
+    "ex-0352": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": null
+    },
+    "ex-0353": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": null
+    },
+    "ex-0354": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": null
+    },
+    "ex-0355": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": null
+    },
+    "ex-0356": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": null
+    },
+    "ex-0357": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": null
+    },
+    "ex-0358": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": null
+    },
+    "ex-0361": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": null
+    },
+    "ex-0362": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": null
+    },
+    "ex-0364": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": null
+    },
+    "ex-0365": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": null
+    },
+    "ex-0367": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": null
+    },
+    "ex-0368": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": null
+    },
+    "ex-0369": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": null
+    },
+    "ex-0370": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": null
+    },
+    "ex-0371": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": null
+    },
+    "ex-0372": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": null
+    },
+    "ex-0373": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": null
+    },
+    "ex-0374": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": null
+    },
+    "ex-0376": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": null
+    },
+    "ex-0377": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": null
+    },
+    "ex-0378": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": null
+    },
+    "ex-0379": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": null
+    },
+    "ex-0380": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": null
+    },
+    "ex-0382": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": null
+    },
+    "ex-0383": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": null
+    },
+    "ex-0387": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": null
+    },
+    "ex-0388": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": null
+    },
+    "ex-0390": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2:resolved",
+          "at": "2026-07-26T08:48:03.588Z"
+        }
+      ],
+      "stuck_count": 2,
+      "verdict": null
+    },
+    "ex-0391": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": null
+    },
+    "ex-0392": {
+      "group": "Emphasis and strong emphasis",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T02:47:16.892Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T03:08:56.459Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T03:18:37.021Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T07:49:04.062Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T08:24:27.486Z"
+        },
+        {
+          "phase": "repair-group-2",
+          "at": "2026-07-26T08:48:03.588Z"
+        },
+        {
+          "phase": "repair-group-3",
+          "at": "2026-07-26T08:59:52.928Z"
+        },
+        {
+          "phase": "repair-before-2",
+          "at": "2026-07-26T09:01:04.907Z"
+        },
+        {
+          "phase": "repair-group-1:stuck",
+          "at": "2026-07-26T09:45:30.629Z"
+        },
+        {
+          "phase": "final:resolved",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "repair-group-1/group-1a:stuck",
+          "at": "2026-07-26T13:03:43.060Z"
+        },
+        {
+          "phase": "repair-group-1/group-1b:resolved",
+          "at": "2026-07-26T13:46:01.320Z"
+        }
+      ],
+      "stuck_count": 3,
+      "verdict": null
+    },
+    "ex-0009": {
+      "group": "Tabs",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "final",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1:resolved",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "stageb-before-1",
+          "at": "2026-07-26T14:32:26.425Z"
+        },
+        {
+          "phase": "stageb-blind-Backslash_escapes",
+          "at": "2026-07-26T14:38:46.938Z"
+        },
+        {
+          "phase": "stageb-blind-Tabs:resolved",
+          "at": "2026-07-26T15:36:09.457Z"
+        }
+      ],
+      "stuck_count": 0,
+      "verdict": null
+    },
+    "ex-0013": {
+      "group": "Backslash escapes",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "final",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1:resolved",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "stageb-before-1",
+          "at": "2026-07-26T14:32:26.425Z"
+        },
+        {
+          "phase": "stageb-blind-Backslash_escapes:resolved",
+          "at": "2026-07-26T14:38:46.938Z"
+        }
+      ],
+      "stuck_count": 0,
+      "verdict": null
+    },
+    "ex-0049": {
+      "group": "ATX headings",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "final",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1:resolved",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "stageb-before-1",
+          "at": "2026-07-26T14:32:26.425Z"
+        },
+        {
+          "phase": "stageb-blind-Backslash_escapes",
+          "at": "2026-07-26T14:38:46.938Z"
+        },
+        {
+          "phase": "stageb-blind-Tabs",
+          "at": "2026-07-26T15:36:09.457Z"
+        },
+        {
+          "phase": "stageb-blind-ATX_headings:resolved",
+          "at": "2026-07-26T15:42:19.423Z"
+        }
+      ],
+      "stuck_count": 0,
+      "verdict": null
+    },
+    "ex-0065": {
+      "group": "Setext headings",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "final",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1:resolved",
+          "at": "2026-07-26T12:09:26.293Z"
+        }
+      ],
+      "stuck_count": 0,
+      "verdict": null
+    },
+    "ex-0111": {
+      "group": "Fenced code blocks",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "final",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1:resolved",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "stageb-before-1",
+          "at": "2026-07-26T14:32:26.425Z"
+        },
+        {
+          "phase": "stageb-blind-Backslash_escapes",
+          "at": "2026-07-26T14:38:46.938Z"
+        },
+        {
+          "phase": "stageb-blind-Tabs",
+          "at": "2026-07-26T15:36:09.457Z"
+        },
+        {
+          "phase": "stageb-blind-ATX_headings",
+          "at": "2026-07-26T15:42:19.423Z"
+        },
+        {
+          "phase": "stageb-blind-Fenced_code_blocks:resolved",
+          "at": "2026-07-26T15:50:23.890Z"
+        }
+      ],
+      "stuck_count": 0,
+      "verdict": null
+    },
+    "ex-0148": {
+      "group": "Block quotes",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "final",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1:resolved",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "stageb-before-1",
+          "at": "2026-07-26T14:32:26.425Z"
+        },
+        {
+          "phase": "stageb-blind-Backslash_escapes",
+          "at": "2026-07-26T14:38:46.938Z"
+        },
+        {
+          "phase": "stageb-blind-Tabs",
+          "at": "2026-07-26T15:36:09.457Z"
+        },
+        {
+          "phase": "stageb-blind-ATX_headings",
+          "at": "2026-07-26T15:42:19.423Z"
+        },
+        {
+          "phase": "stageb-blind-Fenced_code_blocks",
+          "at": "2026-07-26T15:50:23.890Z"
+        },
+        {
+          "phase": "stageb-blind-Block_quotes:resolved",
+          "at": "2026-07-26T15:55:46.280Z"
+        }
+      ],
+      "stuck_count": 0,
+      "verdict": null
+    },
+    "ex-0230": {
+      "group": "Lists",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "final",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1:resolved",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "stageb-before-1",
+          "at": "2026-07-26T14:32:26.425Z"
+        },
+        {
+          "phase": "stageb-blind-Backslash_escapes",
+          "at": "2026-07-26T14:38:46.938Z"
+        },
+        {
+          "phase": "stageb-blind-Tabs",
+          "at": "2026-07-26T15:36:09.457Z"
+        },
+        {
+          "phase": "stageb-blind-ATX_headings",
+          "at": "2026-07-26T15:42:19.423Z"
+        },
+        {
+          "phase": "stageb-blind-Fenced_code_blocks",
+          "at": "2026-07-26T15:50:23.890Z"
+        },
+        {
+          "phase": "stageb-blind-Block_quotes",
+          "at": "2026-07-26T15:55:46.280Z"
+        },
+        {
+          "phase": "stageb-blind-Lists:resolved",
+          "at": "2026-07-26T16:02:57.632Z"
+        }
+      ],
+      "stuck_count": 0,
+      "verdict": null
+    },
+    "ex-0457": {
+      "group": "Links",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "final",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1:resolved",
+          "at": "2026-07-26T12:09:26.293Z"
+        }
+      ],
+      "stuck_count": 0,
+      "verdict": null
+    },
+    "ex-0517": {
+      "group": "Hard line breaks",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "final",
+          "at": "2026-07-26T09:47:53.917Z"
+        },
+        {
+          "phase": "repair-before-1:resolved",
+          "at": "2026-07-26T12:09:26.293Z"
+        },
+        {
+          "phase": "stageb-before-1",
+          "at": "2026-07-26T14:32:26.425Z"
+        },
+        {
+          "phase": "stageb-blind-Backslash_escapes",
+          "at": "2026-07-26T14:38:46.938Z"
+        },
+        {
+          "phase": "stageb-blind-Tabs",
+          "at": "2026-07-26T15:36:09.457Z"
+        },
+        {
+          "phase": "stageb-blind-ATX_headings",
+          "at": "2026-07-26T15:42:19.423Z"
+        },
+        {
+          "phase": "stageb-blind-Fenced_code_blocks",
+          "at": "2026-07-26T15:50:23.890Z"
+        },
+        {
+          "phase": "stageb-blind-Block_quotes",
+          "at": "2026-07-26T15:55:46.280Z"
+        },
+        {
+          "phase": "stageb-blind-Lists",
+          "at": "2026-07-26T16:02:57.632Z"
+        },
+        {
+          "phase": "stageb-blind-Hard_line_breaks:resolved",
+          "at": "2026-07-26T16:08:23.980Z"
+        }
+      ],
+      "stuck_count": 0,
+      "verdict": null
+    },
+    "ex-0015": {
+      "group": "Backslash escapes",
+      "status": "passing",
+      "attempts": [
+        {
+          "phase": "stageb-before-1",
+          "at": "2026-07-26T14:32:26.425Z"
+        },
+        {
+          "phase": "stageb-blind-Backslash_escapes:resolved",
+          "at": "2026-07-26T14:38:46.938Z"
+        }
+      ],
+      "stuck_count": 0,
+      "verdict": null
+    }
+  },
+  "updated_at": "2026-07-26T16:11:22.538Z"
+}

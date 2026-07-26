@@ -168,8 +168,11 @@ export function buildRepairClusterPrompt({
   reference,
   verifyCmd,
   coordMode = "strict",
+  lessons = "",
+  designNote = "",
+  strategySuffix = "",
 }) {
-  return fillTemplate(loadPrompt("repair-cluster"), {
+  let body = fillTemplate(loadPrompt("repair-cluster"), {
     RATE: typeof rate === "number" ? `${(rate * 100).toFixed(1)}%` : String(rate ?? "n/a"),
     CLUSTER_ID: clusterId || "?",
     HYPOTHESIS: hypothesis || "_unspecified_",
@@ -177,5 +180,62 @@ export function buildRepairClusterPrompt({
     REFERENCE: reference || "_None available._",
     VERIFY_CMD: verifyCmd || "_No verification command configured._",
     COORDINATION_MODE_RULES: repairCoordinationRules(coordMode),
+    LESSONS: lessons || "_None yet._",
+  });
+  if (designNote) {
+    body += `\n\n## Design note from decomposer\n\n${designNote}\n`;
+  }
+  if (strategySuffix) {
+    body += `\n\n## Candidate strategy\n\n${strategySuffix}\n`;
+  }
+  return body;
+}
+
+export function buildRepairBlindPrompt({
+  rate,
+  group,
+  failCount,
+  reference,
+  verifyGenCmd,
+  verifyVisibleCmd,
+  coordMode = "strict",
+  lessons = "",
+  strategySuffix = "",
+}) {
+  let body = fillTemplate(loadPrompt("repair-blind"), {
+    RATE: typeof rate === "number" ? `${(rate * 100).toFixed(1)}%` : String(rate ?? "n/a"),
+    GROUP: group || "?",
+    FAIL_COUNT: String(failCount ?? 0),
+    REFERENCE: reference || "_None available._",
+    VERIFY_GEN_CMD: verifyGenCmd || "_No generated checks configured._",
+    VERIFY_VISIBLE_CMD: verifyVisibleCmd || "_No verification command configured._",
+    COORDINATION_MODE_RULES: repairCoordinationRules(coordMode),
+    LESSONS: lessons || "_None yet._",
+  });
+  if (strategySuffix) {
+    body += `\n\n## Candidate strategy\n\n${strategySuffix}\n`;
+  }
+  return body;
+}
+
+export function buildDecomposePrompt({
+  clusterId,
+  hypothesis,
+  itemCount,
+  failures,
+  reference,
+}) {
+  return fillTemplate(loadPrompt("decompose"), {
+    CLUSTER_ID: clusterId || "?",
+    HYPOTHESIS: hypothesis || "_unspecified_",
+    ITEM_COUNT: String(itemCount ?? 0),
+    FAILURES: formatScoreFailures(failures, 40),
+    REFERENCE: reference || "_None available._",
+  });
+}
+
+export function buildOverfitReviewPrompt({ diff }) {
+  return fillTemplate(loadPrompt("overfit-review"), {
+    DIFF: truncate(diff, 8000) || "_Empty diff._",
   });
 }

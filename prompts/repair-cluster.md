@@ -19,6 +19,10 @@ You are repairing an already-integrated codebase. The harness scored the accepta
 
 {{REFERENCE}}
 
+## Prior lessons (harness-generated)
+
+{{LESSONS}}
+
 ## Self-verification command
 
 Run this before finishing (holdout excluded; only this cluster's ids):

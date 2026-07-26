@@ -40,6 +40,20 @@ function rung2Count(m) {
   return (m.repair_clusters || []).filter((c) => c.rung === 2).length;
 }
 
+function rung3Count(m) {
+  const a = (m.repair_clusters || []).filter((c) => c.rung === 3).length;
+  const b = (m.repair_stage_b || []).filter((c) => c.rung === 3).length;
+  return a + b;
+}
+
+function stageBGain(m) {
+  return (m.repair_stage_b || []).filter((c) => c.accepted).reduce((s, c) => s + (c.gain_full || 0), 0);
+}
+
+function suspiciousReviews(m) {
+  return (m.overfit_reviews || []).filter((r) => r.verdict === "suspicious").length;
+}
+
 console.log("\n=== mini-swarm A/B comparison ===\n");
 row("Metric", "Run A", "Run B");
 row("coordination", a.coordination, b.coordination);
@@ -93,6 +107,10 @@ row(
 row("merge gate rejections", a.merge_gate_rejection_count ?? 0, b.merge_gate_rejection_count ?? 0);
 row("repair clusters", repairAccepted(a), repairAccepted(b));
 row("rung2 attempts", rung2Count(a), rung2Count(b));
+row("rung3 attempts", rung3Count(a), rung3Count(b));
+row("stage_b_gain", stageBGain(a), stageBGain(b));
+row("stage_b_clusters", (a.repair_stage_b || []).length, (b.repair_stage_b || []).length);
+row("overfit_suspicious", suspiciousReviews(a), suspiciousReviews(b));
 row("adjudications", (a.adjudications || []).length, (b.adjudications || []).length);
 row("suspected_oracle", (a.suspected_oracle_bugs || []).length, (b.suspected_oracle_bugs || []).length);
 row(
@@ -101,6 +119,11 @@ row(
     : (a.global_repair_time_ms != null ? (a.global_repair_time_ms / 60000).toFixed(1) : "-"),
   b.repair_time_ms != null ? (b.repair_time_ms / 60000).toFixed(1)
     : (b.global_repair_time_ms != null ? (b.global_repair_time_ms / 60000).toFixed(1) : "-"),
+);
+row(
+  "strong_model_min",
+  a.strong_model_time_ms != null ? (a.strong_model_time_ms / 60000).toFixed(1) : "-",
+  b.strong_model_time_ms != null ? (b.strong_model_time_ms / 60000).toFixed(1) : "-",
 );
 row("loc", a.loc, b.loc);
 row("agent calls", a.agent_calls?.length, b.agent_calls?.length);

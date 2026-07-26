@@ -1,0 +1,185 @@
+[
+  {
+    "id": "task-01",
+    "title": "Core pipeline: index, CLI, types, registries, render",
+    "spec_sections": [
+      "Paragraphs",
+      "Blank lines",
+      "Precedence",
+      "Textual content"
+    ],
+    "files_scope": [
+      "src/index.ts",
+      "src/cli.ts",
+      "src/types.ts",
+      "src/render.ts",
+      "src/blocks/registry.ts",
+      "src/inline/registry.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "Improve the shared pipeline stub so later tasks can register parsers. Keep tsc green. Own pipeline-level semantics (blank lines, precedence, textual content). Do not implement every CommonMark feature here. Your goal is to pass ALL CommonMark spec examples for your spec_sections (see spec/examples.json). Read the spec section carefully, including edge cases; the harness will score your sections and send failing examples back for fixes."
+  },
+  {
+    "id": "task-02",
+    "title": "ATX headings",
+    "spec_sections": [
+      "ATX headings"
+    ],
+    "files_scope": [
+      "src/blocks/headings.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "Implement parser in your module; register it in src/blocks/registry.ts and add the render case in src/render.ts via minimal cross-scope patches (cross-scope: register <feature>). Your goal is to pass ALL CommonMark spec examples for your spec_sections (see spec/examples.json). Read the spec section carefully, including edge cases; the harness will score your sections and send failing examples back for fixes."
+  },
+  {
+    "id": "task-03",
+    "title": "Setext headings",
+    "spec_sections": [
+      "Setext headings"
+    ],
+    "files_scope": [
+      "src/blocks/setext.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "Implement parser in your module; register it in src/blocks/registry.ts and add the render case in src/render.ts via minimal cross-scope patches (cross-scope: register <feature>). Your goal is to pass ALL CommonMark spec examples for your spec_sections (see spec/examples.json). Read the spec section carefully, including edge cases; the harness will score your sections and send failing examples back for fixes."
+  },
+  {
+    "id": "task-04",
+    "title": "Paragraphs and blank lines",
+    "spec_sections": [
+      "Paragraphs",
+      "Blank lines"
+    ],
+    "files_scope": [
+      "src/blocks/paragraphs.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "Implement parser in your module; register it in src/blocks/registry.ts and add the render case in src/render.ts via minimal cross-scope patches (cross-scope: register <feature>). Your goal is to pass ALL CommonMark spec examples for your spec_sections (see spec/examples.json). Read the spec section carefully, including edge cases; the harness will score your sections and send failing examples back for fixes."
+  },
+  {
+    "id": "task-05",
+    "title": "Lists and list items",
+    "spec_sections": [
+      "List items",
+      "Lists"
+    ],
+    "files_scope": [
+      "src/blocks/lists.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "List items may contain nested blocks (paragraphs, code, quotes); recursive block parsing via the registry is expected. Implement parser in your module; register it in src/blocks/registry.ts and add the render case in src/render.ts via minimal cross-scope patches (cross-scope: register <feature>). Your goal is to pass ALL CommonMark spec examples for your spec_sections (see spec/examples.json). Read the spec section carefully, including edge cases; the harness will score your sections and send failing examples back for fixes."
+  },
+  {
+    "id": "task-06",
+    "title": "Block quotes",
+    "spec_sections": [
+      "Block quotes"
+    ],
+    "files_scope": [
+      "src/blocks/blockquote.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "Implement parser in your module; register it in src/blocks/registry.ts and add the render case in src/render.ts via minimal cross-scope patches (cross-scope: register <feature>). Your goal is to pass ALL CommonMark spec examples for your spec_sections (see spec/examples.json). Read the spec section carefully, including edge cases; the harness will score your sections and send failing examples back for fixes."
+  },
+  {
+    "id": "task-07",
+    "title": "Thematic breaks",
+    "spec_sections": [
+      "Thematic breaks"
+    ],
+    "files_scope": [
+      "src/blocks/thematic.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "Implement parser in your module; register it in src/blocks/registry.ts and add the render case in src/render.ts via minimal cross-scope patches (cross-scope: register <feature>). Your goal is to pass ALL CommonMark spec examples for your spec_sections (see spec/examples.json). Read the spec section carefully, including edge cases; the harness will score your sections and send failing examples back for fixes."
+  },
+  {
+    "id": "task-08",
+    "title": "Fenced code blocks",
+    "spec_sections": [
+      "Fenced code blocks"
+    ],
+    "files_scope": [
+      "src/blocks/fenced.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "Implement parser in your module; register it in src/blocks/registry.ts and add the render case in src/render.ts via minimal cross-scope patches (cross-scope: register <feature>). Your goal is to pass ALL CommonMark spec examples for your spec_sections (see spec/examples.json). Read the spec section carefully, including edge cases; the harness will score your sections and send failing examples back for fixes."
+  },
+  {
+    "id": "task-09",
+    "title": "Indented code blocks",
+    "spec_sections": [
+      "Indented code blocks"
+    ],
+    "files_scope": [
+      "src/blocks/indented.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "Implement parser in your module; register it in src/blocks/registry.ts and add the render case in src/render.ts via minimal cross-scope patches (cross-scope: register <feature>). Your goal is to pass ALL CommonMark spec examples for your spec_sections (see spec/examples.json). Read the spec section carefully, including edge cases; the harness will score your sections and send failing examples back for fixes."
+  },
+  {
+    "id": "task-10",
+    "title": "Emphasis and strong emphasis",
+    "spec_sections": [
+      "Emphasis and strong emphasis"
+    ],
+    "files_scope": [
+      "src/inline/emphasis.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "Implement parser in your module; register it in src/inline/registry.ts and add the render case in src/render.ts via minimal cross-scope patches (cross-scope: register <feature>). Your goal is to pass ALL CommonMark spec examples for your spec_sections (see spec/examples.json). Read the spec section carefully, including edge cases; the harness will score your sections and send failing examples back for fixes."
+  },
+  {
+    "id": "task-11",
+    "title": "Code spans",
+    "spec_sections": [
+      "Code spans"
+    ],
+    "files_scope": [
+      "src/inline/codespan.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "Implement parser in your module; register it in src/inline/registry.ts and add the render case in src/render.ts via minimal cross-scope patches (cross-scope: register <feature>). Your goal is to pass ALL CommonMark spec examples for your spec_sections (see spec/examples.json). Read the spec section carefully, including edge cases; the harness will score your sections and send failing examples back for fixes."
+  },
+  {
+    "id": "task-12",
+    "title": "Links and images",
+    "spec_sections": [
+      "Links",
+      "Images"
+    ],
+    "files_scope": [
+      "src/inline/links.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "Implement parser in your module; register it in src/inline/registry.ts and add the render case in src/render.ts via minimal cross-scope patches (cross-scope: register <feature>). Your goal is to pass ALL CommonMark spec examples for your spec_sections (see spec/examples.json). Read the spec section carefully, including edge cases; the harness will score your sections and send failing examples back for fixes."
+  },
+  {
+    "id": "task-13",
+    "title": "Text-level semantics: escapes, line breaks, tabs",
+    "spec_sections": [
+      "Backslash escapes",
+      "Hard line breaks",
+      "Soft line breaks",
+      "Tabs"
+    ],
+    "files_scope": [
+      "src/inline/text.ts"
+    ],
+    "status": "pending",
+    "attempts": 0,
+    "notes": "Expose shared helpers for backslash escapes that other parsers can import. Tab expansion belongs at the block-parse entry (or a shared preprocess helper). Implement parser in your module; register it in src/inline/registry.ts and add the render case in src/render.ts via minimal cross-scope patches (cross-scope: register <feature>). Your goal is to pass ALL CommonMark spec examples for your spec_sections (see spec/examples.json). Read the spec section carefully, including edge cases; the harness will score your sections and send failing examples back for fixes."
+  }
+]

@@ -4,32 +4,55 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 
+const STRONG_ROLES = new Set(["adjudicator", "cluster", "decomposer", "repair-strong"]);
+const REVIEWER_ROLES = new Set(["overfit-reviewer", "reviewer"]);
+
 function normalizeRepair(raw) {
-  if (raw.repair && typeof raw.repair === "object") {
-    return {
-      maxRounds: raw.repair.maxRounds ?? 4,
-      target: raw.repair.target ?? 1.0,
-      exhaustiveThreshold: raw.repair.exhaustiveThreshold ?? 24,
-      topGroups: raw.repair.topGroups ?? 3,
-      maxClusters: raw.repair.maxClusters ?? 8,
-      candidates: raw.repair.candidates ?? 2,
-      minGainItems: raw.repair.minGainItems ?? 1,
-      maxPhaseMinutes: raw.repair.maxPhaseMinutes ?? 90,
-      stuckThreshold: raw.repair.stuckThreshold ?? 2,
+  const r = raw.repair && typeof raw.repair === "object" ? raw.repair : null;
+  const base = r
+    ? {
+      maxRounds: r.maxRounds ?? 4,
+      target: r.target ?? 1.0,
+      exhaustiveThreshold: r.exhaustiveThreshold ?? 24,
+      topGroups: r.topGroups ?? 3,
+      maxClusters: r.maxClusters ?? 8,
+      candidates: r.candidates ?? 2,
+      minGainItems: r.minGainItems ?? 1,
+      maxPhaseMinutes: r.maxPhaseMinutes ?? 240,
+      stuckThreshold: r.stuckThreshold ?? 2,
+      plateauRounds: r.plateauRounds ?? 2,
+      rung3Enabled: r.rung3Enabled !== false,
+      decomposeThreshold: r.decomposeThreshold ?? 12,
+      rejectSuspicious: !!r.rejectSuspicious,
+      genExamples: {
+        seed: r.genExamples?.seed ?? "v12",
+        count: r.genExamples?.count ?? 300,
+        path: r.genExamples?.path ?? "spec/gen-examples-v12.json",
+      },
+      generalization: {
+        maxRounds: r.generalization?.maxRounds ?? 3,
+        plateauRounds: r.generalization?.plateauRounds ?? 2,
+      },
+    }
+    : {
+      // Compat: synthesize from legacy v10 keys.
+      maxRounds: raw.maxGlobalRepairRounds ?? 2,
+      target: raw.globalRepairTarget ?? 1.0,
+      exhaustiveThreshold: 24,
+      topGroups: raw.globalRepairTopSections ?? 3,
+      maxClusters: 8,
+      candidates: 2,
+      minGainItems: 1,
+      maxPhaseMinutes: 240,
+      stuckThreshold: 2,
+      plateauRounds: 2,
+      rung3Enabled: true,
+      decomposeThreshold: 12,
+      rejectSuspicious: false,
+      genExamples: { seed: "v12", count: 300, path: "spec/gen-examples-v12.json" },
+      generalization: { maxRounds: 3, plateauRounds: 2 },
     };
-  }
-  // Compat: synthesize from legacy v10 keys.
-  return {
-    maxRounds: raw.maxGlobalRepairRounds ?? 2,
-    target: raw.globalRepairTarget ?? 1.0,
-    exhaustiveThreshold: 24,
-    topGroups: raw.globalRepairTopSections ?? 3,
-    maxClusters: 8,
-    candidates: 2,
-    minGainItems: 1,
-    maxPhaseMinutes: 90,
-    stuckThreshold: 2,
-  };
+  return base;
 }
 
 function normalizeHoldout(raw) {
@@ -41,6 +64,34 @@ function normalizeHoldout(raw) {
     alarmPp: h.alarmPp ?? 5,
     failOnOracleLiterals: !!h.failOnOracleLiterals,
   };
+}
+
+/**
+ * Resolve model slug for a role. Strong roles → models.strong → worker;
+ * reviewer-like → models.reviewer → worker; else models[role] → worker.
+ */
+export function resolveModel(config, role) {
+  const models = config?.models || {};
+  const worker = models.worker || "composer-2.5-fast";
+  if (models[role]) return models[role];
+  if (STRONG_ROLES.has(role)) return models.strong || worker;
+  if (REVIEWER_ROLES.has(role)) return models.reviewer || worker;
+  return worker;
+}
+
+/** Unique model slugs referenced by config (for preflight). */
+export function listConfiguredModels(config) {
+  const models = config?.models || {};
+  const roles = [
+    "planner", "worker", "merger", "reviewer", "strong",
+    "adjudicator", "cluster", "decomposer", "repair-strong", "overfit-reviewer",
+  ];
+  const set = new Set();
+  for (const role of roles) set.add(resolveModel(config, role));
+  for (const v of Object.values(models)) {
+    if (typeof v === "string" && v) set.add(v);
+  }
+  return [...set];
 }
 
 export function loadConfig(overrides = {}) {

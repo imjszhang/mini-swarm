@@ -22,6 +22,7 @@ const SCORE_SCRIPT = path.join(ROOT, "scorer", "score.mjs");
  *   itemIds?: string[],
  *   holdoutFile?: string|null,
  *   holdoutMode?: "include"|"exclude"|"only",
+ *   examplesFile?: string|null,
  *   truncate?: number,
  *   maxFailures?: number,
  *   limit?: number|null,
@@ -33,6 +34,9 @@ export function scoreScope(workspaceDir, jsonOut, opts = {}) {
     "--workspace", workspaceDir,
     "--json", jsonOut,
   ];
+  if (opts.examplesFile) {
+    args.push("--examples", opts.examplesFile);
+  }
   if (opts.groups?.length) {
     args.push("--sections", opts.groups.join(","));
   }
@@ -99,7 +103,7 @@ export function scoreScope(workspaceDir, jsonOut, opts = {}) {
  * Task-plugin hook: return normative reference text for a group name.
  * Opaque to mechanism modules (they treat it as a string blob).
  */
-export function getReferenceText(group, maxChars = 3000) {
+export function getReferenceText(group, maxChars = 8000) {
   if (!group || !existsSync(SPEC_TEXT_PATH)) return "";
   const text = readFileSync(SPEC_TEXT_PATH, "utf8");
   const heading = `## ${group}`;

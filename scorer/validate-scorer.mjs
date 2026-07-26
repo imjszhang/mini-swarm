@@ -15,7 +15,16 @@ const FIXTURE = path.join(ROOT, "scorer", ".fixture-workspace");
 const EXCEPTIONS_PATH = path.join(ROOT, "spec", "oracle-exceptions.json");
 
 function setupFixture() {
-  rmSync(FIXTURE, { recursive: true, force: true });
+  try {
+    rmSync(FIXTURE, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 });
+  } catch (err) {
+    // Windows: directory busy — reuse existing fixture if node_modules present.
+    if (!existsSync(path.join(FIXTURE, "node_modules", "commonmark"))) {
+      throw err;
+    }
+    console.warn("[score:validate] reusing existing fixture (rm failed):", err.code || err.message);
+    return;
+  }
   mkdirSync(path.join(FIXTURE, "dist"), { recursive: true });
   writeFileSync(path.join(FIXTURE, "package.json"), JSON.stringify({
     name: "fixture-commonmark",

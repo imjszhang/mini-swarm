@@ -1,6 +1,7 @@
 import { execSync, spawn } from "node:child_process";
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
+import { resolveModel } from "./lib/config.mjs";
 
 /** Kill agent process tree (Windows SIGTERM often leaves cursor-agent grandchildren alive). */
 function killAgentTree(child) {
@@ -37,7 +38,7 @@ export function spawnAgent({
   logKey = role,
   timeoutMs,
 }) {
-  const model = config.models[role];
+  const model = resolveModel(config, role);
   if (!model) {
     return Promise.reject(new Error(`No model configured for role: ${role}`));
   }
