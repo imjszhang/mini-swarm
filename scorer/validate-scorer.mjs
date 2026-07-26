@@ -1,15 +1,18 @@
 #!/usr/bin/env node
 /**
- * Validate scorer against reference commonmark npm package (dev only).
+ * Validate scorer against reference commonmark npm package.
+ * Requires 100% of in-scope examples minus any entries in
+ * spec/oracle-exceptions.json (human-reviewed; expected empty).
  */
 import { spawnSync } from "node:child_process";
-import { cpSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
 const FIXTURE = path.join(ROOT, "scorer", ".fixture-workspace");
+const EXCEPTIONS_PATH = path.join(ROOT, "spec", "oracle-exceptions.json");
 
 function setupFixture() {
   rmSync(FIXTURE, { recursive: true, force: true });
@@ -45,17 +48,49 @@ if (!existsSync(path.join(ROOT, "spec", "examples.json"))) {
 }
 
 setupFixture();
+
+const scoreJson = path.join(FIXTURE, "score-full.json");
 const score = spawnSync(process.execPath, [
   "scorer/score.mjs",
   "--workspace", FIXTURE,
-  "--limit", "50",
+  "--json", scoreJson,
+  "--max-failures", "600",
 ], { cwd: ROOT, encoding: "utf8" });
 
 console.log(score.stdout || score.stderr);
-const m = /Pass rate: (\d+)\/(\d+)/.exec(score.stdout || "");
-const passed = m ? Number(m[1]) : 0;
-if (score.status !== 0 && passed < 30) {
-  console.error("Scorer validation failed on first 50 examples.");
+
+let report;
+try {
+  report = JSON.parse(readFileSync(scoreJson, "utf8"));
+} catch {
+  console.error("Scorer validation failed: could not parse score report.");
   process.exit(1);
 }
-console.log(`Scorer validation OK (reference impl ${passed}/50; tabs may differ from spec).`);
+
+let exceptions = [];
+if (existsSync(EXCEPTIONS_PATH)) {
+  try {
+    exceptions = JSON.parse(readFileSync(EXCEPTIONS_PATH, "utf8"));
+    if (!Array.isArray(exceptions)) exceptions = [];
+  } catch {
+    exceptions = [];
+  }
+}
+const exceptionIds = new Set(exceptions.map((e) => e.id).filter(Boolean));
+const failingIds = (report.failures || []).map((f) => f.id);
+const unexplained = failingIds.filter((id) => !exceptionIds.has(id));
+const allowedFail = report.total - exceptionIds.size;
+
+console.log(
+  `Reference impl: ${report.passed}/${report.total}; exceptions=${exceptionIds.size}; unexplained_fails=${unexplained.length}`,
+);
+if (unexplained.length) {
+  console.error("Unexplained failures (first 10):", unexplained.slice(0, 10));
+  console.error("Scorer validation FAILED — reference must pass all in-scope examples minus oracle-exceptions.");
+  process.exit(1);
+}
+if (report.passed < allowedFail) {
+  console.error(`Scorer validation FAILED: passed ${report.passed} < allowed ${allowedFail}`);
+  process.exit(1);
+}
+console.log("Scorer validation OK (reference impl covers in-scope suite minus exceptions).");

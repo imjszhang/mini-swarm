@@ -2,67 +2,67 @@
   {
     "id": "ex-0001",
     "section": "Tabs",
-    "markdown": "→foo→baz→→bim",
-    "html": "<pre><code>foo→baz→→bim\n</code></pre>"
+    "markdown": "\tfoo\tbaz\t\tbim",
+    "html": "<pre><code>foo\tbaz\t\tbim\n</code></pre>"
   },
   {
     "id": "ex-0002",
     "section": "Tabs",
-    "markdown": "  →foo→baz→→bim",
-    "html": "<pre><code>foo→baz→→bim\n</code></pre>"
+    "markdown": "  \tfoo\tbaz\t\tbim",
+    "html": "<pre><code>foo\tbaz\t\tbim\n</code></pre>"
   },
   {
     "id": "ex-0003",
     "section": "Tabs",
-    "markdown": "    a→a\n    ὐ→a",
-    "html": "<pre><code>a→a\nὐ→a\n</code></pre>"
+    "markdown": "    a\ta\n    ὐ\ta",
+    "html": "<pre><code>a\ta\nὐ\ta\n</code></pre>"
   },
   {
     "id": "ex-0004",
     "section": "Tabs",
-    "markdown": "  - foo\n\n→bar",
+    "markdown": "  - foo\n\n\tbar",
     "html": "<ul>\n<li>\n<p>foo</p>\n<p>bar</p>\n</li>\n</ul>"
   },
   {
     "id": "ex-0005",
     "section": "Tabs",
-    "markdown": "- foo\n\n→→bar",
+    "markdown": "- foo\n\n\t\tbar",
     "html": "<ul>\n<li>\n<p>foo</p>\n<pre><code>  bar\n</code></pre>\n</li>\n</ul>"
   },
   {
     "id": "ex-0006",
     "section": "Tabs",
-    "markdown": ">→→foo",
+    "markdown": ">\t\tfoo",
     "html": "<blockquote>\n<pre><code>  foo\n</code></pre>\n</blockquote>"
   },
   {
     "id": "ex-0007",
     "section": "Tabs",
-    "markdown": "-→→foo",
+    "markdown": "-\t\tfoo",
     "html": "<ul>\n<li>\n<pre><code>  foo\n</code></pre>\n</li>\n</ul>"
   },
   {
     "id": "ex-0008",
     "section": "Tabs",
-    "markdown": "    foo\n→bar",
+    "markdown": "    foo\n\tbar",
     "html": "<pre><code>foo\nbar\n</code></pre>"
   },
   {
     "id": "ex-0009",
     "section": "Tabs",
-    "markdown": " - foo\n   - bar\n→ - baz",
+    "markdown": " - foo\n   - bar\n\t - baz",
     "html": "<ul>\n<li>foo\n<ul>\n<li>bar\n<ul>\n<li>baz</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>"
   },
   {
     "id": "ex-0010",
     "section": "Tabs",
-    "markdown": "#→Foo",
+    "markdown": "#\tFoo",
     "html": "<h1>Foo</h1>"
   },
   {
     "id": "ex-0011",
     "section": "Tabs",
-    "markdown": "*→*→*→",
+    "markdown": "*\t*\t*\t",
     "html": "<hr />"
   },
   {
@@ -74,8 +74,8 @@
   {
     "id": "ex-0013",
     "section": "Backslash escapes",
-    "markdown": "\\→\\A\\a\\ \\3\\φ\\«",
-    "html": "<p>\\→\\A\\a\\ \\3\\φ\\«</p>"
+    "markdown": "\\\t\\A\\a\\ \\3\\φ\\«",
+    "html": "<p>\\\t\\A\\a\\ \\3\\φ\\«</p>"
   },
   {
     "id": "ex-0014",
@@ -386,7 +386,7 @@
   {
     "id": "ex-0065",
     "section": "Setext headings",
-    "markdown": "  Foo *bar\nbaz*→\n====",
+    "markdown": "  Foo *bar\nbaz*\t\n====",
     "html": "<h1>Foo <em>bar\nbaz</em></h1>"
   },
   {

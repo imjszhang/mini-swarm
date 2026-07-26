@@ -1,0 +1,232 @@
+{
+  "scored_at": "2026-07-25T17:32:04.069Z",
+  "workspace": "D:\\github\\projects\\mini-swarm\\runs\\run-a-bare-contention-v11\\workspace",
+  "total": 439,
+  "passed": 0,
+  "rate": 0,
+  "by_section": {
+    "Tabs": {
+      "passed": 0,
+      "total": 9,
+      "rate": 0
+    },
+    "Backslash escapes": {
+      "passed": 0,
+      "total": 11,
+      "rate": 0
+    },
+    "Precedence": {
+      "passed": 0,
+      "total": 1,
+      "rate": 0
+    },
+    "Thematic breaks": {
+      "passed": 0,
+      "total": 16,
+      "rate": 0
+    },
+    "ATX headings": {
+      "passed": 0,
+      "total": 15,
+      "rate": 0
+    },
+    "Setext headings": {
+      "passed": 0,
+      "total": 22,
+      "rate": 0
+    },
+    "Indented code blocks": {
+      "passed": 0,
+      "total": 10,
+      "rate": 0
+    },
+    "Fenced code blocks": {
+      "passed": 0,
+      "total": 24,
+      "rate": 0
+    },
+    "Paragraphs": {
+      "passed": 0,
+      "total": 6,
+      "rate": 0
+    },
+    "Blank lines": {
+      "passed": 0,
+      "total": 1,
+      "rate": 0
+    },
+    "Block quotes": {
+      "passed": 0,
+      "total": 21,
+      "rate": 0
+    },
+    "List items": {
+      "passed": 0,
+      "total": 40,
+      "rate": 0
+    },
+    "Lists": {
+      "passed": 0,
+      "total": 22,
+      "rate": 0
+    },
+    "Code spans": {
+      "passed": 0,
+      "total": 18,
+      "rate": 0
+    },
+    "Emphasis and strong emphasis": {
+      "passed": 0,
+      "total": 112,
+      "rate": 0
+    },
+    "Links": {
+      "passed": 0,
+      "total": 76,
+      "rate": 0
+    },
+    "Images": {
+      "passed": 0,
+      "total": 18,
+      "rate": 0
+    },
+    "Hard line breaks": {
+      "passed": 0,
+      "total": 12,
+      "rate": 0
+    },
+    "Soft line breaks": {
+      "passed": 0,
+      "total": 2,
+      "rate": 0
+    },
+    "Textual content": {
+      "passed": 0,
+      "total": 3,
+      "rate": 0
+    }
+  },
+  "failures": [
+    {
+      "id": "ex-0002",
+      "section": "Tabs",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v11/workspace/dist/blocks/registry.js:103\r\nregisterBlockParser(parseIndentedCodeInList);\r\n                    ^\r\n\r\nReferenceError: parseIndentedCodeInList is not defined\r\n    at file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v11/workspace/dist/blocks/registry.js:103:21\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:371:25)\r\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:669:26)\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\r\n\r\nNode.js v24.6.0",
+      "markdown": "  \tfoo\tbaz\t\tbim"
+    },
+    {
+      "id": "ex-0003",
+      "section": "Tabs",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v11/workspace/dist/blocks/registry.js:103\r\nregisterBlockParser(parseIndentedCodeInList);\r\n                    ^\r\n\r\nReferenceError: parseIndentedCodeInList is not defined\r\n    at file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v11/workspace/dist/blocks/registry.js:103:21\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:371:25)\r\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:669:26)\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\r\n\r\nNode.js v24.6.0",
+      "markdown": "    a\ta\n    ὐ\ta"
+    },
+    {
+      "id": "ex-0004",
+      "section": "Tabs",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v11/workspace/dist/blocks/registry.js:103\r\nregisterBlockParser(parseIndentedCodeInList);\r\n                    ^\r\n\r\nReferenceError: parseIndentedCodeInList is not defined\r\n    at file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v11/workspace/dist/blocks/registry.js:103:21\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:371:25)\r\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:669:26)\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\r\n\r\nNode.js v24.6.0",
+      "markdown": "  - foo\n\n\tbar"
+    },
+    {
+      "id": "ex-0005",
+      "section": "Tabs",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v11/workspace/dist/blocks/registry.js:103\r\nregisterBlockParser(parseIndentedCodeInList);\r\n                    ^\r\n\r\nReferenceError: parseIndentedCodeInList is not defined\r\n    at file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v11/workspace/dist/blocks/registry.js:103:21\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:371:25)\r\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:669:26)\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\r\n\r\nNode.js v24.6.0",
+      "markdown": "- foo\n\n\t\tbar"
+    },
+    {
+      "id": "ex-0006",
+      "section": "Tabs",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v11/workspace/dist/blocks/registry.js:103\r\nregisterBlockParser(parseIndentedCodeInList);\r\n                    ^\r\n\r\nReferenceError: parseIndentedCodeInList is not defined\r\n    at file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v11/workspace/dist/blocks/registry.js:103:21\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:371:25)\r\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:669:26)\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\r\n\r\nNode.js v24.6.0",
+      "markdown": ">\t\tfoo"
+    },
+    {
+      "id": "ex-0007",
+      "section": "Tabs",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v11/workspace/dist/blocks/registry.js:103\r\nregisterBlockParser(parseIndentedCodeInList);\r\n                    ^\r\n\r\nReferenceError: parseIndentedCodeInList is not defined\r\n    at file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v11/workspace/dist/blocks/registry.js:103:21\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:371:25)\r\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:669:26)\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\r\n\r\nNode.js v24.6.0",
+      "markdown": "-\t\tfoo"
+    },
+    {
+      "id": "ex-0008",
+      "section": "Tabs",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v11/workspace/dist/blocks/registry.js:103\r\nregisterBlockParser(parseIndentedCodeInList);\r\n                    ^\r\n\r\nReferenceError: parseIndentedCodeInList is not defined\r\n    at file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v11/workspace/dist/blocks/registry.js:103:21\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:371:25)\r\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:669:26)\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\r\n\r\nNode.js v24.6.0",
+      "markdown": "    foo\n\tbar"
+    },
+    {
+      "id": "ex-0010",
+      "section": "Tabs",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v11/workspace/dist/blocks/registry.js:103\r\nregisterBlockParser(parseIndentedCodeInList);\r\n                    ^\r\n\r\nReferenceError: parseIndentedCodeInList is not defined\r\n    at file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v11/workspace/dist/blocks/registry.js:103:21\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:371:25)\r\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:669:26)\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\r\n\r\nNode.js v24.6.0",
+      "markdown": "#\tFoo"
+    },
+    {
+      "id": "ex-0011",
+      "section": "Tabs",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v11/workspace/dist/blocks/registry.js:103\r\nregisterBlockParser(parseIndentedCodeInList);\r\n                    ^\r\n\r\nReferenceError: parseIndentedCodeInList is not defined\r\n    at file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v11/workspace/dist/blocks/registry.js:103:21\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:371:25)\r\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:669:26)\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\r\n\r\nNode.js v24.6.0",
+      "markdown": "*\t*\t*\t"
+    },
+    {
+      "id": "ex-0012",
+      "section": "Backslash escapes",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v11/workspace/dist/blocks/registry.js:103\r\nregisterBlockParser(parseIndentedCodeInList);\r\n                    ^\r\n\r\nReferenceError: parseIndentedCodeInList is not defined\r\n    at file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v11/workspace/dist/blocks/registry.js:103:21\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:371:25)\r\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:669:26)\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\r\n\r\nNode.js v24.6.0",
+      "markdown": "\\!\\\"\\#\\$\\%\\&\\'\\(\\)\\*\\+\\,\\-\\.\\/\\:\\;\\<\\=\\>\\?\\@\\[\\\\\\]\\^\\_\\`\\{\\|\\}\\~"
+    },
+    {
+      "id": "ex-0014",
+      "section": "Backslash escapes",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v11/workspace/dist/blocks/registry.js:103\r\nregisterBlockParser(parseIndentedCodeInList);\r\n                    ^\r\n\r\nReferenceError: parseIndentedCodeInList is not defined\r\n    at file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v11/workspace/dist/blocks/registry.js:103:21\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:371:25)\r\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:669:26)\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\r\n\r\nNode.js v24.6.0",
+      "markdown": "\\*not emphasized*\n\\<br/> not a tag\n\\[not a link](/foo)\n\\`not code`\n1\\. not a list\n\\* not a list\n\\# not a heading\n\\[foo]: /url \"not a reference\"\n\\&ouml; not a character entity"
+    },
+    {
+      "id": "ex-0016",
+      "section": "Backslash escapes",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v11/workspace/dist/blocks/registry.js:103\r\nregisterBlockParser(parseIndentedCodeInList);\r\n                    ^\r\n\r\nReferenceError: parseIndentedCodeInList is not defined\r\n    at file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v11/workspace/dist/blocks/registry.js:103:21\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:371:25)\r\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:669:26)\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\r\n\r\nNode.js v24.6.0",
+      "markdown": "foo\\\nbar"
+    },
+    {
+      "id": "ex-0017",
+      "section": "Backslash escapes",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v11/workspace/dist/blocks/registry.js:103\r\nregisterBlockParser(parseIndentedCodeInList);\r\n                    ^\r\n\r\nReferenceError: parseIndentedCodeInList is not defined\r\n    at file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v11/workspace/dist/blocks/registry.js:103:21\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:371:25)\r\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:669:26)\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\r\n\r\nNode.js v24.6.0",
+      "markdown": "`` \\[\\` ``"
+    },
+    {
+      "id": "ex-0018",
+      "section": "Backslash escapes",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v11/workspace/dist/blocks/registry.js:103\r\nregisterBlockParser(parseIndentedCodeInList);\r\n                    ^\r\n\r\nReferenceError: parseIndentedCodeInList is not defined\r\n    at file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v11/workspace/dist/blocks/registry.js:103:21\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:371:25)\r\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:669:26)\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\r\n\r\nNode.js v24.6.0",
+      "markdown": "    \\[\\]"
+    },
+    {
+      "id": "ex-0019",
+      "section": "Backslash escapes",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v11/workspace/dist/blocks/registry.js:103\r\nregisterBlockParser(parseIndentedCodeInList);\r\n                    ^\r\n\r\nReferenceError: parseIndentedCodeInList is not defined\r\n    at file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v11/workspace/dist/blocks/registry.js:103:21\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:371:25)\r\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:669:26)\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\r\n\r\nNode.js v24.6.0",
+      "markdown": "~~~\n\\[\\]\n~~~"
+    },
+    {
+      "id": "ex-0020",
+      "section": "Backslash escapes",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v11/workspace/dist/blocks/registry.js:103\r\nregisterBlockParser(parseIndentedCodeInList);\r\n                    ^\r\n\r\nReferenceError: parseIndentedCodeInList is not defined\r\n    at file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v11/workspace/dist/blocks/registry.js:103:21\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:371:25)\r\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:669:26)\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\r\n\r\nNode.js v24.6.0",
+      "markdown": "<https://example.com?find=\\*>"
+    },
+    {
+      "id": "ex-0021",
+      "section": "Backslash escapes",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v11/workspace/dist/blocks/registry.js:103\r\nregisterBlockParser(parseIndentedCodeInList);\r\n                    ^\r\n\r\nReferenceError: parseIndentedCodeInList is not defined\r\n    at file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v11/workspace/dist/blocks/registry.js:103:21\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:371:25)\r\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:669:26)\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\r\n\r\nNode.js v24.6.0",
+      "markdown": "<a href=\"/bar\\/)\">"
+    },
+    {
+      "id": "ex-0022",
+      "section": "Backslash escapes",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v11/workspace/dist/blocks/registry.js:103\r\nregisterBlockParser(parseIndentedCodeInList);\r\n                    ^\r\n\r\nReferenceError: parseIndentedCodeInList is not defined\r\n    at file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v11/workspace/dist/blocks/registry.js:103:21\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:371:25)\r\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:669:26)\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\r\n\r\nNode.js v24.6.0",
+      "markdown": "[foo](/bar\\* \"ti\\*tle\")"
+    },
+    {
+      "id": "ex-0023",
+      "section": "Backslash escapes",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v11/workspace/dist/blocks/registry.js:103\r\nregisterBlockParser(parseIndentedCodeInList);\r\n                    ^\r\n\r\nReferenceError: parseIndentedCodeInList is not defined\r\n    at file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v11/workspace/dist/blocks/registry.js:103:21\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:371:25)\r\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:669:26)\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\r\n\r\nNode.js v24.6.0",
+      "markdown": "[foo]\n\n[foo]: /bar\\* \"ti\\*tle\""
+    },
+    {
+      "id": "ex-0024",
+      "section": "Backslash escapes",
+      "reason": "file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v11/workspace/dist/blocks/registry.js:103\r\nregisterBlockParser(parseIndentedCodeInList);\r\n                    ^\r\n\r\nReferenceError: parseIndentedCodeInList is not defined\r\n    at file:///D:/github/projects/mini-swarm/runs/run-a-bare-contention-v11/workspace/dist/blocks/registry.js:103:21\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:371:25)\r\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:669:26)\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\r\n\r\nNode.js v24.6.0",
+      "markdown": "``` foo\\+bar\nfoo\n```"
+    }
+  ],
+  "failure_count": 439
+}

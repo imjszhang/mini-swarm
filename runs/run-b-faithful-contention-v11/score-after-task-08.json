@@ -1,0 +1,272 @@
+{
+  "scored_at": "2026-07-25T19:44:08.731Z",
+  "workspace": "D:\\github\\projects\\mini-swarm\\runs\\run-b-faithful-contention-v11\\workspace",
+  "total": 439,
+  "passed": 199,
+  "rate": 0.4533029612756264,
+  "by_section": {
+    "Tabs": {
+      "passed": 5,
+      "total": 9,
+      "rate": 0.5555555555555556
+    },
+    "Backslash escapes": {
+      "passed": 3,
+      "total": 11,
+      "rate": 0.2727272727272727
+    },
+    "Precedence": {
+      "passed": 1,
+      "total": 1,
+      "rate": 1
+    },
+    "Thematic breaks": {
+      "passed": 15,
+      "total": 16,
+      "rate": 0.9375
+    },
+    "ATX headings": {
+      "passed": 15,
+      "total": 15,
+      "rate": 1
+    },
+    "Setext headings": {
+      "passed": 20,
+      "total": 22,
+      "rate": 0.9090909090909091
+    },
+    "Indented code blocks": {
+      "passed": 10,
+      "total": 10,
+      "rate": 1
+    },
+    "Fenced code blocks": {
+      "passed": 24,
+      "total": 24,
+      "rate": 1
+    },
+    "Paragraphs": {
+      "passed": 6,
+      "total": 6,
+      "rate": 1
+    },
+    "Blank lines": {
+      "passed": 1,
+      "total": 1,
+      "rate": 1
+    },
+    "Block quotes": {
+      "passed": 21,
+      "total": 21,
+      "rate": 1
+    },
+    "List items": {
+      "passed": 9,
+      "total": 40,
+      "rate": 0.225
+    },
+    "Lists": {
+      "passed": 5,
+      "total": 22,
+      "rate": 0.22727272727272727
+    },
+    "Code spans": {
+      "passed": 12,
+      "total": 18,
+      "rate": 0.6666666666666666
+    },
+    "Emphasis and strong emphasis": {
+      "passed": 32,
+      "total": 112,
+      "rate": 0.2857142857142857
+    },
+    "Links": {
+      "passed": 9,
+      "total": 76,
+      "rate": 0.11842105263157894
+    },
+    "Images": {
+      "passed": 1,
+      "total": 18,
+      "rate": 0.05555555555555555
+    },
+    "Hard line breaks": {
+      "passed": 5,
+      "total": 12,
+      "rate": 0.4166666666666667
+    },
+    "Soft line breaks": {
+      "passed": 2,
+      "total": 2,
+      "rate": 1
+    },
+    "Textual content": {
+      "passed": 3,
+      "total": 3,
+      "rate": 1
+    }
+  },
+  "failures": [
+    {
+      "id": "ex-0005",
+      "section": "Tabs",
+      "reason": "output mismatch",
+      "markdown": "- foo\n\n\t\tbar",
+      "expected": "<ul>\n<li>\n<p>foo</p>\n<pre><code>  bar\n</code></pre>\n</li>\n</ul>",
+      "actual": "<ul>\n<li>\n<p>foo</p>\n<p>\tbar</p>\n</li>\n</ul>"
+    },
+    {
+      "id": "ex-0006",
+      "section": "Tabs",
+      "reason": "output mismatch",
+      "markdown": ">\t\tfoo",
+      "expected": "<blockquote>\n<pre><code>  foo\n</code></pre>\n</blockquote>",
+      "actual": "<blockquote>\n<pre><code>\tfoo\n</code></pre>\n</blockquote>"
+    },
+    {
+      "id": "ex-0007",
+      "section": "Tabs",
+      "reason": "output mismatch",
+      "markdown": "-\t\tfoo",
+      "expected": "<ul>\n<li>\n<pre><code>  foo\n</code></pre>\n</li>\n</ul>",
+      "actual": "<p>-\t\tfoo</p>"
+    },
+    {
+      "id": "ex-0010",
+      "section": "Tabs",
+      "reason": "output mismatch",
+      "markdown": "#\tFoo",
+      "expected": "<h1>Foo</h1>",
+      "actual": "<p>#\tFoo</p>"
+    },
+    {
+      "id": "ex-0014",
+      "section": "Backslash escapes",
+      "reason": "output mismatch",
+      "markdown": "\\*not emphasized*\n\\<br/> not a tag\n\\[not a link](/foo)\n\\`not code`\n1\\. not a list\n\\* not a list\n\\# not a heading\n\\[foo]: /url \"not a reference\"\n\\&ouml; not a character entity",
+      "expected": "<p>*not emphasized*\n&lt;br/&gt; not a tag\n[not a link](/foo)\n`not code`\n1. not a list\n* not a list\n# not a heading\n[foo]: /url &quot;not a reference&quot;\n&amp;ouml; not a character entity</p>",
+      "actual": "<p>*not emphasized*\n&lt;br/&gt; not a tag\n[not a link](/foo)\n<code>not code</code>\n1. not a list\n* not a list\n# not a heading\n[foo]: /url &quot;not a reference&quot;\n&amp;ouml; not a character entity</p>"
+    },
+    {
+      "id": "ex-0016",
+      "section": "Backslash escapes",
+      "reason": "output mismatch",
+      "markdown": "foo\\\nbar",
+      "expected": "<p>foo<br />\nbar</p>",
+      "actual": "<p>foo\\\nbar</p>"
+    },
+    {
+      "id": "ex-0017",
+      "section": "Backslash escapes",
+      "reason": "output mismatch",
+      "markdown": "`` \\[\\` ``",
+      "expected": "<p><code>\\[\\`</code></p>",
+      "actual": "<p><code>[`</code></p>"
+    },
+    {
+      "id": "ex-0020",
+      "section": "Backslash escapes",
+      "reason": "output mismatch",
+      "markdown": "<https://example.com?find=\\*>",
+      "expected": "<p><a href=\"https://example.com?find=%5C*\">https://example.com?find=\\*</a></p>",
+      "actual": "<p>&lt;https://example.com?find=*&gt;</p>"
+    },
+    {
+      "id": "ex-0021",
+      "section": "Backslash escapes",
+      "reason": "output mismatch",
+      "markdown": "<a href=\"/bar\\/)\">",
+      "expected": "<a href=\"/bar\\/)\">",
+      "actual": "<p>&lt;a href=&quot;/bar/)&quot;&gt;</p>"
+    },
+    {
+      "id": "ex-0022",
+      "section": "Backslash escapes",
+      "reason": "output mismatch",
+      "markdown": "[foo](/bar\\* \"ti\\*tle\")",
+      "expected": "<p><a href=\"/bar*\" title=\"ti*tle\">foo</a></p>",
+      "actual": "<p>[foo](/bar* &quot;ti*tle&quot;)</p>"
+    },
+    {
+      "id": "ex-0023",
+      "section": "Backslash escapes",
+      "reason": "output mismatch",
+      "markdown": "[foo]\n\n[foo]: /bar\\* \"ti\\*tle\"",
+      "expected": "<p><a href=\"/bar*\" title=\"ti*tle\">foo</a></p>",
+      "actual": "<p>[foo]</p>\n<p>[foo]: /bar* &quot;ti*tle&quot;</p>"
+    },
+    {
+      "id": "ex-0024",
+      "section": "Backslash escapes",
+      "reason": "output mismatch",
+      "markdown": "``` foo\\+bar\nfoo\n```",
+      "expected": "<pre><code class=\"language-foo+bar\">foo\n</code></pre>",
+      "actual": "<pre><code class=\"language-foo\\+bar\">foo\n</code></pre>"
+    },
+    {
+      "id": "ex-0039",
+      "section": "Thematic breaks",
+      "reason": "output mismatch",
+      "markdown": " *-*",
+      "expected": "<p><em>-</em></p>",
+      "actual": "<p>*-*</p>"
+    },
+    {
+      "id": "ex-0064",
+      "section": "Setext headings",
+      "reason": "output mismatch",
+      "markdown": "Foo *bar\nbaz*\n====",
+      "expected": "<h1>Foo <em>bar\nbaz</em></h1>",
+      "actual": "<h1>Foo *bar\nbaz*</h1>"
+    },
+    {
+      "id": "ex-0076",
+      "section": "Setext headings",
+      "reason": "output mismatch",
+      "markdown": "> foo\nbar\n===",
+      "expected": "<blockquote>\n<p>foo\nbar\n===</p>\n</blockquote>",
+      "actual": "<blockquote>\n<p>foo\nbar</p>\n</blockquote>\n<p>===</p>"
+    },
+    {
+      "id": "ex-0165",
+      "section": "List items",
+      "reason": "output mismatch",
+      "markdown": "A paragraph\nwith two lines.\n\n    indented code\n\n> A block quote.",
+      "expected": "<p>A paragraph\nwith two lines.</p>\n<pre><code>indented code\n</code></pre>\n<blockquote>\n<p>A block quote.</p>\n</blockquote>",
+      "actual": "<p>A paragraph\nwith two lines.</p>\n<p> indented code</p>\n<blockquote>\n<p>A block quote.</p>\n</blockquote>"
+    },
+    {
+      "id": "ex-0168",
+      "section": "List items",
+      "reason": "output mismatch",
+      "markdown": "- one\n\n  two",
+      "expected": "<ul>\n<li>\n<p>one</p>\n<p>two</p>\n</li>\n</ul>",
+      "actual": "<ul>\n<li>one</li>\n</ul>\n<p>two</p>"
+    },
+    {
+      "id": "ex-0169",
+      "section": "List items",
+      "reason": "output mismatch",
+      "markdown": " -    one\n\n     two",
+      "expected": "<ul>\n<li>one</li>\n</ul>\n<pre><code> two\n</code></pre>",
+      "actual": "<ul>\n<li>\n<p>one</p>\n<p>two</p>\n</li>\n</ul>"
+    },
+    {
+      "id": "ex-0174",
+      "section": "List items",
+      "reason": "output mismatch",
+      "markdown": "- foo\n\n\n  bar",
+      "expected": "<ul>\n<li>\n<p>foo</p>\n<p>bar</p>\n</li>\n</ul>",
+      "actual": "<ul>\n<li>foo</li>\n</ul>\n<p>bar</p>"
+    },
+    {
+      "id": "ex-0176",
+      "section": "List items",
+      "reason": "output mismatch",
+      "markdown": "- Foo\n\n      bar\n\n\n      baz",
+      "expected": "<ul>\n<li>\n<p>Foo</p>\n<pre><code>bar\n\n\nbaz\n</code></pre>\n</li>\n</ul>",
+      "actual": "<ul>\n<li>\n<p>Foo</p>\n<p>bar</p>\n<p>baz</p>\n</li>\n</ul>"
+    }
+  ],
+  "failure_count": 240
+}

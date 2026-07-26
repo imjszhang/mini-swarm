@@ -1,6 +1,21 @@
-import { spawn } from "node:child_process";
+import { execSync, spawn } from "node:child_process";
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
+
+/** Kill agent process tree (Windows SIGTERM often leaves cursor-agent grandchildren alive). */
+function killAgentTree(child) {
+  if (!child?.pid) return;
+  if (process.platform === "win32") {
+    try {
+      execSync(`taskkill /PID ${child.pid} /T /F`, { stdio: "ignore", windowsHide: true });
+      return;
+    } catch {
+      /* fall through */
+    }
+  }
+  try { child.kill("SIGTERM"); } catch { /* ignore */ }
+  try { child.kill("SIGKILL"); } catch { /* ignore */ }
+}
 
 function resolveAgentExecutable(configured) {
   if (process.platform === "win32") {
@@ -70,7 +85,9 @@ export function spawnAgent({
     const timer = timeoutMs
       ? setTimeout(() => {
         timedOut = true;
-        child.kill("SIGTERM");
+        killAgentTree(child);
+        // Second strike if close still hasn't fired (defensive).
+        setTimeout(() => killAgentTree(child), 5000);
       }, timeoutMs)
       : null;
 

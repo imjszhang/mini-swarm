@@ -1,0 +1,200 @@
+{
+  "scored_at": "2026-07-25T16:45:03.410Z",
+  "workspace": "D:\\github\\projects\\mini-swarm\\runs\\run-b-faithful-contention-v10\\workspace",
+  "total": 525,
+  "passed": 514,
+  "rate": 0.979047619047619,
+  "by_section": {
+    "Tabs": {
+      "passed": 11,
+      "total": 11,
+      "rate": 1
+    },
+    "Backslash escapes": {
+      "passed": 12,
+      "total": 13,
+      "rate": 0.9230769230769231
+    },
+    "Precedence": {
+      "passed": 1,
+      "total": 1,
+      "rate": 1
+    },
+    "Thematic breaks": {
+      "passed": 19,
+      "total": 19,
+      "rate": 1
+    },
+    "ATX headings": {
+      "passed": 18,
+      "total": 18,
+      "rate": 1
+    },
+    "Setext headings": {
+      "passed": 27,
+      "total": 27,
+      "rate": 1
+    },
+    "Indented code blocks": {
+      "passed": 12,
+      "total": 12,
+      "rate": 1
+    },
+    "Fenced code blocks": {
+      "passed": 29,
+      "total": 29,
+      "rate": 1
+    },
+    "Paragraphs": {
+      "passed": 8,
+      "total": 8,
+      "rate": 1
+    },
+    "Blank lines": {
+      "passed": 1,
+      "total": 1,
+      "rate": 1
+    },
+    "Block quotes": {
+      "passed": 25,
+      "total": 25,
+      "rate": 1
+    },
+    "List items": {
+      "passed": 46,
+      "total": 48,
+      "rate": 0.9583333333333334
+    },
+    "Lists": {
+      "passed": 26,
+      "total": 27,
+      "rate": 0.9629629629629629
+    },
+    "Code spans": {
+      "passed": 21,
+      "total": 22,
+      "rate": 0.9545454545454546
+    },
+    "Emphasis and strong emphasis": {
+      "passed": 132,
+      "total": 132,
+      "rate": 1
+    },
+    "Links": {
+      "passed": 84,
+      "total": 90,
+      "rate": 0.9333333333333333
+    },
+    "Images": {
+      "passed": 22,
+      "total": 22,
+      "rate": 1
+    },
+    "Hard line breaks": {
+      "passed": 15,
+      "total": 15,
+      "rate": 1
+    },
+    "Soft line breaks": {
+      "passed": 2,
+      "total": 2,
+      "rate": 1
+    },
+    "Textual content": {
+      "passed": 3,
+      "total": 3,
+      "rate": 1
+    }
+  },
+  "failures": [
+    {
+      "id": "ex-0020",
+      "section": "Backslash escapes",
+      "reason": "output mismatch",
+      "markdown": "<https://example.com?find=\\*>",
+      "expected": "<p><a href=\"https://example.com?find=%5C*\">https://example.com?find=\\*</a></p>",
+      "actual": "<p><a href=\"https://example.com?find=%5C*\">https://example.com?find=%5C*</a></p>"
+    },
+    {
+      "id": "ex-0204",
+      "section": "List items",
+      "reason": "output mismatch",
+      "markdown": "> 1. > Blockquote\ncontinued here.",
+      "expected": "<blockquote>\n<ol>\n<li>\n<blockquote>\n<p>Blockquote\ncontinued here.</p>\n</blockquote>\n</li>\n</ol>\n</blockquote>",
+      "actual": "<blockquote>\n<ol>\n<li>\n<blockquote>\n<p>Blockquote</p>\n</blockquote>\n</li>\n</ol>\n</blockquote>\n<p>continued here.</p>"
+    },
+    {
+      "id": "ex-0205",
+      "section": "List items",
+      "reason": "output mismatch",
+      "markdown": "> 1. > Blockquote\n> continued here.",
+      "expected": "<blockquote>\n<ol>\n<li>\n<blockquote>\n<p>Blockquote\ncontinued here.</p>\n</blockquote>\n</li>\n</ol>\n</blockquote>",
+      "actual": "<blockquote>\n<ol>\n<li>&gt; Blockquote\ncontinued here.</li>\n</ol>\n</blockquote>"
+    },
+    {
+      "id": "ex-0230",
+      "section": "Lists",
+      "reason": "output mismatch",
+      "markdown": "- a\n- ```\n  b\n\n\n  ```\n- c",
+      "expected": "<ul>\n<li>a</li>\n<li>\n<pre><code>b\n\n\n</code></pre>\n</li>\n<li>c</li>\n</ul>",
+      "actual": "<ul>\n<li>a</li>\n<li>\n<pre><code>b\n\n</code></pre>\n</li>\n<li>c</li>\n</ul>"
+    },
+    {
+      "id": "ex-0258",
+      "section": "Code spans",
+      "reason": "output mismatch",
+      "markdown": "<https://foo.bar.`baz>`",
+      "expected": "<p><a href=\"https://foo.bar.%60baz\">https://foo.bar.`baz</a>`</p>",
+      "actual": "<p><a href=\"https://foo.bar.%60baz\">https://foo.bar.%60baz</a>`</p>"
+    },
+    {
+      "id": "ex-0406",
+      "section": "Links",
+      "reason": "output mismatch",
+      "markdown": "[a](<b)c\n[a](<b)c>\n[a](<b>c)",
+      "expected": "<p>[a](&lt;b)c\n[a](&lt;b)c&gt;\n[a](<b>c)</p>",
+      "actual": "<p>[a](<b)c\n[a](<b)c>\n[a](<b>c)</p>"
+    },
+    {
+      "id": "ex-0431",
+      "section": "Links",
+      "reason": "output mismatch",
+      "markdown": "[foo *[bar [baz](/uri)](/uri)*](/uri)",
+      "expected": "<p>[foo <em>[bar <a href=\"/uri\">baz</a>](/uri)</em>](/uri)</p>",
+      "actual": "<p>[foo *[bar <a href=\"/uri\">baz</a>](/uri)*](/uri)</p>"
+    },
+    {
+      "id": "ex-0438",
+      "section": "Links",
+      "reason": "output mismatch",
+      "markdown": "[foo<https://example.com/?search=](uri)>",
+      "expected": "<p>[foo<a href=\"https://example.com/?search=%5D(uri)\">https://example.com/?search=](uri)</a></p>",
+      "actual": "<p>[foo<a href=\"https://example.com/?search=%5D(uri)\">https://example.com/?search=%5D(uri)</a></p>"
+    },
+    {
+      "id": "ex-0450",
+      "section": "Links",
+      "reason": "output mismatch",
+      "markdown": "[foo<https://example.com/?search=][ref]>\n\n[ref]: /uri",
+      "expected": "<p>[foo<a href=\"https://example.com/?search=%5D%5Bref%5D\">https://example.com/?search=][ref]</a></p>",
+      "actual": "<p>[foo<a href=\"https://example.com/?search=%5D%5Bref%5D\">https://example.com/?search=%5D%5Bref%5D</a></p>"
+    },
+    {
+      "id": "ex-0453",
+      "section": "Links",
+      "reason": "output mismatch",
+      "markdown": "[Foo\n  bar]: /url\n\n[Baz][Foo bar]",
+      "expected": "<p><a href=\"/url\">Baz</a></p>",
+      "actual": "<p>[Foo\nbar]: /url</p>\n<p>[Baz][Foo bar]</p>"
+    },
+    {
+      "id": "ex-0458",
+      "section": "Links",
+      "reason": "output mismatch",
+      "markdown": "[foo][ref[]\n\n[ref[]: /uri",
+      "expected": "<p>[foo][ref[]</p>\n<p>[ref[]: /uri</p>",
+      "actual": "<p>[foo][ref[]</p>"
+    }
+  ],
+  "failure_count": 11
+}

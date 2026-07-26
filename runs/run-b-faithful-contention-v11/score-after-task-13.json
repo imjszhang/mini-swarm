@@ -1,0 +1,272 @@
+{
+  "scored_at": "2026-07-26T02:46:22.762Z",
+  "workspace": "D:\\github\\projects\\mini-swarm\\runs\\run-b-faithful-contention-v11\\workspace",
+  "total": 439,
+  "passed": 337,
+  "rate": 0.7676537585421412,
+  "by_section": {
+    "Tabs": {
+      "passed": 9,
+      "total": 9,
+      "rate": 1
+    },
+    "Backslash escapes": {
+      "passed": 11,
+      "total": 11,
+      "rate": 1
+    },
+    "Precedence": {
+      "passed": 1,
+      "total": 1,
+      "rate": 1
+    },
+    "Thematic breaks": {
+      "passed": 12,
+      "total": 16,
+      "rate": 0.75
+    },
+    "ATX headings": {
+      "passed": 15,
+      "total": 15,
+      "rate": 1
+    },
+    "Setext headings": {
+      "passed": 19,
+      "total": 22,
+      "rate": 0.8636363636363636
+    },
+    "Indented code blocks": {
+      "passed": 10,
+      "total": 10,
+      "rate": 1
+    },
+    "Fenced code blocks": {
+      "passed": 24,
+      "total": 24,
+      "rate": 1
+    },
+    "Paragraphs": {
+      "passed": 6,
+      "total": 6,
+      "rate": 1
+    },
+    "Blank lines": {
+      "passed": 1,
+      "total": 1,
+      "rate": 1
+    },
+    "Block quotes": {
+      "passed": 17,
+      "total": 21,
+      "rate": 0.8095238095238095
+    },
+    "List items": {
+      "passed": 33,
+      "total": 40,
+      "rate": 0.825
+    },
+    "Lists": {
+      "passed": 22,
+      "total": 22,
+      "rate": 1
+    },
+    "Code spans": {
+      "passed": 14,
+      "total": 18,
+      "rate": 0.7777777777777778
+    },
+    "Emphasis and strong emphasis": {
+      "passed": 32,
+      "total": 112,
+      "rate": 0.2857142857142857
+    },
+    "Links": {
+      "passed": 76,
+      "total": 76,
+      "rate": 1
+    },
+    "Images": {
+      "passed": 18,
+      "total": 18,
+      "rate": 1
+    },
+    "Hard line breaks": {
+      "passed": 12,
+      "total": 12,
+      "rate": 1
+    },
+    "Soft line breaks": {
+      "passed": 2,
+      "total": 2,
+      "rate": 1
+    },
+    "Textual content": {
+      "passed": 3,
+      "total": 3,
+      "rate": 1
+    }
+  },
+  "failures": [
+    {
+      "id": "ex-0032",
+      "section": "Thematic breaks",
+      "reason": "output mismatch",
+      "markdown": "Foo\n    ***",
+      "expected": "<p>Foo\n***</p>",
+      "actual": "<p>Foo\n*<em></em></p>"
+    },
+    {
+      "id": "ex-0040",
+      "section": "Thematic breaks",
+      "reason": "output mismatch",
+      "markdown": "- foo\n***\n- bar",
+      "expected": "<ul>\n<li>foo</li>\n</ul>\n<hr />\n<ul>\n<li>bar</li>\n</ul>",
+      "actual": "<ul>\n<li>foo\n*<em></em></li>\n<li>bar</li>\n</ul>"
+    },
+    {
+      "id": "ex-0043",
+      "section": "Thematic breaks",
+      "reason": "output mismatch",
+      "markdown": "* Foo\n* * *\n* Bar",
+      "expected": "<ul>\n<li>Foo</li>\n</ul>\n<hr />\n<ul>\n<li>Bar</li>\n</ul>",
+      "actual": "<ul>\n<li>Foo</li>\n<li>\n<ul>\n<li>\n<ul>\n<li></li>\n</ul>\n</li>\n</ul>\n</li>\n<li>Bar</li>\n</ul>"
+    },
+    {
+      "id": "ex-0044",
+      "section": "Thematic breaks",
+      "reason": "output mismatch",
+      "markdown": "- Foo\n- * * *",
+      "expected": "<ul>\n<li>Foo</li>\n<li>\n<hr />\n</li>\n</ul>",
+      "actual": "<ul>\n<li>Foo</li>\n<li><hr /></li>\n</ul>"
+    },
+    {
+      "id": "ex-0064",
+      "section": "Setext headings",
+      "reason": "output mismatch",
+      "markdown": "Foo *bar\nbaz*\n====",
+      "expected": "<h1>Foo <em>bar\nbaz</em></h1>",
+      "actual": "<h1>Foo *bar\nbaz*</h1>"
+    },
+    {
+      "id": "ex-0076",
+      "section": "Setext headings",
+      "reason": "output mismatch",
+      "markdown": "> foo\nbar\n===",
+      "expected": "<blockquote>\n<p>foo\nbar\n===</p>\n</blockquote>",
+      "actual": "<blockquote>\n<h1>foo\nbar</h1>\n</blockquote>"
+    },
+    {
+      "id": "ex-0082",
+      "section": "Setext headings",
+      "reason": "output mismatch",
+      "markdown": "- foo\n-----",
+      "expected": "<ul>\n<li>foo</li>\n</ul>\n<hr />",
+      "actual": "<ul>\n<li>foo\n-----</li>\n</ul>"
+    },
+    {
+      "id": "ex-0150",
+      "section": "Block quotes",
+      "reason": "output mismatch",
+      "markdown": "> foo\n    - bar",
+      "expected": "<blockquote>\n<p>foo\n- bar</p>\n</blockquote>",
+      "actual": "<blockquote>\n<p>foo</p>\n</blockquote>\n<p> - bar</p>"
+    },
+    {
+      "id": "ex-0151",
+      "section": "Block quotes",
+      "reason": "output mismatch",
+      "markdown": ">",
+      "expected": "<blockquote>\n</blockquote>",
+      "actual": ""
+    },
+    {
+      "id": "ex-0152",
+      "section": "Block quotes",
+      "reason": "output mismatch",
+      "markdown": ">\n>  \n> ",
+      "expected": "<blockquote>\n</blockquote>",
+      "actual": ""
+    },
+    {
+      "id": "ex-0164",
+      "section": "Block quotes",
+      "reason": "output mismatch",
+      "markdown": ">     code\n\n>    not code",
+      "expected": "<blockquote>\n<pre><code>code\n</code></pre>\n</blockquote>\n<blockquote>\n<p>not code</p>\n</blockquote>",
+      "actual": "<blockquote>\n<pre><code>  code\n</code></pre>\n</blockquote>\n<blockquote>\n<p>not code</p>\n</blockquote>"
+    },
+    {
+      "id": "ex-0176",
+      "section": "List items",
+      "reason": "output mismatch",
+      "markdown": "- Foo\n\n      bar\n\n\n      baz",
+      "expected": "<ul>\n<li>\n<p>Foo</p>\n<pre><code>bar\n\n\nbaz\n</code></pre>\n</li>\n</ul>",
+      "actual": "<ul>\n<li>\n<p>Foo</p>\n<pre><code>  bar\n\n\n  baz\n</code></pre>\n</li>\n</ul>"
+    },
+    {
+      "id": "ex-0182",
+      "section": "List items",
+      "reason": "output mismatch",
+      "markdown": "- foo\n\n      bar",
+      "expected": "<ul>\n<li>\n<p>foo</p>\n<pre><code>bar\n</code></pre>\n</li>\n</ul>",
+      "actual": "<ul>\n<li>\n<p>foo</p>\n<pre><code>  bar\n</code></pre>\n</li>\n</ul>"
+    },
+    {
+      "id": "ex-0183",
+      "section": "List items",
+      "reason": "output mismatch",
+      "markdown": "  10.  foo\n\n           bar",
+      "expected": "<ol start=\"10\">\n<li>\n<p>foo</p>\n<pre><code>bar\n</code></pre>\n</li>\n</ol>",
+      "actual": "<ol start=\"10\">\n<li>\n<p>foo</p>\n<pre><code>  bar\n</code></pre>\n</li>\n</ol>"
+    },
+    {
+      "id": "ex-0185",
+      "section": "List items",
+      "reason": "output mismatch",
+      "markdown": "1.     indented code\n\n   paragraph\n\n       more code",
+      "expected": "<ol>\n<li>\n<pre><code>indented code\n</code></pre>\n<p>paragraph</p>\n<pre><code>more code\n</code></pre>\n</li>\n</ol>",
+      "actual": "<ol>\n<li>\n<pre><code>  indented code\n</code></pre>\n<p>paragraph</p>\n<pre><code>  more code\n</code></pre>\n</li>\n</ol>"
+    },
+    {
+      "id": "ex-0186",
+      "section": "List items",
+      "reason": "output mismatch",
+      "markdown": "1.      indented code\n\n   paragraph\n\n       more code",
+      "expected": "<ol>\n<li>\n<pre><code> indented code\n</code></pre>\n<p>paragraph</p>\n<pre><code>more code\n</code></pre>\n</li>\n</ol>",
+      "actual": "<ol>\n<li>\n<pre><code>  indented code\n</code></pre>\n<p>paragraph</p>\n<pre><code>  more code\n</code></pre>\n</li>\n</ol>"
+    },
+    {
+      "id": "ex-0199",
+      "section": "List items",
+      "reason": "output mismatch",
+      "markdown": "  1.  A paragraph\n      with two lines.\n\n          indented code\n\n      > A block quote.",
+      "expected": "<ol>\n<li>\n<p>A paragraph\nwith two lines.</p>\n<pre><code>indented code\n</code></pre>\n<blockquote>\n<p>A block quote.</p>\n</blockquote>\n</li>\n</ol>",
+      "actual": "<ol>\n<li>\n<p>A paragraph\nwith two lines.</p>\n<pre><code>  indented code\n</code></pre>\n<blockquote>\n<p>A block quote.</p>\n</blockquote>\n</li>\n</ol>"
+    },
+    {
+      "id": "ex-0202",
+      "section": "List items",
+      "reason": "output mismatch",
+      "markdown": "  1.  A paragraph\nwith two lines.\n\n          indented code\n\n      > A block quote.",
+      "expected": "<ol>\n<li>\n<p>A paragraph\nwith two lines.</p>\n<pre><code>indented code\n</code></pre>\n<blockquote>\n<p>A block quote.</p>\n</blockquote>\n</li>\n</ol>",
+      "actual": "<ol>\n<li>\n<p>A paragraph\nwith two lines.</p>\n<pre><code>  indented code\n</code></pre>\n<blockquote>\n<p>A block quote.</p>\n</blockquote>\n</li>\n</ol>"
+    },
+    {
+      "id": "ex-0248",
+      "section": "Code spans",
+      "reason": "output mismatch",
+      "markdown": "``\nfoo \n``",
+      "expected": "<p><code>foo </code></p>",
+      "actual": "<p><code>foo</code></p>"
+    },
+    {
+      "id": "ex-0249",
+      "section": "Code spans",
+      "reason": "output mismatch",
+      "markdown": "`foo   bar \nbaz`",
+      "expected": "<p><code>foo   bar  baz</code></p>",
+      "actual": "<p><code>foo   bar baz</code></p>"
+    }
+  ],
+  "failure_count": 102
+}

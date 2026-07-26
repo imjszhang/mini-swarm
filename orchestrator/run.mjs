@@ -15,7 +15,6 @@ import path from "node:path";
 import { loadConfig, projectRoot } from "./lib/config.mjs";
 import {
   abortMerge,
-  commitAll,
   commitCount,
   computeChurn,
   createWorktree,
@@ -23,7 +22,6 @@ import {
   filesChangedInWorktree,
   findConflictMarkers,
   getDiff,
-  headSha,
   initRepo,
   isBranchMergedInto,
   isDirty,
@@ -40,20 +38,29 @@ import {
   createInitialProgress,
   loadProgress,
   markPhase,
-  markRepairRound,
   markTask,
   saveProgress,
 } from "./lib/progress.mjs";
+import { ensureHoldout, holdoutFilePath } from "./lib/holdout.mjs";
+import {
+  loadLedger,
+  saveLedger,
+  updateFromReport,
+} from "./lib/ledger.mjs";
 import {
   buildPlannerPrompt,
-  buildGlobalRepairPrompt,
   buildIntegrationFixPrompt,
   buildReviewerPrompt,
   buildWorkerPrompt,
   buildWorkerScoreFixPrompt,
   loadPrompt,
 } from "./lib/prompts.mjs";
-import { runScore } from "./lib/score-run.mjs";
+import {
+  examplesPath,
+  loadExamples,
+  scanForOracleLiterals,
+  scoreScope,
+} from "./lib/verifier.mjs";
 import {
   loadTasks,
   saveTasks,
@@ -63,7 +70,21 @@ import {
 } from "./lib/tasks.mjs";
 import { checkScopeViolation, MergeQueue } from "./merge-queue.mjs";
 import { countLoc, createMetricsCollector } from "./metrics.mjs";
+import { runRepairPhase } from "./repair-engine.mjs";
 import { spawnAgent } from "./runner.mjs";
+
+function buildWorkerVerifyCmd(task, runDir) {
+  const scorer = path.join(ROOT, "scorer", "score.mjs");
+  const sections = (task.spec_sections || []).join(",");
+  const parts = [
+    `node ${JSON.stringify(scorer)}`,
+    "--workspace .",
+  ];
+  if (sections) parts.push(`--sections ${JSON.stringify(sections)}`);
+  const ho = holdoutFilePath(runDir);
+  parts.push(`--holdout-file ${JSON.stringify(ho)}`, "--holdout-mode exclude");
+  return parts.join(" ");
+}
 
 const ROOT = projectRoot();
 
@@ -98,6 +119,7 @@ function parseArgs(argv) {
     concurrency: null,
     coordMode: "strict",
     taskSet: "default",
+    contentionReport: null,
     help: false,
   };
   for (const a of argv) {
@@ -111,6 +133,7 @@ function parseArgs(argv) {
     else if (a.startsWith("--concurrency=")) args.concurrency = Number(a.split("=")[1]);
     else if (a.startsWith("--coord-mode=")) args.coordMode = a.split("=")[1];
     else if (a.startsWith("--task-set=")) args.taskSet = a.split("=")[1];
+    else if (a.startsWith("--contention-report=")) args.contentionReport = a.split("=")[1];
   }
   return args;
 }
@@ -128,6 +151,7 @@ Options:
   --run-id=ID        Custom run id (default: timestamp)
   --resume           Resume an interrupted run (requires --run-id; needs progress.json, see npm run salvage)
   --concurrency=N    Override config concurrency
+  --contention-report=PATH  Inject historical hot-file report into LLM planner (default task-set only)
 `);
 }
 
@@ -206,7 +230,16 @@ function writeContentionDesign(workspaceDir) {
   }
 }
 
-async function runPlanner({ workspaceDir, config, runDir, coordination, coordMode, metrics, taskSet }) {
+async function runPlanner({
+  workspaceDir,
+  config,
+  runDir,
+  coordination,
+  coordMode,
+  metrics,
+  taskSet,
+  contentionReportText = "",
+}) {
   const plannerCoordMode = coordination ? coordMode : "none";
 
   // Contention set is fixed for fair A/B; skip LLM planner noise.
@@ -217,15 +250,15 @@ async function runPlanner({ workspaceDir, config, runDir, coordination, coordMod
     return tasks;
   }
 
-  const examplesPath = path.join(ROOT, "spec", "examples.json");
+  const examplesFile = examplesPath();
   const sections = sectionSummary();
-  const prompt = `${buildPlannerPrompt({ coordination, coordMode })}
+  const prompt = `${buildPlannerPrompt({ coordination, coordMode, contentionReportText })}
 
 ## Spec sections (example counts)
 
 ${JSON.stringify(sections, null, 2)}
 
-Examples file path: ${examplesPath}
+Examples file path: ${examplesFile}
 
 Write tasks.json in the workspace root. If coordination is on, also write DESIGN.md and GUIDE.md.
 `;
@@ -282,7 +315,13 @@ async function runWorkerTask({
 }) {
   const designMd = readDesign(cwd);
   const guideMd = readGuide(cwd);
-  const prompt = buildWorkerPrompt({ task, designMd, guideMd, coordMode });
+  const prompt = buildWorkerPrompt({
+    task,
+    designMd,
+    guideMd,
+    coordMode,
+    verifyCmd: buildWorkerVerifyCmd(task, runDir),
+  });
   const result = await spawnAgent({
     role: "worker",
     prompt,
@@ -369,7 +408,11 @@ async function runWorkerWithScoreFeedback({
         console.warn(`[run] ${task.id} feedback round ${round}: build failed`);
       } else {
         const scorePath = path.join(runDir, `score-feedback-${task.id}-${round}.json`);
-        const scored = runScore(cwd, scorePath, { sections });
+        const scored = scoreScope(cwd, scorePath, {
+          groups: sections,
+          holdoutFile: holdoutFilePath(runDir),
+          holdoutMode: "exclude",
+        });
         rate = scored.report?.rate ?? 0;
         failures = scored.report?.failures || [];
         console.log(`[run] ${task.id} feedback round ${round}: section rate=${(rate * 100).toFixed(1)}%`);
@@ -395,6 +438,7 @@ async function runWorkerWithScoreFeedback({
       failures,
       coordMode,
       buildError,
+      verifyCmd: buildWorkerVerifyCmd(task, runDir),
     });
     const fixResult = await spawnAgent({
       role: "worker",
@@ -422,7 +466,11 @@ async function runWorkerWithScoreFeedback({
       let finalFailures = 0;
       if (buildFinal.ok) {
         const scorePath = path.join(runDir, `score-feedback-${task.id}-final.json`);
-        const scored = runScore(cwd, scorePath, { sections });
+        const scored = scoreScope(cwd, scorePath, {
+          groups: sections,
+          holdoutFile: holdoutFilePath(runDir),
+          holdoutMode: "exclude",
+        });
         finalRate = scored.report?.rate ?? 0;
         finalFailures = (scored.report?.failures || []).length;
         console.log(`[run] ${task.id} feedback final: section rate=${(finalRate * 100).toFixed(1)}%`);
@@ -439,121 +487,6 @@ async function runWorkerWithScoreFeedback({
   }
 
   return lastResult;
-}
-
-function pickWorstSections(bySection, topN) {
-  return Object.entries(bySection || {})
-    .map(([name, st]) => ({
-      name,
-      passed: st.passed || 0,
-      total: st.total || 0,
-      rate: st.rate || 0,
-      failed: (st.total || 0) - (st.passed || 0),
-    }))
-    .filter((s) => s.failed > 0)
-    .sort((a, b) => b.failed - a.failed || a.rate - b.rate)
-    .slice(0, topN);
-}
-
-/**
- * Final global repair phase: score full suite, fix worst sections, with regression guard.
- */
-async function runGlobalRepairPhase({
-  workspaceDir,
-  config,
-  runDir,
-  coordMode,
-  metrics,
-  progress = null,
-}) {
-  const maxRounds = config.maxGlobalRepairRounds ?? 0;
-  if (config.mock || maxRounds <= 0) return;
-
-  const topN = config.globalRepairTopSections ?? 3;
-  const target = config.globalRepairTarget ?? 1.0;
-  const minGainPp = config.globalRepairMinGainPp ?? 0.5;
-  const startRound = (progress?.global_repair_rounds_done ?? 0) + 1;
-
-  for (let r = startRound; r <= maxRounds; r += 1) {
-    const build = ensureBuilt(workspaceDir);
-    if (!build.ok) {
-      console.warn(`[run] global repair round ${r}: build failed; skipping phase`);
-      return;
-    }
-
-    const beforePath = path.join(runDir, `score-global-before-${r}.json`);
-    const scored = runScore(workspaceDir, beforePath);
-    metrics.recordScore({ phase: `global-before-${r}`, ...scored.report });
-    const rateBefore = scored.report?.rate ?? 0;
-    console.log(`[run] global repair round ${r}: rate=${(rateBefore * 100).toFixed(1)}%`);
-    if (rateBefore >= target) break;
-
-    const worst = pickWorstSections(scored.report?.by_section, topN);
-    if (!worst.length) break;
-    const sections = worst.map((s) => s.name);
-    const detailPath = path.join(runDir, `score-global-${r}-sections.json`);
-    const detail = runScore(workspaceDir, detailPath, { sections });
-
-    commitAll(workspaceDir, `checkpoint: pre-repair ${r}`);
-    const checkpointSha = headSha(workspaceDir);
-
-    const prompt = buildGlobalRepairPrompt({
-      rate: rateBefore,
-      bySection: worst,
-      failures: detail.report?.failures || scored.report?.failures || [],
-      coordMode,
-    });
-    const result = await spawnAgent({
-      role: "worker",
-      prompt,
-      cwd: workspaceDir,
-      config,
-      runDir,
-      logKey: `global-repair-${r}`,
-      timeoutMs: (config.taskTimeoutMinutes || 20) * 60 * 1000,
-    });
-    metrics.recordAgentCall({
-      role: "global-repair",
-      round: r,
-      ok: result.ok,
-      elapsedMs: result.elapsedMs,
-    });
-
-    commitAll(workspaceDir, `global repair ${r}`);
-
-    const build2 = ensureBuilt(workspaceDir);
-    let rateAfter = rateBefore;
-    let reverted = false;
-    if (!build2.ok) {
-      resetHard(workspaceDir, checkpointSha);
-      reverted = true;
-      console.warn(`[run] global repair round ${r}: build broke; reverted`);
-    } else {
-      const afterPath = path.join(runDir, `score-global-after-${r}.json`);
-      const scored2 = runScore(workspaceDir, afterPath);
-      metrics.recordScore({ phase: `global-after-${r}`, ...scored2.report });
-      const nextRate = scored2.report?.rate ?? 0;
-      if (nextRate < rateBefore) {
-        resetHard(workspaceDir, checkpointSha);
-        reverted = true;
-        console.warn(`[run] global repair round ${r}: rate dropped; reverted`);
-      } else {
-        rateAfter = nextRate;
-        console.log(`[run] global repair round ${r}: rate=${(rateAfter * 100).toFixed(1)}%`);
-      }
-    }
-
-    metrics.recordGlobalRepair({
-      round: r,
-      sections,
-      rate_before: rateBefore,
-      rate_after: rateAfter,
-      reverted,
-    });
-    if (progress) markRepairRound(runDir, progress, r);
-
-    if ((rateAfter - rateBefore) * 100 < minGainPp) break;
-  }
 }
 
 async function ensureBuiltWithRepair({ workspaceDir, config, runDir, metrics, taskId }) {
@@ -952,6 +885,21 @@ async function main() {
       initSkeleton(workspaceDir, { taskSet: cli.taskSet, coordination: config.coordination });
     }
 
+    let contentionReportText = "";
+    if (cli.contentionReport && cli.taskSet === "default") {
+      try {
+        const report = JSON.parse(readFileSync(path.resolve(cli.contentionReport), "utf8"));
+        const top = (report.files || []).slice(0, 20)
+          .map((f) => `- ${f.file} (hits=${f.count})`)
+          .join("\n");
+        contentionReportText = top || "_No hot files._";
+      } catch (err) {
+        console.warn(`[run] could not load --contention-report: ${err.message}`);
+      }
+    } else if (cli.contentionReport && cli.taskSet === "contention") {
+      console.log("[run] --contention-report ignored for fixed contention task set");
+    }
+
     tasks = await runPlanner({
       workspaceDir,
       config,
@@ -960,6 +908,7 @@ async function main() {
       coordMode: cli.coordMode,
       metrics,
       taskSet: cli.taskSet,
+      contentionReportText,
     });
 
     if (cli.quick) {
@@ -1013,16 +962,40 @@ async function main() {
     process.once("SIGTERM", () => { flush(); process.exit(143); });
   }
 
+  // Holdout is created once per run (resume reuses existing file).
+  const holdout = ensureHoldout(runDir, examplesPath(), config);
+  console.log(`[run] holdout ids=${holdout.ids.length} seed=${holdout.seed}`);
+
   if (config.mock) {
     createMockSkeleton(workspaceDir, { taskSet: cli.taskSet, coordination: config.coordination });
-    const scorePath = path.join(runDir, "score-final.json");
-    const scored = runScore(workspaceDir, scorePath);
-    metrics.recordScore({ phase: "final", ...scored.report });
+    const hoFile = holdoutFilePath(runDir);
+    const visible = scoreScope(workspaceDir, path.join(runDir, "score-visible.json"), {
+      holdoutFile: hoFile,
+      holdoutMode: "exclude",
+      maxFailures: 600,
+    });
+    const holdoutScore = scoreScope(workspaceDir, path.join(runDir, "score-holdout.json"), {
+      holdoutFile: hoFile,
+      holdoutMode: "only",
+      maxFailures: 600,
+    });
+    const full = scoreScope(workspaceDir, path.join(runDir, "score-final.json"), {
+      holdoutMode: "include",
+      maxFailures: 600,
+    });
+    metrics.recordScore({ phase: "final", ...full.report });
+    const ledger = loadLedger(runDir);
+    updateFromReport(ledger, full.report, "mock-final");
+    saveLedger(runDir, ledger);
     const agentCalls = metrics.data.agent_calls || [];
     metrics.finish({
       commits: commitCount(workspaceDir),
       loc: countLoc(workspaceDir),
-      final_score: scored.report,
+      final_score: full.report,
+      visible_score: visible.report,
+      holdout_score: holdoutScore.report,
+      holdout_gap_pp: ((visible.report.rate || 0) - (holdoutScore.report.rate || 0)) * 100,
+      overfit_alarm: false,
       churn: computeChurn(workspaceDir),
       merge_resolve_time_ms: agentCalls
         .filter((c) => c.phase === "merge-resolve")
@@ -1035,7 +1008,7 @@ async function main() {
         .reduce((s, c) => s + (c.elapsedMs || 0), 0),
       global_repair_time_ms: 0,
     });
-    console.log(`[run] mock complete rate=${(scored.report.rate * 100).toFixed(1)}%`);
+    console.log(`[run] mock complete rate=${(full.report.rate * 100).toFixed(1)}%`);
     process.exit(0);
   }
 
@@ -1132,7 +1105,10 @@ async function main() {
 
       if (cli.coordMode !== "faithful") ensureBuilt(workspaceDir);
       const scorePath = path.join(runDir, `score-after-${task.id}.json`);
-      const scored = runScore(workspaceDir, scorePath);
+      const scored = scoreScope(workspaceDir, scorePath, {
+        holdoutFile: holdoutFilePath(runDir),
+        holdoutMode: "exclude",
+      });
       metrics.recordScore({ phase: `after-${task.id}`, ...scored.report });
 
       const status = mergeResult.ok && mergeResult.postMerge?.ok !== false ? "done" : "failed";
@@ -1171,7 +1147,10 @@ async function main() {
       })
       : ensureBuilt(workspaceDir);
     const scorePath = path.join(runDir, `score-after-${task.id}.json`);
-    const scored = runScore(workspaceDir, scorePath);
+    const scored = scoreScope(workspaceDir, scorePath, {
+      holdoutFile: holdoutFilePath(runDir),
+      holdoutMode: "exclude",
+    });
     metrics.recordScore({ phase: `after-${task.id}`, ...scored.report });
 
     const status = workerResult.ok && buildResult.ok ? "done" : "failed";
@@ -1209,18 +1188,47 @@ async function main() {
   }
 
   if (progress) markPhase(runDir, progress, "global_repair");
-  await runGlobalRepairPhase({
+  await runRepairPhase({
     workspaceDir,
     config,
     runDir,
     coordMode: cli.coordMode,
     metrics,
     progress,
+    ensureBuilt,
   });
 
-  const finalScorePath = path.join(runDir, "score-final.json");
-  const finalScored = runScore(workspaceDir, finalScorePath);
+  const hoFile = holdoutFilePath(runDir);
+  const visibleScored = scoreScope(workspaceDir, path.join(runDir, "score-visible.json"), {
+    holdoutFile: hoFile,
+    holdoutMode: "exclude",
+    maxFailures: 600,
+  });
+  const holdoutScored = scoreScope(workspaceDir, path.join(runDir, "score-holdout.json"), {
+    holdoutFile: hoFile,
+    holdoutMode: "only",
+    maxFailures: 600,
+  });
+  const finalScored = scoreScope(workspaceDir, path.join(runDir, "score-final.json"), {
+    holdoutMode: "include",
+    maxFailures: 600,
+  });
   metrics.recordScore({ phase: "final", ...finalScored.report });
+
+  const holdoutGapPp = ((visibleScored.report.rate || 0) - (holdoutScored.report.rate || 0)) * 100;
+  const overfitAlarm = holdoutGapPp > (config.holdout?.alarmPp ?? 5);
+  if (overfitAlarm) {
+    console.warn(`[run] OVERFIT ALARM: holdout_gap_pp=${holdoutGapPp.toFixed(1)}`);
+  }
+
+  const oracleHits = scanForOracleLiterals(workspaceDir, loadExamples());
+  if (oracleHits.length) {
+    console.warn(`[run] oracle literal hits: ${oracleHits.length}`);
+  }
+
+  const ledger = loadLedger(runDir);
+  updateFromReport(ledger, finalScored.report, "final");
+  saveLedger(runDir, ledger);
 
   const diff = getDiff(workspaceDir);
   if (diff.trim()) {
@@ -1228,7 +1236,11 @@ async function main() {
       role: "reviewer",
       prompt: buildReviewerPrompt({
         diff: diff.slice(0, 8000),
-        scoreSnapshot: JSON.stringify(finalScored.report, null, 2),
+        scoreSnapshot: JSON.stringify({
+          full: finalScored.report,
+          visible: visibleScored.report,
+          holdout: holdoutScored.report,
+        }, null, 2),
       }),
       cwd: workspaceDir,
       config,
@@ -1248,6 +1260,11 @@ async function main() {
     commits: commitCount(workspaceDir),
     loc: countLoc(workspaceDir),
     final_score: finalScored.report,
+    visible_score: visibleScored.report,
+    holdout_score: holdoutScored.report,
+    holdout_gap_pp: holdoutGapPp,
+    overfit_alarm: overfitAlarm,
+    oracle_literal_hits: oracleHits,
     tasks_done: metrics.data.tasks.filter((t) => t.status === "done").length,
     churn: computeChurn(workspaceDir),
     merge_resolve_time_ms: agentCalls
@@ -1260,13 +1277,14 @@ async function main() {
       .filter((c) => c.role === "worker-fix")
       .reduce((s, c) => s + (c.elapsedMs || 0), 0),
     global_repair_time_ms: agentCalls
-      .filter((c) => c.role === "global-repair")
+      .filter((c) => c.role === "global-repair" || c.role === "repair" || c.role === "repair-candidate")
       .reduce((s, c) => s + (c.elapsedMs || 0), 0),
   });
   if (progress) markPhase(runDir, progress, "finished");
 
   console.log(`[run] done metrics=${metricsPath}`);
   console.log(`[run] pass rate ${(finalScored.report.rate * 100).toFixed(1)}% (${finalScored.report.passed}/${finalScored.report.total})`);
+  console.log(`[run] visible=${(visibleScored.report.rate * 100).toFixed(1)}% holdout=${(holdoutScored.report.rate * 100).toFixed(1)}% gap=${holdoutGapPp.toFixed(1)}pp`);
   console.log(`[run] merge_conflicts=${metrics.data.merge_conflict_count} scope_violations=${metrics.data.scope_violation_count} loc=${countLoc(workspaceDir)}`);
 }
 

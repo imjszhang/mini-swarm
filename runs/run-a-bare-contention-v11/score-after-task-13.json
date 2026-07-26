@@ -1,0 +1,272 @@
+{
+  "scored_at": "2026-07-25T17:55:14.935Z",
+  "workspace": "D:\\github\\projects\\mini-swarm\\runs\\run-a-bare-contention-v11\\workspace",
+  "total": 439,
+  "passed": 370,
+  "rate": 0.8428246013667426,
+  "by_section": {
+    "Tabs": {
+      "passed": 9,
+      "total": 9,
+      "rate": 1
+    },
+    "Backslash escapes": {
+      "passed": 11,
+      "total": 11,
+      "rate": 1
+    },
+    "Precedence": {
+      "passed": 1,
+      "total": 1,
+      "rate": 1
+    },
+    "Thematic breaks": {
+      "passed": 16,
+      "total": 16,
+      "rate": 1
+    },
+    "ATX headings": {
+      "passed": 15,
+      "total": 15,
+      "rate": 1
+    },
+    "Setext headings": {
+      "passed": 22,
+      "total": 22,
+      "rate": 1
+    },
+    "Indented code blocks": {
+      "passed": 9,
+      "total": 10,
+      "rate": 0.9
+    },
+    "Fenced code blocks": {
+      "passed": 22,
+      "total": 24,
+      "rate": 0.9166666666666666
+    },
+    "Paragraphs": {
+      "passed": 6,
+      "total": 6,
+      "rate": 1
+    },
+    "Blank lines": {
+      "passed": 1,
+      "total": 1,
+      "rate": 1
+    },
+    "Block quotes": {
+      "passed": 19,
+      "total": 21,
+      "rate": 0.9047619047619048
+    },
+    "List items": {
+      "passed": 39,
+      "total": 40,
+      "rate": 0.975
+    },
+    "Lists": {
+      "passed": 19,
+      "total": 22,
+      "rate": 0.8636363636363636
+    },
+    "Code spans": {
+      "passed": 17,
+      "total": 18,
+      "rate": 0.9444444444444444
+    },
+    "Emphasis and strong emphasis": {
+      "passed": 112,
+      "total": 112,
+      "rate": 1
+    },
+    "Links": {
+      "passed": 33,
+      "total": 76,
+      "rate": 0.4342105263157895
+    },
+    "Images": {
+      "passed": 2,
+      "total": 18,
+      "rate": 0.1111111111111111
+    },
+    "Hard line breaks": {
+      "passed": 12,
+      "total": 12,
+      "rate": 1
+    },
+    "Soft line breaks": {
+      "passed": 2,
+      "total": 2,
+      "rate": 1
+    },
+    "Textual content": {
+      "passed": 3,
+      "total": 3,
+      "rate": 1
+    }
+  },
+  "failures": [
+    {
+      "id": "ex-0098",
+      "section": "Indented code blocks",
+      "reason": "output mismatch",
+      "markdown": "# Heading\n    foo\nHeading\n------\n    foo\n----",
+      "expected": "<h1>Heading</h1>\n<pre><code>foo\n</code></pre>\n<h2>Heading</h2>\n<pre><code>foo\n</code></pre>\n<hr />",
+      "actual": "<h1>Heading</h1>\n<pre><code>foo\n</code></pre>\n<p>Heading</p>\n<hr />\n<pre><code>foo\n</code></pre>\n<hr />"
+    },
+    {
+      "id": "ex-0110",
+      "section": "Fenced code blocks",
+      "reason": "output mismatch",
+      "markdown": "`````\n\n```\naaa",
+      "expected": "<pre><code>\n```\naaa\n</code></pre>",
+      "actual": "<p>`````</p>\n<p>```\naaa</p>"
+    },
+    {
+      "id": "ex-0120",
+      "section": "Fenced code blocks",
+      "reason": "output mismatch",
+      "markdown": "```\naaa\n    ```",
+      "expected": "<pre><code>aaa\n    ```\n</code></pre>",
+      "actual": "<p><code>aaa</code></p>"
+    },
+    {
+      "id": "ex-0149",
+      "section": "Block quotes",
+      "reason": "output mismatch",
+      "markdown": "> ```\nfoo\n```",
+      "expected": "<blockquote>\n<pre><code></code></pre>\n</blockquote>\n<p>foo</p>\n<pre><code></code></pre>",
+      "actual": "<blockquote>\n<p>```\nfoo</p>\n</blockquote>\n<p>```</p>"
+    },
+    {
+      "id": "ex-0157",
+      "section": "Block quotes",
+      "reason": "output mismatch",
+      "markdown": "foo\n> bar",
+      "expected": "<p>foo</p>\n<blockquote>\n<p>bar</p>\n</blockquote>",
+      "actual": "<p>foo\n&gt; bar</p>"
+    },
+    {
+      "id": "ex-0204",
+      "section": "List items",
+      "reason": "output mismatch",
+      "markdown": "> 1. > Blockquote\ncontinued here.",
+      "expected": "<blockquote>\n<ol>\n<li>\n<blockquote>\n<p>Blockquote\ncontinued here.</p>\n</blockquote>\n</li>\n</ol>\n</blockquote>",
+      "actual": "<blockquote>\n<ol>\n<li>\n<blockquote>\n<p>Blockquote</p>\n</blockquote>\n</li>\n</ol>\n</blockquote>\n<p>continued here.</p>"
+    },
+    {
+      "id": "ex-0217",
+      "section": "Lists",
+      "reason": "output mismatch",
+      "markdown": "The number of windows in my house is\n1.  The number of doors is 6.",
+      "expected": "<p>The number of windows in my house is</p>\n<ol>\n<li>The number of doors is 6.</li>\n</ol>",
+      "actual": "<p>The number of windows in my house is\n1.  The number of doors is 6.</p>"
+    },
+    {
+      "id": "ex-0232",
+      "section": "Lists",
+      "reason": "output mismatch",
+      "markdown": "* a\n  > b\n  >\n* c",
+      "expected": "<ul>\n<li>a\n<blockquote>\n<p>b</p>\n</blockquote>\n</li>\n<li>c</li>\n</ul>",
+      "actual": "<ul>\n<li>a\n&gt; b\n&gt;</li>\n<li>c</li>\n</ul>"
+    },
+    {
+      "id": "ex-0233",
+      "section": "Lists",
+      "reason": "output mismatch",
+      "markdown": "- a\n  > b\n  ```\n  c\n  ```\n- d",
+      "expected": "<ul>\n<li>a\n<blockquote>\n<p>b</p>\n</blockquote>\n<pre><code>c\n</code></pre>\n</li>\n<li>d</li>\n</ul>",
+      "actual": "<ul>\n<li>a\n&gt; b\n<pre><code>c\n</code></pre>\n</li>\n<li>d</li>\n</ul>"
+    },
+    {
+      "id": "ex-0254",
+      "section": "Code spans",
+      "reason": "output mismatch",
+      "markdown": "[not a `link](/foo`)",
+      "expected": "<p>[not a <code>link](/foo</code>)</p>",
+      "actual": "<p><a href=\"/foo%60\">not a `link</a></p>"
+    },
+    {
+      "id": "ex-0401",
+      "section": "Links",
+      "reason": "output mismatch",
+      "markdown": "[link](</my uri>)",
+      "expected": "<p><a href=\"/my%20uri\">link</a></p>",
+      "actual": "<p><a href=\"/my uri\">link</a></p>"
+    },
+    {
+      "id": "ex-0403",
+      "section": "Links",
+      "reason": "output mismatch",
+      "markdown": "[link](<foo\nbar>)",
+      "expected": "<p>[link](<foo\nbar>)</p>",
+      "actual": "<p><a href=\"foo\nbar\">link</a></p>"
+    },
+    {
+      "id": "ex-0405",
+      "section": "Links",
+      "reason": "output mismatch",
+      "markdown": "[link](<foo\\>)",
+      "expected": "<p>[link](&lt;foo&gt;)</p>",
+      "actual": "<p><a href=\"&lt;foo&gt;\">link</a></p>"
+    },
+    {
+      "id": "ex-0406",
+      "section": "Links",
+      "reason": "output mismatch",
+      "markdown": "[a](<b)c\n[a](<b)c>\n[a](<b>c)",
+      "expected": "<p>[a](&lt;b)c\n[a](&lt;b)c&gt;\n[a](<b>c)</p>",
+      "actual": "<p><a href=\"&lt;b\">ac\n<a href=\"&lt;b\">ac&gt;\n<a href=\"&lt;b&gt;c\">a</a></a></a></p>"
+    },
+    {
+      "id": "ex-0415",
+      "section": "Links",
+      "reason": "output mismatch",
+      "markdown": "[link](foo%20b&auml;)",
+      "expected": "<p><a href=\"foo%20b%C3%A4\">link</a></p>",
+      "actual": "<p><a href=\"foo%20b&amp;auml;\">link</a></p>"
+    },
+    {
+      "id": "ex-0416",
+      "section": "Links",
+      "reason": "output mismatch",
+      "markdown": "[link](\"title\")",
+      "expected": "<p><a href=\"%22title%22\">link</a></p>",
+      "actual": "<p><a href=\"&quot;title&quot;\">link</a></p>"
+    },
+    {
+      "id": "ex-0417",
+      "section": "Links",
+      "reason": "output mismatch",
+      "markdown": "[link](/url \"title\")\n[link](/url 'title')\n[link](/url (title))",
+      "expected": "<p><a href=\"/url\" title=\"title\">link</a>\n<a href=\"/url\" title=\"title\">link</a>\n<a href=\"/url\" title=\"title\">link</a></p>",
+      "actual": "<p>[link](/url &quot;title&quot;)\n[link](/url 'title')\n[link](/url (title))</p>"
+    },
+    {
+      "id": "ex-0418",
+      "section": "Links",
+      "reason": "output mismatch",
+      "markdown": "[link](/url \"title \\\"&quot;\")",
+      "expected": "<p><a href=\"/url\" title=\"title &quot;&quot;\">link</a></p>",
+      "actual": "<p><a href=\"/url\" title=\"title &quot;&amp;quot;\">link</a></p>"
+    },
+    {
+      "id": "ex-0419",
+      "section": "Links",
+      "reason": "output mismatch",
+      "markdown": "[link](/url \"title\")",
+      "expected": "<p><a href=\"/url%C2%A0%22title%22\">link</a></p>",
+      "actual": "<p>[link](/url &quot;title&quot;)</p>"
+    },
+    {
+      "id": "ex-0422",
+      "section": "Links",
+      "reason": "output mismatch",
+      "markdown": "[link](   /uri\n  \"title\"  )",
+      "expected": "<p><a href=\"/uri\" title=\"title\">link</a></p>",
+      "actual": "<p>[link](   /uri\n&quot;title&quot;  )</p>"
+    }
+  ],
+  "failure_count": 69
+}

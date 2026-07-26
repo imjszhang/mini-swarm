@@ -5,11 +5,62 @@
 - **Run A (bare)**: `npm run run:quick -- --run-id=run-a-bare-v4`
 - **Run B (coordinated)**: `npm run run:quick:coordinated -- --run-id=run-b-coordinated-v4`
 - **Run B faithful**: `npm run run:faithful -- --run-id=run-b-faithful-v7`
-- **v8/v9/v10 high-contention A/B**: `npm run run:contention:bare` / `npm run run:contention:faithful` (`--task-set=contention`, concurrency 4, seed planner; v9 adds score-feedback; v10 adds worktree sync + merge gate + global repair)
+- **v8/v9/v10/v11 high-contention A/B**: `npm run run:contention:bare` / `npm run run:contention:faithful` (`--task-set=contention`, concurrency 4, seed planner; v9 score-feedback; v10 sync+gate+global repair; v11 holdout+ledger+adaptive repair)
 - **Resume interrupted run**: `npm run salvage -- --run-id=RUN_ID --task-set=contention` then original command + `--resume` (task-level; agent/wall times in metrics cover last segment only — see README)
 - **Serial minimal loop**: `npm run run:serial -- --quick --run-id=run-a-serial-quick`
+- **Compare (v11)**: `npm run compare -- runs/run-a-bare-contention-v11/metrics.json runs/run-b-faithful-contention-v11/metrics.json`
 - **Compare (v10)**: `npm run compare -- runs/run-a-bare-contention-v10/metrics.json runs/run-b-faithful-contention-v10/metrics.json`
 - **Compare (v9)**: `npm run compare -- runs/run-a-bare-contention-v9b/metrics.json runs/run-b-faithful-contention-v9/metrics.json`
+
+## Runs (2026-07-26) — v11 generic quality loop
+
+| Run ID | Mode | Coordination | planner | Notes |
+|---|---|---|---|---|
+| run-a-bare-contention-v11 | **contention 13 tasks**, concurrency 4 | false | **seed-contention** | **98.5%** full (517/525); visible **100%** (439/439); holdout 90.7% (78/86); **overfit_alarm**; 9/9 repair clusters accepted; 33 syncs; 4764 LOC; ~123 min wall / ~207 min agent |
+| run-b-faithful-contention-v11 | **contention 13 tasks**, concurrency 4 | **faithful** | **seed-contention** | **97.9%** full (514/525); visible **99.3%** (436/439); holdout 90.7%; **overfit_alarm**; **resumed** (hung agent → salvage → repair-only segment); repair 79.7%→99.3% visible then 90‑min budget stop; 3652 LOC; resume-segment agent ~109 min |
+
+### Corrected-oracle dual track (re-score of v10 workspaces)
+
+After fixing `→`→tab substitution in `spec/extract.mjs`, reference commonmark.js scores **525/525**. Re-scoring frozen v10 workspaces (no code changes):
+
+| Workspace | Old oracle (headline) | Corrected oracle |
+|---|---|---|
+| bare v10 | 94.1% (494/525) | **94.9%** (498/525) |
+| faithful v10 | 97.9% (514/525) | **97.9%** (514/525) |
+
+Historical v9/v10 tables keep the old-oracle headline; use the corrected column when comparing to v11 (which always uses the corrected suite).
+
+### v11 architecture: holdout + ledger + adaptive repair
+
+Same models / concurrency / contention task set as v10. Symmetric harness upgrades:
+
+1. **Oracle correction** (extract-time tab normalization) + reference self-check at 100%.
+2. **Holdout** (15% stratified) — agent feedback on visible set; final reports visible/holdout/full.
+3. **Failure ledger + adjudication** — stuck items classified; suspected oracle / ambiguity leave the repair queue for humans.
+4. **Repair engine v2** — adaptive clustering, monotonic changeset acceptance, best-of-N candidate worktrees, plateau/time-budget stop.
+5. **Windows agent kill-tree** on timeout (`taskkill /T /F`) after a hung score-fix agent blocked faithful for ~6.5h.
+
+| Metric | Bare v11 | Faithful v11 (resumed) |
+|---|---|---|
+| Full pass rate | **98.5%** (517/525) | 97.9% (514/525) |
+| Visible | **100%** (439/439) | 99.3% (436/439) |
+| Holdout | 90.7% (78/86) | 90.7% (78/86) |
+| holdout_gap_pp | 9.3 (alarm) | 8.6 (alarm) |
+| Repair clusters accepted | 9/9 | 2/4 (budget stop) |
+| LOC | 4764 | **3652** |
+| Agent time | ~207 min (full run) | last resume segment only* |
+
+\*Faithful was interrupted mid–task-13 fix (hung cursor-agent), salvaged, resumed; later manually interrupted mid-repair and resumed again. Pool metrics (sync/feedback/cross-scope) in the final `metrics.json` cover only the last resume segment (repair-only → mostly zeros). Quality/LOC/commits are cumulative on the workspace.
+
+Direct v11 A/B (`npm run compare -- runs/run-a-bare-contention-v11/metrics.json runs/run-b-faithful-contention-v11/metrics.json`):
+
+- **Headline full suite: bare 98.5% > faithful 97.9%** (−0.6pp). Neither arm hit 100% on the full 525; both hit **overfit alarms** (visible≫holdout).
+- **Holdout is the story**: both arms score **90.7%** on the blind set while visible sits at 99–100%. The quality loop closed the training/visible set; generalization to holdout did not follow automatically.
+- **Structure: faithful still leaner** (3652 vs 4764 LOC).
+- **100% miss reasons**: bare — 8 holdout failures after visible 100%; faithful — repair time budget (90 min) stopped at 99.3% visible / 97.9% full, same holdout floor.
+- Ops lesson: Windows `SIGTERM` does not kill `cursor-agent` trees; v11 adds `taskkill /T /F` on timeout.
+
+Interpretation: v11 proves the generic loop (oracle audit, holdout, ledger, adaptive repair, best-of-N) is runnable and catches overfitting that v10's single final score hid. Pushing past ~98% full requires either longer repair budget + holdout-aware acceptance, or treating holdout failures as first-class repair targets (without leaking them into worker prompts). Coordination's remaining edge is compactness, not the full-suite headline in this run.
 
 ## Runs (2026-07-25) — v10 architecture + resume
 

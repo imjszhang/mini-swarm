@@ -30,14 +30,24 @@ npm run run:faithful          # Run B faithful, full task set
 npm run run:contention:bare   # high-contention bare (13 tasks, concurrency 4, score feedback)
 npm run run:contention:faithful
 npm run run:serial -- --quick # serial minimal loop (no worktrees)
-npm run compare -- runs/run-a-bare-contention-v9b/metrics.json runs/run-b-faithful-contention-v9/metrics.json
+npm run compare -- runs/run-a-bare-contention-v11/metrics.json runs/run-b-faithful-contention-v11/metrics.json
+npm run contention:report -- runs/RUN_ID/metrics.json
 
 # Resume an interrupted run (task-level; requires progress.json)
 npm run salvage -- --run-id=RUN_ID --task-set=contention   # rebuild progress from wreckage
 npm run run:contention:bare -- --run-id=RUN_ID --resume    # continue skipped done tasks
 ```
 
-CLI flags of note: `--task-set=default|contention` (contention uses a fixed seed planner for fair A/B), `--coord-mode=strict|faithful`, `--concurrency=N`, `--resume` (requires `--run-id` + `progress.json`; see `npm run salvage`). Contention runs use harness score-feedback (`maxScoreFeedbackRounds` in `config.json`).
+CLI flags of note: `--task-set=default|contention` (contention uses a fixed seed planner for fair A/B), `--coord-mode=strict|faithful`, `--concurrency=N`, `--resume` (requires `--run-id` + `progress.json`; see `npm run salvage`), `--contention-report=PATH` (injects historical hot-file stats into the LLM planner; no-op for fixed contention seeds).
+
+### v11 quality loop (generic harness)
+
+Both arms share the same post-pool repair architecture (task-agnostic mechanism code under `orchestrator/`):
+
+- **Corrected oracle**: `spec/extract.mjs` substitutes typographic `→` → real tab on markdown + expected HTML (official CommonMark runner semantics). Historical v9/v10 headline numbers stay as the old oracle; dual-track `score-corrected-oracle.json` re-scores existing workspaces.
+- **Holdout**: stratified seeded blind set in `runs/{id}/holdout.json`. Agent feedback scores use `--holdout-mode exclude`; final metrics report `visible_score` / `holdout_score` / `final_score` (full suite). Holdout secrecy is best-effort (agents could read repo files); prompts forbid it, and `oracle_literal_hits` + `holdout_gap_pp` alarm for overfitting.
+- **Ledger + adjudication**: stuck failures are classified (`implementation_bug` | `suspected_oracle_bug` | `spec_ambiguity` | `out_of_scope_dependency`). Oracle/ambiguity verdicts leave the repair queue for human review — agents never edit the acceptance suite.
+- **Repair engine**: adaptive clustering → monotonic changeset acceptance → best-of-N candidate worktrees on reject. Config under `config.repair` / `config.holdout`.
 
 ### Resume semantics
 
@@ -80,11 +90,13 @@ Each run writes `runs/{runId}/metrics.json`:
 - `churn` (`total_added` / `total_deleted` / `churn_ratio`) and `merge_resolve_time_ms`
 - `score_feedback_count` / `worker_fix_time_ms` (section-scoped fix rounds)
 - `worktree_sync_count` / `merge_gate_rejection_count` / `global_repair_*` (v10 architecture)
+- `visible_score` / `holdout_score` / `holdout_gap_pp` / `overfit_alarm` / `oracle_literal_hits` (v11)
+- `repair_clusters` / `adjudications` / `suspected_oracle_bugs` / `phase_cost_curve` / `repair_time_ms` (v11)
 - `resumed` / `resume_segment` when continued via `--resume`
 - `tasks_done` / per-task status
 - lines of code, agent call timing
 
-Each live run also writes `progress.json` (task statuses + phase) for crash recovery.
+Each live run also writes `progress.json` (task statuses + phase) for crash recovery, plus `holdout.json` and `ledger.json`.
 
 ## Article lineage
 
@@ -102,5 +114,7 @@ Part of @js trilogy: loop → harness → **swarm**. Source blog: Cursor Agent S
 - compile-checked interface stubs via `src/contracts.ts` (contention / faithful)
 
 v10 adds VCS-layer merge validity gating, worktree freshness sync, and a final global repair phase (both arms). Task-level `--resume` / `salvage` recover interrupted runs.
+
+v11 replaces the simple global-repair phase with a generic quality loop (holdout, ledger, adjudication, adaptive clusters, best-of-N). Mechanism modules stay task-agnostic; CommonMark specifics live in `spec/` + `scorer/` + the verifier facade.
 
 It does **not** reproduce Cursor's custom high-throughput VCS, multiple planner trees, bloated-file decomposition, or stacked multi-perspective review. Results measure this minimal reproduction, not Cursor's production swarm.

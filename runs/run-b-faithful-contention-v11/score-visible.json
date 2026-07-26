@@ -1,0 +1,136 @@
+{
+  "scored_at": "2026-07-26T09:46:56.041Z",
+  "workspace": "D:\\github\\projects\\mini-swarm\\runs\\run-b-faithful-contention-v11\\workspace",
+  "total": 439,
+  "passed": 436,
+  "rate": 0.9931662870159453,
+  "by_section": {
+    "Tabs": {
+      "passed": 9,
+      "total": 9,
+      "rate": 1
+    },
+    "Backslash escapes": {
+      "passed": 11,
+      "total": 11,
+      "rate": 1
+    },
+    "Precedence": {
+      "passed": 1,
+      "total": 1,
+      "rate": 1
+    },
+    "Thematic breaks": {
+      "passed": 16,
+      "total": 16,
+      "rate": 1
+    },
+    "ATX headings": {
+      "passed": 15,
+      "total": 15,
+      "rate": 1
+    },
+    "Setext headings": {
+      "passed": 20,
+      "total": 22,
+      "rate": 0.9090909090909091
+    },
+    "Indented code blocks": {
+      "passed": 10,
+      "total": 10,
+      "rate": 1
+    },
+    "Fenced code blocks": {
+      "passed": 24,
+      "total": 24,
+      "rate": 1
+    },
+    "Paragraphs": {
+      "passed": 6,
+      "total": 6,
+      "rate": 1
+    },
+    "Blank lines": {
+      "passed": 1,
+      "total": 1,
+      "rate": 1
+    },
+    "Block quotes": {
+      "passed": 21,
+      "total": 21,
+      "rate": 1
+    },
+    "List items": {
+      "passed": 40,
+      "total": 40,
+      "rate": 1
+    },
+    "Lists": {
+      "passed": 22,
+      "total": 22,
+      "rate": 1
+    },
+    "Code spans": {
+      "passed": 18,
+      "total": 18,
+      "rate": 1
+    },
+    "Emphasis and strong emphasis": {
+      "passed": 112,
+      "total": 112,
+      "rate": 1
+    },
+    "Links": {
+      "passed": 75,
+      "total": 76,
+      "rate": 0.9868421052631579
+    },
+    "Images": {
+      "passed": 18,
+      "total": 18,
+      "rate": 1
+    },
+    "Hard line breaks": {
+      "passed": 12,
+      "total": 12,
+      "rate": 1
+    },
+    "Soft line breaks": {
+      "passed": 2,
+      "total": 2,
+      "rate": 1
+    },
+    "Textual content": {
+      "passed": 3,
+      "total": 3,
+      "rate": 1
+    }
+  },
+  "failures": [
+    {
+      "id": "ex-0064",
+      "section": "Setext headings",
+      "reason": "output mismatch",
+      "markdown": "Foo *bar\nbaz*\n====",
+      "expected": "<h1>Foo <em>bar\nbaz</em></h1>",
+      "actual": "<h1>Foo *bar\nbaz*</h1>"
+    },
+    {
+      "id": "ex-0076",
+      "section": "Setext headings",
+      "reason": "output mismatch",
+      "markdown": "> foo\nbar\n===",
+      "expected": "<blockquote>\n<p>foo\nbar\n===</p>\n</blockquote>",
+      "actual": "<blockquote>\n<h1>foo\nbar</h1>\n</blockquote>"
+    },
+    {
+      "id": "ex-0457",
+      "section": "Links",
+      "reason": "output mismatch",
+      "markdown": "[bar][foo\\!]\n\n[foo!]: /url",
+      "expected": "<p>[bar][foo!]</p>",
+      "actual": "<p>[bar][foo\\!]</p>"
+    }
+  ],
+  "failure_count": 3
+}

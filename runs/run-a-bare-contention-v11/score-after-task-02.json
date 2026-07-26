@@ -1,0 +1,272 @@
+{
+  "scored_at": "2026-07-25T17:19:44.013Z",
+  "workspace": "D:\\github\\projects\\mini-swarm\\runs\\run-a-bare-contention-v11\\workspace",
+  "total": 439,
+  "passed": 114,
+  "rate": 0.25968109339407747,
+  "by_section": {
+    "Tabs": {
+      "passed": 3,
+      "total": 9,
+      "rate": 0.3333333333333333
+    },
+    "Backslash escapes": {
+      "passed": 3,
+      "total": 11,
+      "rate": 0.2727272727272727
+    },
+    "Precedence": {
+      "passed": 1,
+      "total": 1,
+      "rate": 1
+    },
+    "Thematic breaks": {
+      "passed": 11,
+      "total": 16,
+      "rate": 0.6875
+    },
+    "ATX headings": {
+      "passed": 15,
+      "total": 15,
+      "rate": 1
+    },
+    "Setext headings": {
+      "passed": 6,
+      "total": 22,
+      "rate": 0.2727272727272727
+    },
+    "Indented code blocks": {
+      "passed": 4,
+      "total": 10,
+      "rate": 0.4
+    },
+    "Fenced code blocks": {
+      "passed": 1,
+      "total": 24,
+      "rate": 0.041666666666666664
+    },
+    "Paragraphs": {
+      "passed": 6,
+      "total": 6,
+      "rate": 1
+    },
+    "Blank lines": {
+      "passed": 1,
+      "total": 1,
+      "rate": 1
+    },
+    "Block quotes": {
+      "passed": 1,
+      "total": 21,
+      "rate": 0.047619047619047616
+    },
+    "List items": {
+      "passed": 6,
+      "total": 40,
+      "rate": 0.15
+    },
+    "Lists": {
+      "passed": 4,
+      "total": 22,
+      "rate": 0.18181818181818182
+    },
+    "Code spans": {
+      "passed": 2,
+      "total": 18,
+      "rate": 0.1111111111111111
+    },
+    "Emphasis and strong emphasis": {
+      "passed": 32,
+      "total": 112,
+      "rate": 0.2857142857142857
+    },
+    "Links": {
+      "passed": 8,
+      "total": 76,
+      "rate": 0.10526315789473684
+    },
+    "Images": {
+      "passed": 1,
+      "total": 18,
+      "rate": 0.05555555555555555
+    },
+    "Hard line breaks": {
+      "passed": 5,
+      "total": 12,
+      "rate": 0.4166666666666667
+    },
+    "Soft line breaks": {
+      "passed": 1,
+      "total": 2,
+      "rate": 0.5
+    },
+    "Textual content": {
+      "passed": 3,
+      "total": 3,
+      "rate": 1
+    }
+  },
+  "failures": [
+    {
+      "id": "ex-0002",
+      "section": "Tabs",
+      "reason": "output mismatch",
+      "markdown": "  \tfoo\tbaz\t\tbim",
+      "expected": "<pre><code>foo\tbaz\t\tbim\n</code></pre>",
+      "actual": "<pre><code>  \tfoo\tbaz\t\tbim\n</code></pre>"
+    },
+    {
+      "id": "ex-0004",
+      "section": "Tabs",
+      "reason": "output mismatch",
+      "markdown": "  - foo\n\n\tbar",
+      "expected": "<ul>\n<li>\n<p>foo</p>\n<p>bar</p>\n</li>\n</ul>",
+      "actual": "<ul>\n<li>foo</li>\n</ul>\n<pre><code>bar\n</code></pre>"
+    },
+    {
+      "id": "ex-0005",
+      "section": "Tabs",
+      "reason": "output mismatch",
+      "markdown": "- foo\n\n\t\tbar",
+      "expected": "<ul>\n<li>\n<p>foo</p>\n<pre><code>  bar\n</code></pre>\n</li>\n</ul>",
+      "actual": "<ul>\n<li>foo</li>\n</ul>\n<pre><code>\tbar\n</code></pre>"
+    },
+    {
+      "id": "ex-0006",
+      "section": "Tabs",
+      "reason": "output mismatch",
+      "markdown": ">\t\tfoo",
+      "expected": "<blockquote>\n<pre><code>  foo\n</code></pre>\n</blockquote>",
+      "actual": "<p>&gt;\t\tfoo</p>"
+    },
+    {
+      "id": "ex-0007",
+      "section": "Tabs",
+      "reason": "output mismatch",
+      "markdown": "-\t\tfoo",
+      "expected": "<ul>\n<li>\n<pre><code>  foo\n</code></pre>\n</li>\n</ul>",
+      "actual": "<p>-\t\tfoo</p>"
+    },
+    {
+      "id": "ex-0010",
+      "section": "Tabs",
+      "reason": "output mismatch",
+      "markdown": "#\tFoo",
+      "expected": "<h1>Foo</h1>",
+      "actual": "<p>#\tFoo</p>"
+    },
+    {
+      "id": "ex-0016",
+      "section": "Backslash escapes",
+      "reason": "output mismatch",
+      "markdown": "foo\\\nbar",
+      "expected": "<p>foo<br />\nbar</p>",
+      "actual": "<p>foo\\\nbar</p>"
+    },
+    {
+      "id": "ex-0017",
+      "section": "Backslash escapes",
+      "reason": "output mismatch",
+      "markdown": "`` \\[\\` ``",
+      "expected": "<p><code>\\[\\`</code></p>",
+      "actual": "<p>`` [` ``</p>"
+    },
+    {
+      "id": "ex-0019",
+      "section": "Backslash escapes",
+      "reason": "output mismatch",
+      "markdown": "~~~\n\\[\\]\n~~~",
+      "expected": "<pre><code>\\[\\]\n</code></pre>",
+      "actual": "<p>~~~\n[]\n~~~</p>"
+    },
+    {
+      "id": "ex-0020",
+      "section": "Backslash escapes",
+      "reason": "output mismatch",
+      "markdown": "<https://example.com?find=\\*>",
+      "expected": "<p><a href=\"https://example.com?find=%5C*\">https://example.com?find=\\*</a></p>",
+      "actual": "<p>&lt;https://example.com?find=*&gt;</p>"
+    },
+    {
+      "id": "ex-0021",
+      "section": "Backslash escapes",
+      "reason": "output mismatch",
+      "markdown": "<a href=\"/bar\\/)\">",
+      "expected": "<a href=\"/bar\\/)\">",
+      "actual": "<p>&lt;a href=&quot;/bar/)&quot;&gt;</p>"
+    },
+    {
+      "id": "ex-0022",
+      "section": "Backslash escapes",
+      "reason": "output mismatch",
+      "markdown": "[foo](/bar\\* \"ti\\*tle\")",
+      "expected": "<p><a href=\"/bar*\" title=\"ti*tle\">foo</a></p>",
+      "actual": "<p>[foo](/bar* &quot;ti*tle&quot;)</p>"
+    },
+    {
+      "id": "ex-0023",
+      "section": "Backslash escapes",
+      "reason": "output mismatch",
+      "markdown": "[foo]\n\n[foo]: /bar\\* \"ti\\*tle\"",
+      "expected": "<p><a href=\"/bar*\" title=\"ti*tle\">foo</a></p>",
+      "actual": "<p>[foo]</p>\n<p>[foo]: /bar* &quot;ti*tle&quot;</p>"
+    },
+    {
+      "id": "ex-0024",
+      "section": "Backslash escapes",
+      "reason": "output mismatch",
+      "markdown": "``` foo\\+bar\nfoo\n```",
+      "expected": "<pre><code class=\"language-foo+bar\">foo\n</code></pre>",
+      "actual": "<p>``` foo+bar\nfoo\n```</p>"
+    },
+    {
+      "id": "ex-0039",
+      "section": "Thematic breaks",
+      "reason": "output mismatch",
+      "markdown": " *-*",
+      "expected": "<p><em>-</em></p>",
+      "actual": "<p>*-*</p>"
+    },
+    {
+      "id": "ex-0041",
+      "section": "Thematic breaks",
+      "reason": "output mismatch",
+      "markdown": "Foo\n***\nbar",
+      "expected": "<p>Foo</p>\n<hr />\n<p>bar</p>",
+      "actual": "<p>Foo\n***\nbar</p>"
+    },
+    {
+      "id": "ex-0042",
+      "section": "Thematic breaks",
+      "reason": "output mismatch",
+      "markdown": "Foo\n---\nbar",
+      "expected": "<h2>Foo</h2>\n<p>bar</p>",
+      "actual": "<p>Foo\n---\nbar</p>"
+    },
+    {
+      "id": "ex-0043",
+      "section": "Thematic breaks",
+      "reason": "output mismatch",
+      "markdown": "* Foo\n* * *\n* Bar",
+      "expected": "<ul>\n<li>Foo</li>\n</ul>\n<hr />\n<ul>\n<li>Bar</li>\n</ul>",
+      "actual": "<ul>\n<li>Foo</li>\n<li>* *</li>\n<li>Bar</li>\n</ul>"
+    },
+    {
+      "id": "ex-0044",
+      "section": "Thematic breaks",
+      "reason": "output mismatch",
+      "markdown": "- Foo\n- * * *",
+      "expected": "<ul>\n<li>Foo</li>\n<li>\n<hr />\n</li>\n</ul>",
+      "actual": "<ul>\n<li>Foo</li>\n<li>* * *</li>\n</ul>"
+    },
+    {
+      "id": "ex-0063",
+      "section": "Setext headings",
+      "reason": "output mismatch",
+      "markdown": "Foo *bar*\n=========\n\nFoo *bar*\n---------",
+      "expected": "<h1>Foo <em>bar</em></h1>\n<h2>Foo <em>bar</em></h2>",
+      "actual": "<p>Foo *bar*\n=========</p>\n<p>Foo *bar*\n---------</p>"
+    }
+  ],
+  "failure_count": 325
+}

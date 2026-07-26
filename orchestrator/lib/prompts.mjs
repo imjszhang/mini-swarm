@@ -14,7 +14,7 @@ export function fillTemplate(template, vars) {
   return out;
 }
 
-export function buildPlannerPrompt({ coordination, coordMode = "strict" }) {
+export function buildPlannerPrompt({ coordination, coordMode = "strict", contentionReportText = "" }) {
   const strictRules = `- **Coordination ON (strict)**: Write \`DESIGN.md\` first (module interfaces, data structures, file layout).
 - \`files_scope\` MUST be pairwise disjoint across tasks (no overlapping paths).
 - Initialize \`GUIDE.md\` with a short header (project tips for future workers).
@@ -27,16 +27,19 @@ export function buildPlannerPrompt({ coordination, coordMode = "strict" }) {
 - DESIGN.md is a living document. A worker that changes an interface or design decision must update the relevant section so later workers receive the new reality.
 - DESIGN.md interface definitions live in \`src/contracts.ts\` and are compile-checked; if you change an interface, update \`contracts.ts\` and DESIGN.md together.
 - Notes may mention a shared integration file outside primary scope only when they explicitly require a minimal cross-scope patch and explain why.`;
-  const rules = coordination
+  let rules = coordination
     ? (coordMode === "faithful" ? faithfulRules : strictRules)
     : `- **Coordination OFF**: No DESIGN.md required. Overlapping files_scope allowed (conflicts expected).`;
+  if (contentionReportText) {
+    rules += `\n\n## Historical high-contention files (from prior runs)\n\n${contentionReportText}\n\nConsider splitting ownership of hot files or adding a dedicated wiring task.`;
+  }
   return fillTemplate(loadPrompt("planner"), {
     COORDINATION_RULES: rules,
   });
 }
 
-export function buildWorkerPrompt({ task, designMd, guideMd, coordMode = "strict" }) {
-  const modeRules = coordMode === "faithful"
+function coordinationModeRules(coordMode) {
+  return coordMode === "faithful"
     ? `- Treat \`files_scope\` as your primary ownership area.
 - If integration or a core design correction genuinely requires another file, make the smallest targeted cross-scope patch and add \`cross-scope: <reason>\` to the commit message.
 - If you change an interface or design decision, update the relevant section of DESIGN.md. Do not rewrite unrelated design decisions.
@@ -44,12 +47,24 @@ export function buildWorkerPrompt({ task, designMd, guideMd, coordMode = "strict
 - Append only surprising, reusable findings to GUIDE.md.`
     : `- Only modify files listed in \`files_scope\` for this task (plus \`GUIDE.md\` append-only).
 - If task notes mention editing a file outside \`files_scope\`, ignore that instruction — scope wins.`;
+}
+
+function repairCoordinationRules(coordMode) {
+  return coordMode === "faithful"
+    ? `- If you change an interface or design decision, update the relevant section of DESIGN.md.
+- DESIGN.md interface definitions live in \`src/contracts.ts\` and are compile-checked; if you change an interface, update \`contracts.ts\` and DESIGN.md together.
+- Append only surprising, reusable findings to GUIDE.md.`
+    : `- No scope restrictions for this repair; edit whatever the root cause requires.`;
+}
+
+export function buildWorkerPrompt({ task, designMd, guideMd, coordMode = "strict", verifyCmd = "" }) {
   return fillTemplate(loadPrompt("worker"), {
     TASK_JSON: JSON.stringify(task, null, 2),
     TASK_ID: task.id,
     DESIGN_MD: designMd || "_None._",
     GUIDE_MD: guideMd || "_Empty._",
-    COORDINATION_MODE_RULES: modeRules,
+    COORDINATION_MODE_RULES: coordinationModeRules(coordMode),
+    VERIFY_CMD: verifyCmd || "_No verification command configured._",
   });
 }
 
@@ -84,42 +99,20 @@ export function formatScoreFailures(failures, max = 8) {
   const items = (failures || []).slice(0, max);
   if (!items.length) return "_No failure details available._";
   return items.map((f, i) => {
+    const group = f.group || f.section || "?";
+    const input = f.input ?? f.markdown;
     const lines = [
-      `### Failure ${i + 1}: ${f.id || "?"} [${f.section || "?"}]`,
+      `### Failure ${i + 1}: ${f.id || "?"} [${group}]`,
       `Reason: ${f.reason || "unknown"}`,
     ];
-    if (f.markdown != null) lines.push(`IN:\n\`\`\`\n${truncate(f.markdown)}\n\`\`\``);
-    if (f.expected != null) lines.push(`EXP:\n\`\`\`\n${truncate(f.expected)}\n\`\`\``);
-    if (f.actual != null) lines.push(`GOT:\n\`\`\`\n${truncate(f.actual)}\n\`\`\``);
-    if (f.markdown == null && f.expected == null && f.reason) {
+    if (input != null) lines.push(`IN:\n\`\`\`\n${truncate(input, 2000)}\n\`\`\``);
+    if (f.expected != null) lines.push(`EXP:\n\`\`\`\n${truncate(f.expected, 2000)}\n\`\`\``);
+    if (f.actual != null) lines.push(`GOT:\n\`\`\`\n${truncate(f.actual, 2000)}\n\`\`\``);
+    if (input == null && f.expected == null && f.reason) {
       lines.push(`Detail: ${truncate(f.reason, 500)}`);
     }
     return lines.join("\n");
   }).join("\n\n");
-}
-
-export function buildGlobalRepairPrompt({
-  rate,
-  bySection,
-  failures,
-  coordMode = "strict",
-}) {
-  const modeRules = coordMode === "faithful"
-    ? `- If you change an interface or design decision, update the relevant section of DESIGN.md.
-- DESIGN.md interface definitions live in \`src/contracts.ts\` and are compile-checked; if you change an interface, update \`contracts.ts\` and DESIGN.md together.
-- Append only surprising, reusable findings to GUIDE.md.`
-    : `- No scope restrictions for this repair; edit whatever the root cause requires.`;
-
-  const sectionLines = (bySection || [])
-    .map((s) => `- ${s.name}: ${s.passed}/${s.total} (${((s.rate || 0) * 100).toFixed(1)}%)`)
-    .join("\n") || "_No section stats._";
-
-  return fillTemplate(loadPrompt("global-repair"), {
-    RATE: typeof rate === "number" ? `${(rate * 100).toFixed(1)}%` : String(rate ?? "n/a"),
-    BY_SECTION: sectionLines,
-    FAILURES: formatScoreFailures(failures, 12),
-    COORDINATION_MODE_RULES: modeRules,
-  });
 }
 
 export function buildWorkerScoreFixPrompt({
@@ -129,16 +122,8 @@ export function buildWorkerScoreFixPrompt({
   failures,
   coordMode = "strict",
   buildError = null,
+  verifyCmd = "",
 }) {
-  const modeRules = coordMode === "faithful"
-    ? `- Treat \`files_scope\` as your primary ownership area.
-- If integration or a core design correction genuinely requires another file, make the smallest targeted cross-scope patch and add \`cross-scope: <reason>\` to the commit message.
-- If you change an interface or design decision, update the relevant section of DESIGN.md. Do not rewrite unrelated design decisions.
-- DESIGN.md interface definitions live in \`src/contracts.ts\` and are compile-checked; if you change an interface, update \`contracts.ts\` and DESIGN.md together.
-- Append only surprising, reusable findings to GUIDE.md.`
-    : `- Only modify files listed in \`files_scope\` for this task (plus \`GUIDE.md\` append-only).
-- If task notes mention editing a file outside \`files_scope\`, ignore that instruction — scope wins.`;
-
   let failureBlock = formatScoreFailures(failures, 8);
   if (buildError) {
     failureBlock = `### Build failed\n\`\`\`\n${truncate(buildError, 1500)}\n\`\`\`\n\n${failureBlock}`;
@@ -149,6 +134,48 @@ export function buildWorkerScoreFixPrompt({
     SECTIONS: (sections || task.spec_sections || []).join(", ") || "(none)",
     RATE: typeof rate === "number" ? `${(rate * 100).toFixed(1)}%` : String(rate ?? "n/a"),
     FAILURES: failureBlock,
-    COORDINATION_MODE_RULES: modeRules,
+    COORDINATION_MODE_RULES: coordinationModeRules(coordMode),
+    VERIFY_CMD: verifyCmd || "_No verification command configured._",
+  });
+}
+
+export function buildAdjudicatePrompt({ items }) {
+  const block = (items || []).map((it, i) => {
+    return [
+      `### Item ${i + 1}: ${it.id} [${it.group || "?"}]`,
+      `IN:\n\`\`\`\n${truncate(it.input, 2000)}\n\`\`\``,
+      `EXP:\n\`\`\`\n${truncate(it.expected, 2000)}\n\`\`\``,
+      `GOT:\n\`\`\`\n${truncate(it.actual, 2000)}\n\`\`\``,
+      `Normative reference excerpt:\n\`\`\`\n${truncate(it.reference, 2000)}\n\`\`\``,
+    ].join("\n");
+  }).join("\n\n") || "_No items._";
+
+  return fillTemplate(loadPrompt("adjudicate"), { ITEMS: block });
+}
+
+export function buildClusterPrompt({ failures, maxClusters }) {
+  return fillTemplate(loadPrompt("cluster"), {
+    FAILURES: formatScoreFailures(failures, 40),
+    MAX_CLUSTERS: String(maxClusters ?? 8),
+  });
+}
+
+export function buildRepairClusterPrompt({
+  rate,
+  clusterId,
+  hypothesis,
+  failures,
+  reference,
+  verifyCmd,
+  coordMode = "strict",
+}) {
+  return fillTemplate(loadPrompt("repair-cluster"), {
+    RATE: typeof rate === "number" ? `${(rate * 100).toFixed(1)}%` : String(rate ?? "n/a"),
+    CLUSTER_ID: clusterId || "?",
+    HYPOTHESIS: hypothesis || "_unspecified_",
+    FAILURES: formatScoreFailures(failures, 40),
+    REFERENCE: reference || "_None available._",
+    VERIFY_CMD: verifyCmd || "_No verification command configured._",
+    COORDINATION_MODE_RULES: repairCoordinationRules(coordMode),
   });
 }

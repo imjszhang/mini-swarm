@@ -162,9 +162,16 @@ export function listConflictFiles(mainDir) {
   }
 }
 
-export function createWorktree(mainDir, worktreesRoot, taskId) {
-  const branch = `task/${taskId}`;
-  const wtPath = path.join(worktreesRoot, taskId);
+/**
+ * @param {string} mainDir
+ * @param {string} worktreesRoot
+ * @param {string} taskId — directory name under worktreesRoot (and default branch suffix)
+ * @param {{ branch?: string, dirName?: string }} [opts]
+ */
+export function createWorktree(mainDir, worktreesRoot, taskId, opts = {}) {
+  const branch = opts.branch || `task/${taskId}`;
+  const dirName = opts.dirName || taskId;
+  const wtPath = path.join(worktreesRoot, dirName);
 
   if (existsSync(wtPath)) {
     try {
@@ -181,6 +188,39 @@ export function createWorktree(mainDir, worktreesRoot, taskId) {
 
   git(mainDir, ["worktree", "add", "-b", branch, wtPath, "main"]);
   return { branch, path: wtPath };
+}
+
+export function listBranchesByPrefix(dir, prefix) {
+  try {
+    const out = git(dir, ["branch", "--list", `${prefix}*`, "--format=%(refname:short)"]);
+    return out ? out.split("\n").map((s) => s.trim()).filter(Boolean) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function deleteBranchesByPrefix(dir, prefix) {
+  for (const branch of listBranchesByPrefix(dir, prefix)) {
+    try {
+      git(dir, ["branch", "-D", branch]);
+    } catch {
+      /* ignore */
+    }
+  }
+}
+
+/**
+ * Merge a branch into main with --no-ff. Returns { ok, conflict, message }.
+ */
+export function mergeBranchNoFf(mainDir, branchName) {
+  try {
+    git(mainDir, ["merge", "--no-ff", branchName, "--no-edit"]);
+    return { ok: true, conflict: false };
+  } catch (err) {
+    const msg = String(err.stderr || err.stdout || err.message || "");
+    const conflict = /CONFLICT|conflict/i.test(msg);
+    return { ok: false, conflict, message: msg };
+  }
 }
 
 export function removeWorktree(mainDir, wtPath) {

@@ -8,8 +8,8 @@ import { countTasksDone, normalizeMetrics } from "./metrics.mjs";
 
 const [aPath, bPath] = process.argv.slice(2);
 if (!aPath || !bPath) {
-  console.log(`Usage: node orchestrator/compare-runs.mjs runs/run-a-bare-v3/metrics.json runs/run-b-coordinated-v3/metrics.json
-   or: npm run compare -- runs/run-a-bare-v3/metrics.json runs/run-b-coordinated-v3/metrics.json`);
+  console.log(`Usage: node orchestrator/compare-runs.mjs runs/run-a/metrics.json runs/run-b/metrics.json
+   or: npm run compare -- runs/run-a/metrics.json runs/run-b/metrics.json`);
   process.exit(1);
 }
 
@@ -24,6 +24,22 @@ function row(label, va, vb) {
   console.log(`${label.padEnd(24)} ${String(va).padEnd(18)} ${String(vb)}`);
 }
 
+function pct(score) {
+  if (!score || score.rate == null) return "-";
+  return `${(score.rate * 100).toFixed(1)}% (${score.passed}/${score.total})`;
+}
+
+function repairAccepted(m) {
+  const clusters = m.repair_clusters || [];
+  if (!clusters.length) return `${m.global_repair_count ?? 0} (legacy)`;
+  const ok = clusters.filter((c) => c.accepted).length;
+  return `${ok}/${clusters.length}`;
+}
+
+function rung2Count(m) {
+  return (m.repair_clusters || []).filter((c) => c.rung === 2).length;
+}
+
 console.log("\n=== mini-swarm A/B comparison ===\n");
 row("Metric", "Run A", "Run B");
 row("coordination", a.coordination, b.coordination);
@@ -33,8 +49,14 @@ row(
   b.coordination_mode ?? (b.coordination ? "strict" : "none"),
 );
 row("planner_source", a.planner_source ?? "?", b.planner_source ?? "?");
-row("pass rate", `${(a.final_score?.rate * 100 || 0).toFixed(1)}%`, `${(b.final_score?.rate * 100 || 0).toFixed(1)}%`);
-row("passed/total", `${a.final_score?.passed}/${a.final_score?.total}`, `${b.final_score?.passed}/${b.final_score?.total}`);
+row("pass rate (full)", pct(a.final_score), pct(b.final_score));
+row("visible score", pct(a.visible_score), pct(b.visible_score));
+row("holdout score", pct(a.holdout_score), pct(b.holdout_score));
+row(
+  "holdout_gap_pp",
+  a.holdout_gap_pp != null ? a.holdout_gap_pp.toFixed(1) : "-",
+  b.holdout_gap_pp != null ? b.holdout_gap_pp.toFixed(1) : "-",
+);
 row("tasks done", `${countTasksDone(a.tasks)}/${a.tasks?.length ?? "?"}`, `${countTasksDone(b.tasks)}/${b.tasks?.length ?? "?"}`);
 row("merge conflicts", a.merge_conflict_count, b.merge_conflict_count);
 row("scope violations", a.scope_violation_count, b.scope_violation_count);
@@ -69,11 +91,16 @@ row(
   `${b.worktree_sync_count ?? 0} (${b.worktree_sync_conflict_count ?? 0} conflict)`,
 );
 row("merge gate rejections", a.merge_gate_rejection_count ?? 0, b.merge_gate_rejection_count ?? 0);
-row("global repairs", a.global_repair_count ?? 0, b.global_repair_count ?? 0);
+row("repair clusters", repairAccepted(a), repairAccepted(b));
+row("rung2 attempts", rung2Count(a), rung2Count(b));
+row("adjudications", (a.adjudications || []).length, (b.adjudications || []).length);
+row("suspected_oracle", (a.suspected_oracle_bugs || []).length, (b.suspected_oracle_bugs || []).length);
 row(
-  "global_repair_min",
-  a.global_repair_time_ms != null ? (a.global_repair_time_ms / 60000).toFixed(1) : "-",
-  b.global_repair_time_ms != null ? (b.global_repair_time_ms / 60000).toFixed(1) : "-",
+  "repair_min",
+  a.repair_time_ms != null ? (a.repair_time_ms / 60000).toFixed(1)
+    : (a.global_repair_time_ms != null ? (a.global_repair_time_ms / 60000).toFixed(1) : "-"),
+  b.repair_time_ms != null ? (b.repair_time_ms / 60000).toFixed(1)
+    : (b.global_repair_time_ms != null ? (b.global_repair_time_ms / 60000).toFixed(1) : "-"),
 );
 row("loc", a.loc, b.loc);
 row("agent calls", a.agent_calls?.length, b.agent_calls?.length);

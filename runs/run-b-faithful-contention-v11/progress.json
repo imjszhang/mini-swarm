@@ -1,0 +1,41 @@
+{
+  "run_id": "run-b-faithful-contention-v11",
+  "phase": "finished",
+  "fingerprint": {
+    "task_set": "contention",
+    "coordination_mode": "faithful",
+    "quick": false,
+    "serial": false
+  },
+  "tasks": {
+    "task-01": "done",
+    "task-02": "done",
+    "task-03": "done",
+    "task-04": "done",
+    "task-05": "done",
+    "task-06": "done",
+    "task-07": "done",
+    "task-08": "done",
+    "task-09": "done",
+    "task-10": "done",
+    "task-11": "done",
+    "task-12": "done",
+    "task-13": "done"
+  },
+  "global_repair_rounds_done": 2,
+  "segments": [
+    {
+      "started_at": "2026-07-25T19:12:24.094Z",
+      "salvaged": true
+    },
+    {
+      "started_at": "2026-07-26T02:35:45.425Z",
+      "interrupted_at": "2026-07-26T03:30:42.407Z",
+      "note": "manual interrupt mid repair round 1"
+    },
+    {
+      "started_at": "2026-07-26T07:48:27.397Z"
+    }
+  ],
+  "updated_at": "2026-07-26T09:49:04.223Z"
+}

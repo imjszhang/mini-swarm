@@ -14,10 +14,24 @@
   "maxScoreFeedbackRounds": 2,
   "scoreFeedbackTarget": 1.0,
   "worktreeSync": true,
-  "maxGlobalRepairRounds": 2,
-  "globalRepairTopSections": 3,
-  "globalRepairTarget": 1.0,
-  "globalRepairMinGainPp": 0.5,
+  "holdout": {
+    "enabled": true,
+    "ratio": 0.15,
+    "seed": "v11",
+    "alarmPp": 5,
+    "failOnOracleLiterals": false
+  },
+  "repair": {
+    "maxRounds": 4,
+    "target": 1.0,
+    "exhaustiveThreshold": 24,
+    "topGroups": 3,
+    "maxClusters": 8,
+    "candidates": 2,
+    "minGainItems": 1,
+    "maxPhaseMinutes": 90,
+    "stuckThreshold": 2
+  },
   "guideMaxLines": 80,
   "agentCommand": "cursor-agent"
 }

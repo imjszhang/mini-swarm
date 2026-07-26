@@ -60,11 +60,15 @@ function parseSpec(text) {
       i += 1; // skip closing fence
 
       if (!EXCLUDED_SECTIONS.has(section)) {
+        // CommonMark spec uses → as a typographic stand-in for a real tab;
+        // the official runner substitutes on both markdown and expected HTML.
+        const markdown = mdLines.join("\n").replaceAll("→", "\t");
+        const html = htmlLines.join("\n").replaceAll("→", "\t");
         examples.push({
           id: `ex-${String(examples.length + 1).padStart(4, "0")}`,
           section,
-          markdown: mdLines.join("\n"),
-          html: htmlLines.join("\n"),
+          markdown,
+          html,
         });
       }
       continue;

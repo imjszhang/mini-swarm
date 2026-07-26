@@ -7,6 +7,43 @@ function recomputeConflictTotals(data) {
   data.conflict_count = data.merge_conflict_count + data.scope_violation_count;
 }
 
+function buildPhaseCostCurve(data) {
+  const buckets = {
+    pool: { agent_ms: 0, passed_delta: 0 },
+    feedback: { agent_ms: 0, passed_delta: 0 },
+    "repair-rung1": { agent_ms: 0, passed_delta: 0 },
+    "repair-rung2": { agent_ms: 0, passed_delta: 0 },
+  };
+
+  for (const call of data.agent_calls || []) {
+    const ms = call.elapsedMs || 0;
+    if (call.role === "worker" && !call.round) buckets.pool.agent_ms += ms;
+    else if (call.role === "worker-fix") buckets.feedback.agent_ms += ms;
+    else if (call.role === "repair") buckets["repair-rung1"].agent_ms += ms;
+    else if (call.role === "repair-candidate") buckets["repair-rung2"].agent_ms += ms;
+    else if (call.role === "global-repair") buckets["repair-rung1"].agent_ms += ms;
+  }
+
+  for (const rc of data.repair_clusters || []) {
+    const key = rc.rung === 2 ? "repair-rung2" : "repair-rung1";
+    if (rc.accepted) buckets[key].passed_delta += rc.gain_items || 0;
+  }
+
+  // Score-curve deltas for pool/feedback (best-effort from after-task points).
+  const curve = data.score_curve || [];
+  let prevPassed = 0;
+  for (const pt of curve) {
+    const phase = String(pt.phase || "");
+    const passed = pt.passed || 0;
+    if (phase.startsWith("after-")) {
+      buckets.pool.passed_delta += Math.max(0, passed - prevPassed);
+      prevPassed = passed;
+    }
+  }
+
+  return buckets;
+}
+
 export function createMetricsCollector(runDir) {
   const data = {
     started_at: new Date().toISOString(),
@@ -22,6 +59,17 @@ export function createMetricsCollector(runDir) {
     worktree_syncs: [],
     merge_gate_rejections: [],
     global_repairs: [],
+    repair_clusters: [],
+    adjudications: [],
+    suspected_oracle_bugs: [],
+    spec_ambiguities: [],
+    unowned_requirements: [],
+    oracle_literal_hits: [],
+    visible_score: null,
+    holdout_score: null,
+    holdout_gap_pp: null,
+    overfit_alarm: false,
+    adjudication_parse_failures: 0,
     merge_conflict_count: 0,
     scope_violation_count: 0,
     cross_scope_change_count: 0,
@@ -91,7 +139,20 @@ export function createMetricsCollector(runDir) {
     finish(extra = {}) {
       data.finished_at = new Date().toISOString();
       recomputeConflictTotals(data);
-      Object.assign(data, extra);
+      const agentCalls = data.agent_calls || [];
+      const repair_time_ms = agentCalls
+        .filter((c) => c.role === "repair" || c.role === "repair-candidate" || c.role === "global-repair")
+        .reduce((s, c) => s + (c.elapsedMs || 0), 0);
+      const adjudication_time_ms = agentCalls
+        .filter((c) => c.role === "adjudicator" || c.role === "cluster")
+        .reduce((s, c) => s + (c.elapsedMs || 0), 0);
+      Object.assign(data, {
+        repair_time_ms,
+        adjudication_time_ms,
+        // Keep legacy alias for compare scripts.
+        global_repair_time_ms: data.global_repair_time_ms ?? repair_time_ms,
+        phase_cost_curve: buildPhaseCostCurve(data),
+      }, extra);
       const out = path.join(runDir, "metrics.json");
       writeFileSync(out, `${JSON.stringify(data, null, 2)}\n`, "utf8");
       return out;
@@ -135,6 +196,20 @@ export function normalizeMetrics(raw) {
   m.worktree_syncs = m.worktree_syncs || [];
   m.merge_gate_rejections = m.merge_gate_rejections || [];
   m.global_repairs = m.global_repairs || [];
+  m.repair_clusters = m.repair_clusters || [];
+  m.adjudications = m.adjudications || [];
+  m.suspected_oracle_bugs = m.suspected_oracle_bugs || [];
+  m.spec_ambiguities = m.spec_ambiguities || [];
+  m.unowned_requirements = m.unowned_requirements || [];
+  m.oracle_literal_hits = m.oracle_literal_hits || [];
+  m.visible_score = m.visible_score ?? null;
+  m.holdout_score = m.holdout_score ?? null;
+  m.holdout_gap_pp = m.holdout_gap_pp ?? null;
+  m.overfit_alarm = !!m.overfit_alarm;
+  m.adjudication_parse_failures = m.adjudication_parse_failures ?? 0;
+  m.phase_cost_curve = m.phase_cost_curve ?? null;
+  m.repair_time_ms = m.repair_time_ms ?? m.global_repair_time_ms ?? null;
+  m.adjudication_time_ms = m.adjudication_time_ms ?? null;
   m.merge_conflict_count = m.merge_conflicts.length;
   m.scope_violation_count = m.scope_violations.length;
   m.cross_scope_change_count = m.cross_scope_changes.length;
