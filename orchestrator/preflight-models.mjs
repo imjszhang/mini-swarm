@@ -39,6 +39,14 @@ for (const slug of models) {
     `[preflight:models] ${ok ? "OK" : "FAIL"} ${slug} (${result.elapsedMs || Date.now() - started}ms)`
       + (ok ? "" : ` exit=${result.code} timedOut=${result.timedOut} out=${JSON.stringify((result.output || "").slice(0, 120))}`),
   );
+  if (result.usage) {
+    console.log(
+      `[preflight:models]   usage in=${result.usage.input_tokens} out=${result.usage.output_tokens}`
+        + ` cacheRead=${result.usage.cache_read_tokens} apiMs=${result.apiMs ?? "-"}`,
+    );
+  } else if (ok) {
+    console.warn(`[preflight:models]   WARN: no usage event from ${slug} — token metrics (核心#3) will be empty`);
+  }
   if (!ok) {
     failures.push(slug);
     if (/grok/i.test(slug)) {

@@ -43,7 +43,7 @@ import {
 import { projectRoot } from "./lib/config.mjs";
 import { getReferenceText, loadExamples, scanForOracleLiterals, scoreScope } from "./lib/verifier.mjs";
 import { holdoutFilePath } from "./lib/holdout.mjs";
-import { spawnAgent } from "./runner.mjs";
+import { agentUsage, spawnAgent } from "./runner.mjs";
 
 function buildVerifyCmd(itemIds, holdoutFile) {
   const scorer = path.join(projectRoot(), "scorer", "score.mjs");
@@ -179,7 +179,7 @@ async function runOverfitReview({
     role: "overfit-reviewer",
     cluster_id: clusterId,
     ok: result.ok,
-    elapsedMs: result.elapsedMs,
+    ...agentUsage(result),
   });
 
   let parsed = extractJsonObject(result.output || "");
@@ -246,7 +246,7 @@ async function runAdjudication({
   metrics.recordAgentCall({
     role: "adjudicator",
     ok: result.ok,
-    elapsedMs: result.elapsedMs,
+    ...agentUsage(result),
   });
 
   let parsed = await parseAgentJson(result, async () => {
@@ -254,7 +254,7 @@ async function runAdjudication({
     metrics.recordAgentCall({
       role: "adjudicator",
       ok: retry.ok,
-      elapsedMs: retry.elapsedMs,
+      ...agentUsage(retry),
       retry: true,
     });
     return retry;
@@ -333,7 +333,7 @@ async function buildClusters({
   metrics.recordAgentCall({
     role: "cluster",
     ok: result.ok,
-    elapsedMs: result.elapsedMs,
+    ...agentUsage(result),
   });
 
   let parsed = await parseAgentJson(result, async () => {
@@ -341,7 +341,7 @@ async function buildClusters({
     metrics.recordAgentCall({
       role: "cluster",
       ok: retry.ok,
-      elapsedMs: retry.elapsedMs,
+      ...agentUsage(retry),
       retry: true,
     });
     return retry;
@@ -423,7 +423,7 @@ async function maybeDecomposeCluster({
     role: "decomposer",
     cluster_id: cluster.cluster_id,
     ok: result.ok,
-    elapsedMs: result.elapsedMs,
+    ...agentUsage(result),
   });
 
   const parsed = await parseAgentJson(result, async () => {
@@ -432,7 +432,7 @@ async function maybeDecomposeCluster({
       role: "decomposer",
       cluster_id: cluster.cluster_id,
       ok: retry.ok,
-      elapsedMs: retry.elapsedMs,
+      ...agentUsage(retry),
       retry: true,
     });
     return retry;
@@ -566,7 +566,7 @@ async function tryRung1({
     role: "repair",
     cluster_id: cluster.cluster_id,
     ok: result.ok,
-    elapsedMs: result.elapsedMs,
+    ...agentUsage(result),
   });
   commitAll(workspaceDir, `repair ${cluster.cluster_id}`);
 
@@ -650,7 +650,7 @@ async function tryRung2({
       cluster_id: cluster.cluster_id,
       candidate: k + 1,
       ok: result.ok,
-      elapsedMs: result.elapsedMs,
+      ...agentUsage(result),
     });
     commitAll(wt.path, `repair candidate ${cluster.cluster_id} #${k + 1}`);
 
@@ -768,7 +768,7 @@ async function tryRung3({
     role: "repair-strong",
     cluster_id: cluster.cluster_id,
     ok: result.ok,
-    elapsedMs: result.elapsedMs,
+    ...agentUsage(result),
   });
   commitAll(workspaceDir, `repair-strong ${cluster.cluster_id}`);
 

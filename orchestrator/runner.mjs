@@ -27,6 +27,43 @@ function resolveAgentExecutable(configured) {
 }
 
 /**
+ * Parse the final `{"type":"result",...}` event emitted by
+ * `cursor-agent --output-format json`. Scans lines from the end so stray
+ * warnings on stdout don't break parsing. Returns null when absent
+ * (crash/timeout/legacy CLI) so callers can fall back to raw stdout.
+ */
+function parseResultEvent(stdout) {
+  const lines = String(stdout || "").split(/\r?\n/);
+  for (let i = lines.length - 1; i >= 0; i -= 1) {
+    const line = lines[i].trim();
+    if (!line.startsWith("{")) continue;
+    try {
+      const evt = JSON.parse(line);
+      if (evt && evt.type === "result") return evt;
+    } catch { /* keep scanning */ }
+  }
+  return null;
+}
+
+/**
+ * Extract the metrics fields every recordAgentCall site should attach:
+ * model, wall/API duration and real token usage (核心指标 #3).
+ * Spread into the entry: metrics.recordAgentCall({ role, ..., ...agentUsage(result) }).
+ */
+export function agentUsage(result) {
+  const u = result?.usage || null;
+  return {
+    model: result?.model ?? null,
+    elapsedMs: result?.elapsedMs ?? null,
+    api_ms: result?.apiMs ?? null,
+    tokens_in: u ? (u.input_tokens ?? 0) : null,
+    tokens_out: u ? (u.output_tokens ?? 0) : null,
+    tokens_cache_read: u ? (u.cache_read_tokens ?? 0) : null,
+    tokens_cache_write: u ? (u.cache_write_tokens ?? 0) : null,
+  };
+}
+
+/**
  * Spawn cursor-agent (or config.agentCommand) in headless mode.
  */
 export function spawnAgent({
@@ -55,8 +92,10 @@ export function spawnAgent({
     cwd,
     "--model",
     model,
+    // json (not text): the final result event carries usage.{input,output,cache*}Tokens
+    // and duration_api_ms, which feed the four core metrics (token cost / time).
     "--output-format",
-    "text",
+    "json",
   ];
 
   const logDir = path.join(runDir, "logs");
@@ -95,12 +134,33 @@ export function spawnAgent({
     child.on("close", (code) => {
       if (timer) clearTimeout(timer);
       const elapsedMs = Date.now() - started;
+
+      // Prefer the structured result event; fall back to raw stdout so a
+      // crash/timeout (no result event) behaves exactly like the old text mode.
+      const evt = parseResultEvent(stdout);
+      const output = evt && evt.result != null ? String(evt.result) : stdout;
+      const usage = evt?.usage
+        ? {
+          input_tokens: evt.usage.inputTokens ?? 0,
+          output_tokens: evt.usage.outputTokens ?? 0,
+          cache_read_tokens: evt.usage.cacheReadTokens ?? 0,
+          cache_write_tokens: evt.usage.cacheWriteTokens ?? 0,
+        }
+        : null;
+      const apiMs = evt?.duration_api_ms ?? evt?.duration_ms ?? null;
+
       const logBody = [
         `# spawnAgent ${logKey}`,
         `role=${role} model=${model}`,
-        `exit=${code} elapsedMs=${elapsedMs} timedOut=${timedOut}`,
+        `exit=${code} elapsedMs=${elapsedMs} apiMs=${apiMs ?? "-"} timedOut=${timedOut}`,
+        usage
+          ? `tokens in=${usage.input_tokens} out=${usage.output_tokens} cacheRead=${usage.cache_read_tokens} cacheWrite=${usage.cache_write_tokens}`
+          : "tokens (no usage event)",
         "",
-        "## stdout",
+        "## result",
+        output,
+        "",
+        "## raw stdout (json)",
         stdout,
         "",
         "## stderr",
@@ -111,7 +171,10 @@ export function spawnAgent({
         ok: code === 0 && !timedOut,
         code,
         timedOut,
-        output: stdout,
+        output,
+        rawOutput: stdout,
+        usage,
+        apiMs,
         stderr,
         elapsedMs,
         logPath,
@@ -128,6 +191,9 @@ export function spawnAgent({
         code: -1,
         timedOut: false,
         output: "",
+        rawOutput: "",
+        usage: null,
+        apiMs: null,
         stderr: err.message,
         elapsedMs: Date.now() - started,
         logPath,

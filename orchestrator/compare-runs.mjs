@@ -54,6 +54,41 @@ function suspiciousReviews(m) {
   return (m.overfit_reviews || []).filter((r) => r.verdict === "suspicious").length;
 }
 
+function fmtMin(ms) {
+  return ms != null ? (ms / 60000).toFixed(1) : "-";
+}
+
+function fmtTokens(n) {
+  if (n == null) return "-";
+  if (n >= 1e6) return `${(n / 1e6).toFixed(2)}M`;
+  if (n >= 1e3) return `${(n / 1e3).toFixed(1)}k`;
+  return String(n);
+}
+
+function coreTaskTime(m) {
+  const t = m.core_metrics?.task_time_ms;
+  if (!t) return "-";
+  return `med ${fmtMin(t.median)}m / max ${fmtMin(t.max)}m`;
+}
+
+function coreTokensTotal(m) {
+  const t = m.core_metrics?.tokens;
+  if (!t || !t.calls_with_usage) return "-";
+  return `${fmtTokens(t.total)} (in ${fmtTokens(t.input)} / out ${fmtTokens(t.output)})`;
+}
+
+function coreTokensByModel(m) {
+  const by = m.core_metrics?.tokens?.by_model || {};
+  const parts = Object.entries(by).map(([k, v]) => `${k}=${fmtTokens(v.total)}`);
+  return parts.length ? parts.join(" ") : "-";
+}
+
+function usageCoverage(m) {
+  const t = m.core_metrics?.tokens;
+  if (!t) return "-";
+  return `${t.calls_with_usage}/${t.calls_total}`;
+}
+
 console.log("\n=== mini-swarm A/B comparison ===\n");
 row("Metric", "Run A", "Run B");
 row("coordination", a.coordination, b.coordination);
@@ -72,6 +107,13 @@ row(
   b.holdout_gap_pp != null ? b.holdout_gap_pp.toFixed(1) : "-",
 );
 row("tasks done", `${countTasksDone(a.tasks)}/${a.tasks?.length ?? "?"}`, `${countTasksDone(b.tasks)}/${b.tasks?.length ?? "?"}`);
+// --- 四核心指标（完成率见上：pass rate / tasks done）---
+row("task_time (核心#2)", coreTaskTime(a), coreTaskTime(b));
+row("tokens (核心#3)", coreTokensTotal(a), coreTokensTotal(b));
+row("tokens by model", coreTokensByModel(a), coreTokensByModel(b));
+row("usage coverage", usageCoverage(a), usageCoverage(b));
+row("wall_min (核心#4)", fmtMin(a.core_metrics?.wall_time_ms), fmtMin(b.core_metrics?.wall_time_ms));
+row("tasks_done_min", fmtMin(a.core_metrics?.time_to_all_tasks_done_ms), fmtMin(b.core_metrics?.time_to_all_tasks_done_ms));
 row("merge conflicts", a.merge_conflict_count, b.merge_conflict_count);
 row("scope violations", a.scope_violation_count, b.scope_violation_count);
 row("task_set", a.task_set ?? "-", b.task_set ?? "-");
@@ -129,5 +171,5 @@ row("loc", a.loc, b.loc);
 row("agent calls", a.agent_calls?.length, b.agent_calls?.length);
 const aMs = a.agent_calls?.reduce((s, c) => s + (c.elapsedMs || 0), 0) || 0;
 const bMs = b.agent_calls?.reduce((s, c) => s + (c.elapsedMs || 0), 0) || 0;
-row("agent time (ms)", aMs, bMs);
+row("agent time (min)", fmtMin(aMs), fmtMin(bMs));
 console.log("");

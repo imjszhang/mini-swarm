@@ -117,6 +117,24 @@ Each run writes `runs/{runId}/metrics.json`:
 - `tasks_done` / per-task status
 - lines of code, agent call timing
 
+### Core metrics (v12.1, Cursor 命题四指标)
+
+`core_metrics` in `metrics.json` first-classes the four indicators needed to
+reproduce the Cursor swarm economics claim (quality × cost × time):
+
+1. **任务完成率** — `task_completion` (done/total) + `pass_rate_full` / `pass_rate_visible` / `pass_rate_holdout`
+2. **单任务完成时间** — `task_time_ms` (mean / median / min / max / total / per_task)
+3. **消耗 token** — `tokens` (input / output / cache_read / cache_write, `by_model` + `by_role` breakdown; real counts from the `usage` field of `cursor-agent --output-format json`, not estimates)
+4. **总完成时长** — `wall_time_ms` (whole run), `time_to_all_tasks_done_ms` (start → last task done), `agent_time_ms` / `agent_api_time_ms`
+
+Every `agent_calls[]` entry now records `model`, `api_ms`, `tokens_in/out/cache_*`.
+`tokens.calls_with_usage` vs `calls_total` shows capture coverage — runs recorded
+before v12.1 (text output) rebuild time metrics via `normalizeMetrics` but show
+zero token coverage. `npm run preflight:models` prints per-model usage as a
+capture self-check; `compare-runs` surfaces the four rows (`task_time` /
+`tokens` / `wall_min` / `tasks_done_min`) plus `tokens by model` for the
+strong-vs-cheap split.
+
 Each live run also writes `progress.json` (task statuses + phase) for crash recovery, plus `holdout.json` and `ledger.json`.
 
 ## Article lineage

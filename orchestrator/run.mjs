@@ -72,7 +72,7 @@ import {
 import { checkScopeViolation, MergeQueue } from "./merge-queue.mjs";
 import { countLoc, createMetricsCollector } from "./metrics.mjs";
 import { runRepairPhase } from "./repair-engine.mjs";
-import { spawnAgent } from "./runner.mjs";
+import { agentUsage, spawnAgent } from "./runner.mjs";
 
 function buildWorkerVerifyCmd(task, runDir) {
   const scorer = path.join(ROOT, "scorer", "score.mjs");
@@ -428,7 +428,7 @@ Write tasks.json in the workspace root. If coordination is on, also write DESIGN
   metrics.recordAgentCall({
     role: "planner",
     ok: result.ok,
-    elapsedMs: result.elapsedMs,
+    ...agentUsage(result),
   });
 
   let tasks = loadTasks(workspaceDir);
@@ -478,7 +478,7 @@ async function runWorkerTask({
     role: "worker",
     taskId: task.id,
     ok: result.ok,
-    elapsedMs: result.elapsedMs,
+    ...agentUsage(result),
   });
   return result;
 }
@@ -597,7 +597,7 @@ async function runWorkerWithScoreFeedback({
       taskId: task.id,
       round,
       ok: fixResult.ok,
-      elapsedMs: fixResult.elapsedMs,
+      ...agentUsage(fixResult),
     });
     lastResult = fixResult;
     prevRate = rate;
@@ -664,7 +664,7 @@ async function ensureBuiltWithRepair({ workspaceDir, config, runDir, metrics, ta
       taskId,
       attempt,
       ok: result.ok && build.ok,
-      elapsedMs: result.elapsedMs,
+      ...agentUsage(result),
     });
     if (build.ok) return { ok: true, attempts: attempt };
   }
@@ -1405,7 +1405,7 @@ async function main() {
     metrics.recordAgentCall({
       role: "reviewer",
       ok: reviewResult.ok,
-      elapsedMs: reviewResult.elapsedMs,
+      ...agentUsage(reviewResult),
     });
   }
 

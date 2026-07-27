@@ -7,6 +7,117 @@ function recomputeConflictTotals(data) {
   data.conflict_count = data.merge_conflict_count + data.scope_violation_count;
 }
 
+function median(sortedNums) {
+  if (!sortedNums.length) return null;
+  const mid = Math.floor(sortedNums.length / 2);
+  return sortedNums.length % 2
+    ? sortedNums[mid]
+    : Math.round((sortedNums[mid - 1] + sortedNums[mid]) / 2);
+}
+
+/** Aggregate real token usage from agent_calls (requires runner json output). */
+function aggregateTokens(agentCalls) {
+  const totals = { input: 0, output: 0, cache_read: 0, cache_write: 0, total: 0 };
+  const byModel = {};
+  const byRole = {};
+  let covered = 0;
+  for (const c of agentCalls) {
+    if (c.tokens_in == null && c.tokens_out == null) continue;
+    covered += 1;
+    const tin = c.tokens_in || 0;
+    const tout = c.tokens_out || 0;
+    const tcr = c.tokens_cache_read || 0;
+    const tcw = c.tokens_cache_write || 0;
+    totals.input += tin;
+    totals.output += tout;
+    totals.cache_read += tcr;
+    totals.cache_write += tcw;
+    for (const [map, key] of [[byModel, c.model || "unknown"], [byRole, c.role || "unknown"]]) {
+      if (!map[key]) map[key] = { input: 0, output: 0, cache_read: 0, cache_write: 0, total: 0, calls: 0 };
+      map[key].input += tin;
+      map[key].output += tout;
+      map[key].cache_read += tcr;
+      map[key].cache_write += tcw;
+      map[key].total += tin + tout;
+      map[key].calls += 1;
+    }
+  }
+  totals.total = totals.input + totals.output;
+  return { totals, byModel, byRole, covered };
+}
+
+/**
+ * 四个核心指标（Cursor 命题复现）:
+ *   1. task_completion / pass_rate_* —— 任务完成率
+ *   2. task_time_ms —— 单任务完成时间
+ *   3. tokens —— 消耗 token（按模型/角色分层，strong vs cheap 经济学）
+ *   4. wall_time_ms / time_to_all_tasks_done_ms / agent_time_ms —— 总完成时长
+ */
+export function buildCoreMetrics(data) {
+  const tasks = data.tasks || [];
+  const tasksTotal = tasks.length;
+  const tasksDone = tasks.filter((t) => t.status === "done").length;
+  const timed = tasks.filter((t) => typeof t.elapsedMs === "number");
+  const perTask = {};
+  for (const t of timed) perTask[t.id] = t.elapsedMs;
+  const times = timed.map((t) => t.elapsedMs).sort((x, y) => x - y);
+  const timeSum = times.reduce((s, v) => s + v, 0);
+
+  const agentCalls = data.agent_calls || [];
+  const agentTimeMs = agentCalls.reduce((s, c) => s + (c.elapsedMs || 0), 0);
+  const apiTimeMs = agentCalls.reduce((s, c) => s + (c.api_ms || 0), 0);
+  const { totals, byModel, byRole, covered } = aggregateTokens(agentCalls);
+
+  const wallTimeMs = data.started_at && data.finished_at
+    ? Date.parse(data.finished_at) - Date.parse(data.started_at)
+    : null;
+
+  // Time from run start until the last task finished (总完成任务时长 in the
+  // strict sense; excludes repair/review phases that follow the pool).
+  let timeToAllTasksDoneMs = null;
+  if (data.started_at && timed.length) {
+    let latest = null;
+    for (const t of timed) {
+      if (!t.started_at) continue;
+      const end = Date.parse(t.started_at) + t.elapsedMs;
+      if (latest == null || end > latest) latest = end;
+    }
+    if (latest != null) timeToAllTasksDoneMs = latest - Date.parse(data.started_at);
+  }
+
+  return {
+    task_completion: {
+      done: tasksDone,
+      total: tasksTotal,
+      rate: tasksTotal ? Number((tasksDone / tasksTotal).toFixed(4)) : null,
+    },
+    pass_rate_full: data.final_score?.rate ?? null,
+    pass_rate_visible: data.visible_score?.rate ?? null,
+    pass_rate_holdout: data.holdout_score?.rate ?? null,
+    task_time_ms: times.length
+      ? {
+        mean: Math.round(timeSum / times.length),
+        median: median(times),
+        min: times[0],
+        max: times[times.length - 1],
+        total: timeSum,
+        per_task: perTask,
+      }
+      : null,
+    tokens: {
+      ...totals,
+      calls_with_usage: covered,
+      calls_total: agentCalls.length,
+      by_model: byModel,
+      by_role: byRole,
+    },
+    wall_time_ms: wallTimeMs,
+    time_to_all_tasks_done_ms: timeToAllTasksDoneMs,
+    agent_time_ms: agentTimeMs,
+    agent_api_time_ms: apiTimeMs || null,
+  };
+}
+
 function buildPhaseCostCurve(data) {
   const buckets = {
     pool: { agent_ms: 0, passed_delta: 0 },
@@ -168,6 +279,8 @@ export function createMetricsCollector(runDir) {
         global_repair_time_ms: data.global_repair_time_ms ?? repair_time_ms,
         phase_cost_curve: buildPhaseCostCurve(data),
       }, extra);
+      // After extra so final_score/visible_score/holdout_score are in place.
+      data.core_metrics = buildCoreMetrics(data);
       const out = path.join(runDir, "metrics.json");
       writeFileSync(out, `${JSON.stringify(data, null, 2)}\n`, "utf8");
       return out;
@@ -227,6 +340,9 @@ export function normalizeMetrics(raw) {
   m.overfit_alarm = !!m.overfit_alarm;
   m.adjudication_parse_failures = m.adjudication_parse_failures ?? 0;
   m.phase_cost_curve = m.phase_cost_curve ?? null;
+  // Older runs predate core_metrics; rebuild what's derivable (task times,
+  // wall time). Token fields stay zero-coverage for pre-json-output runs.
+  m.core_metrics = m.core_metrics ?? buildCoreMetrics(m);
   m.repair_time_ms = m.repair_time_ms ?? m.global_repair_time_ms ?? null;
   m.adjudication_time_ms = m.adjudication_time_ms ?? null;
   m.strong_model_time_ms = m.strong_model_time_ms ?? null;

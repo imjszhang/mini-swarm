@@ -58,6 +58,18 @@ Three-way compare notes:
 
 **Erratum (v11 dist vs source):** Rebuilding `run-b-faithful-contention-v11` workspace from tracked source (not the frozen `dist/` that produced the v11 headline) scored only **~81.5% visible** before v12 repair-only. The v11 faithful headline (99.3% visible / 97.9% full) remains the dual-track record of that run's scored dist; continuation correctly repaired from the real source state. Do not silently rewrite v11 table numbers.
 
+### v12.1 instrumentation — 四核心指标 (2026-07-27)
+
+Runner switched from `--output-format text` to `json`: every agent call now
+records real `usage` tokens (in/out/cache) + `api_ms` + `model`, and
+`metrics.json` gains a `core_metrics` block (任务完成率 / 单任务完成时间 /
+消耗 token / 总完成时长; see README “Core metrics”). Verified live on both
+tiers (`composer-2.5-fast`, `cursor-grok-4.5-high-fast`) via
+`preflight:models`. **All runs listed above predate token capture** — their
+`core_metrics.tokens` show zero coverage; time metrics are rebuilt from
+existing fields. Cost-curve claims involving tokens must come from runs after
+this change.
+
 ## Runs (2026-07-26) — v11 generic quality loop
 
 | Run ID | Mode | Coordination | planner | Notes |

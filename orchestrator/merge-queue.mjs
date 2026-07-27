@@ -10,7 +10,7 @@ import {
   resetHard,
 } from "./lib/git.mjs";
 import { buildMergerPrompt } from "./lib/prompts.mjs";
-import { spawnAgent } from "./runner.mjs";
+import { agentUsage, spawnAgent } from "./runner.mjs";
 
 /**
  * Serial FIFO merge queue with conflict handling and conflict-marker gate.
@@ -101,7 +101,7 @@ export class MergeQueue {
         phase: "merge-resolve",
         attempt,
         ok: agentResult.ok,
-        elapsedMs: agentResult.elapsedMs,
+        ...agentUsage(agentResult),
       });
 
       const stillConflict = listConflictFiles(this.mainDir);
