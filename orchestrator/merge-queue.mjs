@@ -1,4 +1,6 @@
 import { execSync } from "node:child_process";
+import { existsSync, readFileSync } from "node:fs";
+import path from "node:path";
 import {
   abortMerge,
   filesChangedSince,
@@ -11,6 +13,24 @@ import {
 } from "./lib/git.mjs";
 import { buildMergerPrompt } from "./lib/prompts.mjs";
 import { agentUsage, spawnAgent } from "./runner.mjs";
+
+/** Source files over the line budget (S-A-008 oversized-file gate). */
+export function findOversizedFiles(dir, files, maxLines) {
+  if (!maxLines || maxLines <= 0) return [];
+  const hits = [];
+  for (const rel of files || []) {
+    const n = rel.replace(/\\/g, "/");
+    if (!n.startsWith("src/") || !/\.(ts|js|mjs)$/.test(n)) continue;
+    if (n.endsWith(".d.ts")) continue;
+    const p = path.join(dir, rel);
+    if (!existsSync(p)) continue;
+    try {
+      const lines = readFileSync(p, "utf8").split("\n").length;
+      if (lines > maxLines) hits.push({ file: rel, lines });
+    } catch { /* skip */ }
+  }
+  return hits;
+}
 
 /**
  * Serial FIFO merge queue with conflict handling and conflict-marker gate.
@@ -66,6 +86,33 @@ export class MergeQueue {
   _markerHits(preSha, extraFiles = []) {
     const files = [...new Set([...(extraFiles || []), ...this._changedFiles(preSha)])];
     return findConflictMarkers(this.mainDir, files);
+  }
+
+  _oversizedGate(preSha, taskId) {
+    const maxLines = this.config.swarm?.oversizedFileLines
+      ?? this.config.oversizedFileLines
+      ?? 0;
+    if (!maxLines) return null;
+    const changed = this._changedFiles(preSha);
+    const oversized = findOversizedFiles(this.mainDir, changed, maxLines);
+    if (!oversized.length) return null;
+    this.metrics.recordMergeGateRejection?.({
+      taskId,
+      files: oversized.map((o) => o.file),
+      phase: "oversized",
+    });
+    if (typeof this.metrics.recordOversizedBlock === "function") {
+      this.metrics.recordOversizedBlock({ taskId, files: oversized });
+    }
+    resetHard(this.mainDir, preSha);
+    return {
+      ok: false,
+      conflict: false,
+      oversized: true,
+      oversized_files: oversized,
+      taskId,
+      gate: "oversized",
+    };
   }
 
   async _resolveLoop({
@@ -142,6 +189,8 @@ export class MergeQueue {
         continue;
       }
 
+      const oversized = this._oversizedGate(preSha, taskId);
+      if (oversized) return oversized;
       return { ok: true, conflict: true, resolved: true, taskId, attempt };
     }
 
@@ -157,6 +206,8 @@ export class MergeQueue {
     if (mergeResult.ok) {
       const hits = this._markerHits(preSha);
       if (!hits.length) {
+        const oversized = this._oversizedGate(preSha, taskId);
+        if (oversized) return oversized;
         return { ok: true, conflict: false, taskId };
       }
       const marked = hits.map((h) => h.file);

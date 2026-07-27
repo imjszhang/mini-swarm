@@ -232,6 +232,9 @@ export function removeWorktree(mainDir, wtPath) {
 }
 
 export function readGuide(workspaceDir) {
+  // Prefer Field Guide folder (v13); fall back to legacy GUIDE.md.
+  const index = path.join(workspaceDir, "guide", "index.md");
+  if (existsSync(index)) return readFileSync(index, "utf8");
   const p = path.join(workspaceDir, "GUIDE.md");
   return existsSync(p) ? readFileSync(p, "utf8") : "";
 }

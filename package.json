@@ -24,6 +24,9 @@
     "compare": "node orchestrator/compare-runs.mjs",
     "contention:report": "node orchestrator/contention-report.mjs",
     "salvage": "node orchestrator/salvage-progress.mjs",
-    "smoke:runner": "node orchestrator/smoke-runner.mjs"
+    "smoke:runner": "node orchestrator/smoke-runner.mjs",
+    "swarm": "node orchestrator/swarm.mjs",
+    "swarm:mock": "node orchestrator/swarm.mjs --mock",
+    "swarm:smoke": "node orchestrator/swarm.mjs --budget-minutes=15 --concurrency=2"
   }
 }

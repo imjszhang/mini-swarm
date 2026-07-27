@@ -5,6 +5,7 @@
 - **Run A (bare)**: `npm run run:quick -- --run-id=run-a-bare-v4`
 - **Run B (coordinated)**: `npm run run:quick:coordinated -- --run-id=run-b-coordinated-v4`
 - **Run B faithful**: `npm run run:faithful -- --run-id=run-b-faithful-v7`
+- **v13 Cursor-faithful swarm**: `npm run swarm` / `npm run swarm:mock` / `npm run swarm:smoke` (planner tree + zero test signal + review stack; wall-clock budget)
 - **v8/v9/v10/v11/v12 high-contention A/B**: `npm run run:contention:bare` / `npm run run:contention:faithful` (`--task-set=contention`, concurrency 4, seed planner; v9 score-feedback; v10 sync+gate+global repair; v11 holdout+ledger+adaptive repair; v12 Stage B + strong ladder)
 - **Resume interrupted run**: `npm run salvage -- --run-id=RUN_ID --task-set=contention` then original command + `--resume` (task-level; agent/wall times in metrics cover last segment only — see README)
 - **Repair-only continuation**: `npm run run -- --repair-only --from-run=PRIOR --run-id=NEW --task-set=contention [--coord-mode=faithful]`
@@ -14,6 +15,50 @@
 - **Compare (v11)**: `npm run compare -- runs/run-a-bare-contention-v11/metrics.json runs/run-b-faithful-contention-v11/metrics.json`
 - **Compare (v10)**: `npm run compare -- runs/run-a-bare-contention-v10/metrics.json runs/run-b-faithful-contention-v10/metrics.json`
 - **Compare (v9)**: `npm run compare -- runs/run-a-bare-contention-v9b/metrics.json runs/run-b-faithful-contention-v9/metrics.json`
+
+## Runs (2026-07-27) — v13 Cursor-faithful swarm (S-A-008)
+
+| Run ID | Mode | Notes |
+|---|---|---|
+| mock-v13-swarm2 | `--mock` | Tree + merge + observe score loop OK; 2 leaves done; planner_rounds=2 |
+| smoke-v13-swarm | live, 15 min, conc=2 | Protocol OK: planner JSON → 22 leaves; 8 done; splitter×1; **18.3%** full; tokens captured (worker ~82% of non-cache total in short run) |
+| **run-swarm-v13** | live, **240 min**, conc=4 | **69.1%** full (363/525); visible **68.8%** (302/439); holdout **70.9%** (61/86); gap **-2.1** (no overfit alarm); 22 planner rounds; 10 review stacks; 3 splits / 2 oversized blocks; 38/45 task completions recorded; 100 commits; 37 conflicts; 7739 LOC; wall ~244.5 min; agent ~316 min |
+
+Models: planner/splitter/`review-spec` = `cursor-grok-4.5-high-fast`; workers/merger/`review-diff`/`review-codebase` = `composer-2.5-fast`.
+
+### v13 architecture (zero test signal)
+
+New entry `npm run swarm` (legacy `run.mjs` / repair-engine retained as control):
+
+1. **Strong planner tree** — `swarm-planner` writes `DESIGN.md` + `tree.json` actions (`add_task` / `split_task` / …); never implements.
+2. **Zero test signal** — agents never see examples, VERIFY_CMD, or pass/fail; scorer is harness-only observation (`score_curve` + final triple).
+3. **Field Guide folder** — `guide/index.md` with line budget.
+4. **Oversized VCS gate** — merge-queue blocks commits when `src/**` exceeds line budget → `splitter`.
+5. **Review stack** — diff / codebase / spec perspectives every N merges; findings return to planner.
+6. **Wall-clock budget** — default 240 minutes (Cursor 4h frame).
+
+| Metric | run-swarm-v13 | v12 fresh faithful (control) |
+|---|---|---|
+| Full pass rate | **69.1%** (363/525) | 93.0% (488/525) |
+| Visible / holdout | 68.8% / **70.9%** | 93.8% / 88.4% |
+| holdout_gap_pp | **-2.1** | +5.5 (alarm) |
+| Architecture | zero-signal swarm | test-driven pool+repair |
+| Planner rounds | 22 | seed-contention (fixed) |
+| Reviews / splits | 10 / 3 | n/a / n/a |
+| Tokens (in+out) | **9.59M** (usage 134/137) | n/a (pre-v12.1) |
+| Worker token share | 47.1% (role); cheap model 80.5% | n/a |
+| Strong model token share | 19.5% | n/a |
+| LOC | 7739 | 3377 |
+| Wall | ~244.5 min | ~324 min |
+
+Honesty notes:
+
+- Quality is **lower** than the test-driven v12 pipeline by design (Cursor's own 4h runs were often 73–85% on a different task). Zero-signal forbids score feedback and Stage A/B repair.
+- Holdout **above** visible (gap −2.1) is the reverse of v11/v12 overfit alarms — evidence that agents were not fitting the official example set.
+- Worker role is only ~47% of tokens because merger + review stack + planner also burn tokens; **cheap-model** share remains ~80%. Cursor's “workers ≥69–90%” refers to role mix on their stack, not identical accounting.
+- Declared boundary: git worktrees, not custom VCS; concurrency 4, not hundreds of agents.
+
+Compare (observational): `npm run compare -- runs/run-b-faithful-contention-v12/metrics.json runs/run-swarm-v13/metrics.json`
 
 ## Runs (2026-07-26) — v12 generalization loop
 

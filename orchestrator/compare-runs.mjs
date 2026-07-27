@@ -168,6 +168,15 @@ row(
   b.strong_model_time_ms != null ? (b.strong_model_time_ms / 60000).toFixed(1) : "-",
 );
 row("loc", a.loc, b.loc);
+row("swarm_planner_rounds", a.swarm_planner_rounds ?? 0, b.swarm_planner_rounds ?? 0);
+row("swarm reviews", (a.reviews || []).length, (b.reviews || []).length);
+row("swarm splits", (a.splits || []).length, (b.splits || []).length);
+row("oversized_blocks", (a.oversized_blocks || []).length, (b.oversized_blocks || []).length);
+row(
+  "tree leaves done",
+  a.tree_stats ? `${a.tree_stats.done}/${a.tree_stats.leaves}` : "-",
+  b.tree_stats ? `${b.tree_stats.done}/${b.tree_stats.leaves}` : "-",
+);
 row("agent calls", a.agent_calls?.length, b.agent_calls?.length);
 const aMs = a.agent_calls?.reduce((s, c) => s + (c.elapsedMs || 0), 0) || 0;
 const bMs = b.agent_calls?.reduce((s, c) => s + (c.elapsedMs || 0), 0) || 0;

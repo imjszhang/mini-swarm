@@ -239,3 +239,70 @@ export function buildOverfitReviewPrompt({ diff }) {
     DIFF: truncate(diff, 8000) || "_Empty diff._",
   });
 }
+
+export function buildSwarmPlannerPrompt({
+  specToc,
+  treeSummary,
+  designMd,
+  guideIndex,
+  workerReports,
+  reviewFindings,
+  budgetRemainingMin,
+  maxTreeDepth,
+}) {
+  return fillTemplate(loadPrompt("swarm-planner"), {
+    SPEC_TOC: specToc || "_None._",
+    TREE_SUMMARY: treeSummary || "_Empty._",
+    DESIGN_MD: designMd || "_None._",
+    GUIDE_INDEX: guideIndex || "_Empty._",
+    WORKER_REPORTS: workerReports || "_None yet._",
+    REVIEW_FINDINGS: reviewFindings || "_None yet._",
+    BUDGET_REMAINING_MIN: String(budgetRemainingMin ?? "?"),
+    MAX_TREE_DEPTH: String(maxTreeDepth ?? 2),
+  });
+}
+
+export function buildSwarmWorkerPrompt({
+  task,
+  specText,
+  designMd,
+  guideIndex,
+  oversizedLines,
+}) {
+  return fillTemplate(loadPrompt("swarm-worker"), {
+    TASK_JSON: JSON.stringify(task, null, 2),
+    SPEC_TEXT: specText || "_No sections assigned._",
+    DESIGN_MD: designMd || "_None._",
+    GUIDE_INDEX: guideIndex || "_Empty._",
+    OVERSIZED_LINES: String(oversizedLines ?? 400),
+  });
+}
+
+export function buildSplitterPrompt({ oversizedFiles, designMd, oversizedLines }) {
+  return fillTemplate(loadPrompt("splitter"), {
+    OVERSIZED_FILES: (oversizedFiles || []).map((f) => `- ${f}`).join("\n") || "_None._",
+    DESIGN_MD: designMd || "_None._",
+    OVERSIZED_LINES: String(oversizedLines ?? 400),
+  });
+}
+
+export function buildReviewDiffPrompt({ diff }) {
+  return fillTemplate(loadPrompt("review-diff"), {
+    DIFF: truncate(diff, 12000) || "_Empty diff._",
+  });
+}
+
+export function buildReviewCodebasePrompt({ treeListing, fileExcerpts }) {
+  return fillTemplate(loadPrompt("review-codebase"), {
+    TREE_LISTING: treeListing || "_Empty._",
+    FILE_EXCERPTS: fileExcerpts || "_None._",
+  });
+}
+
+export function buildReviewSpecPrompt({ designMd, specToc, contracts }) {
+  return fillTemplate(loadPrompt("review-spec"), {
+    DESIGN_MD: designMd || "_None._",
+    SPEC_TOC: specToc || "_None._",
+    CONTRACTS: contracts || "_None._",
+  });
+}

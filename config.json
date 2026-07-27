@@ -46,6 +46,16 @@
       "plateauRounds": 2
     }
   },
+  "swarm": {
+    "budgetMinutes": 240,
+    "concurrency": 4,
+    "reviewEveryNMerges": 3,
+    "reviewPerspectives": 3,
+    "oversizedFileLines": 400,
+    "maxTreeDepth": 2,
+    "guideMaxLines": 80,
+    "observeScoreEveryMerges": 1
+  },
   "guideMaxLines": 80,
   "agentCommand": "cursor-agent"
 }

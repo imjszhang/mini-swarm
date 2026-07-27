@@ -1,0 +1,2882 @@
+{
+  "version": 1,
+  "next_id": 2,
+  "nodes": {
+    "plan-01": {
+      "id": "plan-01",
+      "kind": "plan",
+      "title": "Foundation: AST, pipeline, tabs, escapes",
+      "parent": null,
+      "deps": [],
+      "status": "open",
+      "notes": ""
+    },
+    "plan-02": {
+      "id": "plan-02",
+      "kind": "plan",
+      "title": "Leaf blocks A: breaks, headings, code",
+      "parent": null,
+      "deps": [],
+      "status": "open",
+      "notes": ""
+    },
+    "plan-03": {
+      "id": "plan-03",
+      "kind": "plan",
+      "title": "Leaf blocks B: HTML, link defs, paragraphs",
+      "parent": null,
+      "deps": [],
+      "status": "open",
+      "notes": ""
+    },
+    "plan-04": {
+      "id": "plan-04",
+      "kind": "plan",
+      "title": "Container blocks: quotes and lists",
+      "parent": null,
+      "deps": [],
+      "status": "open",
+      "notes": ""
+    },
+    "plan-05": {
+      "id": "plan-05",
+      "kind": "plan",
+      "title": "Inline parsing",
+      "parent": null,
+      "deps": [],
+      "status": "open",
+      "notes": ""
+    },
+    "plan-06": {
+      "id": "plan-06",
+      "kind": "plan",
+      "title": "HTML render and document integration",
+      "parent": null,
+      "deps": [],
+      "status": "open",
+      "notes": ""
+    },
+    "task-01": {
+      "id": "task-01",
+      "kind": "leaf",
+      "title": "Lock AST types and Phase1/Phase2 pipeline skeleton",
+      "parent": "plan-01",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/types.ts",
+        "src/contracts.ts",
+        "src/index.ts",
+        "src/blocks/document.ts",
+        "src/blocks/registry.ts"
+      ],
+      "spec_sections": [
+        "Precedence",
+        "Blank lines"
+      ],
+      "notes": "Replace open index signatures with the DESIGN.md unions; LinkRefMap; stop trimming input; document.ts owns container stack + opener try-order stub; Phase2 hook that walks leaves (may no-op until inline exists). Update contracts.ts re-exports.",
+      "report": {
+        "status": "done",
+        "summary": "将 BlockNode/InlineNode 改为 DESIGN.md 判别联合类型并引入 LinkRefMap；registry 增加 BlockContext；新增 document.ts（空白行跳过、按注册顺序的 opener 尝试、ContainerFrame 栈占位、段落回退）；index.ts 仅做换行规范化（不再 trim），串联 Phase1 runPhase1、Phase2 parseInlines 叶子遍历（暂空操作）与渲染；contracts.ts 同步导出。cross-scope：render.ts 段落改用 raw 字段。",
+        "oversized_files": [],
+        "guide_note": "Phase 1 lives in document.ts (parseDocument); index.ts only normalizes newlines (no trim) and wires Phase 2 leaf walk."
+      },
+      "attempts": 1
+    },
+    "task-02": {
+      "id": "task-02",
+      "kind": "leaf",
+      "title": "Tab stop / indent column helpers",
+      "parent": "plan-01",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/util/tabs.ts"
+      ],
+      "spec_sections": [
+        "Tabs"
+      ],
+      "notes": "Export column-aware tab width-4 helpers for indent measurement and partial expansion used by block parsers. No block logic here.",
+      "report": {
+        "status": "done",
+        "summary": "新增 src/util/tabs.ts：导出 TAB_WIDTH、visualColumn、columnAfterTab、expandTabs（可限定 endIndex 做部分展开）、leadingIndentColumns、expandLeadingIndent。列位置按码点递增，制表符按 CM 规则补空格至下一 4 列边界。npm run build 通过并已提交。",
+        "oversized_files": [],
+        "guide_note": "制表符在已是 4 的倍数的列上仍会再前进 4 列（col % TAB_WIDTH === 0 时），与“下一制表位”语义一致。"
+      },
+      "attempts": 1
+    },
+    "task-03": {
+      "id": "task-03",
+      "kind": "leaf",
+      "title": "Backslash escapes and character references",
+      "parent": "plan-01",
+      "deps": [],
+      "status": "retired",
+      "files_scope": [
+        "src/util/escape.ts"
+      ],
+      "spec_sections": [
+        "Backslash escapes",
+        "Entity and numeric character references"
+      ],
+      "notes": "Implement unescape/decode helpers for inline text and destinations; HTML attribute/text encode helpers for render. Named entities: cover CM-required set (common HTML named entities).",
+      "report": {
+        "status": "oversized",
+        "summary": "实现 CM 反斜杠转义（isAsciiPunctuation、unescapeBackslashes）、HTML 命名/十进制/十六进制字符引用解码（decodeCharacterReferences，无效引用保留字面量；U+0000 与非法码点 → U+FFFD）、目的地/标题用 decodeString（先 unescape 再 decode），以及 escapeHtmlText / escapeHtmlAttribute。从 WHATWG entities.json 生成 src/util/html-entities.ts（2125 个带分号的实体）。在 contracts.ts 中 re-export 供后续 inline/render 使用。",
+        "oversized_files": [
+          "src/util/html-entities.ts"
+        ],
+        "guide_note": "Full HTML5 semicolon-terminated entity map lives in `src/util/html-entities.ts` (~2k entries) so `escape.ts` stays parser-sized."
+      },
+      "attempts": 1
+    },
+    "task-04": {
+      "id": "task-04",
+      "kind": "leaf",
+      "title": "Thematic breaks",
+      "parent": "plan-02",
+      "deps": [
+        "task-01",
+        "task-02"
+      ],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/thematic.ts",
+        "src/blocks/document.ts"
+      ],
+      "spec_sections": [
+        "Thematic breaks"
+      ],
+      "notes": "Register opener in precedence order; produce thematic_break nodes.",
+      "report": {
+        "status": "done",
+        "summary": "新增 src/blocks/thematic.ts（行级 thematic break 判定与 opener），在 document.ts 侧效注册为最高优先级 block parser；render 增加 thematic_break → <hr />。已 npm run build 并用 spec 样例（***/---/___、+++ 非 break、段落中断、- - -）验证。",
+        "oversized_files": [],
+        "guide_note": "Thematic break openers register via side effect in document.ts (first in precedence); line scan allows only -/_/* with spaces/tabs between, 3+ markers."
+      },
+      "attempts": 1
+    },
+    "task-05": {
+      "id": "task-05",
+      "kind": "leaf",
+      "title": "ATX headings",
+      "parent": "plan-02",
+      "deps": [
+        "task-01",
+        "task-02"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/atx.ts",
+        "src/blocks/document.ts"
+      ],
+      "spec_sections": [
+        "ATX headings"
+      ],
+      "notes": "Parse level + raw content (trim closing # per CM); store raw for Phase2.",
+      "report": {
+        "status": "blocked",
+        "summary": "agent exit 1",
+        "oversized_files": []
+      },
+      "attempts": 1
+    },
+    "task-06": {
+      "id": "task-06",
+      "kind": "leaf",
+      "title": "Setext headings",
+      "parent": "plan-02",
+      "deps": [
+        "task-01",
+        "task-11"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/setext.ts",
+        "src/blocks/paragraph.ts",
+        "src/blocks/document.ts"
+      ],
+      "spec_sections": [
+        "Setext headings"
+      ],
+      "notes": "Integrate with paragraph accumulation: underline line rewrites pending paragraph to heading level 1/2.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-07": {
+      "id": "task-07",
+      "kind": "leaf",
+      "title": "Indented code blocks",
+      "parent": "plan-02",
+      "deps": [
+        "task-01",
+        "task-02"
+      ],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/indented-code.ts",
+        "src/blocks/document.ts"
+      ],
+      "spec_sections": [
+        "Indented code blocks"
+      ],
+      "notes": "4-space indent code; preserve internal blanks; strip one level of indent; lang null, fenced false.",
+      "report": {
+        "status": "done",
+        "summary": "新增 indented-code 块解析器：按 visual column 去掉一层 4 列缩进，保留内部空行与行尾空白，末尾空行不计入块内；document 在段落续行时跳过 indented opener 并对 ≥4 列缩进行做 stripOneLevelIndent；render 增加 code_block 转义输出。",
+        "oversized_files": [],
+        "guide_note": "Indented code must be skipped in paragraph continuation (`allowIndentedCode: false`); strip uses four visual columns via `stripOneLevelIndent` in `indented-code.ts`."
+      },
+      "attempts": 1
+    },
+    "task-08": {
+      "id": "task-08",
+      "kind": "leaf",
+      "title": "Fenced code blocks",
+      "parent": "plan-02",
+      "deps": [
+        "task-01",
+        "task-02"
+      ],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/fenced-code.ts",
+        "src/blocks/document.ts"
+      ],
+      "spec_sections": [
+        "Fenced code blocks"
+      ],
+      "notes": "```/~~~ fences, info string, indent up to 3; closing fence rules per CM.",
+      "report": {
+        "status": "done",
+        "summary": "Added fenced-code block parser per CM spec and registered it from document.ts; extended render for code_block HTML self-check.",
+        "oversized_files": [],
+        "guide_note": "Fenced open/close use ^( {0,3})(`{3,}|~{3,}) only — tabs before a fence do not open/close at column 0–3."
+      },
+      "attempts": 1
+    },
+    "task-09": {
+      "id": "task-09",
+      "kind": "leaf",
+      "title": "HTML blocks",
+      "parent": "plan-03",
+      "deps": [
+        "task-01"
+      ],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/html-block.ts",
+        "src/blocks/document.ts"
+      ],
+      "spec_sections": [
+        "HTML blocks"
+      ],
+      "notes": "Implement CM HTML block types 1–7 start/end conditions; raw text passthrough node.",
+      "report": {
+        "status": "done",
+        "summary": "Added html-block.ts with CM types 1–7 classification, multi-line consumption, and registry wiring; document.ts imports it and disables type-7 on paragraph interrupt; render passes html_block text through.",
+        "oversized_files": [],
+        "guide_note": "HTML block type 7 is suppressed during paragraph continuation via BlockParserOptions.allowHtmlType7."
+      },
+      "attempts": 1
+    },
+    "task-10": {
+      "id": "task-10",
+      "kind": "leaf",
+      "title": "Link reference definitions",
+      "parent": "plan-03",
+      "deps": [
+        "task-01",
+        "task-03"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/link-def.ts",
+        "src/blocks/document.ts",
+        "src/types.ts"
+      ],
+      "spec_sections": [
+        "Link reference definitions"
+      ],
+      "notes": "Parse defs into LinkRefMap; first definition wins; not emitted as visible blocks; may span lines per CM.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-11": {
+      "id": "task-11",
+      "kind": "leaf",
+      "title": "Paragraphs and blank lines",
+      "parent": "plan-03",
+      "deps": [
+        "task-01"
+      ],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/paragraph.ts",
+        "src/blocks/document.ts",
+        "src/index.ts"
+      ],
+      "spec_sections": [
+        "Paragraphs",
+        "Blank lines"
+      ],
+      "notes": "Replace one-line stub paragraphs with multi-line accumulation + interrupt rules; blank lines separate blocks only.",
+      "report": {
+        "status": "done",
+        "summary": "新增 src/blocks/paragraph.ts：多行段落累积、首行 indent<4 才能开段、每行去首尾空白拼 raw；document.ts 注册段落解析器，空行仅分隔块（忽略文档首尾与段间多余空行），续行上其它块可中断段落但缩进代码块不能（setIndentedCodeParser 供后续对接）。",
+        "oversized_files": [],
+        "guide_note": "Paragraph continuation skips indented-code interrupt checks via setIndentedCodeParser in document.ts."
+      },
+      "attempts": 1
+    },
+    "task-12": {
+      "id": "task-12",
+      "kind": "leaf",
+      "title": "Block quotes",
+      "parent": "plan-04",
+      "deps": [
+        "task-01",
+        "task-11"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/blockquote.ts",
+        "src/blocks/document.ts"
+      ],
+      "spec_sections": [
+        "Block quotes"
+      ],
+      "notes": "Container open/continue with optional space after >; lazy continuation; nest with document stack.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-13": {
+      "id": "task-13",
+      "kind": "leaf",
+      "title": "List items",
+      "parent": "plan-04",
+      "deps": [
+        "task-01",
+        "task-02",
+        "task-11"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/list.ts",
+        "src/blocks/document.ts"
+      ],
+      "spec_sections": [
+        "List items"
+      ],
+      "notes": "Bullet/ordered markers, indent rules, loose vs content under item; share file with Lists task via clear sectioning.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-14": {
+      "id": "task-14",
+      "kind": "leaf",
+      "title": "Lists (tight/loose, continuity)",
+      "parent": "plan-04",
+      "deps": [
+        "task-13"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/list.ts",
+        "src/blocks/document.ts"
+      ],
+      "spec_sections": [
+        "Lists"
+      ],
+      "notes": "List continuity, changing marker type starts new list, tight/loose blank-line rules, start number for ordered.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-15": {
+      "id": "task-15",
+      "kind": "leaf",
+      "title": "Inline driver, text, hard/soft breaks",
+      "parent": "plan-05",
+      "deps": [
+        "task-01",
+        "task-03"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/inline/parse.ts",
+        "src/inline/text.ts",
+        "src/inline/breaks.ts",
+        "src/inline/registry.ts",
+        "src/index.ts"
+      ],
+      "spec_sections": [
+        "Textual content",
+        "Hard line breaks",
+        "Soft line breaks"
+      ],
+      "notes": "Phase2 entry: parseInlines(raw, linkRefs). Fallback text + break rules; wire into leaf blocks.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-16": {
+      "id": "task-16",
+      "kind": "leaf",
+      "title": "Code spans",
+      "parent": "plan-05",
+      "deps": [
+        "task-15"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/inline/code-span.ts",
+        "src/inline/parse.ts"
+      ],
+      "spec_sections": [
+        "Code spans"
+      ],
+      "notes": "Backtick fence matching, strip one leading/trailing space rule, normalize interior newlines to spaces.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-17": {
+      "id": "task-17",
+      "kind": "leaf",
+      "title": "Autolinks and raw HTML inlines",
+      "parent": "plan-05",
+      "deps": [
+        "task-15"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/inline/autolink.ts",
+        "src/inline/raw-html.ts",
+        "src/inline/parse.ts"
+      ],
+      "spec_sections": [
+        "Autolinks",
+        "Raw HTML"
+      ],
+      "notes": "URI/email autolinks; inline HTML tags/comments/etc. per CM; register before emphasis/text greedy paths.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-18": {
+      "id": "task-18",
+      "kind": "leaf",
+      "title": "Links",
+      "parent": "plan-05",
+      "deps": [
+        "task-10",
+        "task-15",
+        "task-03"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/inline/link.ts",
+        "src/inline/parse.ts"
+      ],
+      "spec_sections": [
+        "Links"
+      ],
+      "notes": "Inline, full/collapsed/shortcut reference links; destination/title parsing; label normalize against LinkRefMap.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-19": {
+      "id": "task-19",
+      "kind": "leaf",
+      "title": "Images",
+      "parent": "plan-05",
+      "deps": [
+        "task-18"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/inline/image.ts",
+        "src/inline/link.ts",
+        "src/inline/parse.ts"
+      ],
+      "spec_sections": [
+        "Images"
+      ],
+      "notes": "Reuse link parsing with leading !; alt text from children as CM requires.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-20": {
+      "id": "task-20",
+      "kind": "leaf",
+      "title": "Emphasis and strong emphasis",
+      "parent": "plan-05",
+      "deps": [
+        "task-15",
+        "task-18"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/inline/emphasis.ts",
+        "src/inline/parse.ts"
+      ],
+      "spec_sections": [
+        "Emphasis and strong emphasis"
+      ],
+      "notes": "Full CM delimiter-stack algorithm (* and _); must interoperate with links (process after brackets resolved or per CM ordering).",
+      "report": null,
+      "attempts": 0
+    },
+    "task-21": {
+      "id": "task-21",
+      "kind": "leaf",
+      "title": "HTML renderer for all node types",
+      "parent": "plan-06",
+      "deps": [
+        "task-01",
+        "task-03"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/render.ts"
+      ],
+      "spec_sections": [
+        "Thematic breaks",
+        "ATX headings",
+        "Setext headings",
+        "Indented code blocks",
+        "Fenced code blocks",
+        "HTML blocks",
+        "Paragraphs",
+        "Block quotes",
+        "Lists",
+        "Code spans",
+        "Emphasis and strong emphasis",
+        "Links",
+        "Images",
+        "Autolinks",
+        "Raw HTML",
+        "Hard line breaks",
+        "Soft line breaks",
+        "Textual content"
+      ],
+      "notes": "Dispatch every AST type per DESIGN.md; tight-list paragraph omission; escape text/attrs; raw HTML passthrough. Can land early with stubs then complete as nodes appear.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-22": {
+      "id": "task-22",
+      "kind": "leaf",
+      "title": "Wire precedence, registration, end-to-end CLI path",
+      "parent": "plan-06",
+      "deps": [
+        "task-04",
+        "task-05",
+        "task-06",
+        "task-07",
+        "task-08",
+        "task-09",
+        "task-10",
+        "task-11",
+        "task-12",
+        "task-14",
+        "task-16",
+        "task-17",
+        "task-19",
+        "task-20",
+        "task-21"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/index.ts",
+        "src/blocks/document.ts",
+        "src/inline/parse.ts",
+        "src/render.ts",
+        "src/cli.ts"
+      ],
+      "spec_sections": [
+        "Precedence"
+      ],
+      "notes": "Ensure opener order, Phase1→Phase2→render, cli unchanged behaviorally; fix any integration gaps so stdin markdown yields CM HTML.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-23": {
+      "id": "task-23",
+      "kind": "leaf",
+      "title": "Phase1 contracts: BlockParser(ctx), central register, Phase1Result",
+      "parent": "plan-01",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/registry.ts",
+        "src/blocks/document.ts",
+        "src/blocks/indented-code.ts",
+        "src/blocks/fenced-code.ts",
+        "src/blocks/thematic.ts",
+        "src/index.ts",
+        "src/contracts.ts"
+      ],
+      "spec_sections": [
+        "Precedence",
+        "Blank lines",
+        "Link reference definitions"
+      ],
+      "notes": "Lock per DESIGN: BlockParser=(ctx,pos)=> {node: BlockNode|null; next}|null; remove ALL module-level registerBlockParser (esp. indented-code); ensureBlockParsers registers thematic→ATX(stub skip if missing)→indented→fenced in that order only; runPhase1 returns Phase1Result {blocks,linkRefs}; index uses result.blocks; update thematic/fenced/indented signatures to take ctx; do not implement ATX/HTML/link-def bodies here.",
+      "report": {
+        "status": "done",
+        "summary": "将 BlockParser 改为 (ctx, pos) => { node: BlockNode | null; next } | null；在 registry.ts 中实现 ensureBlockParsers，按 thematic → ATX（createRequire 缺模块则跳过）→ indented → fenced 顺序集中注册；新增 thematic/indented/fenced 解析器且无模块级 registerBlockParser；runPhase1 返回 Phase1Result { blocks, linkRefs }；index.ts 使用 result.blocks/linkRefs；contracts 导出 ensureBlockParsers。",
+        "oversized_files": [],
+        "guide_note": "Block openers register only via ensureBlockParsers() in registry.ts (no module-level registerBlockParser in leaf parsers)."
+      },
+      "attempts": 1
+    },
+    "task-24": {
+      "id": "task-24",
+      "kind": "leaf",
+      "title": "ATX headings opener + render",
+      "parent": "plan-02",
+      "deps": [
+        "task-23"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/atx.ts",
+        "src/blocks/document.ts",
+        "src/render.ts"
+      ],
+      "spec_sections": [
+        "ATX headings"
+      ],
+      "notes": "Replaces blocked task-05. Implement ATX per CM (1–6 #, optional closing #, strip leading/trailing, indent ≤3). Export BlockParser(ctx,pos); register in ensureBlockParsers immediately after thematic. Render heading via escapeHtmlText(raw) interim. npm run build.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-25": {
+      "id": "task-25",
+      "kind": "leaf",
+      "title": "Container stack open/continue/close scaffold",
+      "parent": "plan-04",
+      "deps": [
+        "task-23"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/document.ts",
+        "src/blocks/blockquote.ts",
+        "src/blocks/list.ts",
+        "src/contracts.ts"
+      ],
+      "spec_sections": [
+        "Block quotes",
+        "List items",
+        "Lists",
+        "Blank lines"
+      ],
+      "notes": "Implement DESIGN ContainerFrame + per-line continue/close/open hooks. Export match helpers from blockquote.ts/list.ts but no full CM list rules yet — enough that a single-level blockquote and a simple bullet list can nest a paragraph. Wire blank-line → list.tight=false. Do not finish all list edge cases (task-13/14 will).",
+      "report": null,
+      "attempts": 0
+    },
+    "task-26": {
+      "id": "task-26",
+      "kind": "leaf",
+      "title": "Link reference definitions (map-only, null node)",
+      "parent": "plan-03",
+      "deps": [
+        "task-23"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/link-def.ts",
+        "src/blocks/document.ts",
+        "src/types.ts"
+      ],
+      "spec_sections": [
+        "Link reference definitions"
+      ],
+      "notes": "Replaces task-10. Parser returns {node:null, next} and writes LinkRefMap (normalized label, decodeString dest/title, first wins). Register after HTML block slot (HTML may still be stub). Multi-line defs per CM. Must not emit BlockNode.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-27": {
+      "id": "task-27",
+      "kind": "leaf",
+      "title": "Block quotes full CM rules",
+      "parent": "plan-04",
+      "deps": [
+        "task-25"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/blockquote.ts",
+        "src/blocks/document.ts",
+        "src/render.ts"
+      ],
+      "spec_sections": [
+        "Block quotes"
+      ],
+      "notes": "Replaces task-12. Complete quote prefix/lazy continuation on container stack from task-25; nested quotes; interrupt rules; render <blockquote>.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-28": {
+      "id": "task-28",
+      "kind": "leaf",
+      "title": "List items marker/indent/continuation",
+      "parent": "plan-04",
+      "deps": [
+        "task-25"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/list.ts",
+        "src/blocks/document.ts"
+      ],
+      "spec_sections": [
+        "List items"
+      ],
+      "notes": "Replaces task-13. Ordered/bullet markers, padding, content indent, nested items via stack; interrupting paragraphs per CM.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-29": {
+      "id": "task-29",
+      "kind": "leaf",
+      "title": "Lists tight/loose and continuity",
+      "parent": "plan-04",
+      "deps": [
+        "task-28"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/list.ts",
+        "src/blocks/document.ts",
+        "src/render.ts"
+      ],
+      "spec_sections": [
+        "Lists",
+        "Blank lines"
+      ],
+      "notes": "Replaces task-14. Same-type continuity, start number, tight/loose from blank lines, HTML ol/ul/li; omit <p> when tight.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-30": {
+      "id": "task-30",
+      "kind": "leaf",
+      "title": "Inline driver + text + hard/soft breaks",
+      "parent": "plan-05",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/inline/parse.ts",
+        "src/inline/text.ts",
+        "src/inline/breaks.ts",
+        "src/inline/registry.ts",
+        "src/index.ts",
+        "src/contracts.ts"
+      ],
+      "spec_sections": [
+        "Textual content",
+        "Hard line breaks",
+        "Soft line breaks"
+      ],
+      "notes": "Replaces task-15. InlineContext + delimiter array per DESIGN; wire index parseInlines to call parseInlines(raw, linkRefs); breaks + text only; leave emphasis/link stubs for later tasks.",
+      "report": {
+        "status": "done",
+        "summary": "实现 parseInlineContent 驱动（InlineContext + delimiters 占位）、text/breaks 模块与 Phase 2 接线；硬/软换行按 CM 规则处理（含块末无效硬换行、行首尾空格修剪）；registry 改为 ctx 签名供后续 opener 注册；cross-scope 更新 render 输出 text/softbreak/hardbreak。",
+        "oversized_files": [],
+        "guide_note": "Line breaks are handled in parse.ts before registry openers so \\ + LF hard breaks can trim the prior text node."
+      },
+      "attempts": 1
+    },
+    "task-31": {
+      "id": "task-31",
+      "kind": "leaf",
+      "title": "ATX headings + static registry import",
+      "parent": "plan-02",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/atx.ts",
+        "src/blocks/registry.ts",
+        "src/render.ts"
+      ],
+      "spec_sections": [
+        "ATX headings"
+      ],
+      "notes": "Create parseAtxBlock per CM (0–3 indent, 1–6 #, space required, optional closing #). Statically import+register in ensureBlockParsers after thematic (remove createRequire). Heading render arm already exists — keep/adjust if needed. Update contracts only if signatures change.",
+      "report": {
+        "status": "done",
+        "summary": "实现 `parseAtxBlock`（0–3 列缩进、1–6 个 `#`、后接空白或行尾、可选 closing `#`、raw 去首尾空白）。在 `ensureBlockParsers` 中静态注册 thematic → ATX，并在 `parseDocument` 入口调用。`render.ts` 增加 `heading`（h1–h6）与 `thematic_break`。cross-scope：新增最小 `thematic.ts` 以满足 opener 顺序。",
+        "oversized_files": [],
+        "guide_note": "ATX openers use `visualColumn` for the 0–3 indent cap (tabs count toward the limit); call `ensureBlockParsers()` once at Phase 1 entry."
+      },
+      "attempts": 1
+    },
+    "task-32": {
+      "id": "task-32",
+      "kind": "leaf",
+      "title": "Unify paragraph fallback onto paragraph.ts helpers",
+      "parent": "plan-03",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/paragraph.ts",
+        "src/blocks/document.ts"
+      ],
+      "spec_sections": [
+        "Paragraphs",
+        "Blank lines"
+      ],
+      "notes": "Delete dual-track parseParagraphFallback loop. Use accumulateParagraphLines + normalizeParagraphLines + canOpenParagraphLine. Interrupt via tryOpenBlock({ allowIndentedCode:false, allowHtmlType7:false }). Align continuation indent with DESIGN single-track raw rules.",
+      "report": {
+        "status": "done",
+        "summary": "新增 `paragraph.ts`（`canOpenParagraphLine`、`accumulateParagraphLines`、`normalizeParagraphLines`、`createParagraphParser`）；删除 `document.ts` 中的 `parseParagraphFallback` 双轨逻辑，改为注册段落 opener，续行中断通过 `tryOpenBlock(..., { allowIndentedCode: false, allowHtmlType7: false }, paragraphParser)`。`normalizeParagraphLines` 按 CM 逐行去 leading、整体 trim 首尾，保留行尾空白供 hard break。cross-scope：在 `registry.ts`/`contracts.ts` 增加 `BlockParserOptions`。",
+        "oversized_files": [],
+        "guide_note": "Paragraph continuation interrupts use tryOpenBlock with allowIndentedCode/allowHtmlType7 false; skip the paragraph opener itself."
+      },
+      "attempts": 1
+    },
+    "task-33": {
+      "id": "task-33",
+      "kind": "leaf",
+      "title": "Link reference definitions (map-only)",
+      "parent": "plan-03",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/link-def.ts",
+        "src/blocks/registry.ts",
+        "src/types.ts"
+      ],
+      "spec_sections": [
+        "Link reference definitions"
+      ],
+      "notes": "Export parseLinkRefDef BlockParser: on match return { node:null, next }; mutate ctx.linkRefs with normalized label; first wins. Register after HTML block. May span lines per CM. No AST node.",
+      "report": {
+        "status": "done",
+        "summary": "新增 `parseLinkRefDef`：按 CommonMark 解析可跨行的链接引用定义，写入 `ctx.linkRefs`（规范化 label、先定义者优先），匹配时返回 `{ node: null, next }`。`BlockParser` 改为接收 `BlockContext` 并允许 `node: null`；`document.ts` 跳过无 AST 的匹配；在 `index.ts` 侧载注册。",
+        "oversized_files": [],
+        "guide_note": "Link ref defs return `node: null`; failed title retry (trailing junk) matches cmark’s rewind-before-title rule in `link-def.ts`."
+      },
+      "attempts": 1
+    },
+    "task-34": {
+      "id": "task-34",
+      "kind": "leaf",
+      "title": "Setext headings via paragraph look-ahead",
+      "parent": "plan-02",
+      "deps": [
+        "task-32"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/setext.ts",
+        "src/blocks/paragraph.ts",
+        "src/blocks/document.ts"
+      ],
+      "spec_sections": [
+        "Setext headings"
+      ],
+      "notes": "Not a registry opener. Helpers detect setext underline; document/paragraph accumulation rewrites paragraph → heading level 1/2 and consumes underline. Respect thematic-break precedence for `-` underlines. Render already supports heading.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-35": {
+      "id": "task-35",
+      "kind": "leaf",
+      "title": "Container stack open/continue/close scaffold",
+      "parent": "plan-04",
+      "deps": [
+        "task-32"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/document.ts",
+        "src/blocks/blockquote.ts",
+        "src/blocks/list.ts",
+        "src/contracts.ts"
+      ],
+      "spec_sections": [
+        "Block quotes",
+        "List items",
+        "Lists",
+        "Blank lines"
+      ],
+      "notes": "Replace void stack placeholder with DESIGN ContainerFrame (root/blockquote/list/list_item + children). Implement per-line match→lazy→close→open→leaf. Export match helpers only from blockquote.ts/list.ts (no registerBlockParser). Skeleton may stub full list tight rules but must push/pop and nest children correctly. Sync ContainerFrame in contracts.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-36": {
+      "id": "task-36",
+      "kind": "leaf",
+      "title": "Block quotes full CM rules + render",
+      "parent": "plan-04",
+      "deps": [
+        "task-35"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/blockquote.ts",
+        "src/blocks/document.ts",
+        "src/render.ts"
+      ],
+      "spec_sections": [
+        "Block quotes"
+      ],
+      "notes": "Complete matchBlockquotePrefix / lazy continuation / nested quotes per CM. Render blockquote → <blockquote>\\n…</blockquote>\\n. Do not invent registry BlockParser for quotes.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-37": {
+      "id": "task-37",
+      "kind": "leaf",
+      "title": "List items marker/indent/continuation",
+      "parent": "plan-04",
+      "deps": [
+        "task-35"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/list.ts",
+        "src/blocks/document.ts"
+      ],
+      "spec_sections": [
+        "List items"
+      ],
+      "notes": "matchListMarker + contentIndent + continuesListItem per CM (W/N rules, tabs via util/tabs). Document opens list+list_item frames using locked synthesis (compatible markerType merges). Lazy paragraph continuation inside items.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-38": {
+      "id": "task-38",
+      "kind": "leaf",
+      "title": "Lists tight/loose, continuity, render",
+      "parent": "plan-04",
+      "deps": [
+        "task-37"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/list.ts",
+        "src/blocks/document.ts",
+        "src/render.ts"
+      ],
+      "spec_sections": [
+        "Lists",
+        "Blank lines"
+      ],
+      "notes": "Finalize list.tight on close; blank-line loose rules; ordered start; bullet/delimiter continuity → new list when incompatible. Render ul/ol/li; tight omits <p> around item paragraphs.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-39": {
+      "id": "task-39",
+      "kind": "leaf",
+      "title": "Code spans opener + render",
+      "parent": "plan-05",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/inline/code-span.ts",
+        "src/inline/parse.ts",
+        "src/inline/registry.ts",
+        "src/render.ts"
+      ],
+      "spec_sections": [
+        "Code spans"
+      ],
+      "notes": "CM backtick fence matching; strip one leading/trailing space rule; collapse newlines to space. NO entity decode, NO backslash escapes. ensureInlineParsers registers before autolink. Render <code> with escapeHtmlText.",
+      "report": {
+        "status": "done",
+        "summary": "实现 CM 行内 code span：code-span.ts 按反引号串长度配对闭合，内容换行变空格、仅 ASCII 空格且非全空格时各剥一层；parse.ts 通过 ensureInlineParsers 在 autolink 之前注册；render 用 escapeHtmlText 输出 <code>；index 接入 Phase 2。新增 util/escape.ts。",
+        "oversized_files": [],
+        "guide_note": "Code-span close scan must skip `` runs inside content (only valid backtick strings count); see findClosingBacktickString in code-span.ts."
+      },
+      "attempts": 1
+    },
+    "task-40": {
+      "id": "task-40",
+      "kind": "leaf",
+      "title": "Autolinks and raw HTML inlines",
+      "parent": "plan-05",
+      "deps": [
+        "task-39"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/inline/autolink.ts",
+        "src/inline/raw-html.ts",
+        "src/inline/parse.ts",
+        "src/inline/registry.ts",
+        "src/render.ts"
+      ],
+      "spec_sections": [
+        "Autolinks",
+        "Raw HTML"
+      ],
+      "notes": "Registry openers after code span. Autolink → link node; raw HTML → html_inline pass-through. No entity decode inside these forms. Wire ensureInlineParsers.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-41": {
+      "id": "task-41",
+      "kind": "leaf",
+      "title": "Inline links (inline/ref/collapsed/shortcut)",
+      "parent": "plan-05",
+      "deps": [
+        "task-33",
+        "task-40"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/inline/link.ts",
+        "src/inline/parse.ts",
+        "src/render.ts"
+      ],
+      "spec_sections": [
+        "Links"
+      ],
+      "notes": "Driver-integrated bracket parsing + delimiter stack; full/collapsed/shortcut/reference using linkRefs; decodeString on destination/title. Render <a href> with escapeHtmlAttribute; text via children. Not a one-shot InlineParser.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-42": {
+      "id": "task-42",
+      "kind": "leaf",
+      "title": "Images sharing link parser machinery",
+      "parent": "plan-05",
+      "deps": [
+        "task-41"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/inline/image.ts",
+        "src/inline/link.ts",
+        "src/inline/parse.ts",
+        "src/render.ts"
+      ],
+      "spec_sections": [
+        "Images"
+      ],
+      "notes": "![...] forms reusing link.ts helpers; image node; render <img src alt title />. Alt from text-only concatenation per CM.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-43": {
+      "id": "task-43",
+      "kind": "leaf",
+      "title": "Emphasis and strong emphasis",
+      "parent": "plan-05",
+      "deps": [
+        "task-41"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/inline/emphasis.ts",
+        "src/inline/parse.ts",
+        "src/render.ts"
+      ],
+      "spec_sections": [
+        "Emphasis and strong emphasis"
+      ],
+      "notes": "Delimiter-stack push on */_ runs; process_emphasis on close/end per CM flanking rules. Produce emph/strong nodes. Render <em>/<strong>. Integrate in parse.ts step 5.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-44": {
+      "id": "task-44",
+      "kind": "leaf",
+      "title": "Final render arms + CLI e2e precedence wire",
+      "parent": "plan-06",
+      "deps": [
+        "task-31",
+        "task-33",
+        "task-34",
+        "task-36",
+        "task-38",
+        "task-39",
+        "task-40",
+        "task-41",
+        "task-42",
+        "task-43"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/render.ts",
+        "src/index.ts",
+        "src/blocks/document.ts",
+        "src/inline/parse.ts",
+        "src/cli.ts"
+      ],
+      "spec_sections": [
+        "Precedence"
+      ],
+      "notes": "Ensure every BlockNode/InlineNode arm renders (no unimplemented throws). index.ts: normalize→Phase1→Phase2→render; cli stdin/stdout. Verify opener order matches DESIGN; no architecture changes.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-45": {
+      "id": "task-45",
+      "kind": "leaf",
+      "title": "Align Phase1/inline contracts to revised DESIGN",
+      "parent": "plan-01",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/contracts.ts",
+        "src/blocks/document.ts",
+        "src/blocks/registry.ts",
+        "src/inline/registry.ts",
+        "src/inline/parse.ts",
+        "src/index.ts"
+      ],
+      "spec_sections": [
+        "Precedence",
+        "Blank lines"
+      ],
+      "notes": "Sync locked contracts only (no container behavior yet): (1) ContainerFrame → DESIGN shape with children/items; (2) runPhase1(lines, linkRefs?) mutates provided map; update index.ts call; (3) export TryOpenBlockOptions with allowIndentedCode + allowHtmlType7; tryOpenBlock uses it; (4) Delimiter full fields (char/numDelims/origDelims/token/canOpen/canClose/active); (5) export ensureInlineParsers; getInlineParsers calls ensure. Do not implement stack algorithm here. Keep parse compiling.",
+      "report": {
+        "status": "done",
+        "summary": "扩展 ContainerFrame（root/blockquote/list/list_item，含 children/items）；BlockParser 改为 (ctx, pos, TryOpenBlockOptions)，导出 tryOpenBlock 并在段落续行中断时关闭 allowIndentedCode/allowHtmlType7；runPhase1 可选 linkRefs 并原地写入 map；新增 parse.ts（完整 Delimiter 字段 + parseInline）；ensureInlineParsers 由 getInlineParsers 触发；contracts/DESIGN/guide 同步导出。",
+        "oversized_files": [],
+        "guide_note": "TryOpenBlockOptions and ContainerFrame children/items shape are locked in contracts.ts before container stack behavior lands."
+      },
+      "attempts": 1
+    },
+    "task-46": {
+      "id": "task-46",
+      "kind": "leaf",
+      "title": "Setext underline matcher",
+      "parent": "plan-02",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/setext.ts"
+      ],
+      "spec_sections": [
+        "Setext headings"
+      ],
+      "notes": "Add setext.ts exporting matchSetextUnderline(line): 1|2|null per CM (indent≤3 via visualColumn, run of = or -, trailing spaces/tabs only). Not a BlockParser; no registry. No document wiring in this task.",
+      "report": {
+        "status": "done",
+        "summary": "新增 src/blocks/setext.ts，导出 matchSetextUnderline(line)：用 leadingIndentColumns 限制前导缩进 ≤3，随后为连续的 = 或 -，行尾仅允许空格/制表符；返回 1、2 或 null。未注册 BlockParser、未改 document。已通过 npm run build 与若干样例行自检。",
+        "oversized_files": [],
+        "guide_note": "matchSetextUnderline 只判定下划线行形状；与 thematic 的 --- 行重叠，由后续段落前瞻区分 setext。"
+      },
+      "attempts": 1
+    },
+    "task-47": {
+      "id": "task-47",
+      "kind": "leaf",
+      "title": "Blockquote/list match helpers",
+      "parent": "plan-04",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/blockquote.ts",
+        "src/blocks/list.ts"
+      ],
+      "spec_sections": [
+        "Block quotes",
+        "List items",
+        "Lists"
+      ],
+      "notes": "Create match-only helpers per DESIGN: matchBlockquotePrefix; matchListMarker; continuesListItem; listMarkerInterruptsParagraph (ordered interrupts paragraph only if start===1). No registerBlockParser. No document stack yet.",
+      "report": {
+        "status": "done",
+        "summary": "新增 matchBlockquotePrefix（行首 ≤3 列缩进 + 可选 atIndex 嵌套 `>`）、matchListMarker（W/N padding、有序 1–9 位数字）、continuesListItem（空白行/缩进列）、listMarkerInterruptsParagraph（有序仅 start===1）；contracts 与 Field Guide 已同步。",
+        "oversized_files": [],
+        "guide_note": "List marker `padding` is marker width plus post-marker spaces (CM W+N); when N≥5 or N<1 or blank item, treat as N=1 — see `matchListMarker` in list.ts."
+      },
+      "attempts": 1
+    },
+    "task-48": {
+      "id": "task-48",
+      "kind": "leaf",
+      "title": "Per-line document loop + open paragraph + setext",
+      "parent": "plan-04",
+      "deps": [
+        "task-45",
+        "task-46",
+        "task-47"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/document.ts",
+        "src/blocks/paragraph.ts",
+        "src/blocks/html-block.ts"
+      ],
+      "spec_sections": [
+        "Paragraphs",
+        "Blank lines",
+        "Setext headings",
+        "Precedence",
+        "Block quotes",
+        "List items"
+      ],
+      "notes": "Rewrite Phase1 to per-line openParagraph tip state + isBlockStartingLine (tryOpenBlock → blockquote → list interrupt rules). Wire setext before interrupt check. Remove accumulateParagraphLines/createParagraphParser usage; html-block imports isBlankLine from paragraph.ts. Implement container prefix continue/lazy close/open using blockquote/list helpers and DESIGN ContainerFrame; append leaves to tip frame. Must allow > and list markers to interrupt paragraphs.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-49": {
+      "id": "task-49",
+      "kind": "leaf",
+      "title": "Block quotes CM rules + render",
+      "parent": "plan-04",
+      "deps": [
+        "task-48"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/blockquote.ts",
+        "src/blocks/document.ts",
+        "src/render.ts"
+      ],
+      "spec_sections": [
+        "Block quotes"
+      ],
+      "notes": "Complete blockquote open/continue/lazy/nested rules per CM; ensure document stack finalizes blockquote nodes. Add render arm for blockquote. Extend match helpers only if CM gaps found.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-50": {
+      "id": "task-50",
+      "kind": "leaf",
+      "title": "List items marker/indent/continuation",
+      "parent": "plan-04",
+      "deps": [
+        "task-48"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/list.ts",
+        "src/blocks/document.ts"
+      ],
+      "spec_sections": [
+        "List items"
+      ],
+      "notes": "Full list_item open/continue/indent/lazy rules; list synthesis (compatible list vs new list). Respect ordered start===1 interrupt. Do not finalize tight/loose yet beyond seenBlank scaffolding if needed.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-51": {
+      "id": "task-51",
+      "kind": "leaf",
+      "title": "Lists tight/loose + continuity + render",
+      "parent": "plan-04",
+      "deps": [
+        "task-50"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/list.ts",
+        "src/blocks/document.ts",
+        "src/render.ts"
+      ],
+      "spec_sections": [
+        "Lists",
+        "Blank lines"
+      ],
+      "notes": "Apply CM tight/loose blank-line rules on list/list_item frames; finalize tight on list close. Render ul/ol/li; tight lists omit <p> around item paragraphs.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-52": {
+      "id": "task-52",
+      "kind": "leaf",
+      "title": "Autolinks and raw HTML inlines + render",
+      "parent": "plan-05",
+      "deps": [
+        "task-45"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/inline/autolink.ts",
+        "src/inline/raw-html.ts",
+        "src/inline/parse.ts",
+        "src/inline/registry.ts",
+        "src/render.ts"
+      ],
+      "spec_sections": [
+        "Autolinks",
+        "Raw HTML"
+      ],
+      "notes": "Implement CM autolink + raw html_inline openers; register via ensureInlineParsers after code span. No entity/backslash decode inside payloads. Add render arms (html_inline passthrough; autolink as link or per CM).",
+      "report": null,
+      "attempts": 0
+    },
+    "task-53": {
+      "id": "task-53",
+      "kind": "leaf",
+      "title": "Inline links (inline/ref/collapsed/shortcut)",
+      "parent": "plan-05",
+      "deps": [
+        "task-45",
+        "task-52"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/inline/link.ts",
+        "src/inline/parse.ts",
+        "src/render.ts"
+      ],
+      "spec_sections": [
+        "Links"
+      ],
+      "notes": "Bracket parsing + destination/title + ref/collapsed/shortcut via linkRefs; integrate with driver/delimiter active flags per CM. decodeString for dest/title. Render <a href>. Not a registry InlineParser.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-54": {
+      "id": "task-54",
+      "kind": "leaf",
+      "title": "Images sharing link machinery + render",
+      "parent": "plan-05",
+      "deps": [
+        "task-53"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/inline/image.ts",
+        "src/inline/link.ts",
+        "src/inline/parse.ts",
+        "src/render.ts"
+      ],
+      "spec_sections": [
+        "Images"
+      ],
+      "notes": "![...] image forms sharing link parser helpers; render <img src alt title>. Escape attributes.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-55": {
+      "id": "task-55",
+      "kind": "leaf",
+      "title": "Emphasis and strong emphasis + render",
+      "parent": "plan-05",
+      "deps": [
+        "task-45"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/inline/emphasis.ts",
+        "src/inline/parse.ts",
+        "src/render.ts"
+      ],
+      "spec_sections": [
+        "Emphasis and strong emphasis"
+      ],
+      "notes": "Push Delimiter runs for */_; processEmphasis after scan per CM rules (multiple of 3, flanking). Render <em>/<strong>. Coordinate with link.ts active-flag disabling; if link not landed yet, still honor active on delimiters.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-56": {
+      "id": "task-56",
+      "kind": "leaf",
+      "title": "Final render arms + CLI e2e precedence wire",
+      "parent": "plan-06",
+      "deps": [
+        "task-49",
+        "task-51",
+        "task-52",
+        "task-53",
+        "task-54",
+        "task-55"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/render.ts",
+        "src/index.ts",
+        "src/blocks/document.ts",
+        "src/inline/parse.ts",
+        "src/cli.ts"
+      ],
+      "spec_sections": [
+        "Precedence"
+      ],
+      "notes": "Ensure every BlockNode/InlineNode render arm exists (no silent empty). Verify normalize→Phase1→Phase2→render→cli stdin/stdout path; fix any registration/precedence gaps only. No new architecture.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-57": {
+      "id": "task-57",
+      "kind": "leaf",
+      "title": "allowLinkRefDef + sole isBlankLine + setext export",
+      "parent": "plan-03",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/registry.ts",
+        "src/blocks/document.ts",
+        "src/blocks/paragraph.ts",
+        "src/blocks/list.ts",
+        "src/blocks/html-block.ts",
+        "src/blocks/setext.ts",
+        "src/contracts.ts"
+      ],
+      "spec_sections": [
+        "Precedence",
+        "Blank lines",
+        "Link reference definitions",
+        "Setext headings"
+      ],
+      "notes": "Add TryOpenBlockOptions.allowLinkRefDef (default true); tryOpenBlock skips parseLinkRefDef when false (mirror indented-code skip). Tighten paragraph.isBlankLine to SP/TAB only (no trim); delete local isBlankLine in list.ts and html-block.ts — import from paragraph.ts. Export matchSetextUnderline from contracts.ts. Do NOT rewrite the document loop yet. Update Field Guide one line on link-ref non-interrupt.",
+      "report": {
+        "status": "done",
+        "summary": "新增 TryOpenBlockOptions.allowLinkRefDef 及 tryOpenBlock 跳过逻辑；段落 fallback 中断 opts 含 allowLinkRefDef:false；isBlankLine 收紧为 SP/TAB-only 并统一到 paragraph.ts；contracts 导出 matchSetextUnderline；Field Guide 补充 link-ref 不可打断段落说明。",
+        "oversized_files": [],
+        "guide_note": "Paragraph continuation interrupts use tryOpenBlock with allowIndentedCode/allowHtmlType7/allowLinkRefDef false; link ref defs cannot interrupt a paragraph (CM)."
+      },
+      "attempts": 1
+    },
+    "task-58": {
+      "id": "task-58",
+      "kind": "leaf",
+      "title": "Complete named HTML entities h–z",
+      "parent": "plan-05",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/util/html-entities.ts",
+        "src/util/html-entities/h.ts",
+        "src/util/html-entities/i.ts",
+        "src/util/html-entities/j.ts",
+        "src/util/html-entities/k.ts",
+        "src/util/html-entities/l.ts",
+        "src/util/html-entities/m.ts",
+        "src/util/html-entities/n.ts",
+        "src/util/html-entities/o.ts",
+        "src/util/html-entities/p.ts",
+        "src/util/html-entities/q.ts",
+        "src/util/html-entities/r.ts",
+        "src/util/html-entities/s.ts",
+        "src/util/html-entities/t.ts",
+        "src/util/html-entities/u.ts",
+        "src/util/html-entities/v.ts",
+        "src/util/html-entities/w.ts",
+        "src/util/html-entities/x.ts",
+        "src/util/html-entities/y.ts",
+        "src/util/html-entities/z.ts"
+      ],
+      "spec_sections": [
+        "Entity and numeric character references"
+      ],
+      "notes": "Generate semicolon-terminated WHATWG named entities for letters h–z (same style as a–g). Merge all in html-entities.ts. Do not change decodeCharacterReferences API. Verify &nbsp; &lt; &gt; &amp; &quot; resolve. If a single file is huge, keep per-letter splits.",
+      "report": {
+        "status": "done",
+        "summary": "从 WHATWG entities.json 生成 h–z 共 14 个字母分片（2125 条中带分号实体名按首字母归类），更新 html-entities.ts 合并 a–z 全部分片；合并后 2125 个唯一实体，nbsp/lt/gt/amp/quot 映射正确，npm run build 通过；本地用 escape.decodeCharacterReferences 抽检通过。cross-scope：纳入 workspace 已有 a–g 分片以便本分支可编译。",
+        "oversized_files": [],
+        "guide_note": "WHATWG entities.json keys use &name;; map keys are name only. Letters h–z are per-first-letter shards; a–g remain equal sorted chunks (~304 each)."
+      },
+      "attempts": 1
+    },
+    "task-59": {
+      "id": "task-59",
+      "kind": "leaf",
+      "title": "Per-line tip paragraph + setext + content view",
+      "parent": "plan-04",
+      "deps": [
+        "task-57"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/document.ts",
+        "src/blocks/paragraph.ts",
+        "src/blocks/setext.ts"
+      ],
+      "spec_sections": [
+        "Paragraphs",
+        "Blank lines",
+        "Setext headings",
+        "Precedence",
+        "Link reference definitions"
+      ],
+      "notes": "Replace parseParagraphFallback with DESIGN tip state openParagraph + per-line rules. Implement isBlockStartingLine (tryOpenBlock → blockquote prefix → list marker interrupt rules). Setext underline before thematic on open paragraph. Content-line view: at root view=lines.slice(absPos), tryOpenBlock(viewCtx,0), advance absPos by next. Interrupt opts must pass allowIndentedCode/allowHtmlType7/allowLinkRefDef false. Keep ContainerFrame stack as [root] only (no quote/list open yet) but structure ready. Remove calls to accumulateParagraphLines/createParagraphParser. npm run build.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-60": {
+      "id": "task-60",
+      "kind": "leaf",
+      "title": "Block quotes: stack continue/lazy + render",
+      "parent": "plan-04",
+      "deps": [
+        "task-59"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/blockquote.ts",
+        "src/blocks/document.ts",
+        "src/render.ts"
+      ],
+      "spec_sections": [
+        "Block quotes"
+      ],
+      "notes": "Wire matchBlockquotePrefix into document container continue/open/close + lazy continuation per DESIGN. Extend content-line view builder to strip `>` chain so multi-line leaves inside quotes see residuals. Emit blockquote AST into parent children on close. Add render arm <blockquote>…</blockquote> per CM (blank lines). Do not implement lists here.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-61": {
+      "id": "task-61",
+      "kind": "leaf",
+      "title": "List items: marker open/indent/continue",
+      "parent": "plan-04",
+      "deps": [
+        "task-60"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/list.ts",
+        "src/blocks/document.ts"
+      ],
+      "spec_sections": [
+        "List items"
+      ],
+      "notes": "Open list/list_item frames from matchListMarker; contentIndent=contentColumn; continuesListItem(residual, contentColumn, emptyItem) after outer strips. Compatible list append vs new list (markerType). Nested lists via indent. isBlockStartingLine uses listMarkerInterruptsParagraph when interruptingParagraph. Content view must strip list content indent. Keep tight=true for now if needed; full tight/loose in task-62. No render yet unless needed to compile.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-62": {
+      "id": "task-62",
+      "kind": "leaf",
+      "title": "Lists tight/loose + continuity + render",
+      "parent": "plan-04",
+      "deps": [
+        "task-61"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/list.ts",
+        "src/blocks/document.ts",
+        "src/render.ts"
+      ],
+      "spec_sections": [
+        "Lists",
+        "Blank lines"
+      ],
+      "notes": "Blank-line rules set list.tight=false (between items; blank then another block inside item). Finalize tight on list close. Render ul/ol/li; tight omits <p> around item paragraphs; ordered start attribute when start!==1. Continuity: bullet/delimiter change starts new list.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-63": {
+      "id": "task-63",
+      "kind": "leaf",
+      "title": "Autolinks and raw HTML inlines + render",
+      "parent": "plan-05",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/inline/autolink.ts",
+        "src/inline/raw-html.ts",
+        "src/inline/parse.ts",
+        "src/inline/registry.ts",
+        "src/render.ts"
+      ],
+      "spec_sections": [
+        "Autolinks",
+        "Raw HTML"
+      ],
+      "notes": "Implement CM autolink and raw html_inline openers; register via ensureInlineParsers after code span. Wire parse.ts loop order: breaks → code → autolink/raw HTML → … Render html_inline passthrough; autolink as <a href>. No entity decode inside autolink/raw HTML payloads beyond CM rules.",
+      "report": {
+        "status": "done",
+        "summary": "实现了 CommonMark 风格的 autolink（URI/email → link 节点）与 raw HTML（html_inline 透传）解析器，在 ensureInlineParsers 中于 code span 之后注册；parse.ts 按 breaks → registry openers → 文本/转义/实体的顺序驱动 Phase 2；render.ts 将 autolink 渲染为 <a href>（含 href 编码与 & 转义），html_inline 原样输出。修复 open tag 须在属性前出现空白，避免将 <m:abc> 误解析为 HTML。",
+        "oversized_files": [],
+        "guide_note": "Raw HTML open tags reject attributes that are not preceded by tag whitespace; otherwise <m:abc> would parse as tag m."
+      },
+      "attempts": 1
+    },
+    "task-64": {
+      "id": "task-64",
+      "kind": "leaf",
+      "title": "Inline links (inline/ref/collapsed/shortcut)",
+      "parent": "plan-05",
+      "deps": [
+        "task-58",
+        "task-63"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/inline/link.ts",
+        "src/inline/parse.ts",
+        "src/render.ts"
+      ],
+      "spec_sections": [
+        "Links"
+      ],
+      "notes": "Bracket parser integrated with delimiter stack (not registry one-shot). Inline + full/collapsed/shortcut reference via linkRefs; decodeString on destination/title. Failed parse leaves literal. Deactivate interior delimiter.active on successful link close. Render <a href> with escaped attrs. Follow CM link text / balanced parens rules.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-65": {
+      "id": "task-65",
+      "kind": "leaf",
+      "title": "Images sharing link machinery + render",
+      "parent": "plan-05",
+      "deps": [
+        "task-64"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/inline/image.ts",
+        "src/inline/link.ts",
+        "src/inline/parse.ts",
+        "src/render.ts"
+      ],
+      "spec_sections": [
+        "Images"
+      ],
+      "notes": "Image = link machinery with ![ opener; AST type image. Share destination/title/ref resolution. Render <img src alt title /> with escapes; alt from textual content of descendants per CM.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-66": {
+      "id": "task-66",
+      "kind": "leaf",
+      "title": "Emphasis and strong emphasis + render",
+      "parent": "plan-05",
+      "deps": [
+        "task-64"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/inline/emphasis.ts",
+        "src/inline/parse.ts",
+        "src/render.ts"
+      ],
+      "spec_sections": [
+        "Emphasis and strong emphasis"
+      ],
+      "notes": "CM delimiter-stack algorithm in processEmphasis (canOpen/canClose, rule of three, multiple of 3). Driver pushes Delimiter on */_ runs; call processEmphasis after scan (and after link closes as required). Render <em>/<strong>. Do not ad-hoc nest count.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-67": {
+      "id": "task-67",
+      "kind": "leaf",
+      "title": "Final render arms + CLI e2e precedence wire",
+      "parent": "plan-06",
+      "deps": [
+        "task-60",
+        "task-62",
+        "task-63",
+        "task-64",
+        "task-65",
+        "task-66",
+        "task-58"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/render.ts",
+        "src/index.ts",
+        "src/blocks/document.ts",
+        "src/inline/parse.ts",
+        "src/cli.ts"
+      ],
+      "spec_sections": [
+        "Precedence"
+      ],
+      "notes": "Ensure every BlockNode/InlineNode has a render arm (throw if unknown). index.ts: normalize → runPhase1 → Phase2 walk (paragraph/heading + recurse blockquote/list/list_item) → render. CLI stdin/stdout path intact. No new architecture. Fix any remaining wiring gaps only.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-68": {
+      "id": "task-68",
+      "kind": "leaf",
+      "title": "Per-line tip paragraph + setext + content-view + open containers",
+      "parent": "plan-04",
+      "deps": [],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/document.ts",
+        "src/blocks/paragraph.ts",
+        "src/blocks/setext.ts",
+        "src/blocks/blockquote.ts",
+        "src/blocks/list.ts"
+      ],
+      "spec_sections": [
+        "Paragraphs",
+        "Blank lines",
+        "Setext headings",
+        "Precedence",
+        "Link reference definitions",
+        "Block quotes",
+        "List items"
+      ],
+      "notes": "CRITICAL: replace flat tryOpenBlock+parseParagraphFallback loop. Implement openParagraph tip, isBlankLine blanks, matchSetextUnderline before interrupt checks, isBlockStartingLine, buildContentLineView, content-view tryOpenBlock. DELETE/stop calling parseParagraphFallback. On no-tip residual: open blockquote/list frames via matchBlockquotePrefix/matchListMarker + list synthesis (DESIGN), strip prefixes, then tip/leaf rules. Prefix continue for already-open frames required; lazy continuation may be incomplete but must not swallow `>`/list markers as paragraph text. Do not invent new AST. npm run build.",
+      "report": {
+        "status": "oversized",
+        "summary": "已用 per-line openParagraph tip 重写 Phase 1：buildContentLineView、content-view tryOpenBlock、isBlockStartingLine（含 blockquote/list 中断）、setext 在中断前判定；移除 parseParagraphFallback；通过 matchBlockquotePrefix/matchListMarker 打开容器栈并剥离前缀；同级列表项合并到同一 list。新增 paragraph/setext/blockquote/list 模块，npm run build 通过。",
+        "oversized_files": [
+          {
+            "file": "src/blocks/document.ts",
+            "lines": 442
+          }
+        ],
+        "guide_note": "Setext underline is checked on the open-paragraph tip before interrupt rules; blockquote open recurses with afterPrefixStrip so one line is not re-prefixed."
+      },
+      "attempts": 1
+    },
+    "task-69": {
+      "id": "task-69",
+      "kind": "leaf",
+      "title": "Blockquote continue/lazy finalize + render",
+      "parent": "plan-04",
+      "deps": [
+        "task-68"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/blockquote.ts",
+        "src/blocks/document.ts",
+        "src/render.ts"
+      ],
+      "spec_sections": [
+        "Block quotes"
+      ],
+      "notes": "Complete CM blockquote continue + lazy continuation (open tip paragraph only) + close/finalize into parent children. Add render arm: <blockquote>\\n…</blockquote>\\n. Use matchBlockquotePrefix; no registerBlockParser.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-70": {
+      "id": "task-70",
+      "kind": "leaf",
+      "title": "List item indent/continue wiring",
+      "parent": "plan-04",
+      "deps": [
+        "task-68"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/list.ts",
+        "src/blocks/document.ts"
+      ],
+      "spec_sections": [
+        "List items",
+        "Blank lines"
+      ],
+      "notes": "Wire continuesListItem + contentIndent/contentColumn for stack continue; empty-item blank rules; interrupt via listMarkerInterruptsParagraph. Keep match helpers; document owns open/close. Lazy continuation shared with tip paragraph rules from DESIGN.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-71": {
+      "id": "task-71",
+      "kind": "leaf",
+      "title": "Lists tight/loose + continuity + render",
+      "parent": "plan-04",
+      "deps": [
+        "task-70"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/list.ts",
+        "src/blocks/document.ts",
+        "src/render.ts"
+      ],
+      "spec_sections": [
+        "Lists",
+        "Blank lines"
+      ],
+      "notes": "Finalize list.tight on blank-between-items / blank-between-blocks; compatible list continuity (ordered+markerType); changing bullet/delimiter starts new list. Render ul/ol (start attr if ordered && start!==1); tight lists omit <p> around item paragraphs. list_item render as <li>…</li>.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-72": {
+      "id": "task-72",
+      "kind": "leaf",
+      "title": "Inline links (inline/ref/collapsed/shortcut)",
+      "parent": "plan-05",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/inline/link.ts",
+        "src/inline/parse.ts",
+        "src/render.ts"
+      ],
+      "spec_sections": [
+        "Links"
+      ],
+      "notes": "Implement link.ts bracket matcher for inline/full/collapsed/shortcut; decodeString on dest/title; resolve via ctx.linkRefs normalized labels; failed closer → literal `[`. Deactivate interior active delimiters on success. Wire into parse.ts main loop before emphasis; extend SPECIAL stop set with `[`. Render <a> already partially present — fix href escaping for non-autolink destinations if needed.",
+      "report": {
+        "status": "done",
+        "summary": "新增 `link.ts`（内联 / 完整 / 折叠 / 快捷引用链接、destination/title 解析、`decodeString`、失败时退回字面 `[`）、`parse.ts`（主循环在 emphasis 前处理 `[`、SPECIAL 含 `[`、成功链接时 deactivate delimiters）、`util/escape.ts`；更新 `render.ts` 输出 `<a>` 并对非 autolink 的 href/title 做编码；在 `index.ts` 接入 Phase 2 内联解析。",
+        "oversized_files": [],
+        "guide_note": "tryParseLink 在独立 delimiter 列表上解析 link text，避免 post-`]` 探测失败时误 deactivate emphasis。"
+      },
+      "attempts": 1
+    },
+    "task-73": {
+      "id": "task-73",
+      "kind": "leaf",
+      "title": "Images sharing link machinery + alt text",
+      "parent": "plan-05",
+      "deps": [
+        "task-72"
+      ],
+      "status": "done",
+      "files_scope": [
+        "src/inline/image.ts",
+        "src/inline/link.ts",
+        "src/inline/parse.ts",
+        "src/render.ts"
+      ],
+      "spec_sections": [
+        "Images"
+      ],
+      "notes": "![ opener sharing link closer/dest/title/ref logic; type image. Fix render alt to imageAltText (plain text extract per DESIGN) — must NOT HTML-render children into alt.",
+      "report": {
+        "status": "done",
+        "summary": "Implemented `![` via `tryParseImage` calling shared `parseLinkOrImageFromBracket` / `parseLinkCloser` (inline dest+title, collapsed/full/shortcut refs) in link.ts; extended InlineParseEnv for nested description parsing; wired parse.ts + Phase 2 in index; render uses `imageAltText` for img alt (not HTML children). Verified inline image spec examples via CLI.",
+        "oversized_files": [],
+        "guide_note": "Image closers reuse `parseLinkCloser` in `link.ts`; render alt via `imageAltText`, not HTML children."
+      },
+      "attempts": 1
+    },
+    "task-74": {
+      "id": "task-74",
+      "kind": "leaf",
+      "title": "Emphasis and strong emphasis + processEmphasis",
+      "parent": "plan-05",
+      "deps": [
+        "task-72"
+      ],
+      "status": "done",
+      "files_scope": [
+        "src/inline/emphasis.ts",
+        "src/inline/parse.ts",
+        "src/render.ts"
+      ],
+      "spec_sections": [
+        "Emphasis and strong emphasis"
+      ],
+      "notes": "Implement flanking (DESIGN locked rules) → push Delimiter; after scan call processEmphasis including multiple-of-3 rule. Wire `*`/`_` runs in parse.ts; extend SPECIAL. emph/strong render arms already exist — keep. Prefer after links so deactivation interacts correctly; may land parallel once link deactivation API exists.",
+      "report": {
+        "status": "done",
+        "summary": "新增 emphasis.ts：左右 flank 判定、scanEmphasisDelimiter、带 container 指针的 delimiter 栈、processEmphasis（mod-3、最短跨度配对及若干无效 emph 过滤）。新增 parse.ts：SPECIAL 字符、* / _ 分隔符扫描并在扫描结束后调用 processEmphasis。扩展 render.ts 的 emph/strong（及 inline 渲染）；cross-scope 在 index.ts 中接入 parseInline。",
+        "oversized_files": [],
+        "guide_note": "Emphasis delimiters 用 container 指向节点数组，嵌套 span 把节点移入 emph/strong 子节点后仍能继续 processEmphasis。"
+      },
+      "attempts": 1
+    },
+    "task-75": {
+      "id": "task-75",
+      "kind": "leaf",
+      "title": "Final render arms + CLI e2e precedence wire",
+      "parent": "plan-06",
+      "deps": [
+        "task-69",
+        "task-71",
+        "task-73",
+        "task-74"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/render.ts",
+        "src/index.ts",
+        "src/blocks/document.ts",
+        "src/inline/parse.ts",
+        "src/cli.ts"
+      ],
+      "spec_sections": [
+        "Precedence"
+      ],
+      "notes": "Ensure every BlockNode/InlineNode type has a render arm (no default throw). Verify index.ts normalize→runPhase1→parseInlines walk (incl. blockquote/list_item children)→render; cli stdin/stdout. No new harness. Fix any wiring gaps only.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-76": {
+      "id": "task-76",
+      "kind": "leaf",
+      "title": "Fix content-line view + canOpenParagraphLine wiring",
+      "parent": "plan-04",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/document.ts",
+        "src/blocks/container-stack.ts",
+        "src/contracts.ts"
+      ],
+      "spec_sections": [
+        "Precedence",
+        "Paragraphs",
+        "Blank lines",
+        "Block quotes",
+        "List items",
+        "Fenced code blocks",
+        "HTML blocks"
+      ],
+      "notes": "CRITICAL bugfix from task-68: buildContentLineView must return string[] of prefix-stripped residuals while stack continues (NO lazy), 1:1 with doc lines; tryOpenBlock MUST run on that view, never raw docLines.slice while containers open. Keep tip on TipFrame (no document-level openParagraph). Use canOpenParagraphLine before starting a new tip. Align contracts ContainerFrame export with StackFrame alias per DESIGN. Do not implement tight/loose or full lazy polish here — leave for task-77/78. Keep file sizes modest; prefer helpers in container-stack.ts.",
+      "report": {
+        "status": "done",
+        "summary": "buildContentLineView 现为与 doc 行 1:1 的 prefix-stripped string[]（无 lazy）；tryOpenBlock 与段落中断均在 content view 上运行；tip 开段前使用 canOpenParagraphLine；ContainerFrame=StackFrame 已从 contracts 导出；逻辑下沉到 container-stack.ts，document.ts 约 178 行。",
+        "oversized_files": [],
+        "guide_note": "buildContentLineView 构建与 doc 行对齐的 residual 视图（仅前缀剥离、无 lazy）；leaf tryOpenBlock 与段落中断应使用该视图而非 raw slice。"
+      },
+      "attempts": 1
+    },
+    "task-77": {
+      "id": "task-77",
+      "kind": "leaf",
+      "title": "Blockquote continue/lazy finalize + render",
+      "parent": "plan-04",
+      "deps": [
+        "task-76"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/blockquote.ts",
+        "src/blocks/document.ts",
+        "src/blocks/container-stack.ts",
+        "src/render.ts"
+      ],
+      "spec_sections": [
+        "Block quotes"
+      ],
+      "notes": "Complete CM blockquote continue vs lazy using tip-on-frame + isBlockStartingLine interrupt opts. Nested `>` open/strip on residual. Finalize closed blockquote into parent children. Add render arm: <blockquote>\\n + children + </blockquote>\\n. Do not expand into list tight/loose.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-78": {
+      "id": "task-78",
+      "kind": "leaf",
+      "title": "Lists: continue, tight/loose, continuity, render",
+      "parent": "plan-04",
+      "deps": [
+        "task-76"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/list.ts",
+        "src/blocks/document.ts",
+        "src/blocks/container-stack.ts",
+        "src/render.ts"
+      ],
+      "spec_sections": [
+        "List items",
+        "Lists",
+        "Blank lines"
+      ],
+      "notes": "Wire continuesListItem / stripToContentColumn on residuals; sibling markers via listsCompatible; blank-line rules set list.tight=false; empty-item rules. Render <ul>/<ol start> and <li>; tight lists omit <p> around item paragraphs. Prefer extending existing container-stack helpers over a second stack.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-79": {
+      "id": "task-79",
+      "kind": "leaf",
+      "title": "Final render arms + CLI e2e precedence wire",
+      "parent": "plan-06",
+      "deps": [
+        "task-76",
+        "task-77",
+        "task-78",
+        "task-73",
+        "task-74"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/render.ts",
+        "src/index.ts",
+        "src/blocks/document.ts",
+        "src/inline/parse.ts",
+        "src/cli.ts"
+      ],
+      "spec_sections": [
+        "Precedence"
+      ],
+      "notes": "Ensure every AST type has a render arm (throw if missing). Wire normalize → runPhase1 → parseInlines leaf walk → render end-to-end for CLI. Fix only integration gaps; do not re-architect parsers. imageAltText must be used for image alt.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-80": {
+      "id": "task-80",
+      "kind": "leaf",
+      "title": "Strict content-line view continue gate (no lazy)",
+      "parent": "plan-04",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/container-stack.ts",
+        "src/blocks/document.ts"
+      ],
+      "spec_sections": [
+        "Precedence",
+        "Block quotes",
+        "List items",
+        "Fenced code blocks",
+        "HTML blocks",
+        "Indented code blocks"
+      ],
+      "notes": "Fix buildContentLineView: stop appending at first line where stack fails STRICT continue (required `>` / list contentColumn / blank rules). No lazy tip exception in the view. stripLineToContentResidual must not keep the full raw line when `>` is missing. document tryOpenBlock must use this truncated view. Do NOT implement tight/loose or render arms here.",
+      "report": {
+        "status": "done",
+        "summary": "在 task-76 容器 Phase 1 基础上实现 strict content-line view：`strictLineContinuesContainers` 在 `buildContentLineView` 中于首条不满足 `>`/contentColumn/空行规则处截断（无 blockquote lazy tip）；`stripLineToContentResidual` 在缺少 `>` 或列表缩进时返回空串而非整行 raw；`tryOpenBlock` 继续在截断后的 `lineView.view` 上运行；段落 tip 在 strip 为空时用 raw 保留 lazy 续行文本。npm run build 通过。",
+        "oversized_files": [],
+        "guide_note": "buildContentLineView 在 strictLineContinuesContainers 失败处截断；缺 `>` 时 strip 残差为空，避免 tryOpen 误吞容器外整行。"
+      },
+      "attempts": 1
+    },
+    "task-81": {
+      "id": "task-81",
+      "kind": "leaf",
+      "title": "Blockquote continue/lazy + render",
+      "parent": "plan-04",
+      "deps": [
+        "task-80"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/blockquote.ts",
+        "src/blocks/container-stack.ts",
+        "src/blocks/document.ts",
+        "src/render.ts"
+      ],
+      "spec_sections": [
+        "Block quotes"
+      ],
+      "notes": "CM blockquote continue + lazy per DESIGN: lazy only when tip open AND residual is NOT isBlockStartingLine(interrupt). tip!==null alone is wrong. Open nested `>` on residual after outer strips, not rawLine. Blank lines continue blockquote. Add render arm: <blockquote>\\n + children + </blockquote>\\n. No list tight/loose work.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-82": {
+      "id": "task-82",
+      "kind": "leaf",
+      "title": "Lists continue, tight/loose, render",
+      "parent": "plan-04",
+      "deps": [
+        "task-81"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/list.ts",
+        "src/blocks/container-stack.ts",
+        "src/blocks/document.ts",
+        "src/render.ts"
+      ],
+      "spec_sections": [
+        "List items",
+        "Lists",
+        "Blank lines"
+      ],
+      "notes": "Wire list_item continue via continuesListItem; emptyItem = children.length===0 && tip===null. Sibling markers / listsCompatible continuity. Set list.tight=false for blank between items or blank between blocks inside an item. Document blank lines MUST go through stack bookkeeping (no early finalize-only skip). Render list + list_item; tight omits <p> around item paragraphs; <ol start> only when ordered && start!==1.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-83": {
+      "id": "task-83",
+      "kind": "leaf",
+      "title": "Final render arms + CLI e2e wire",
+      "parent": "plan-06",
+      "deps": [
+        "task-82"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/render.ts",
+        "src/index.ts",
+        "src/blocks/document.ts",
+        "src/inline/parse.ts",
+        "src/cli.ts"
+      ],
+      "spec_sections": [
+        "Precedence"
+      ],
+      "notes": "Confirm every BlockNode/InlineNode has a render arm (no unimplemented throw for supported AST). renderNode recurses containers; Phase2 walk already covers blockquote/list. Ensure cli stdin→stdout path via renderMarkdown. Fix only glue/precedence regressions; no new architecture.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-84": {
+      "id": "task-84",
+      "kind": "leaf",
+      "title": "Document loop: lazy continue + residual opens + blank routing",
+      "parent": "plan-04",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/document.ts",
+        "src/blocks/container-stack.ts",
+        "src/contracts.ts"
+      ],
+      "spec_sections": [
+        "Block quotes",
+        "List items",
+        "Precedence",
+        "Blank lines",
+        "Paragraphs"
+      ],
+      "notes": "Post-task-80 bugs only — no new architecture. (1) Replace lineContinuesContainers with lineContinuesWithLazy(stack, rawLine, residualIsBlockStarting): tip!==null alone must NOT keep a blockquote/list_item open; also require !residualIsBlockStarting(wouldBeResidual) with interrupt opts. Document passes isBlockStartingLine. (2) strictLineContinuesContainers must walk ALL frames root→leaf (not only tip top); still never lazy. (3) Open >/list markers only on prefix-stripped residual after existing stack — never matchBlockquotePrefix/matchListMarker/openBlockquoteLevels on rawLine when containers are open (raw re-pushes outer quotes). (4) Remove parseDocument blank early-continue that only finalizeTip; blanks must run popContainersThatEnded / continue path (tight hooks can be stubs for task-85). Do not put lazy into buildContentLineView. Match helpers stay in blockquote.ts/list.ts.",
+      "report": {
+        "status": "done",
+        "summary": "实现 lazy 延续（isBlockStartingLine 门控）、strict 全栈 walk、容器内 residual 开 quote/list、空行走 pop/continue；已 build 通过并提交 e65de07。",
+        "oversized_files": [],
+        "guide_note": "Lazy 在 lineContinuesWithLazy + isBlockStartingLine；buildContentLineView 仍只用 strict 全栈 walk。"
+      },
+      "attempts": 1
+    },
+    "task-85": {
+      "id": "task-85",
+      "kind": "leaf",
+      "title": "Lists tight/loose + emptyItem blank + continuity",
+      "parent": "plan-04",
+      "deps": [
+        "task-84"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/list.ts",
+        "src/blocks/container-stack.ts",
+        "src/blocks/document.ts"
+      ],
+      "spec_sections": [
+        "List items",
+        "Lists",
+        "Blank lines"
+      ],
+      "notes": "Depends on task-84 lazy/blank routing. Implement DESIGN List synthesis tight/loose: blank between block children in same item → list.tight=false; blank between items (after contentful item, before next sibling) → loose. emptyItem+blank must close item via continuesListItem. Finish sibling/incompatible list continuity (listsCompatible; close list bookkeeping frame when marker incompatible). Keep matchListMarker/continuesListItem APIs. No render arms here.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-86": {
+      "id": "task-86",
+      "kind": "leaf",
+      "title": "Render blockquote/list/list_item (tight omit p)",
+      "parent": "plan-06",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/render.ts"
+      ],
+      "spec_sections": [
+        "Block quotes",
+        "Lists"
+      ],
+      "notes": "Add renderNode arms only: blockquote → <blockquote>\\n + recurse children + </blockquote>\\n; list → <ul> or <ol start=\"N\"> only when ordered && start!==1; each list_item → <li>…</li>\\n with recurse item.children; tight lists omit <p> around item paragraphs (CM). Recurse in renderNode itself. Leave other arms untouched; still throw on unknown types.",
+      "report": {
+        "status": "done",
+        "summary": "在 `src/render.ts` 中新增 `blockquote`、`list`、`list_item` 渲染：`renderBlock` 递归子节点；有序列表在 `start !== 1` 时输出 `start` 属性；紧列表项内段落省略 `<p>`，并通过 `tightParagraphIsLast` 控制段落后换行；未知块类型改为抛错；对外仍导出单参 `renderNode` 以免与 `Array.map` 冲突。已 `npm run build` 并通过 mock AST 自测。",
+        "oversized_files": [],
+        "guide_note": "Tight lists: `inTightList` 只传给 list item 的直接子块；最后一项段落不加 trailing `\\n`。"
+      },
+      "attempts": 1
+    },
+    "task-87": {
+      "id": "task-87",
+      "kind": "leaf",
+      "title": "Final CLI e2e precedence wire",
+      "parent": "plan-06",
+      "deps": [
+        "task-84",
+        "task-85",
+        "task-86"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/render.ts",
+        "src/index.ts",
+        "src/blocks/document.ts",
+        "src/inline/parse.ts",
+        "src/cli.ts"
+      ],
+      "spec_sections": [
+        "Precedence"
+      ],
+      "notes": "After containers+render land: confirm renderMarkdown normalize→runPhase1→parseInlines(container walk already present)→renderNode; cli stdin→stdout. Fix only wire/integration gaps (missing imports, ensure* calls, render recursion). No architecture changes, no new test harness.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-88": {
+      "id": "task-88",
+      "kind": "leaf",
+      "title": "Nested continue residual strip + blank finalizeTip",
+      "parent": "plan-04",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/container-stack.ts",
+        "src/blocks/document.ts"
+      ],
+      "spec_sections": [
+        "Block quotes",
+        "List items",
+        "Precedence",
+        "Blank lines",
+        "Paragraphs"
+      ],
+      "notes": "Fix lineContinuesWithLazy per DESIGN: when testing the top frame, residual = stripLineToContentResidual(rawLine, stack.slice(0,-1)); all blank/marker/indent/lazy checks and residualIsBlockStarting use that residual, never uncleared outer >/list indent on rawLine. Fix processLineContent blank residual: must finalizeTip(stack) then advance — forbidden tip=null without finalize. Document raw-blank path keeps popContainersThatEnded then finalizeTip (noteBlankInLists lands in task-89 — leave a clearly named stub call site or comment TODO only if needed; prefer not to invent tight logic here). npm run build. No architecture changes.",
+      "report": {
+        "status": "done",
+        "summary": "在 task-84 容器 Phase 1 基线上修正 `lineContinuesWithLazy`：对栈顶 frame 使用 `stripLineToContentResidual(rawLine, stack.slice(0,-1))` 作为 residual，空行、`>`/列表 marker、缩进续行与 `residualIsBlockStarting` 均基于 residual 而非未剥离的 rawLine。`processLineContent` 在 content 为空行时改为 `finalizeTip(stack)` 再前进，禁止仅 `tip=null`。文档层 raw 空行路径保留 `popContainersThatEnded` → `finalizeTip`，并标注 task-89 的 `noteBlankInLists` 挂点。`npm run build` 通过并已提交。",
+        "oversized_files": [],
+        "guide_note": "Nested lazy continue: `lineContinuesWithLazy` tests the tip frame against `stripLineToContentResidual(raw, stack.slice(0,-1))`, not uncleared `rawLine`."
+      },
+      "attempts": 1
+    },
+    "task-89": {
+      "id": "task-89",
+      "kind": "leaf",
+      "title": "List tight/loose pendingBlank bookkeeping",
+      "parent": "plan-04",
+      "deps": [
+        "task-88"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/container-stack.ts",
+        "src/blocks/document.ts",
+        "src/blocks/list.ts"
+      ],
+      "spec_sections": [
+        "List items",
+        "Lists",
+        "Blank lines"
+      ],
+      "notes": "Implement DESIGN tight/loose protocol exactly: list_item frame.pendingBlank; noteBlankInLists; applyPendingBlankLoose; appendBlockToTipFrame. Wire: (1) every blank path after finalizeTip → noteBlankInLists; (2) finalizeTip / leaf append into list_item → apply then push; (3) closeListItemForSiblingMarker before pop → applyPendingBlankLoose for inter-item blanks. emptyItem blank must NOT set pendingBlank. Trailing blank at EOF without next child/sibling must NOT loosen. New lists tight:true. Do not change render.ts (already handles node.tight). npm run build.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-90": {
+      "id": "task-90",
+      "kind": "leaf",
+      "title": "Unify normalizeLinkLabel + final CLI e2e wire",
+      "parent": "plan-06",
+      "deps": [
+        "task-89"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/util/link-label.ts",
+        "src/blocks/link-def.ts",
+        "src/inline/link.ts",
+        "src/contracts.ts",
+        "src/index.ts",
+        "src/cli.ts",
+        "src/render.ts"
+      ],
+      "spec_sections": [
+        "Precedence",
+        "Link reference definitions",
+        "Links",
+        "Hard line breaks",
+        "Soft line breaks"
+      ],
+      "notes": "Extract shared normalizeLinkLabel to src/util/link-label.ts (CM trim/collapse/case-fold und); link-def + inline/link both import it; remove divergent normalizeReferenceLabel; export from contracts. Confirm cli.ts → renderMarkdown → Phase1/Phase2/render path; all render arms present (softbreak=\\n, hardbreak=<br />\\n; blockquote/list/list_item already done). Only fix CM-wrong wiring gaps — no new harness, no architecture rewrite. npm run build.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-91": {
+      "id": "task-91",
+      "kind": "leaf",
+      "title": "List tight/loose pendingBlank + blank residual first",
+      "parent": "plan-04",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/container-stack.ts",
+        "src/blocks/document.ts"
+      ],
+      "spec_sections": [
+        "List items",
+        "Lists",
+        "Blank lines"
+      ],
+      "notes": "IMPLEMENT DESIGN tight/loose protocol — currently absent (no pendingBlank / noteBlankInLists / applyPendingBlankLoose / appendBlockToTipFrame; ListBlock.tight stays true forever).\n\n1) TipFrame list_item: add `pendingBlank: boolean` (open with false).\n2) In container-stack.ts add locked helpers:\n   - noteBlankInLists(stack): topmost list_item with item.children.length>0 → pendingBlank=true; skip emptyItem; only innermost.\n   - applyPendingBlankLoose(frame): if pendingBlank → list.tight=false; clear flag.\n   - appendBlockToTipFrame(stack, node): for list_item call applyPendingBlankLoose then push to item.children; else push to frame.children.\n3) Rewrite finalizeTip / finalizeSetext to append via appendBlockToTipFrame (not raw parentChildren.push).\n4) closeListItemForSiblingMarker: after finalizeTip, if closing frame.pendingBlank → applyPendingBlankLoose before pop.\n5) document.ts blank paths MUST be finalizeTip → noteBlankInLists → advance:\n   - raw blank in parseDocument loop (today only finalizeTip — FORBIDDEN).\n   - blank residual in processLineContent.\n6) CRITICAL bugfix: processLineContent must treat isBlankLine(contentLine) FIRST (before tip append / setext / interrupt). Today open tip + blank residual (`>` empty content) appends \"\" into tip — wrong. Blank never becomes tip text.\n7) Leaf tryOpenBlock success with node!==null: appendBlockToTipFrame, not parentChildren.push.\n8) Do not loosen on trailing blank at EOF with no subsequent child/sibling. Do not invent new stack types. npm run build.",
+      "report": {
+        "status": "done",
+        "summary": "在 list_item TipFrame 上增加 pendingBlank；实现 noteBlankInLists、applyPendingBlankLoose、appendBlockToTipFrame；finalizeTip/finalizeSetext 与 leaf tryOpen 经 appendBlockToTipFrame 入栈；closeListItemForSiblingMarker 在 pop 前 apply；document 空行路径为 finalizeTip→noteBlankInLists→advance，processLineContent 优先处理 content 空行，避免 blank 进入 tip。EOF 尾部空行仅设 flag、不在 pop 时 loosen。",
+        "oversized_files": [],
+        "guide_note": "List tight/loose: loosen only in appendBlockToTipFrame or closeListItemForSiblingMarker, not on EOF pop."
+      },
+      "attempts": 1
+    },
+    "task-92": {
+      "id": "task-92",
+      "kind": "leaf",
+      "title": "Unify normalizeLinkLabel + verify CLI e2e wire",
+      "parent": "plan-06",
+      "deps": [
+        "task-91"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/util/link-label.ts",
+        "src/blocks/link-def.ts",
+        "src/inline/link.ts",
+        "src/contracts.ts",
+        "src/index.ts",
+        "src/cli.ts",
+        "src/render.ts"
+      ],
+      "spec_sections": [
+        "Precedence",
+        "Link reference definitions",
+        "Links",
+        "Hard line breaks",
+        "Soft line breaks"
+      ],
+      "notes": "1) Add src/util/link-label.ts exporting normalizeLinkLabel per DESIGN: strip optional wrapping []; collapse TAB/CR/LF/SP runs to single SP; trim; toLocaleLowerCase(\"und\"). Do NOT use JS \\s (broader than CM).\n2) link-def.ts: delete normalizeReferenceLabel; import shared helper for LinkRefMap keys.\n3) inline/link.ts: remove local normalizeLinkLabel; import shared.\n4) contracts.ts: re-export normalizeLinkLabel from util/link-label.js (not from inline/link).\n5) Verify end-to-end only: index renderMarkdown = normalize newlines (no trim) → runPhase1 → parseInlines → renderNode join; cli.ts stdin→stdout via renderMarkdown. softbreak→\\n, hardbreak→<br />\\n already locked — fix only if wrong. Do not invent test harness or new architecture. npm run build.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-93": {
+      "id": "task-93",
+      "kind": "leaf",
+      "title": "Unify normalizeLinkLabel + CLI smoke",
+      "parent": "plan-06",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/util/link-label.ts",
+        "src/blocks/link-def.ts",
+        "src/inline/link.ts",
+        "src/contracts.ts",
+        "src/index.ts",
+        "src/cli.ts"
+      ],
+      "spec_sections": [
+        "Link reference definitions",
+        "Links",
+        "Precedence"
+      ],
+      "notes": "Create src/util/link-label.ts exporting normalizeLinkLabel per DESIGN: strip optional wrapping []; collapse TAB/CR/LF/SP runs to single SP; trim; case-fold with toLocaleLowerCase(\"und\"). Do NOT use String.trim()/\\s (Unicode spaces). Wire link-def.ts and inline/link.ts to import it; delete normalizeReferenceLabel and any local duplicate; contracts.ts re-exports from util/link-label.ts. Do not re-architect Phase1/2/render. Smoke only: npm run build; pipe a few stdin samples through node dist/cli.js (paragraph, link ref+shortcut, list tight/loose blank, blockquote). No new test harness.",
+      "report": {
+        "status": "done",
+        "summary": "新增 `src/util/link-label.ts` 的 `normalizeLinkLabel`（可选去 `[]`、仅 TAB/CR/LF/SP 折叠与首尾裁剪、`toLocaleLowerCase('und')`）；`link-def.ts` 与 `inline/link.ts` 统一引用并移除 `normalizeReferenceLabel`；`contracts.ts` 再导出；最小改动让 Phase1 向 block parser 传入 `BlockContext` 并注册 `parseLinkRefDef`。已通过 `npm run build` 与 CLI 冒烟。",
+        "oversized_files": [],
+        "guide_note": "`normalizeLinkLabel` is the single CM label key helper in `util/link-label.ts` (TAB/CR/LF/SP only; no `trim()`/`\\s`)."
+      },
+      "attempts": 1
+    },
+    "task-94": {
+      "id": "task-94",
+      "kind": "leaf",
+      "title": "CM link-label case fold + whitespace checks",
+      "parent": "plan-05",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/util/link-label.ts",
+        "src/inline/link.ts",
+        "src/blocks/link-def.ts"
+      ],
+      "spec_sections": [
+        "Link reference definitions",
+        "Links",
+        "Images"
+      ],
+      "notes": "DESIGN locked: normalizeLinkLabel must case-fold with toLowerCase().toUpperCase() (NOT toLocaleLowerCase('und') or toLowerCase alone) so ß/ẞ match SS. Keep TAB/CR/LF/SP-only collapse/trim. In inline/link.ts replace /\\s/ empty-label checks with the same CM whitespace set as link-def labelHasNonWhitespace (SP/TAB/CR/LF only). Prefer sharing a tiny isLabelWhitespace helper from link-label.ts if it avoids duplication. Smoke after build: printf '[ẞ]\\n\\n[SS]: /url\\n' | node dist/cli.js must emit a resolved <a href=\"/url\">. No new deps, no architecture changes, no test harness.",
+      "report": {
+        "status": "done",
+        "summary": "normalizeLinkLabel 改为 toLowerCase().toUpperCase() 并共享 isLabelWhitespace/labelHasNonWhitespace；link-def 与 inline/link 统一 CM 空白符空标签检查；最小接入 Phase2/渲染以通过 ẞ↔SS 引用链接冒烟。",
+        "oversized_files": [],
+        "guide_note": "CM label keys: normalizeLinkLabel uses toLowerCase().toUpperCase() (not toLocaleLowerCase('und')) so ẞ/ß and SS match per spec examples."
+      },
+      "attempts": 1
+    },
+    "task-95": {
+      "id": "task-95",
+      "kind": "leaf",
+      "title": "Fix link-text ] stop so inline/ref links parse",
+      "parent": "plan-05",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/inline/parse.ts"
+      ],
+      "spec_sections": [
+        "Links",
+        "Images"
+      ],
+      "notes": "BUG: disallowLinks parseInlineRange text-runs skip ] (not in SPECIAL), so [a](url) gobbles a](url) and tryParseLink returns null. While disallowLinks, stop text runs before ]. Smoke: [a](http://x) -> <a>; shortcut ref with linkRefs; ![a](http://x). Do not re-architect link.ts. Follow DESIGN Link-text closer lock.",
+      "report": {
+        "status": "done",
+        "summary": "在 parseInlineRange 的文本 run 中于 disallowLinks 时于未转义 ] 处截断，修复 [a](url) 等内联/引用/图片链接无法解析的问题；已合并 task-03 基线并通过冒烟验证。",
+        "oversized_files": [],
+        "guide_note": "Link-text disallowLinks: cap text runs at unescaped ] — SPECIAL omits ], so loop-top closer alone still gobbles a](url)."
+      },
+      "attempts": 1
+    },
+    "task-96": {
+      "id": "task-96",
+      "kind": "leaf",
+      "title": "Stop pushText coalescing into emphasis delimiter placeholders",
+      "parent": "plan-05",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/inline/text.ts",
+        "src/inline/parse.ts"
+      ],
+      "spec_sections": [
+        "Emphasis and strong emphasis"
+      ],
+      "notes": "BUG: pushText merges into scanEmphasisDelimiter placeholder so *a* becomes text '*a' + closer '*'; processEmphasis wraps empty children. Fix per DESIGN: do not coalesce into delimiter token placeholders (or never coalesce). Smoke: *a* -> <em>a</em>; **a** -> <strong>a</strong>.",
+      "report": {
+        "status": "done",
+        "summary": "新增 text.ts：pushText/mergeAdjacentText 不向纯 * / _ 占位符合并；parse.ts 改用 pushText 并导入安全 mergeAdjacentText。已验证 *a* → <em>a</em>、**a** → <strong>a</strong>。",
+        "oversized_files": [],
+        "guide_note": "pushText / mergeAdjacentText 勿合并 ^[*_]+$ 占位节点，否则 *a* 会变成空 emph。"
+      },
+      "attempts": 1
+    },
+    "task-97": {
+      "id": "task-97",
+      "kind": "leaf",
+      "title": "Preserve mid-paragraph trailing spaces for hard breaks",
+      "parent": "plan-05",
+      "deps": [],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/paragraph.ts"
+      ],
+      "spec_sections": [
+        "Hard line breaks",
+        "Paragraphs"
+      ],
+      "notes": "BUG: normalizeParagraphLines per-line rtrim strips the two spaces before NL, so hard breaks never reach Phase 2. Join with \\n then strip SP/TAB only at whole-string ends (DESIGN). Smoke: 'a  \\nb' -> <p>a<br />\\nb</p>.",
+      "report": {
+        "status": "done",
+        "summary": "新增 paragraph.ts 的 normalizeParagraphLines（整段首尾 trim，不做逐行 rtrim）；document 段落 fallback 改用该函数生成 raw，并更新 Field Guide。",
+        "oversized_files": [],
+        "guide_note": "Paragraph raw: join lines then trim SP/TAB at whole-string ends only — never per-line rtrim (hard breaks need interior trailing spaces)."
+      },
+      "attempts": 1
+    },
+    "task-98": {
+      "id": "task-98",
+      "kind": "leaf",
+      "title": "Sibling list marker uses ancestor-strip residual",
+      "parent": "plan-04",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/document.ts"
+      ],
+      "spec_sections": [
+        "List items",
+        "Lists",
+        "Blank lines"
+      ],
+      "notes": "BUG: markerLine=strip(raw, full stack) turns sibling '- b' into ''; item lost; inter-item blank never loosens. Use strip(raw, stack.slice(0,-1)) when tip is list_item; closeListItemForSiblingMarker + openListItem on that residual (DESIGN Sibling list markers). Smoke: '- a\\n\\n- b' -> loose two-item <ul> with <p>.",
+      "report": {
+        "status": "done",
+        "summary": "在 parseDocument 主循环中，当栈顶为 list_item 时对兄弟项检测改用 stripLineToContentResidual(rawLine, stack.slice(0,-1))，再调用 closeListItemForSiblingMarker 与 openListItem；修复全栈 strip 把 `- b` 变成空串导致第二项丢失、项间空行无法 loosen 的问题。已 fast-forward 合并 task-91 基线以便编译验证，冒烟 `- a\\n\\n- b` 输出带 `<p>` 的两项 loose `<ul>`。",
+        "oversized_files": [],
+        "guide_note": "Sibling list markers: detect with stripLineToContentResidual(raw, stack.slice(0,-1)) when tip is list_item—full-stack strip erases `- b` to ``."
+      },
+      "attempts": 1
+    },
+    "task-99": {
+      "id": "task-99",
+      "kind": "leaf",
+      "title": "Fix lazy tip residual + list sibling/nested continue",
+      "parent": "plan-04",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/document.ts",
+        "src/blocks/container-stack.ts"
+      ],
+      "spec_sections": [
+        "Block quotes",
+        "List items",
+        "Lists",
+        "Blank lines",
+        "Paragraphs",
+        "Precedence"
+      ],
+      "notes": "CRITICAL container bugs (verified via CLI smoke). Follow DESIGN sections Lazy tip residual + List continue vs sibling vs nested.\n\n1) document.ts sibling path still uses stripLineToContentResidual(raw, stack) — must be stack.slice(0,-1). Bug: `- a\\n- b` keeps only first <li>.\n2) After popContainersThatEnded keeps a tip open lazily, do NOT pass buildContentLineView contentLine (strict strip → \"\") into tip rules — use ancestor residual. Bug: `> foo\\nbar` drops bar.\n3) lineContinuesWithLazy / closeListItemForSiblingMarker / strictLineContinuesContainers: indent-continue (continuesListItem) BEFORE sibling marker match. Bug: `- foo\\n  - bar` wrongly flattens instead of nesting.\n\nSmoke with node dist/cli.js after npm run build. Append Field Guide bullets for the three residual rules. Do not re-architect.",
+      "report": {
+        "status": "done",
+        "summary": "在 task-98 容器解析基线上修复三处 residual/continue 问题：`processLineContent` 在 strict `contentLine` 为空时用 `stripLineToContentResidual(raw, stack.slice(0,-1))` 作为 `tipLine`（修复 `> foo\\nbar`）；`strictLineContinuesContainers` / `lineContinuesWithLazy` / `closeListItemForSiblingMarker` 在 sibling marker 匹配前先判 `continuesListItem`（修复 `- foo\\n  - bar` 嵌套）；兄弟项检测统一用 `stack.slice(0,-1)` 做 ancestor strip。已 smoke 通过 build + CLI。",
+        "oversized_files": [],
+        "guide_note": "Lazy tip: empty strict contentLine → ancestor residual for tip push; list continue: indent before marker match."
+      },
+      "attempts": 1
+    },
+    "task-100": {
+      "id": "task-100",
+      "kind": "leaf",
+      "title": "Container follow-up: loose lists + quote-list nesting",
+      "parent": "plan-04",
+      "deps": [
+        "task-99"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/document.ts",
+        "src/blocks/container-stack.ts",
+        "src/blocks/list.ts"
+      ],
+      "spec_sections": [
+        "Lists",
+        "List items",
+        "Block quotes",
+        "Blank lines"
+      ],
+      "notes": "After task-99: verify/fix `- a\\n\\n- b` → loose (<p> in items), `> - a\\n> - b` → blockquote with two <li>, ordered `1. a\\n2. b`, and pendingBlank not loosened by trailing EOF blanks only. Touch list.ts only if match/continue helpers need a tiny adjust. No new architecture.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-101": {
+      "id": "task-101",
+      "kind": "leaf",
+      "title": "Strip null-on-failure + nested lazy/sibling continue",
+      "parent": "plan-04",
+      "deps": [],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/container-stack.ts",
+        "src/blocks/document.ts"
+      ],
+      "spec_sections": [
+        "Block quotes",
+        "List items",
+        "Lists",
+        "Blank lines",
+        "Precedence"
+      ],
+      "notes": "Root bug: stripLineToContentResidual returns \"\" on failure; isBlankLine(\"\") keeps nested frames and drops lines. IMPLEMENT DESIGN § Strip failure vs blank: return null on failure (or tryStripContainers with ok/residual). Fix lineContinuesWithLazy, resolveContentLine lazy path, sibling detection, and processLineContent open-markers to use contentLine. CLI smoke must pass: (1) - a\\n  - b\\n- c keeps sibling c (2) > > foo\\nbar keeps bar (3) > - foo\\nbar keeps bar (4) prior smokes - a/- b, loose, nested, > foo\\nbar still pass. No architecture changes.",
+      "report": {
+        "status": "oversized",
+        "summary": "在 task-99 基线上将 stripLineToContentResidual 在缺少 `>`/列表缩进时改为返回 null（真实空行仍为 \"\"），避免 isBlankLine(\"\") 误判为 lazy 续行。新增 resolveContentLine，在 strict strip 失败时用 ancestor 或 rawLine 作为 tipLine/markerLine；lineContinuesWithLazy 在 residual 为 null 时返回 false；buildContentLineView 在 strip 失败时截断；兄弟项检测对 null 回退 rawLine。CLI 冒烟 (1)–(4) 均通过，已提交。",
+        "oversized_files": [
+          {
+            "file": "src/blocks/container-stack.ts",
+            "lines": 425
+          }
+        ],
+        "guide_note": "stripLineToContentResidual 失败返回 null，勿与空行 \"\" 混用 isBlankLine。"
+      },
+      "attempts": 1
+    },
+    "task-102": {
+      "id": "task-102",
+      "kind": "leaf",
+      "title": "Final CLI e2e wire + Field Guide nest notes",
+      "parent": "plan-06",
+      "deps": [
+        "task-101"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/index.ts",
+        "src/cli.ts",
+        "src/render.ts",
+        "src/blocks/document.ts"
+      ],
+      "spec_sections": [
+        "Precedence"
+      ],
+      "notes": "After task-101: confirm index/cli pipeline (normalize → runPhase1 → parseInlines → render) unchanged and complete. Only fix regressions surfaced by smoke (do not re-architect). Append Field Guide one-liners for strip null-on-failure and nested lazy/sibling smokes. npm run build must pass.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-103": {
+      "id": "task-103",
+      "kind": "leaf",
+      "title": "strip null-on-failure + tryStripContainers + lazy continue",
+      "parent": "plan-04",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/container-strip.ts",
+        "src/blocks/container-stack.ts"
+      ],
+      "spec_sections": [
+        "Block quotes",
+        "List items",
+        "Lists",
+        "Blank lines",
+        "Precedence"
+      ],
+      "notes": "CURRENT BUG: stripLineToContentResidual still returns '' on missing > / list indent (failure-as-blank). In container-strip.ts only: (1) change return type to string|null — null on strip failure, '' only for successful blank residual; (2) add tryStripContainers(raw, stack) => {ok, residual} returning partial residual at first failing frame; (3) rewrite lineContinuesWithLazy to use tryStripContainers(rawLine, stack.slice(0,-1)) per DESIGN (if !ok: no blank-continue; keep top iff tip!=null && !residualIsBlockStarting(partial); if ok: blank / continuesListItem / sibling marker / lazy tip order); (4) buildContentLineView: only strip when strict continue holds, then ?? '' ok. Re-export tryStripContainers from container-stack.ts. Do not edit document.ts. Do not re-merge container modules.",
+      "report": {
+        "status": "done",
+        "summary": "已将 prefix-strip 逻辑拆到 `container-strip.ts`：`tryStripContainers` 在首帧失败时返回 partial residual；`stripLineToContentResidual` 仅在成功时返回 `''`/`string`，失败为 `null`；`lineContinuesWithLazy` 在 `!ok` 时不当作 blank-continue，仅在 `tip!=null` 且 partial 非 block-start 时保持容器；`buildContentLineView` 在 strict continue 通过后用 `strip ?? ''`。`container-stack.ts` 重新导出上述 API，并在 `contracts.ts` 导出 `tryStripContainers`。工作区已 fast-forward 合并 task-101 基线后提交。",
+        "oversized_files": [],
+        "guide_note": "`tryStripContainers` 在 `!ok` 时返回 partial residual；lazy 续行据此与 active tip 判定，勿把 strip 失败当 blank。"
+      },
+      "attempts": 1
+    },
+    "task-104": {
+      "id": "task-104",
+      "kind": "leaf",
+      "title": "document residual wire: tryStrip lazy tip + sibling + open markers",
+      "parent": "plan-04",
+      "deps": [
+        "task-103"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/document.ts"
+      ],
+      "spec_sections": [
+        "Block quotes",
+        "List items",
+        "Lists",
+        "Blank lines",
+        "Precedence",
+        "Paragraphs"
+      ],
+      "notes": "Depends on task-103 null/tryStrip APIs. Wire document.ts to DESIGN Lazy tip residual + sibling + open-markers rules: resolveContentLine step1 strict full strip; step2 lazy tip => tryStripContainers(raw, stack.slice(0,-1)).residual (never treat failed strip as blank); step3 no tip => buildContentLineView.contentLine. Sibling path: tryStrip ancestor only; only if ok call closeListItemForSiblingMarker+openListItem on residual; if !ok skip. processLineContent: open blockquote/list markers on the resolved contentLine, NOT a second full-stack stripLineToContentResidual(raw, stack). Handle null from strip (do not call isBlankLine on null). Keep tip finalize/blank/setext/interrupt order. Scope: document.ts only. CLI smoke: - a\\n  - b\\n- c ; > foo\\nbar ; > > foo\\nbar ; > - foo\\nbar.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-105": {
+      "id": "task-105",
+      "kind": "leaf",
+      "title": "Final CLI e2e smoke + Field Guide nest notes",
+      "parent": "plan-06",
+      "deps": [
+        "task-104"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/index.ts",
+        "src/cli.ts",
+        "src/render.ts",
+        "guide/index.md"
+      ],
+      "spec_sections": [
+        "Precedence"
+      ],
+      "notes": "After task-104: verify node dist/cli.js stdin→stdout path (index/cli/render already wired — minimal fixes only if broken). CLI smoke DESIGN nest targets plus tight/loose lists and a mixed inline sample. Append short Field Guide notes: strip null-on-failure vs blank; tryStripContainers for lazy/sibling; open markers on resolved residual only. No new architecture or test harness.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-106": {
+      "id": "task-106",
+      "kind": "leaf",
+      "title": "Sibling marker: tryStrip ok-gate (no ?? rawLine)",
+      "parent": "plan-04",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/document.ts"
+      ],
+      "spec_sections": [
+        "List items",
+        "Lists",
+        "Blank lines",
+        "Precedence",
+        "Block quotes",
+        "Paragraphs"
+      ],
+      "notes": "task-103 已落地 tryStripContainers；document.resolveContentLine 的 lazy tip 与 open markers（用 contentLine）已基本正确。本任务只修 parseDocument 兄弟项路径。\n\n当前错误（约 L198–207）：\n`markerLine = stripLineToContentResidual(raw, stack.slice(0,-1)) ?? rawLine`\nstrip 失败时退回 rawLine，违反 DESIGN（Forbidden：failure 当 blank/raw；兄弟项必须 ancestor tryStrip + ok 门控）。\n\n改为（仅当 tipHolder 为 list_item）：\n1. `const s = tryStripContainers(rawLine, stack.slice(0,-1))`\n2. 若 `!s.ok`：跳过兄弟项路径（交给 popContainersThatEnded）\n3. 若 `s.ok`：`markerLine = s.residual`，再 `closeListItemForSiblingMarker` + `openListItem`\n\nForbidden：`?? rawLine` / `?? \"\"`；全栈 strip 做兄弟检测；改 container-strip 架构。\n\nnpm run build 后 CLI 冒烟：`- a\\n- b`；`- a\\n\\n- b`（loose）；`- foo\\n  - bar`（嵌套）；`- a\\n  - b\\n- c`（嵌套+外层兄弟）；`> foo\\nbar`；`> > foo\\nbar`；`> - foo\\nbar`。",
+      "report": {
+        "status": "done",
+        "summary": "parseDocument 兄弟项路径改用 tryStripContainers(ancestor)+ok 门控，移除 strip 失败时退回 rawLine；列表 CLI 冒烟通过。分支已 FF 至 task-103。",
+        "oversized_files": [],
+        "guide_note": "Sibling list markers in parseDocument: tryStripContainers + ok gate only—never rawLine fallback on strip failure."
+      },
+      "attempts": 1
+    },
+    "task-107": {
+      "id": "task-107",
+      "kind": "leaf",
+      "title": "Final CLI e2e smoke + Field Guide nest notes",
+      "parent": "plan-06",
+      "deps": [
+        "task-106"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/index.ts",
+        "src/cli.ts",
+        "guide/index.md"
+      ],
+      "spec_sections": [
+        "Precedence"
+      ],
+      "notes": "依赖 task-106。管道应已是：normalize → runPhase1 → parseInlines → render；cli stdin→stdout。仅在 e2e 断线时最小修补 index/cli；不要重写 render/document。\n\nCLI 复验 DESIGN nest smoke；在 guide/index.md 追加短条目：兄弟项用 tryStripContainers(ancestor)+ok；lazy tip residual=partial 且永不 failure-as-blank；上述列表/引用嵌套样例。保持 Field Guide 精简。",
+      "report": null,
+      "attempts": 0
+    },
+    "task-108": {
+      "id": "task-108",
+      "kind": "leaf",
+      "title": "Setext only when strict container continue",
+      "parent": "plan-04",
+      "deps": [],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/document.ts"
+      ],
+      "spec_sections": [
+        "Setext headings",
+        "Block quotes",
+        "List items",
+        "Paragraphs"
+      ],
+      "notes": "DESIGN already locks Setext vs lazy. In processLineContent, call finalizeSetext/matchSetextUnderline only when strictLineContinuesContainers(stack, rawLine). On lazy tip residual (strict false): skip setext; fall through to isBlockStartingLine interrupt or tip.push. Smoke: '> foo\\nbar\\n===' → one blockquote paragraph including === (not setext); root 'Foo\\n===' still h1; '> foo\\n> ===' (strict) → setext inside quote. npm run build. No architecture changes.",
+      "report": {
+        "status": "blocked",
+        "summary": "agent exit 1",
+        "oversized_files": []
+      },
+      "attempts": 1
+    },
+    "task-109": {
+      "id": "task-109",
+      "kind": "leaf",
+      "title": "link-def decodeString + fenced info entities",
+      "parent": "plan-03",
+      "deps": [],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/link-def.ts",
+        "src/blocks/fenced-code.ts"
+      ],
+      "spec_sections": [
+        "Link reference definitions",
+        "Entity and numeric character references",
+        "Fenced code blocks"
+      ],
+      "notes": "DESIGN Where to decode: link-def destination/title must use decodeString from util/escape.ts (unescape then entities). Forbidden: unescape-only cleanUrl/cleanTitle. fenced-code: after trimInfoString, decodeCharacterReferences on info before firstWord/lang; do not Markdown-unescape info; code body stays raw. npm run build. No document/registry changes.",
+      "report": {
+        "status": "done",
+        "summary": "link-def 用 decodeString 处理引用定义的目的地与标题（替代仅 unescape 的 cleanUrl/cleanTitle）；fenced-code 在 trim 后对 info 做 decodeCharacterReferences 再解析 lang，代码内容不解码。cross-scope 引入 escape/link-label 依赖以通过 tsc。",
+        "oversized_files": [],
+        "guide_note": "Link ref defs: decodeString on dest/title; fenced lang: decodeCharacterReferences on info only (no backslash unescape)."
+      },
+      "attempts": 1
+    },
+    "task-110": {
+      "id": "task-110",
+      "kind": "leaf",
+      "title": "Final CLI e2e smoke + Field Guide notes",
+      "parent": "plan-06",
+      "deps": [
+        "task-108",
+        "task-109"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/index.ts",
+        "src/cli.ts",
+        "guide/index.md"
+      ],
+      "spec_sections": [
+        "Precedence"
+      ],
+      "notes": "Confirm renderMarkdown/cli already wire normalize→Phase1→Phase2→render; touch index/cli only if broken. CLI smoke: nested list '- a\\n  - b\\n- c'; lazy '> foo\\nbar', '> > foo\\nbar', '> - foo\\nbar'; setext-lazy '> foo\\nbar\\n==='; loose '- a\\n\\n- b'; simple emph/link. Append ≤5 Field Guide bullets (setext needs strict continue; sibling tryStrip ok-gate; link-def decodeString; fenced info entities). Keep guide/index.md under ~80 lines. No test harness.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-111": {
+      "id": "task-111",
+      "kind": "leaf",
+      "title": "Resolve merge conflicts: link-def/fenced decode + Field Guide",
+      "parent": "plan-06",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/link-def.ts",
+        "src/blocks/fenced-code.ts",
+        "guide/index.md"
+      ],
+      "spec_sections": [
+        "Link reference definitions",
+        "Entity and numeric character references",
+        "Fenced code blocks"
+      ],
+      "notes": "Workspace is mid-merge with conflict markers. Keep task-109 semantics: link-def destinations/titles via decodeString (not unescape-only); fenced info trim then decodeCharacterReferences for lang (no MD backslash unescape on info; body undecoded). Merge guide/index.md: keep HEAD findings AND append the link-ref/fenced decode bullet; remove all <<<<<<< / ======= / >>>>>>> markers; keep index under ~80 lines. git add the three files so the tree compiles. Do not change document.ts / setext logic.",
+      "report": {
+        "status": "done",
+        "summary": "合并 task-109 与 task-106；确认 link-def 对 destination/title 使用 decodeString、fenced info 在 trim 后仅用 decodeCharacterReferences 解析 lang；合并 guide/index.md 并移除冲突标记；完成 merge commit。",
+        "oversized_files": [],
+        "guide_note": "Link ref 与 fenced info 在 Phase 1 解码，代码块正文保持字面量。"
+      },
+      "attempts": 1
+    },
+    "task-112": {
+      "id": "task-112",
+      "kind": "leaf",
+      "title": "Gate setext finalize on strict container continue",
+      "parent": "plan-04",
+      "deps": [
+        "task-111"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/document.ts"
+      ],
+      "spec_sections": [
+        "Setext headings",
+        "Block quotes",
+        "List items",
+        "Paragraphs"
+      ],
+      "notes": "Bug in processLineContent: matchSetextUnderline → finalizeSetext runs even on lazy tip residuals. Per DESIGN Setext vs lazy: call finalizeSetext ONLY when strictLineContinuesContainers(stack, rawLine) is true; if strict false (lazy tip kept open), skip setext entirely and fall through to interrupt / tip append. Pass rawLine (lines[absPos]) into processLineContent for the gate. Smoke via CLI: `> foo\\nbar\\n===` → one blockquote paragraph foo+softbreak+bar+softbreak+=== (NOT setext); root `foo\\n===` still setext h1; `> foo\\n>---` / indented list setext underlines that strictly continue still finalize. npm run build. Scope: document.ts only.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-113": {
+      "id": "task-113",
+      "kind": "leaf",
+      "title": "Final CLI e2e smoke + Field Guide nest notes",
+      "parent": "plan-06",
+      "deps": [
+        "task-111",
+        "task-112"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/index.ts",
+        "src/cli.ts",
+        "guide/index.md"
+      ],
+      "spec_sections": [
+        "Precedence"
+      ],
+      "notes": "Verify node dist/cli.js stdin→stdout path after build. Smoke (must match CM): `- a\\n- b`; `- a\\n\\n- b` loose; `- foo\\n  - bar` nested; `- a\\n  - b\\n- c`; `> foo\\nbar`; `> > foo\\nbar`; `> - foo\\nbar`; `> foo\\nbar\\n===` not setext; ref link with entity dest; fenced info entity lang. Only touch index/cli if wiring broken; append ≤3 short Field Guide nest notes if missing. No architecture changes.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-114": {
+      "id": "task-114",
+      "kind": "leaf",
+      "title": "Gate setext finalize on strict container continue",
+      "parent": "plan-02",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/document.ts"
+      ],
+      "spec_sections": [
+        "Setext headings",
+        "Block quotes",
+        "List items",
+        "Paragraphs"
+      ],
+      "notes": "BUG confirmed in processLineContent (~L121-126): tip open + matchSetextUnderline(contentLine) always finalizeSetext — misses DESIGN Setext-vs-lazy gate. Fix only: call finalizeSetext iff strictLineContinuesContainers(stack, lines[absPos] ?? \"\") is true (use raw doc line, not residual). When strict is false (lazy tip kept open): do NOT setext; fall through to isBlockStartingLine interrupt or tip.push(contentLine). Example: `> foo\\nbar\\n===` → one blockquote paragraph foo + softbreak + bar + softbreak + === (not heading). Still allow strict in-container setext: `> Foo\\n> ===` → h1 inside quote. Root `Foo\\n===` unchanged. Touch only document.ts; no strip/stack redesign. npm run build + those CLI smokes. Commit.",
+      "report": {
+        "status": "done",
+        "summary": "在 processLineContent 中为 setext 增加 strictLineContinuesContainers(stack, rawLine) 门控；strip 失败时对 resolveContentLine 传 null 以保留 lazy 续行文本。已 build 并通过相关 smoke，已提交。",
+        "oversized_files": [],
+        "guide_note": "Setext under open paragraph tip: finalizeSetext only if strictLineContinuesContainers(stack, rawLine)."
+      },
+      "attempts": 1
+    },
+    "task-115": {
+      "id": "task-115",
+      "kind": "leaf",
+      "title": "Final CLI e2e smoke + Field Guide nest notes",
+      "parent": "plan-06",
+      "deps": [
+        "task-114"
+      ],
+      "status": "pending",
+      "files_scope": [
+        "src/index.ts",
+        "src/cli.ts",
+        "guide/index.md"
+      ],
+      "spec_sections": [
+        "Precedence"
+      ],
+      "notes": "After task-114: verify `node dist/cli.js` stdin→stdout path (index/cli already wired — fix only if broken). Smoke: thematic/ATX/setext; `> foo\\nbar`; `> foo\\nbar\\n===` (not setext); `- a\\n- b`; `- a\\n\\n- b` loose; `- foo\\n  - bar` nested; `- a\\n  - b\\n- c`; `> > foo\\nbar`; `> - foo\\nbar`; link ref + `[x]`; `*a*`/`**a**`; hardbreak `a  \\nb`. Append ≤5 short Field Guide bullets for nest/lazy/setext surprises only. No architecture changes. Commit.",
+      "report": null,
+      "attempts": 0
+    }
+  },
+  "done": false,
+  "planner_rounds": 22
+}

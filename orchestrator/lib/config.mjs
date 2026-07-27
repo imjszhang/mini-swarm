@@ -4,8 +4,21 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 
-const STRONG_ROLES = new Set(["adjudicator", "cluster", "decomposer", "repair-strong"]);
-const REVIEWER_ROLES = new Set(["overfit-reviewer", "reviewer"]);
+const STRONG_ROLES = new Set([
+  "adjudicator",
+  "cluster",
+  "decomposer",
+  "repair-strong",
+  "swarm-planner",
+  "splitter",
+  "review-spec",
+]);
+const REVIEWER_ROLES = new Set([
+  "overfit-reviewer",
+  "reviewer",
+  "review-diff",
+  "review-codebase",
+]);
 
 function normalizeRepair(raw) {
   const r = raw.repair && typeof raw.repair === "object" ? raw.repair : null;
@@ -66,6 +79,20 @@ function normalizeHoldout(raw) {
   };
 }
 
+function normalizeSwarm(raw) {
+  const s = raw.swarm && typeof raw.swarm === "object" ? raw.swarm : {};
+  return {
+    budgetMinutes: s.budgetMinutes ?? 240,
+    concurrency: s.concurrency ?? 4,
+    reviewEveryNMerges: s.reviewEveryNMerges ?? 3,
+    reviewPerspectives: s.reviewPerspectives ?? 3,
+    oversizedFileLines: s.oversizedFileLines ?? 400,
+    maxTreeDepth: s.maxTreeDepth ?? 2,
+    guideMaxLines: s.guideMaxLines ?? raw.guideMaxLines ?? 80,
+    observeScoreEveryMerges: s.observeScoreEveryMerges ?? 1,
+  };
+}
+
 /**
  * Resolve model slug for a role. Strong roles → models.strong → worker;
  * reviewer-like → models.reviewer → worker; else models[role] → worker.
@@ -85,6 +112,7 @@ export function listConfiguredModels(config) {
   const roles = [
     "planner", "worker", "merger", "reviewer", "strong",
     "adjudicator", "cluster", "decomposer", "repair-strong", "overfit-reviewer",
+    "swarm-planner", "splitter", "review-diff", "review-codebase", "review-spec",
   ];
   const set = new Set();
   for (const role of roles) set.add(resolveModel(config, role));
@@ -103,6 +131,11 @@ export function loadConfig(overrides = {}) {
   };
   merged.repair = normalizeRepair({ ...raw, ...overrides, repair: overrides.repair || raw.repair });
   merged.holdout = normalizeHoldout({ ...raw, ...overrides, holdout: overrides.holdout || raw.holdout });
+  merged.swarm = normalizeSwarm({
+    ...raw,
+    ...overrides,
+    swarm: { ...(raw.swarm || {}), ...(overrides.swarm || {}) },
+  });
   return merged;
 }
 

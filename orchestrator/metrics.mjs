@@ -187,6 +187,11 @@ export function createMetricsCollector(runDir) {
     spec_ambiguities: [],
     unowned_requirements: [],
     oracle_literal_hits: [],
+    swarm_planner_rounds: 0,
+    tree_stats: null,
+    reviews: [],
+    splits: [],
+    oversized_blocks: [],
     visible_score: null,
     holdout_score: null,
     holdout_gap_pp: null,
@@ -247,6 +252,9 @@ export function createMetricsCollector(runDir) {
       data.global_repairs.push({ ...entry, at: new Date().toISOString() });
       data.global_repair_count = data.global_repairs.length;
     },
+    recordOversizedBlock(entry) {
+      data.oversized_blocks.push({ ...entry, at: new Date().toISOString() });
+    },
     recordTask(entry) {
       const idx = data.tasks.findIndex((t) => t.id === entry.id);
       if (idx >= 0) data.tasks[idx] = { ...data.tasks[idx], ...entry };
@@ -269,7 +277,10 @@ export function createMetricsCollector(runDir) {
         .filter((c) => c.role === "adjudicator" || c.role === "cluster")
         .reduce((s, c) => s + (c.elapsedMs || 0), 0);
       const strong_model_time_ms = agentCalls
-        .filter((c) => ["repair-strong", "decomposer", "adjudicator", "cluster"].includes(c.role))
+        .filter((c) => [
+          "repair-strong", "decomposer", "adjudicator", "cluster",
+          "swarm-planner", "splitter", "review-spec",
+        ].includes(c.role))
         .reduce((s, c) => s + (c.elapsedMs || 0), 0);
       Object.assign(data, {
         repair_time_ms,
@@ -334,6 +345,11 @@ export function normalizeMetrics(raw) {
   m.spec_ambiguities = m.spec_ambiguities || [];
   m.unowned_requirements = m.unowned_requirements || [];
   m.oracle_literal_hits = m.oracle_literal_hits || [];
+  m.swarm_planner_rounds = m.swarm_planner_rounds ?? 0;
+  m.tree_stats = m.tree_stats ?? null;
+  m.reviews = m.reviews || [];
+  m.splits = m.splits || [];
+  m.oversized_blocks = m.oversized_blocks || [];
   m.visible_score = m.visible_score ?? null;
   m.holdout_score = m.holdout_score ?? null;
   m.holdout_gap_pp = m.holdout_gap_pp ?? null;

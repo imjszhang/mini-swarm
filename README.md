@@ -35,6 +35,11 @@ npm run contention:report -- runs/RUN_ID/metrics.json
 npm run spec:generate         # synthetic gen-examples for Stage B self-verify
 npm run preflight:models      # probe composer + strong model slugs
 
+# v13 Cursor-faithful swarm (S-A-008; zero test signal; wall-clock budget)
+npm run swarm:mock            # scripted planner/worker end-to-end
+npm run swarm                 # full swarm (default 240 min budget)
+npm run swarm:smoke           # live smoke: 15 min, concurrency 2
+
 # Resume an interrupted run (task-level; requires progress.json)
 npm run salvage -- --run-id=RUN_ID --task-set=contention   # rebuild progress from wreckage
 npm run run:contention:bare -- --run-id=RUN_ID --resume    # continue skipped done tasks
@@ -141,21 +146,43 @@ Each live run also writes `progress.json` (task statuses + phase) for crash reco
 
 Part of @js trilogy: loop → harness → **swarm**. Source blog: Cursor Agent Swarm Model Economics.
 
-## Fidelity boundary
+## Fidelity boundary (v13 swarm vs S-A-008)
 
-`faithful` reproduces a small, Git-backed subset of Cursor's newer swarm framework:
+**Source of truth**: Cursor blog *Agent Swarm and Model Economics*
+(`https://cursor.com/cn/blog/agent-swarm-model-economics`, registered as **S-A-008** in x-articles-js).
+Only components **explicitly claimed** in that source are reproduced. Components not in the source
+are **not** claimed as Cursor fidelity.
 
-- planner/worker context specialization
-- shared design decisions and a worker-maintained Field Guide
-- neutral third-party conflict resolution
-- targeted cross-scope patches instead of hard rejection
-- compiler failures feeding an integration-fix loop
-- compile-checked interface stubs via `src/contracts.ts` (contention / faithful)
+### Reproduced (v13 `npm run swarm`)
 
-v10 adds VCS-layer merge validity gating, worktree freshness sync, and a final global repair phase (both arms). Task-level `--resume` / `salvage` recover interrupted runs.
+| # | Component (S-A-008) | Status in mini-swarm |
+|---|---|---|
+| 1 | Strong-model planner: tree decompose + delegate; planner never implements; planner owns design decisions | `swarm-planner` (models.strong) writes `DESIGN.md` + `tree.json` actions |
+| 2 | Cheap/fast workers execute leaf nodes | `composer-2.5-fast` workers on ready leaves |
+| 3 | No fixed topology / scale with complexity | Dynamic task tree (`maxTreeDepth` cap for safety) |
+| 4 | Custom high-throughput VCS | **Boundary**: git worktrees + merge queue (not a custom VCS) |
+| 5 | Shared design docs + compile-checked references | `DESIGN.md` + `src/contracts.ts` |
+| 6 | Neutral third-party merge resolver | `merger` role in MergeQueue |
+| 7 | Oversized file: mark → block commit → external split | merge-queue line-count gate → `splitter` (strong) |
+| 8 | Cross-scope destructive patches + compiler-driven fix | faithful worktrees + integration-fix on build fail |
+| 9 | Multi-perspective low-correlation review stack | `review-diff` / `review-codebase` / `review-spec` (mixed model tiers) |
+| 10 | Field Guide folder (`index.md` inject + line budget) | `guide/index.md` (+ notes); workers append surprises |
+| 11 | Spec-as-prompt; scoring tests **hidden from agents** | Zero test signal: agents never see examples / pass-fail / VERIFY_CMD; scorer is harness-only observation |
+| 12 | Fixed wall-clock budget + metrics | `swarm.budgetMinutes` (default 240); four core metrics + commits/conflicts/LOC |
 
-v11 replaces the simple global-repair phase with a generic quality loop (holdout, ledger, adjudication, adaptive clusters, best-of-N). Mechanism modules stay task-agnostic; CommonMark specifics live in `spec/` + `scorer/` + the verifier facade.
+### Explicitly NOT claimed (absent from S-A-008 raw)
 
-v12 adds Stage B blind / full-suite acceptance, synthetic gen-examples, strong-model rung3 + decomposer, and an overfit reviewer. Holdout after Stage B is no longer a pure blind final exam — it guides harness acceptance without leaking example text into agent prompts.
+- Persistent planner re-plan loop as a named Cursor feature (we do re-invite the planner with reports for practicality; not marketed as source-text)
+- Supervisor that kills stuck agents / auto re-dispatch
+- Named Judge acceptance gate
+- Swarm-authored tests
+- Fixed parallelism N / hundreds of concurrent agents (we keep concurrency ≈ 4)
+- 835-page SQL spec scale (we use CommonMark `spec/spec.txt`)
+
+### Legacy pipeline (v8–v12)
+
+`npm run` / `run:contention:*` keep the test-driven linear pipeline
+(planner → pool + score feedback → Stage A/B repair) as an **architectural control**.
+That path intentionally exposes failing examples to agents and is **not** S-A-008-faithful.
 
 It does **not** reproduce Cursor's custom high-throughput VCS, multiple planner trees, bloated-file decomposition, or stacked multi-perspective review. Results measure this minimal reproduction, not Cursor's production swarm.
