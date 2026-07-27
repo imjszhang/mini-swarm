@@ -83,13 +83,18 @@ function normalizeSwarm(raw) {
   const s = raw.swarm && typeof raw.swarm === "object" ? raw.swarm : {};
   return {
     budgetMinutes: s.budgetMinutes ?? 240,
-    concurrency: s.concurrency ?? 4,
-    reviewEveryNMerges: s.reviewEveryNMerges ?? 3,
+    runToDone: !!s.runToDone,
+    maxWallMinutes: s.maxWallMinutes ?? 480,
+    concurrency: s.concurrency ?? 8,
+    plannerReportBatch: s.plannerReportBatch ?? 3,
+    reviewEveryNMerges: s.reviewEveryNMerges ?? 5,
     reviewPerspectives: s.reviewPerspectives ?? 3,
     oversizedFileLines: s.oversizedFileLines ?? 400,
     maxTreeDepth: s.maxTreeDepth ?? 2,
     guideMaxLines: s.guideMaxLines ?? raw.guideMaxLines ?? 80,
-    observeScoreEveryMerges: s.observeScoreEveryMerges ?? 1,
+    observeScoreEveryMerges: s.observeScoreEveryMerges ?? 3,
+    specTextMaxChars: s.specTextMaxChars ?? 64000,
+    maxLeafAttempts: s.maxLeafAttempts ?? 3,
   };
 }
 

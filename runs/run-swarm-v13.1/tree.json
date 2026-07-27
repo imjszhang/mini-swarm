@@ -1,0 +1,4212 @@
+{
+  "version": 1,
+  "next_id": 3,
+  "nodes": {
+    "plan-foundation": {
+      "id": "plan-foundation",
+      "kind": "plan",
+      "title": "Foundation utilities and AST conventions",
+      "parent": null,
+      "deps": [],
+      "status": "open",
+      "notes": ""
+    },
+    "plan-blocks": {
+      "id": "plan-blocks",
+      "kind": "plan",
+      "title": "Block-structure parsers",
+      "parent": null,
+      "deps": [],
+      "status": "open",
+      "notes": ""
+    },
+    "plan-inlines": {
+      "id": "plan-inlines",
+      "kind": "plan",
+      "title": "Inline parsers and scanners",
+      "parent": null,
+      "deps": [],
+      "status": "open",
+      "notes": ""
+    },
+    "plan-pipeline": {
+      "id": "plan-pipeline",
+      "kind": "plan",
+      "title": "Phases, registration order, render, wiring",
+      "parent": null,
+      "deps": [],
+      "status": "open",
+      "notes": ""
+    },
+    "task-tabs": {
+      "id": "task-tabs",
+      "kind": "leaf",
+      "title": "Tab expansion helpers (col 4)",
+      "parent": "plan-foundation",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/util/tabs.ts"
+      ],
+      "spec_sections": [
+        "Tabs"
+      ],
+      "notes": "Export expandTabs/indent column helpers per CommonMark tab-as-spaces-to-multiple-of-4. Pure util; no registry. Other block tasks will import this.",
+      "report": {
+        "status": "done",
+        "summary": "新增 expandTabs(line)（整行 \\t → 空格，列宽 4）与 indentWidth(line)（仅统计行首空格/制表符的列宽）。npm run build 通过。Tabs 节的端到端 spec 示例需后续 block 解析器接入本 util 后才能在 CLI 上对齐；已用 node 对制表符缩进、>+双 tab 等场景做了单元级自检。",
+        "oversized_files": [],
+        "guide_note": "indentWidth 只统计行首 space/tab；块标记（如 >）需先剥离再对剩余部分用 expandTabs 量缩进。",
+        "self_checked": 6
+      },
+      "attempts": 1
+    },
+    "task-escapes": {
+      "id": "task-escapes",
+      "kind": "leaf",
+      "title": "Backslash escape helper",
+      "parent": "plan-foundation",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/util/escapes.ts"
+      ],
+      "spec_sections": [
+        "Backslash escapes"
+      ],
+      "notes": "Implement ASCII-punctuation backslash unescaping per spec. Export functions only; do not invent new global architecture.",
+      "report": {
+        "status": "done",
+        "summary": "CommonMark 反斜杠转义工具已在 src/util/escapes.ts 实现：isAsciiPunctuation 与 unescapeMarkdown；仅当下一码元为 ASCII 标点时去掉 \\，否则保留字面反斜杠。已 build，并对规范片段做了 6 项函数级自检。",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 6
+      },
+      "attempts": 1
+    },
+    "task-entities": {
+      "id": "task-entities",
+      "kind": "leaf",
+      "title": "Entity and numeric character references",
+      "parent": "plan-foundation",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/util/entities.ts"
+      ],
+      "spec_sections": [
+        "Entity and numeric character references"
+      ],
+      "notes": "Decode named entities, decimal and hex numeric refs as CommonMark requires. Export decode helpers for inline/destination use.",
+      "report": {
+        "status": "done",
+        "summary": "Implemented src/util/entities.ts with embedded HTML5 named-entity map, decimal/hex numeric reference parsing (invalid/U+0000 → U+FFFD), and decodeCharacterReference / decodeCharacterReferences exports for inline and destination decoding.",
+        "oversized_files": [],
+        "guide_note": "Numeric refs: after &#, x/X selects hex (1–6 digits); otherwise decimal (1–7 digits). Eight decimal digits before ; is a non-entity.",
+        "self_checked": 8
+      },
+      "attempts": 1
+    },
+    "task-escape-html": {
+      "id": "task-escape-html",
+      "kind": "leaf",
+      "title": "HTML output escaping helper",
+      "parent": "plan-foundation",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/util/escape-html.ts"
+      ],
+      "spec_sections": [
+        "Textual content"
+      ],
+      "notes": "Export escapeHtml for text/attributes (& < > \"). Parsing of textual content nodes is separate (task-inline-text); this is the render-side literal text rules.",
+      "report": {
+        "status": "done",
+        "summary": "新增 escapeHtml(s)，用链式 replace 转义 & < > \"，供 render 侧文本与属性值使用；npm run build 通过，已对转义用例与 spec「Textual content」三则示例做自检。",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 3
+      },
+      "attempts": 1
+    },
+    "task-types": {
+      "id": "task-types",
+      "kind": "leaf",
+      "title": "Document AST field conventions in types",
+      "parent": "plan-foundation",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/types.ts",
+        "src/contracts.ts"
+      ],
+      "spec_sections": [],
+      "notes": "Align comments/exported aliases with DESIGN.md AST table. Keep open index signatures so parallel parser leaves compile. Update contracts re-exports if needed.",
+      "report": {
+        "status": "done",
+        "summary": "在 types.ts 中记录块/内联 AST 字段约定、LinkRefMap，并导出与 DESIGN.md 对齐的 narrowing 别名；contracts.ts 同步 re-export。构建通过。",
+        "oversized_files": [],
+        "guide_note": "LinkRefMap 与 LinkRefEntry 现由 types.ts 定义，block-phase 可直接 import 而无需重复声明。",
+        "self_checked": 0
+      },
+      "attempts": 1
+    },
+    "task-thematic": {
+      "id": "task-thematic",
+      "kind": "leaf",
+      "title": "Thematic break block parser",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/thematic.ts"
+      ],
+      "spec_sections": [
+        "Thematic breaks"
+      ],
+      "notes": "Export parseThematicBreak(lines,pos). Emit {type:'thematic_break'}. Do not register; load.ts will. Honor indent ≤3 and *-_- rules.",
+      "report": {
+        "status": "done",
+        "summary": "新增 src/blocks/thematic.ts，导出 parseThematicBreak；按规范识别主题分隔线并产出 thematic_break 节点。",
+        "oversized_files": [],
+        "guide_note": "第 4 个前导空格须在「至多 3 个缩进空格」之后立刻判失败，不能当作 -/_/* 序列前的空白。",
+        "self_checked": 17
+      },
+      "attempts": 1
+    },
+    "task-atx": {
+      "id": "task-atx",
+      "kind": "leaf",
+      "title": "ATX heading block parser",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/atx.ts"
+      ],
+      "spec_sections": [
+        "ATX headings"
+      ],
+      "notes": "Export parseAtxHeading. Emit {type:'heading', level, text} (inlines filled later). Closing # rules and ≤3 indent per spec.",
+      "report": {
+        "status": "done",
+        "summary": "新增 src/blocks/atx.ts，导出 parseAtxHeading：≤3 空格缩进、1–6 个未转义 opening #、内容与 # 之间需空白（空标题除外）、可选 closing #（前需空白、尾部仅空白、尊重反斜杠转义），产出 { type: 'heading', level, text }。cross-scope：load.ts 注册、index 引入 load、render 输出 h1–h6 以便 CLI 自测。",
+        "oversized_files": [],
+        "guide_note": "ATX closing # 在 opening # 之后的整段 rest（含分隔空白）上自尾扫描，空标题 ### ### 才正确。",
+        "self_checked": 9
+      },
+      "attempts": 1
+    },
+    "task-setext": {
+      "id": "task-setext",
+      "kind": "leaf",
+      "title": "Setext heading block parser",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/setext.ts"
+      ],
+      "spec_sections": [
+        "Setext headings"
+      ],
+      "notes": "Export parseSetextHeading and/or helpers for underline detection. Coordinate via DESIGN: block-phase may promote a paragraph when next line is =/- setext underline.",
+      "report": {
+        "status": "done",
+        "summary": "实现 src/blocks/setext.ts：isSetextUnderline、多行 parseSetextHeading、段落提升 helper 及段落型内容行校验；通过 load.ts 注册。cross-scope 在 index.ts 做段落→Setext 提升，render.ts 输出 heading 与最小 inline 以便自测。",
+        "oversized_files": [],
+        "guide_note": "Setext paragraph promotion must reject content lines that are thematic breaks (`---`), or `---`/`---` pairs become spurious `<h2>`.",
+        "self_checked": 10
+      },
+      "attempts": 1
+    },
+    "task-indented-code": {
+      "id": "task-indented-code",
+      "kind": "leaf",
+      "title": "Indented code block parser",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/indented-code.ts"
+      ],
+      "spec_sections": [
+        "Indented code blocks"
+      ],
+      "notes": "Export parseIndentedCode. Emit {type:'code_block', fenced:false, lang:null, value}. Strip 4-space indent; handle blank lines inside.",
+      "report": {
+        "status": "done",
+        "summary": "新增 src/blocks/indented-code.ts：导出 parseIndentedCode / wouldInterruptOpenParagraph，按 CommonMark 解析缩进代码块（≥4 列缩进、块内空行、去掉 4 列、尾随空行不纳入块）。cross-scope：在 load.ts 注册解析器；在 block-phase 增加悬挂缩进段落延续，避免缩进代码打断未闭合段落。",
+        "oversized_files": [],
+        "guide_note": "Indented code blank lines: ≥4 columns of leading ws lose four columns in value; shorter whitespace-only lines become empty lines in the block.",
+        "self_checked": 7
+      },
+      "attempts": 1
+    },
+    "task-fenced-code": {
+      "id": "task-fenced-code",
+      "kind": "leaf",
+      "title": "Fenced code block parser",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/fenced-code.ts"
+      ],
+      "spec_sections": [
+        "Fenced code blocks"
+      ],
+      "notes": "Export parseFencedCode for ```/~~~ fences, info string → lang, closing fence rules, indent stripping.",
+      "report": {
+        "status": "done",
+        "summary": "新增 src/blocks/fenced-code.ts（parseFencedCode）：开头最多 3 空格、≥3 同字符围栏、反引号 info 禁含 `、闭合同型且长度≥开头且行尾仅空白、内容缩进剥离、未闭合吃到文档末；cross-scope 注册解析器并渲染 code_block。自测 7 个 spec 样例通过 CLI。",
+        "oversized_files": [],
+        "guide_note": "Closing fence lines must match /^ {0,3}([`~]+)[\\t ]*$/ only — any non-whitespace after the run keeps the line in the block.",
+        "self_checked": 7
+      },
+      "attempts": 1
+    },
+    "task-html-block": {
+      "id": "task-html-block",
+      "kind": "leaf",
+      "title": "HTML block parser (types 1–7)",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/html-block.ts"
+      ],
+      "spec_sections": [
+        "HTML blocks"
+      ],
+      "notes": "Export parseHtmlBlock implementing CommonMark HTML block types 1–7 start/end conditions. Emit {type:'html_block', value}.",
+      "report": {
+        "status": "done",
+        "summary": "在 src/blocks/html-block.ts 实现并导出 parseHtmlBlock：识别 CommonMark HTML 块类型 1–7 的起始条件，按规范延伸至对应结束条件，输出 { type: 'html_block', value }。为 CLI 自检做了最小 cross-scope：在 index 注册解析器、在 render 原样输出 html_block。",
+        "oversized_files": [],
+        "guide_note": "HTML 块分类顺序：CDATA(5) 须在 declaration(4) 之前，<!-- 须在 <!+letter 之前。",
+        "self_checked": 7
+      },
+      "attempts": 1
+    },
+    "task-link-ref": {
+      "id": "task-link-ref",
+      "kind": "leaf",
+      "title": "Link reference definition parser",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/link-ref.ts"
+      ],
+      "spec_sections": [
+        "Link reference definitions"
+      ],
+      "notes": "Export parseLinkRefDef returning node or a side-channel result the block-phase can fold into LinkRefMap. Prefer emitting a transient node type 'link_ref_def' with label/destination/title that block-phase strips from output, OR return {ref, next} documented in file header matching DESIGN LinkRefMap normalization.",
+      "report": {
+        "status": "oversized",
+        "summary": "Implemented parseLinkRefDef and normalizeLinkLabel in src/blocks/link-ref.ts (transient link_ref_def nodes). Wired registration and silent render for CLI block-level self-check.",
+        "oversized_files": [
+          "src/blocks/link-ref.ts"
+        ],
+        "guide_note": "Link ref titles on the next line require leading spaces/tabs on that line; a quote at column 0 after the destination line is not a title.",
+        "self_checked": 5
+      },
+      "attempts": 1
+    },
+    "task-paragraph": {
+      "id": "task-paragraph",
+      "kind": "leaf",
+      "title": "Paragraphs and blank lines",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/paragraph.ts"
+      ],
+      "spec_sections": [
+        "Paragraphs",
+        "Blank lines"
+      ],
+      "notes": "Export parseParagraph fallback: gather non-interrupt lines into paragraph text; blank lines end blocks and produce no node. Interruption checks can be stubs calling exported `canInterruptParagraph` hooks other modules may later refine; match DESIGN.",
+      "report": {
+        "status": "done",
+        "summary": "Implemented src/blocks/paragraph.ts (parseParagraph, isBlankLine, buildParagraphRawContent, interrupt hook registry). Added load.ts registration, block walker blank-line skipping and no document trim in index.ts, interim hard-break rendering in render.ts. Self-checked 7 embedded Paragraphs examples via dist/cli.js (stdin).",
+        "oversized_files": [],
+        "guide_note": "Paragraph fallback skips blank lines in the block walker; interrupt hooks end continuation.",
+        "self_checked": 7
+      },
+      "attempts": 1
+    },
+    "task-blockquote": {
+      "id": "task-blockquote",
+      "kind": "leaf",
+      "title": "Block quote parser",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/blockquote.ts"
+      ],
+      "spec_sections": [
+        "Block quotes"
+      ],
+      "notes": "Export parseBlockQuote. Strip quote marker/indent; nest children as BlockNode[]. Lazy continuation rules per spec; may recursively rely on block-phase later—export a content-line transformer usable by phase.",
+      "report": {
+        "status": "done",
+        "summary": "Added block quote parser with marker scan/strip helpers, line collection (consecutiveness + laziness via contentLineStartsBlock and parseBlockChildren comparison), nested children parsing, and minimal registration/rendering for CLI self-check.",
+        "oversized_files": [],
+        "guide_note": "Block quote laziness: same top-level block count after adding the line and the last block's text grows.",
+        "self_checked": 7
+      },
+      "attempts": 1
+    },
+    "task-list": {
+      "id": "task-list",
+      "kind": "leaf",
+      "title": "List items and lists",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/list.ts"
+      ],
+      "spec_sections": [
+        "List items",
+        "Lists"
+      ],
+      "notes": "Single module owns both sections. Export parseList emitting list/list_item tree; implement marker width, indented code inside items, tight/loose, ordered start. Follow DESIGN AST.",
+      "report": {
+        "status": "done",
+        "summary": "新增 `src/blocks/list.ts`：导出 `parseList` / `parseListMarker`，实现列表标记宽度、嵌套子列表（`baseColumn`）、项内缩进代码、紧/松列表与有序 `start`（≤9 位数字）。cross-scope：在 `index.ts` 注册解析器，在 `render.ts` 输出 ul/ol 与 tight/loose 的 `<p>` 规则。",
+        "oversized_files": [],
+        "guide_note": "Nested list markers use parseListMarker(line, parentContentColumn).",
+        "self_checked": 8
+      },
+      "attempts": 1
+    },
+    "task-code-span": {
+      "id": "task-code-span",
+      "kind": "leaf",
+      "title": "Code span inline scanner",
+      "parent": "plan-inlines",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/inline/code-span.ts"
+      ],
+      "spec_sections": [
+        "Code spans"
+      ],
+      "notes": "Export tryParseCodeSpan(text,pos) → {node,next}|null. Backtick fence rules, space stripping. No self-register.",
+      "report": {
+        "status": "done",
+        "summary": "新增 scanCodeSpan/tryParseCodeSpan：匹配等长 backtick 串、内容换行转空格、双侧 ASCII 空格时各剥一层（全非空格除外）；未闭合返回 null。",
+        "oversized_files": [],
+        "guide_note": "Closing fence must be a full backtick string of exactly openLen; use backtickStringLength at each candidate `.",
+        "self_checked": 13
+      },
+      "attempts": 1
+    },
+    "task-emphasis": {
+      "id": "task-emphasis",
+      "kind": "leaf",
+      "title": "Emphasis and strong emphasis delimiters",
+      "parent": "plan-inlines",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/inline/emphasis.ts"
+      ],
+      "spec_sections": [
+        "Emphasis and strong emphasis"
+      ],
+      "notes": "Export delimiter classification and pairing helpers for * and _ per CommonMark (flanking, multiple of 3 rule). Consumed by inline-phase stack; do not invent a separate pipeline.",
+      "report": {
+        "status": "done",
+        "summary": "新增 src/inline/emphasis.ts：scanDelimiterRun、classifyEmphasisDelimiter（规则 1–8）、flanking/mod-3/canPairEmphasisDelimiters 等导出；guide 补充 mod-3 说明。CLI 尚未接 inline-phase 强调，故用 dist 模块对 spec 样例（*foo bar*、foo*bar*、foo_bar_、*foo**bar*、**foo bar** 等）做分类/配对自检。",
+        "oversized_files": [],
+        "guide_note": "Emphasis mod-3: sum≡0 (mod 3) 且任一侧 both open+close 时，仅当两侧 run 长度均为 3 的倍数才允许配对。",
+        "self_checked": 8
+      },
+      "attempts": 1
+    },
+    "task-link": {
+      "id": "task-link",
+      "kind": "leaf",
+      "title": "Inline and reference links",
+      "parent": "plan-inlines",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/inline/link.ts"
+      ],
+      "spec_sections": [
+        "Links"
+      ],
+      "notes": "Export helpers to parse inline/full/collapsed/shortcut link after ']' matching. Destination/title parsing; use LinkRefMap from phase context passed as argument.",
+      "report": {
+        "status": "done",
+        "summary": "Confirmed link.ts suffix helpers (inline/full/collapsed/shortcut + dest/title via link-dest); integrated inline phase tryCloseLink to parseLinkSuffixAfterText so empty () and failed-inline fallthrough match the spec.",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 7
+      },
+      "attempts": 2
+    },
+    "task-image": {
+      "id": "task-image",
+      "kind": "leaf",
+      "title": "Image syntax",
+      "parent": "plan-inlines",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/inline/image.ts"
+      ],
+      "spec_sections": [
+        "Images"
+      ],
+      "notes": "Export ![...] image parse helpers mirroring links; emit {type:'image',...}.",
+      "report": {
+        "status": "done",
+        "summary": "新增 src/inline/image.ts：isImageOpenerAt、parseImageSuffixAfterText（委托 parseLinkSuffixAfterText）、参考标签别名、tryParse*ImageAfter 重导出、imageNodeFromSuffix 产出 {type:'image',destination,title,children}。cross-scope 引入 link.ts 与 link-dest 的 *In 扫描器以便后缀解析可编译；构建通过，8 项 helper 自检（inline/angle/empty-alt/full/collapsed/shortcut/转义 !/节点形状）均 OK。",
+        "oversized_files": [],
+        "guide_note": "Image suffix parsing reuses link tail helpers: parseImageSuffixAfterText → parseLinkSuffixAfterText with the same index-after-] contract.",
+        "self_checked": 8
+      },
+      "attempts": 1
+    },
+    "task-autolink": {
+      "id": "task-autolink",
+      "kind": "leaf",
+      "title": "Autolink scanner",
+      "parent": "plan-inlines",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/inline/autolink.ts"
+      ],
+      "spec_sections": [
+        "Autolinks"
+      ],
+      "notes": "Export tryParseAutolink for <http...> and <email@...> forms per spec.",
+      "report": {
+        "status": "done",
+        "summary": "新增 autolink 扫描器：URI scheme/body 与 HTML5 邮箱正则，导出 scanAutolink/tryParseAutolink，已提交。",
+        "oversized_files": [],
+        "guide_note": "Try URI autolinks before email so `<mailto:…>` keeps a literal mailto: URI destination, not mailto:mailto:.",
+        "self_checked": 10
+      },
+      "attempts": 1
+    },
+    "task-raw-html": {
+      "id": "task-raw-html",
+      "kind": "leaf",
+      "title": "Raw HTML inline scanner",
+      "parent": "plan-inlines",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/inline/raw-html.ts"
+      ],
+      "spec_sections": [
+        "Raw HTML"
+      ],
+      "notes": "Export tryParseHtmlInline for tags, comments, instructions, CDATA, declarations as CommonMark allows.",
+      "report": {
+        "status": "done",
+        "summary": "新增 scanRawHtml / tryParseHtmlInline，实现 CommonMark Raw HTML 内联扫描（标签/注释/PI/声明/CDATA）及布尔属性与后续属性并存的解析修复；guide 补充一行说明。",
+        "oversized_files": [],
+        "guide_note": "Raw HTML inline: after a boolean attribute (no `=`), do not consume the whitespace before the next attribute when probing for `=`.",
+        "self_checked": 18
+      },
+      "attempts": 1
+    },
+    "task-breaks": {
+      "id": "task-breaks",
+      "kind": "leaf",
+      "title": "Hard and soft line breaks",
+      "parent": "plan-inlines",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/inline/breaks.ts"
+      ],
+      "spec_sections": [
+        "Hard line breaks",
+        "Soft line breaks"
+      ],
+      "notes": "Export helpers: two+ spaces or \\\\ before EOL → hardbreak; otherwise newline → softbreak. Spaces before softbreak handling per spec.",
+      "report": {
+        "status": "done",
+        "summary": "no JSON report",
+        "oversized_files": [],
+        "self_checked": 0
+      },
+      "attempts": 1
+    },
+    "task-inline-text": {
+      "id": "task-inline-text",
+      "kind": "leaf",
+      "title": "Inline textual content tokenization",
+      "parent": "plan-inlines",
+      "deps": [],
+      "status": "retired",
+      "files_scope": [
+        "src/inline/text.ts"
+      ],
+      "spec_sections": [],
+      "notes": "Export text-node accumulation between specials; coordinate with escapes/entities via imports. Textual HTML escaping owned by task-escape-html.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-load-blocks": {
+      "id": "task-load-blocks",
+      "kind": "leaf",
+      "title": "Register block parsers in precedence order",
+      "parent": "plan-pipeline",
+      "deps": [
+        "task-thematic",
+        "task-atx",
+        "task-setext",
+        "task-indented-code",
+        "task-fenced-code",
+        "task-html-block",
+        "task-link-ref",
+        "task-paragraph",
+        "task-blockquote",
+        "task-list"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/load.ts",
+        "src/blocks/registry.ts"
+      ],
+      "spec_sections": [
+        "Precedence"
+      ],
+      "notes": "Import all block parsers and register in DESIGN.md order. Side-effect import entry for block phase. Precedence section is encoded here.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-load-inlines": {
+      "id": "task-load-inlines",
+      "kind": "leaf",
+      "title": "Assemble inline scanner exports",
+      "parent": "plan-pipeline",
+      "deps": [
+        "task-code-span",
+        "task-emphasis",
+        "task-link",
+        "task-image",
+        "task-autolink",
+        "task-raw-html",
+        "task-breaks",
+        "task-inline-text"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/inline/load.ts",
+        "src/inline/registry.ts"
+      ],
+      "spec_sections": [],
+      "notes": "Re-export/register inline scanners for inline-phase. Do not change algorithms—only wiring.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-block-phase": {
+      "id": "task-block-phase",
+      "kind": "leaf",
+      "title": "Block phase line walker and ref map",
+      "parent": "plan-pipeline",
+      "deps": [
+        "task-load-blocks",
+        "task-tabs"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/parse/block-phase.ts"
+      ],
+      "spec_sections": [],
+      "notes": "Implement parseDocumentBlocks(input)→{blocks, refs}. Handle continuations, list/blockquote nesting, setext promotion, strip link_ref_def from output into LinkRefMap. Replace ad-hoc loop currently in index.ts later via wire task.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-inline-phase": {
+      "id": "task-inline-phase",
+      "kind": "leaf",
+      "title": "Inline phase delimiter-stack parser",
+      "parent": "plan-pipeline",
+      "deps": [
+        "task-load-inlines",
+        "task-escapes",
+        "task-entities"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/parse/inline-phase.ts"
+      ],
+      "spec_sections": [],
+      "notes": "parseInlines(text, refs)→InlineNode[] using DESIGN algorithm; walk blocks and fill inlines. Emphasis/link closing via task-emphasis/task-link helpers.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-render": {
+      "id": "task-render",
+      "kind": "leaf",
+      "title": "HTML renderer for all node types",
+      "parent": "plan-pipeline",
+      "deps": [
+        "task-escape-html"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/render.ts"
+      ],
+      "spec_sections": [],
+      "notes": "Expand renderNode for every DESIGN AST type; tight lists; raw HTML passthrough; code escaping. Import escape-html util only.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-wire": {
+      "id": "task-wire",
+      "kind": "leaf",
+      "title": "Wire index.ts end-to-end pipeline",
+      "parent": "plan-pipeline",
+      "deps": [
+        "task-block-phase",
+        "task-inline-phase",
+        "task-render",
+        "task-types"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/index.ts"
+      ],
+      "spec_sections": [],
+      "notes": "renderMarkdown: normalize → block-phase → inline-phase → render. Import load modules for registration. Keep cli.ts unchanged unless necessary.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-normalize-input": {
+      "id": "task-normalize-input",
+      "kind": "leaf",
+      "title": "Newline normalization helper",
+      "parent": "plan-foundation",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/util/normalize.ts"
+      ],
+      "spec_sections": [],
+      "notes": "Export normalizeNewlines(s): CRLF/CR → LF only. Do not trim. Used by index/block-phase entry.",
+      "report": {
+        "status": "done",
+        "summary": "新增 normalizeNewlines(s)：CRLF/CR → LF，不 trim；已通过 npm run build 与行尾转换自检。",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 0
+      },
+      "attempts": 1
+    },
+    "task-normalize-label": {
+      "id": "task-normalize-label",
+      "kind": "leaf",
+      "title": "Link label normalization helper",
+      "parent": "plan-foundation",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/util/normalize-label.ts"
+      ],
+      "spec_sections": [],
+      "notes": "Export normalizeLinkLabel(label) per CommonMark: trim, collapse whitespace to single SP, Unicode case-fold. Keys for LinkRefMap and reference links.",
+      "report": {
+        "status": "done",
+        "summary": "no JSON report",
+        "oversized_files": [],
+        "self_checked": 0
+      },
+      "attempts": 1
+    },
+    "task-link-dest": {
+      "id": "task-link-dest",
+      "kind": "leaf",
+      "title": "Link destination and title scanners",
+      "parent": "plan-inlines",
+      "deps": [],
+      "status": "retired",
+      "files_scope": [
+        "src/inline/link-dest.ts"
+      ],
+      "spec_sections": [],
+      "notes": "Export parseLinkDestination / parseLinkTitle for <...>/inline destinations and quoted/parenthesized titles. Shared by link-ref, link, image. Honor escapes/entities as spec requires; do not invent other APIs — see DESIGN.md.",
+      "report": {
+        "status": "blocked",
+        "summary": "agent exit 1",
+        "oversized_files": [],
+        "self_checked": 0
+      },
+      "attempts": 1
+    },
+    "task-textual": {
+      "id": "task-textual",
+      "kind": "leaf",
+      "title": "Inline textual content tokenization",
+      "parent": "plan-inlines",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/inline/text.ts"
+      ],
+      "spec_sections": [
+        "Textual content"
+      ],
+      "notes": "Export helpers to emit `text` nodes. Apply unescapeMarkdown + decodeEntities where the spec allows; do not decode inside code spans. Pure functions only — no self-register.",
+      "report": {
+        "status": "done",
+        "summary": "新增 src/inline/text.ts：纯函数处理并 emit text 节点（反斜杠转义 + 实体解码）、扫描纯文本 run 与 push/合并辅助；不在 code span 内解码。",
+        "oversized_files": [],
+        "guide_note": "Plain-text inline runs include \\ and & until processTextualContent; breaksTextRun only stops at delimiters/breaks/HTML/autolink starters.",
+        "self_checked": 3
+      },
+      "attempts": 1
+    },
+    "task-block-parse-result": {
+      "id": "task-block-parse-result",
+      "kind": "leaf",
+      "title": "Update BlockParseResult in block registry",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/registry.ts"
+      ],
+      "spec_sections": [],
+      "notes": "Change BlockParser return to BlockParseResult: { next, node?, linkRefs? } | null per DESIGN.md. Keep registerBlockParser/getBlockParsers. Update contracts.ts re-export only if type export name changes — prefer exporting BlockParseResult from registry; if contracts must mention it, that is out of scope here so export the type from registry for phase code to import.",
+      "report": {
+        "status": "done",
+        "summary": "Added BlockParseResult type and updated BlockParser in registry.ts; re-exported in contracts.ts; blockquote nested walker skips AST push when node is absent (link-ref-only matches). Build passes.",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 0
+      },
+      "attempts": 1
+    },
+    "task-blocks-loader": {
+      "id": "task-blocks-loader",
+      "kind": "leaf",
+      "title": "Register block parsers in precedence order",
+      "parent": "plan-pipeline",
+      "deps": [],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/load.ts"
+      ],
+      "spec_sections": [
+        "Precedence"
+      ],
+      "notes": "Create load.ts that registerBlockParser in exact DESIGN order: indented → fenced → html → thematic → atx → setext → linkRef → blockquote → list → paragraph. Import real parsers when present; otherwise local () => null stubs inside load.ts only. Do not edit other block files. Side-effect import from index later is out of scope.",
+      "report": {
+        "status": "done",
+        "summary": "重写 load.ts：按 indented→fenced→html→thematic→atx→setext→linkRef→blockquote→list→paragraph 调用 registerBlockParser；缺失的 parseIndentedCode/parseAtxHeading 使用本地 () => null stub；在 load.ts 注册段落 interrupt（缩进代码不注册；link ref 在 inParagraph 时不中断；setext 在延续段落时用 isSetextUnderline）。已 build 并通过 Precedence 节唯一示例自检。",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 1
+      },
+      "attempts": 1
+    },
+    "task-inlines-loader": {
+      "id": "task-inlines-loader",
+      "kind": "leaf",
+      "title": "Assemble inline scanners loader",
+      "parent": "plan-pipeline",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/inline/load.ts"
+      ],
+      "spec_sections": [],
+      "notes": "Register/export scanner list for inline-phase: code-span, autolink, raw-html, hardbreak (and softbreak if separate). Local null stubs if imports missing. No self-contained emphasis/link finalization here.",
+      "report": {
+        "status": "done",
+        "summary": "新增 src/inline/load.ts：按 code-span → autolink → raw-html(stub) → hardbreak → softbreak 顺序 registerInlineParser，并导出 inlineScanners；未注册 emphasis/link。",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 0
+      },
+      "attempts": 1
+    },
+    "task-parse-block": {
+      "id": "task-parse-block",
+      "kind": "leaf",
+      "title": "Block-phase line walker and ref map",
+      "parent": "plan-pipeline",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/parse/block-phase.ts"
+      ],
+      "spec_sections": [],
+      "notes": "Export parseBlocks(lines) → { blocks, linkRefs }. Try getBlockParsers() in order; merge linkRefs (first wins); push node when present. Own paragraph lazy continuation, interruption rules, and setext underline rewrite of an open paragraph. Do not trim input. Stub-friendly if registry still old: adapt to optional node if needed.",
+      "report": {
+        "status": "done",
+        "summary": "新增 src/parse/block-phase.ts，导出 parseBlocks(lines) → { blocks, linkRefs }：按 getBlockParsers() 顺序尝试；合并 linkRefs（normalizeLinkLabel，先定义优先）；仅在存在 node 时入 AST，并兼容 legacy link_ref_def 与可选 linkRefs 字段；空白行跳过；懒段落延续（跳过 link-ref 解析器以免打断段落）；开放段落的 setext 下划线提升；不 trim 输入。",
+        "oversized_files": [],
+        "guide_note": "Top-level lazy paragraph continuation: when canInterruptParagraph(..., true) is false but parseParagraph returned null, append the line and skip parseLinkRefDef for that line so [label]: dest stays paragraph text.",
+        "self_checked": 3
+      },
+      "attempts": 1
+    },
+    "task-parse-inline": {
+      "id": "task-parse-inline",
+      "kind": "leaf",
+      "title": "Inline-phase delimiter stack parser",
+      "parent": "plan-pipeline",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/parse/inline-phase.ts"
+      ],
+      "spec_sections": [],
+      "notes": "Export parseInlines(text, linkRefMap) → InlineNode[]. Atomic scan: code spans, autolinks, raw HTML, hard breaks; then delimiter stack for emph/strong/links/images. Use helpers from inline/* when available; minimal local stubs otherwise. Fill heading/paragraph `inlines` from interim `text`.",
+      "report": {
+        "status": "done",
+        "summary": "精简 inline-phase：用 getInlineParsers、link/image opener 与 raw-html 回退做原子扫描；tryCloseLink 改为 parseLinkSuffixAfterText/parseImageSuffixAfterText（修复失败 inline dest 后 shortcut 回落）。分隔符栈仍在 inline-items。",
+        "oversized_files": [],
+        "guide_note": "Emphasis 栈在 canClose/canCloseStrong 均为 false 时仍须按 canOpen/canOpenStrong 入栈，否则 *em* 会落成字面星号（见 inline-items processEmphasis）。",
+        "self_checked": 7
+      },
+      "attempts": 2
+    },
+    "task-wire-index": {
+      "id": "task-wire-index",
+      "kind": "leaf",
+      "title": "Wire normalize → block → inline → render in index",
+      "parent": "plan-pipeline",
+      "deps": [],
+      "status": "retired",
+      "files_scope": [
+        "src/index.ts"
+      ],
+      "spec_sections": [],
+      "notes": "Orchestrate only: normalizeNewlines → block-phase → inline-phase (with LinkRefMap) → render. Import blocks/load and inline/load for registration side effects. Remove document-level trim. Keep cli.ts untouched.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-fix-merge": {
+      "id": "task-fix-merge",
+      "kind": "leaf",
+      "title": "Resolve UU conflicts in index/render/guide",
+      "parent": "plan-pipeline",
+      "deps": [],
+      "status": "retired",
+      "files_scope": [
+        "src/index.ts",
+        "src/render.ts",
+        "guide/index.md"
+      ],
+      "spec_sections": [],
+      "notes": "Repo is mid-merge (UU). Resolve conflicts per DESIGN: index.ts = import load side-effects only + thin parse stub OK, NO registerBlockParser calls, NO input.trim(); keep isBlankLine skip if present. render.ts = keep BOTH html_block (raw) and thematic_break (<hr />\\n) plus existing code_block/paragraph; use escapeHtml. guide/index.md = merge Findings bullets, delete conflict markers. Do not implement full phases here.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-atx-recreate": {
+      "id": "task-atx-recreate",
+      "kind": "leaf",
+      "title": "Recreate missing ATX heading parser file",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/atx.ts"
+      ],
+      "spec_sections": [
+        "ATX headings"
+      ],
+      "notes": "task-atx was marked done but src/blocks/atx.ts is absent from the worktree. Re-implement parseAtxHeading per CommonMark (≤3 indent, 1–6 #, optional closing #, contents). Export only; do not register or edit load/index/render.",
+      "report": {
+        "status": "done",
+        "summary": "新增 parseAtxHeading（indentWidth、开/闭 # 序列与转义处理、raw 正文 trim），仅导出；已 build 并通过 13 条 ATX 规范样例自测。",
+        "oversized_files": [],
+        "guide_note": "ATX 闭合 # 从行尾回溯时，奇数个前导 \\ 的 # 不计入闭合序列（与 opening 相同 isEscaped 规则）。",
+        "self_checked": 13
+      },
+      "attempts": 1
+    },
+    "task-entities-export": {
+      "id": "task-entities-export",
+      "kind": "leaf",
+      "title": "Add decodeEntities export alias",
+      "parent": "plan-foundation",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/util/entities.ts"
+      ],
+      "spec_sections": [],
+      "notes": "DESIGN requires decodeEntities. Add `export function decodeEntities(s: string): string` as alias of decodeCharacterReferences (keep existing exports). No other files.",
+      "report": {
+        "status": "done",
+        "summary": "Added export function decodeEntities(s) delegating to decodeCharacterReferences; build succeeds.",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 0
+      },
+      "attempts": 1
+    },
+    "task-render-html": {
+      "id": "task-render-html",
+      "kind": "leaf",
+      "title": "HTML renderer for all node types",
+      "parent": "plan-pipeline",
+      "deps": [
+        "task-fix-merge"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/render.ts"
+      ],
+      "spec_sections": [],
+      "notes": "After merge clean: implement renderNode for all BlockType/InlineType per DESIGN (escapeHtml; raw html_block/html_inline; tight list <p> rules; prefer inlines). Scope only render.ts.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-wire-pipeline": {
+      "id": "task-wire-pipeline",
+      "kind": "leaf",
+      "title": "Wire normalize → block → inline → render in index",
+      "parent": "plan-pipeline",
+      "deps": [
+        "task-fix-merge"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/index.ts"
+      ],
+      "spec_sections": [],
+      "notes": "After merge clean: index only imports loaders + normalize + block-phase + inline-phase + render; export renderMarkdown. Never trim document. Handle optional BlockParseResult.node / linkRefs via phases not inline hacks.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-link-ref-pure": {
+      "id": "task-link-ref-pure",
+      "kind": "leaf",
+      "title": "Link reference def parser (linkRefs only)",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/link-ref.ts"
+      ],
+      "spec_sections": [
+        "Link reference definitions"
+      ],
+      "notes": "Export parseLinkRefDef only. Success: { next, linkRefs } with NO node (no link_ref_def AST). Normalize labels via import normalizeLinkLabel from ../util/normalize-label.js; dest/title via ../inline/link-dest.js when present. Do NOT edit load.ts, render.ts, index.ts, guide, or self-register. Keep file small.",
+      "report": {
+        "status": "done",
+        "summary": "parseLinkRefDef 现返回 { next, linkRefs }（已规范化 label），无 node；移除 link_ref_def AST 与 normalizeLinkLabel 再导出；保留既有 CommonMark 标签/目的地/标题解析。",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 9
+      },
+      "attempts": 1
+    },
+    "task-fix-conflicts": {
+      "id": "task-fix-conflicts",
+      "kind": "leaf",
+      "title": "Resolve UU in index/render/guide",
+      "parent": "plan-pipeline",
+      "deps": [],
+      "status": "retired",
+      "files_scope": [
+        "src/index.ts",
+        "src/render.ts",
+        "guide/index.md"
+      ],
+      "spec_sections": [],
+      "notes": "Remove all <<<<<<< / ======= / >>>>>>> markers. index.ts: loader imports + blank skip + setext promote; NEVER registerBlockParser; tolerate missing result.node. render.ts: union list/heading/code/html/quote/hr arms; no link_ref_def. guide: keep both sides' findings, <80 lines. Do not implement full final pipeline polish.",
+      "report": {
+        "status": "done",
+        "summary": "Removed UU policy gaps: index.ts uses both loader imports, normalizeNewlines, blank skip, setext promotion, optional result.node, and normalize→blocks→parseInlines stub→renderDocument; render.ts exports renderDocument with merged block render arms; guide/index.md already contained both sides' findings under 80 lines.",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 3
+      },
+      "attempts": 1
+    },
+    "task-render-html-2": {
+      "id": "task-render-html-2",
+      "kind": "leaf",
+      "title": "HTML renderer for all node types",
+      "parent": "plan-pipeline",
+      "deps": [
+        "task-fix-conflicts"
+      ],
+      "status": "done",
+      "files_scope": [
+        "src/render.ts"
+      ],
+      "spec_sections": [],
+      "notes": "After conflicts cleared: emit CommonMark HTML for all BlockType/InlineType; escapeHtml for text/attrs; raw html_block/html_inline; tight-list <p> rules; prefer inlines over interim text.",
+      "report": {
+        "status": "done",
+        "summary": "Implemented recursive HTML serialization in src/render.ts for every BlockType and InlineType: escapeHtml on text/attributes and code blocks, raw html_block/html_inline, tight-list paragraph omission, ordered start attribute, and inlines-first with interim text fallback.",
+        "oversized_files": [],
+        "guide_note": "Image alt for <img> should be plain text from text/code descendants only, then escapeHtml once for the attribute.",
+        "self_checked": 7
+      },
+      "attempts": 1
+    },
+    "task-wire-pipeline-2": {
+      "id": "task-wire-pipeline-2",
+      "kind": "leaf",
+      "title": "Wire normalize → block → inline → render",
+      "parent": "plan-pipeline",
+      "deps": [
+        "task-fix-conflicts"
+      ],
+      "status": "done",
+      "files_scope": [
+        "src/index.ts"
+      ],
+      "spec_sections": [],
+      "notes": "After conflicts cleared: import blocks/load.js + inline/load.js; normalizeNewlines → parseBlocks → parseInlines → render; never trim document; no register* calls.",
+      "report": {
+        "status": "done",
+        "summary": "index.ts 接入 block-phase 与 inline-phase，完成 normalize→block→inline→render 管线；移除重复 block  walker 与 documentHasNonBlankContent 早退。cross-scope 新增最小 inline-phase.ts 作为 parseInlines 导入目标。",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 5
+      },
+      "attempts": 1
+    },
+    "task-contracts-reexport": {
+      "id": "task-contracts-reexport",
+      "kind": "leaf",
+      "title": "Sync contracts re-exports with registry types",
+      "parent": "plan-foundation",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/contracts.ts"
+      ],
+      "spec_sections": [],
+      "notes": "Re-export BlockParseResult when registry adds it; keep types/parsers/render re-exports only. No new logic.",
+      "report": {
+        "status": "done",
+        "summary": "Synced contracts.ts: kept BlockParseResult/BlockParser from registry plus types and parser/render re-exports; removed feature-module re-exports (setext, link-ref, normalize-label, link-dest).",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 0
+      },
+      "attempts": 1
+    },
+    "task-cli-thin": {
+      "id": "task-cli-thin",
+      "kind": "leaf",
+      "title": "Keep CLI as thin stdin/stdout wrapper",
+      "parent": "plan-pipeline",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/cli.ts"
+      ],
+      "spec_sections": [],
+      "notes": "Ensure cli.ts only reads stdin UTF-8 and writes renderMarkdown(input) to stdout. No trim, no parsing, no registration.",
+      "report": {
+        "status": "done",
+        "summary": "cli.ts 改为 readFileSync(0, utf8) + renderMarkdown + stdout.write，仅依赖 index 的 renderMarkdown，无 trim/解析/注册。",
+        "oversized_files": [],
+        "guide_note": "readFileSync(0, \"utf8\") 是 Node 下最薄的 stdin 全量读取方式，且不会改动字节内容。",
+        "self_checked": 5
+      },
+      "attempts": 1
+    },
+    "task-link-dest-2": {
+      "id": "task-link-dest-2",
+      "kind": "leaf",
+      "title": "Link dest/title scanners (dual API + decode)",
+      "parent": "plan-inlines",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/inline/link-dest.ts"
+      ],
+      "spec_sections": [],
+      "notes": "Keep multi-line LinkScanCursor parsers for ref defs. Add string parsers parseLinkDestinationIn/parseLinkTitleIn (or equivalent) for inline/image. Returned dest/title MUST unescapeMarkdown + decodeEntities. Export whitespace helpers used by link-ref. No load/index/render/guide edits.",
+      "report": {
+        "status": "done",
+        "summary": "在 link-dest.ts 中保留多行 parseLinkDestination/parseLinkTitle（含 link-scan 辅助导出）；新增 parseLinkDestinationIn/parseLinkTitleIn；所有返回的 destination/title 经 finishLinkValue（unescapeMarkdown + decodeEntities）处理；parseLinkTitle 包装 link-title 扫描后再 decodeEntities。",
+        "oversized_files": [],
+        "guide_note": "link-dest 的 parseLinkTitle 在 link-title 已 unescape 后再 decodeEntities；destination 路径用 finishLinkValue 一次完成两步。",
+        "self_checked": 4
+      },
+      "attempts": 0
+    },
+    "task-link-ref-2": {
+      "id": "task-link-ref-2",
+      "kind": "leaf",
+      "title": "Link reference def parser (linkRefs only)",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/link-ref.ts"
+      ],
+      "spec_sections": [
+        "Link reference definitions"
+      ],
+      "notes": "REWRITE current file: export ONLY parseLinkRefDef returning { next, linkRefs:[{label,destination,title}] } with NO node and NO normalizeLinkLabel re-export. label already normalized. Multi-line label/dest/title per DESIGN; next past last consumed def line. Import dest/title from link-dest (private grammar copy OK if import fails mid-parallel).",
+      "report": {
+        "status": "done",
+        "summary": "重写并完善 `parseLinkRefDef`：仅导出该函数，成功时返回 `{ next, linkRefs }`（无 node），label 经 `normalizeLinkLabel` 规范化；支持多行 label/dest/title；下一行 title 通过 `scanOptionalWhitespace` 解析，若 title 解析后行尾仍有非空白则回退为无 title 定义（如 `/url` + `\"title\" ok`）；校验 label 长度 1–999。cross-scope：修正 `link-dest` 尖括号 destination 允许空格（`<my url>`）。",
+        "oversized_files": [],
+        "guide_note": "Ref-def title on the next line: if parseLinkTitle succeeds but the rest of the line is not spaces/tabs, rewind the cursor and treat the def as title-less (not invalid).",
+        "self_checked": 11
+      },
+      "attempts": 0
+    },
+    "task-blocks-loader-2": {
+      "id": "task-blocks-loader-2",
+      "kind": "leaf",
+      "title": "Register block parsers + interrupt matrix",
+      "parent": "plan-pipeline",
+      "deps": [],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/load.ts"
+      ],
+      "spec_sections": [
+        "Precedence"
+      ],
+      "notes": "Register exactly DESIGN order: indented, fenced, html, thematic, atx, setext, linkRef, blockquote, list, paragraph. Stubs ()=>null OK for missing imports — do not create other files. Register interrupt checks per DESIGN matrix: indented/html type7/linkRef do NOT interrupt; fenced/html1-6/thematic/atx/blockquote/list DO. Use htmlBlockInterruptsParagraph when importable.",
+      "report": {
+        "status": "oversized",
+        "summary": "Registered all ten block parsers in DESIGN order; wired paragraph interrupt checks (indented/link-ref inParagraph=false only; HTML via htmlBlockInterruptsParagraph; fenced/thematic/atx/blockquote/list + setext rules). Replaced ATX stub with parseAtxHeading import.",
+        "oversized_files": [
+          "src/blocks/html-block.ts"
+        ],
+        "guide_note": "Paragraph interrupt for HTML blocks must use htmlBlockInterruptsParagraph (types 1–6 only); parseHtmlBlock also matches type 7.",
+        "self_checked": 1
+      },
+      "attempts": 1
+    },
+    "task-html-interrupt": {
+      "id": "task-html-interrupt",
+      "kind": "leaf",
+      "title": "Export HTML block paragraph-interrupt predicate",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/html-block.ts"
+      ],
+      "spec_sections": [],
+      "notes": "Export htmlBlockInterruptsParagraph(lines,pos) true only for CommonMark HTML block types 1–6 starts; type 7 must return false. Reuse isBlankLine from paragraph.ts if touching blank checks. Do not self-register or edit load.ts.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-setext-tabs": {
+      "id": "task-setext-tabs",
+      "kind": "leaf",
+      "title": "Setext: reuse tabs utils + isSetextUnderline",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/setext.ts"
+      ],
+      "spec_sections": [],
+      "notes": "Replace private expandTabs/indent copies with src/util/tabs.ts. Canonical export isSetextUnderline (alias isSetextHeadingUnderline OK). Keep parseSetextHeading semantics; thematic-break lines are not setext underlines. No load/index edits.",
+      "report": {
+        "status": "done",
+        "summary": "在 setext.ts 中删除本地 expandTabs/leadingIndentWidth，改为从 util/tabs 引入 expandTabs 与 indentWidth；保留 isSetextUnderline 与 parseSetextHeading 语义，isSetextContentLine 仍用 isThematicBreakLine 排除主题分隔行作为标题内容；新增 isSetextHeadingUnderline 别名。",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 5
+      },
+      "attempts": 1
+    },
+    "task-types-linkref": {
+      "id": "task-types-linkref",
+      "kind": "leaf",
+      "title": "Export LinkRefMap type alias",
+      "parent": "plan-foundation",
+      "deps": [],
+      "status": "retired",
+      "files_scope": [
+        "src/types.ts"
+      ],
+      "spec_sections": [],
+      "notes": "Add/export LinkRefMap = Map<string,{destination:string; title:string|null}>. Keep BlockNode/InlineNode open shapes and documented type string conventions. No other files.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-blockquote-blank": {
+      "id": "task-blockquote-blank",
+      "kind": "leaf",
+      "title": "Blockquote: use shared isBlankLine",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/blockquote.ts"
+      ],
+      "spec_sections": [],
+      "notes": "Replace trim()-based blank checks with isBlankLine from paragraph.ts. Preserve lazy continuation + nested getBlockParsers consumption. No load/index/render/guide edits.",
+      "report": {
+        "status": "done",
+        "summary": "Removed local trim()-based isBlankLine from blockquote.ts; import shared isBlankLine from paragraph.ts for all blank-line checks in collection, laziness, and nested child parsing.",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 5
+      },
+      "attempts": 1
+    },
+    "task-inline-registry": {
+      "id": "task-inline-registry",
+      "kind": "leaf",
+      "title": "Align inline registry scanner contract",
+      "parent": "plan-inlines",
+      "deps": [],
+      "status": "retired",
+      "files_scope": [
+        "src/inline/registry.ts"
+      ],
+      "spec_sections": [],
+      "notes": "Ensure InlineParser = (input,start)=>{node,end}|null and register/get helpers for load.ts. Do not register scanners here; load.ts owns order. No other files.",
+      "report": {
+        "status": "done",
+        "summary": "确认并实现 inline 扫描器契约：`InlineParser(text, pos) => InlineParseResult | null`，其中 `InlineParseResult` 含 `node` 与 `next`（与 `BlockParseResult` 一致，不用 `end`）；保留 `registerInlineParser` / `getInlineParsers` 供 `load.ts` 使用，不在 registry 内注册扫描器。同步更新 `DESIGN.md` 与 `contracts.ts` 导出 `InlineParseResult`。",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 0
+      },
+      "attempts": 1
+    },
+    "task-guide-mark-resolved": {
+      "id": "task-guide-mark-resolved",
+      "kind": "leaf",
+      "title": "Ensure guide/index.md merge resolved",
+      "parent": "plan-pipeline",
+      "deps": [],
+      "status": "retired",
+      "files_scope": [
+        "guide/index.md"
+      ],
+      "spec_sections": [],
+      "notes": "If unmerged/conflict markers remain, merge both sides' findings (incl. raw-html boolean-attr note + emphasis mod-3), remove markers, stay under ~80 lines, git add. If already clean, no content churn — only ensure no markers.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-indented-code-2": {
+      "id": "task-indented-code-2",
+      "kind": "leaf",
+      "title": "Indented code block parser",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/indented-code.ts"
+      ],
+      "spec_sections": [
+        "Indented code blocks"
+      ],
+      "notes": "Create ONLY this file. Export parseIndentedCode(lines,pos): BlockParseResult|null. Start: indentWidth≥4 (via tabs.ts), not interrupting paragraphs (no self-register). Content lines: strip 4 columns of indent (expandTabs); blank lines of ≥4 indent or blank may continue; end on non-indented non-blank. Emit {node:{type:'code_block',fenced:false,lang:null,value}, next}. value keeps internal newlines; typically trailing newline per CM. Do not edit load.ts.",
+      "report": {
+        "status": "done",
+        "summary": "src/blocks/indented-code.ts 已实现 parseIndentedCode（tabs 测缩进、4 列剥离、块内空行/chunk、不打断段落、尾随空白行裁剪）；构建通过，8 个规范示例 CLI 自检通过；变更已在 commit b3eb3e4。",
+        "oversized_files": [],
+        "guide_note": "Indented code 在 expandTabs 全行上去掉 4 列后保留余下前导空格（>4 的首行缩进会进 value）。",
+        "self_checked": 8
+      },
+      "attempts": 1
+    },
+    "task-link-3": {
+      "id": "task-link-3",
+      "kind": "leaf",
+      "title": "Inline/reference link helpers",
+      "parent": "plan-inlines",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/inline/link.ts"
+      ],
+      "spec_sections": [
+        "Links"
+      ],
+      "notes": "ONLY src/inline/link.ts. Export isLinkOpenerAt, parseLinkLabelSpan, parseLinkSuffixAfterText supporting inline ([text](dest title)), full ([text][label]), collapsed ([text][]), shortcut ([text]). Use parseLinkDestinationIn/parseLinkTitleIn from link-dest and normalizeLinkLabel + LinkRefMap lookup. Return structured result for inline-phase (destination, title, end) or null. Do NOT edit link-dest.ts, normalize-label.ts, image.ts, load.ts, inline-phase.ts.",
+      "report": {
+        "status": "done",
+        "summary": "新增 src/inline/link.ts：isLinkOpenerAt、parseLinkLabelSpan、parseLinkSuffixAfterText（行内/完整/折叠/快捷引用）；DESIGN.md 补充 linkText 参数与 parseLinkLabelSpan 导出。",
+        "oversized_files": [],
+        "guide_note": "无效行内 (…) 解析失败时会回退到快捷引用，而非整段放弃成链接。",
+        "self_checked": 11
+      },
+      "attempts": 1
+    },
+    "task-image-3": {
+      "id": "task-image-3",
+      "kind": "leaf",
+      "title": "Image opener and suffix helpers",
+      "parent": "plan-inlines",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/inline/image.ts"
+      ],
+      "spec_sections": [
+        "Images"
+      ],
+      "notes": "ONLY src/inline/image.ts. Export isImageOpenerAt (detect '![') and parseImageSuffixAfterText that delegates destination/title/ref forms to parseLinkSuffixAfterText from link.ts. Do not reimplement dest/title scanning. Do NOT edit link.ts, link-dest.ts, load.ts, or inline-phase.ts.",
+      "report": {
+        "status": "done",
+        "summary": "新增 src/inline/image.ts：isImageOpenerAt 识别未转义的 `![`；parseImageSuffixAfterText（及 DESIGN 别名 parseImageSuffixAfterAlt）在 alt 闭合 `]` 后将 inline / full / collapsed / shortcut 解析委托给 link.ts 的 tryParseLinkTail，不重复实现 destination/title 扫描。构建通过；对 5 组后缀形态做了模块级自测。CLI 端到端 Images 示例尚依赖未实现的 inline-stack/inline-phase，暂未比对 HTML。",
+        "oversized_files": [],
+        "guide_note": "Image `]` 后缀与 link 共用 tryParseLinkTail，需由栈传入 alt 纯文本供 collapsed/shortcut 查表。",
+        "self_checked": 5
+      },
+      "attempts": 1
+    },
+    "task-normalize-nul": {
+      "id": "task-normalize-nul",
+      "kind": "leaf",
+      "title": "NUL replacement in normalizeNewlines",
+      "parent": "plan-foundation",
+      "deps": [],
+      "status": "retired",
+      "files_scope": [
+        "src/util/normalize.ts"
+      ],
+      "spec_sections": [
+        "Textual content"
+      ],
+      "notes": "Extend normalizeNewlines: after CRLF/CR→LF, replace U+0000 with U+FFFD. Still must not trim. Keep export name normalizeNewlines.",
+      "report": {
+        "status": "done",
+        "summary": "在 normalizeNewlines 中于 \\r\\n/\\r→\\n 之后链式 replace(/\\0/g, \"\\uFFFD\")，更新注释；npm run build 通过；CLI 验证了 Textual content 三节示例及 NUL→U+FFFD。",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 3
+      },
+      "attempts": 1
+    },
+    "task-inline-load-rawhtml": {
+      "id": "task-inline-load-rawhtml",
+      "kind": "leaf",
+      "title": "Wire real scanRawHtml in inline loader",
+      "parent": "plan-inlines",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/inline/load.ts"
+      ],
+      "spec_sections": [],
+      "notes": "Replace local scanRawHtml stub with import { scanRawHtml } from './raw-html.js'. Keep register order: code-span → autolink → raw-html → hardbreak → softbreak. Do not register emphasis/link/image. Do not edit other files.",
+      "report": {
+        "status": "done",
+        "summary": "在 `src/inline/load.ts` 中删除 `scanRawHtml` 本地桩，改为从 `./raw-html.js` 导入；注册顺序仍为 code-span → autolink → raw-html → hardbreak → softbreak，未注册 emphasis/link/image。已通过 `npm run build`，并用 `<span>x</span>` 验证内联 HTML 输出。",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 0
+      },
+      "attempts": 1
+    },
+    "task-link-title-decode": {
+      "id": "task-link-title-decode",
+      "kind": "leaf",
+      "title": "Decode entities in link titles",
+      "parent": "plan-inlines",
+      "deps": [],
+      "status": "retired",
+      "files_scope": [
+        "src/inline/link-title.ts"
+      ],
+      "spec_sections": [],
+      "notes": "After unescapeMarkdown on title raw, also decodeEntities. Keep parseLinkTitle(lines,cur) and isTitleOpener. Only edit link-title.ts.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-link-scan-ws": {
+      "id": "task-link-scan-ws",
+      "kind": "leaf",
+      "title": "Harden link-scan whitespace helpers",
+      "parent": "plan-inlines",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/inline/link-scan.ts"
+      ],
+      "spec_sections": [],
+      "notes": "Ensure LinkScanCursor helpers: lineAt, atEnd, scanOptionalWhitespace (spaces/tabs + at most one linebreak for dest/title separation), skipSpacesTabsOnLine. Pure helpers only; no dest/title parsing here.",
+      "report": {
+        "status": "done",
+        "summary": "Hardened LinkScanCursor helpers: lineAt bounds check, scanOptionalWhitespace returns false on a second line break and stops at EOF without advancing past the last line, documented skipSpacesTabsOnLine as line-local only.",
+        "oversized_files": [],
+        "guide_note": "scanOptionalWhitespace treats EOF after trailing line spaces as one line end—not a second break—so the cursor stays on the last line.",
+        "self_checked": 5
+      },
+      "attempts": 1
+    },
+    "task-list-isblank": {
+      "id": "task-list-isblank",
+      "kind": "leaf",
+      "title": "List blank checks via isBlankLine",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/list.ts"
+      ],
+      "spec_sections": [
+        "List items",
+        "Lists"
+      ],
+      "notes": "Replace line.trim()==='' blank checks with isBlankLine from paragraph.ts (spaces/tabs only). Keep list marker/indent/tight-loose logic. Do not edit load.ts or paragraph.ts.",
+      "report": {
+        "status": "done",
+        "summary": "在 src/blocks/list.ts 中从 paragraph.ts 引入 isBlankLine，将所有 line.trim()==='' 形式的空白行判断替换为 isBlankLine（共 15 处），未改动列表 marker/缩进/tight-loose 逻辑。构建通过，并用 5 个规范列表示例自测。",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 5
+      },
+      "attempts": 1
+    },
+    "task-block-phase-fold": {
+      "id": "task-block-phase-fold",
+      "kind": "leaf",
+      "title": "Block-phase linkRefs + setext rewrite polish",
+      "parent": "plan-pipeline",
+      "deps": [],
+      "status": "retired",
+      "files_scope": [
+        "src/parse/block-phase.ts"
+      ],
+      "spec_sections": [
+        "Blank lines",
+        "Setext headings"
+      ],
+      "notes": "Ensure parseBlocks merges linkRefs (normalized, first wins), pushes node only when present, skips blanks via isBlankLine, open-paragraph setext rewrite (reject thematic-break underlines). Compatible with both linkRefs field and legacy link_ref_def until link-ref leaf lands. Do not edit load.ts/index.ts.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-emphasis-stack-api": {
+      "id": "task-emphasis-stack-api",
+      "kind": "leaf",
+      "title": "Emphasis stack helper API completeness",
+      "parent": "plan-inlines",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/inline/emphasis.ts"
+      ],
+      "spec_sections": [
+        "Emphasis and strong emphasis"
+      ],
+      "notes": "Ensure exports needed by inline-phase: scanDelimiterRun, flanking predicates, mod3Allows*, canPairEmphasisDelimiters, classifyEmphasisDelimiter. No registration. Do not edit inline-phase.ts.",
+      "report": {
+        "status": "done",
+        "summary": "src/inline/emphasis.ts 已导出 scanDelimiterRun、flanking 谓词、mod3Allows*、canPairEmphasisDelimiters、classifyEmphasisDelimiter；build 通过，helpers 行为与 spec 规则 1–10 一致。分支相对 main 无 diff，未新增 commit（实现已在 7fe2c5e）。",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 8
+      },
+      "attempts": 1
+    },
+    "task-text-run-api": {
+      "id": "task-text-run-api",
+      "kind": "leaf",
+      "title": "Textual run helpers for inline-phase",
+      "parent": "plan-inlines",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/inline/text.ts"
+      ],
+      "spec_sections": [
+        "Textual content"
+      ],
+      "notes": "Keep processTextualContent/emitText/scanTextRun/pushText applying unescapeMarkdown+decodeEntities. breaksTextRun must stop before ` * _ [ ] ! < \\ and newlines as needed by phase. Only this file.",
+      "report": {
+        "status": "done",
+        "summary": "完善 text.ts：processTextualContent/emitText/pushText 经 unescapeMarkdown 再 decodeEntities；breaksTextRun 在 \\ ` * _ [ ] ! < 与换行处截断；scanTextRun/pushTextRun 扫描并合并 text 节点。",
+        "oversized_files": [],
+        "guide_note": "breaksTextRun 在反斜杠处截断，转义由 inline 阶段在 run 外逐字处理，避免整段 scan 时过早 unescape。",
+        "self_checked": 3
+      },
+      "attempts": 1
+    },
+    "task-fenced-info": {
+      "id": "task-fenced-info",
+      "kind": "leaf",
+      "title": "Fenced code info-string edge cases",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/fenced-code.ts"
+      ],
+      "spec_sections": [
+        "Fenced code blocks"
+      ],
+      "notes": "Verify opening fence ≤3 indent, info string → lang (first word), closing fence length≥open, same char, only spaces/tabs after run. Strip fence indent from content lines. Export parseFencedCode only; no load.ts edits.",
+      "report": {
+        "status": "done",
+        "summary": "确认 parseFencedCode 满足开栏≤3 空格、info→首词 lang、闭栏规则与内容缩进剥离；10 个规范用例 CLI 自检通过。实现已在 5e6e063，无需新 diff。",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 10
+      },
+      "attempts": 1
+    },
+    "task-thematic-vs-setext": {
+      "id": "task-thematic-vs-setext",
+      "kind": "leaf",
+      "title": "Thematic break vs setext dash disambiguation",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/thematic.ts"
+      ],
+      "spec_sections": [
+        "Thematic breaks"
+      ],
+      "notes": "parseThematicBreak must match CM (3+ matching -/_/* with spaces). A valid thematic break line must win over setext underline when tried earlier in precedence. Only thematic.ts.",
+      "report": {
+        "status": "done",
+        "summary": "Exported isThematicBreakLine with expandTabs + CM regex; parseThematicBreak defers to setext when prior non-blank lines are valid setext content and the line is both thematic and an underline.",
+        "oversized_files": [],
+        "guide_note": "parseThematicBreak null when thematic line follows valid setext content so promotion wins.",
+        "self_checked": 8
+      },
+      "attempts": 1
+    },
+    "task-paragraph-interrupt-honor": {
+      "id": "task-paragraph-interrupt-honor",
+      "kind": "leaf",
+      "title": "Paragraph honors canInterruptParagraph",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/paragraph.ts"
+      ],
+      "spec_sections": [
+        "Paragraphs",
+        "Blank lines"
+      ],
+      "notes": "parseParagraph must stop before blank (isBlankLine) or when canInterruptParagraph(lines,pos,true). Keep registerParagraphInterruptCheck API. Do not register interrupts here (load.ts owns that).",
+      "report": {
+        "status": "blocked",
+        "summary": "agent exit 1",
+        "oversized_files": [],
+        "self_checked": 0
+      },
+      "attempts": 1
+    },
+    "task-html-type7-start": {
+      "id": "task-html-type7-start",
+      "kind": "leaf",
+      "title": "HTML block type7 start/end fidelity",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/html-block.ts"
+      ],
+      "spec_sections": [
+        "HTML blocks"
+      ],
+      "notes": "SUPERSEDES/COORDINATE with task-html-interrupt if still pending: export htmlBlockInterruptsParagraph true only for types 1–6. Type 7 must parse but not interrupt paragraphs. Keep parseHtmlBlock for types 1–7. Use shared isBlankLine for type 6/7 end-on-blank. Only html-block.ts.",
+      "report": {
+        "status": "done",
+        "summary": "在 `html-block.ts` 中为 type 7 增加 `mayStartType7HtmlBlock`（仅文档/容器开头或前一行为空行时才启动 HTML 块），使段内续行不会误开 type 7；保留 types 1–7 的 `parseHtmlBlock` 与 types 6/7 共用的 `isBlankLine` 结束逻辑；`htmlBlockInterruptsParagraph` 仍仅对 types 1–6 为 true。cross-scope：`load.ts` 在段续写时用该谓词而非裸 `parseHtmlBlock !== null`。",
+        "oversized_files": [],
+        "guide_note": "Type 7 的 parseHtmlBlock 在前一行非空时必须返回 null，否则块阶段会在 lazy 续段之前抢先消费该行。",
+        "self_checked": 6
+      },
+      "attempts": 1
+    },
+    "task-render-inlines-ast": {
+      "id": "task-render-inlines-ast",
+      "kind": "leaf",
+      "title": "Render prefers inlines AST nodes",
+      "parent": "plan-pipeline",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/render.ts"
+      ],
+      "spec_sections": [],
+      "notes": "SUPERSEDES task-render-html-2 if still open: implement renderNode for all block types + renderInlines for text/code/emph/strong/link/image/hardbreak/softbreak/html_inline/autolink. Export renderDocument(blocks). Prefer node.inlines; interim text fallback ok. Escape correctly; no silent default for known types. Remove simplified renderInlineText once inlines path works.",
+      "report": {
+        "status": "done",
+        "summary": "完善 render.ts：全块/内联 AST 渲染、inlines 优先（含 []）、 interim 仅 escape+硬换行、未知类型抛错、支持 list_item；移除 renderInlineText；Field Guide 补充 inlines  precedence。",
+        "oversized_files": [],
+        "guide_note": "After inline phase, `inlines !== undefined` wins even when `[]`; interim `text` is only when `inlines` was never set (`src/render.ts`).",
+        "self_checked": 6
+      },
+      "attempts": 1
+    },
+    "task-wire-normalize-phases": {
+      "id": "task-wire-normalize-phases",
+      "kind": "leaf",
+      "title": "Wire normalize→block→inline→render in index",
+      "parent": "plan-pipeline",
+      "deps": [],
+      "status": "retired",
+      "files_scope": [
+        "src/index.ts"
+      ],
+      "spec_sections": [
+        "Precedence"
+      ],
+      "notes": "SUPERSEDES task-wire-pipeline-2: delete local parseBlocks. import blocks/load + inline/load; normalizeNewlines; split \\n; parseBlocks from block-phase; run inline-phase; renderDocument. Never trim document. Export renderMarkdown only as orchestrator.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-01": {
+      "id": "task-01",
+      "kind": "leaf",
+      "title": "Delimiter stack module (emphasis + bracket close)",
+      "parent": "plan-pipeline",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/parse/inline-stack.ts"
+      ],
+      "spec_sections": [
+        "Emphasis and strong emphasis"
+      ],
+      "notes": "Create src/parse/inline-stack.ts only (≤350 lines). Export stack types + push/process for * / _ using emphasis.ts (scanDelimiterRun, classify, canPair*, mod3*). On ']' resolve nearest active [ or ![ via parseLinkSuffixAfterText / parseImageSuffixAfterAlt from link.ts/image.ts; deactivate openers inside matched span per CommonMark. No atomic scanners, no block walker, do not edit inline-phase.ts/load.ts.",
+      "report": {
+        "status": "done",
+        "summary": "新增 src/parse/inline-stack.ts（约 257 行）：导出 InlineStackItem / EmphasisStackEntry、pushEmphasisAt / pushBracketOpen、processCloseBracket（parseLinkSuffixAfterText / parseImageSuffixAfterAlt）、deactivateDelimitersInBracketSpan、processEmphasisStack 与 flattenInlineStackItems，强调配对复用 emphasis.ts 的 classify 与 canPair* / mod3*。cross-scope：修正 inline-link-forms 中图片后缀 API 名称与参数顺序以通过 tsc。未改 inline-phase.ts（仍用 inline-items），后续可切到本模块公共 API。",
+        "oversized_files": [],
+        "guide_note": "processCloseBracket 在 splice 成 link/image 前对 bracket 内 delim 设 active=false，processEmphasisStack 只处理 active delim。",
+        "self_checked": 6
+      },
+      "attempts": 1
+    },
+    "task-02": {
+      "id": "task-02",
+      "kind": "leaf",
+      "title": "Thin inline-phase orchestrator + block walker",
+      "parent": "plan-pipeline",
+      "deps": [],
+      "status": "retired",
+      "files_scope": [
+        "src/parse/inline-phase.ts"
+      ],
+      "spec_sections": [],
+      "notes": "Create src/parse/inline-phase.ts only, hard cap ≤250 lines (reject >400). Export parseInlines(text, linkRefs) and parseInlinesOnBlocks(blocks, linkRefs). Loop: getInlineParsers() atomics → delimiter via inline-stack → else text.ts runs; softbreak for remaining LF. Fill paragraph/heading inlines; recurse block_quote/list/list_item. Do not reimplement flanking/link grammar. Do not edit load/index/render.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-blocks-loader-3": {
+      "id": "task-blocks-loader-3",
+      "kind": "leaf",
+      "title": "Register block parsers + interrupt matrix",
+      "parent": "plan-blocks",
+      "deps": [
+        "task-indented-code-2",
+        "task-html-type7-start"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/load.ts"
+      ],
+      "spec_sections": [
+        "Precedence"
+      ],
+      "notes": "Only edit src/blocks/load.ts. Remove ATX stub; import parseAtxHeading from ./atx.js. Import parseIndentedCode from ./indented-code.js (no stub). Keep try-order 1..10 per DESIGN. Interrupt matrix: no indented-code; HTML via htmlBlockInterruptsParagraph (not bare parseHtmlBlock); link-ref never interrupts; fenced/thematic/atx/blockquote/list yes. No self-registration elsewhere.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-link-opener-api": {
+      "id": "task-link-opener-api",
+      "kind": "leaf",
+      "title": "Link opener detection helpers",
+      "parent": "plan-inlines",
+      "deps": [],
+      "status": "retired",
+      "files_scope": [
+        "src/inline/link-opener.ts"
+      ],
+      "spec_sections": [
+        "Links"
+      ],
+      "notes": "Optional tiny helper file ONLY if useful; prefer implementing openers inside link.ts. If creating this file: export isUnescapedBracketAt / count preceding backslashes for [ and ]. Do not implement full suffix parsing here. Prefer workers to put everything in link.ts instead — skip creating this file if task-link-3 already covers openers.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-indented-fence-interact": {
+      "id": "task-indented-fence-interact",
+      "kind": "leaf",
+      "title": "Indented code: blank lines + fence non-interrupt notes",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/indented-code.ts"
+      ],
+      "spec_sections": [
+        "Indented code blocks"
+      ],
+      "notes": "DUPLICATE SCOPE with task-indented-code-2 — do not schedule both. Retire this if indented-code-2 still pending.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-link-3-notes": {
+      "id": "task-link-3-notes",
+      "kind": "leaf",
+      "title": "Clarify link.ts suffix contract (no new file)",
+      "parent": "plan-inlines",
+      "deps": [],
+      "status": "retired",
+      "files_scope": [
+        "src/inline/link-notes-placeholder.ts"
+      ],
+      "spec_sections": [],
+      "notes": "placeholder — retire immediately",
+      "report": null,
+      "attempts": 0
+    },
+    "task-blocks-loader-4": {
+      "id": "task-blocks-loader-4",
+      "kind": "leaf",
+      "title": "Register block parsers + interrupt matrix",
+      "parent": "plan-blocks",
+      "deps": [
+        "task-indented-code-2",
+        "task-html-type7-start"
+      ],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/load.ts"
+      ],
+      "spec_sections": [
+        "Precedence"
+      ],
+      "notes": "ONLY src/blocks/load.ts. Register order: indented, fenced, html, thematic, atx (real import from ./atx.js — delete stub), setext, linkRef, blockquote, list, paragraph. Interrupt checks: NO indented; HTML via htmlBlockInterruptsParagraph ONLY (never bare parseHtmlBlock); NO link-ref; YES fenced/thematic/atx/blockquote/list; NO setext interrupt registration (setext rewrite lives in block-phase only). Do not edit other files.",
+      "report": {
+        "status": "done",
+        "summary": "在 load.ts 中注册真实 parseAtxHeading，按规范修正段落中断矩阵（HTML 仅用 htmlBlockInterruptsParagraph；移除 setext 与 link-ref 中断注册）。",
+        "oversized_files": [],
+        "guide_note": "registerParagraphInterruptCheck 的 HTML 钩子应始终调用 htmlBlockInterruptsParagraph；type 7 是否可起块由 parseHtmlBlock 在 try-order 中决定，而非裸 parseHtmlBlock 探测。",
+        "self_checked": 5
+      },
+      "attempts": 1
+    },
+    "task-resolve-link-dest-3": {
+      "id": "task-resolve-link-dest-3",
+      "kind": "leaf",
+      "title": "Clear link-dest UU + dual API finish",
+      "parent": "plan-inlines",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/inline/link-dest.ts"
+      ],
+      "spec_sections": [],
+      "notes": "Resolve git unmerged state on this file (no conflict markers expected — keep current dual API). Ensure parseLinkDestination/Title + parseLinkDestinationIn/TitleIn; finishLinkValue (unescapeMarkdown+decodeEntities) on ALL returned dest/title; re-export cursor helpers. Then git add src/inline/link-dest.ts. Do not edit link.ts/load.ts.",
+      "report": {
+        "status": "done",
+        "summary": "确认 `link-dest.ts` 无冲突标记且双 API 完整（多行 parseLinkDestination/Title + 单串 parseLinkDestinationIn/TitleIn，并 re-export 光标辅助函数）。将 title 的 unescape+decode 统一到 facade 的 `finishLinkValue`，`link-title.ts` 仅返回原始扫描串以避免重复解码。已 build 通过并提交。",
+        "oversized_files": [],
+        "guide_note": "link-title 应返回原始 title 串；`finishLinkValue` 只在 `link-dest.ts` 出口对 dest/title 各执行一次。",
+        "self_checked": 4
+      },
+      "attempts": 1
+    },
+    "task-wire-index-3": {
+      "id": "task-wire-index-3",
+      "kind": "leaf",
+      "title": "Index calls parseInlinesOnBlocks",
+      "parent": "plan-pipeline",
+      "deps": [],
+      "status": "retired",
+      "files_scope": [
+        "src/index.ts"
+      ],
+      "spec_sections": [],
+      "notes": "Keep side-effect imports of blocks/load + inline/load. Pipeline: normalizeNewlines → split \\n → parseBlocks → parseInlinesOnBlocks(blocks, linkRefs) → renderDocument. Never trim. If parseInlinesOnBlocks not exported yet, import that name anyway (phase leaf will add it). Do not implement parsers here.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-contracts-dest-in": {
+      "id": "task-contracts-dest-in",
+      "kind": "leaf",
+      "title": "Contracts export *In scanners + phase APIs",
+      "parent": "plan-pipeline",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/contracts.ts"
+      ],
+      "spec_sections": [],
+      "notes": "Re-export parseLinkDestination, parseLinkTitle, parseLinkDestinationIn, parseLinkTitleIn from link-dest; keep parseInlines + parseInlinesOnBlocks from inline-phase; keep BlockParseResult/InlineParser (next not end). Re-exports only — no logic.",
+      "report": {
+        "status": "done",
+        "summary": "在 contracts 门面中 re-export parseLinkDestinationIn / parseLinkTitleIn，与 DESIGN 要求的 link-dest 双 API 一致；其余导出保持不变。",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 0
+      },
+      "attempts": 1
+    },
+    "task-atx-trailing-hash": {
+      "id": "task-atx-trailing-hash",
+      "kind": "leaf",
+      "title": "ATX trailing hash / space fidelity",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/atx.ts"
+      ],
+      "spec_sections": [
+        "ATX headings"
+      ],
+      "notes": "ONLY atx.ts. Ensure parseAtxHeading: 1–6 #, ≤3 indent, require space/tab (or EOL) after opening #, strip trailing # runs per CM, emit heading with text/inlines. No load.ts edits.",
+      "report": {
+        "status": "done",
+        "summary": "parseAtxHeading 已在 atx.ts 中完整实现（opening 1–6 #、≤3 缩进、# 后空白/EOL、CM closing # 剥离、text 供 inline 阶段）；未改 load.ts。npm run build 通过，14 条 spec 嵌入式样例经 parseAtxHeading→parseInlinesOnBlocks→render 验证通过。工作区无新 diff，无需额外提交。",
+        "oversized_files": [],
+        "guide_note": "ATX closing `#` 仅在 run 前有空格/制表符时剥离；`# foo#` 保留字面 `#`（`foo#`）。",
+        "self_checked": 14
+      },
+      "attempts": 1
+    },
+    "task-link-ref-title-eol": {
+      "id": "task-link-ref-title-eol",
+      "kind": "leaf",
+      "title": "Link-ref title ending-line whitespace",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/link-ref.ts"
+      ],
+      "spec_sections": [
+        "Link reference definitions"
+      ],
+      "notes": "ONLY link-ref.ts. After optional title (may span lines), remainder of the title-ending line must be only spaces/tabs; else treat as no-title or fail per existing DESIGN/guide note. Return {next, linkRefs} only; normalized label; no node; no normalizeLinkLabel re-export.",
+      "report": {
+        "status": "done",
+        "summary": "link-ref 标题结束行空白规则已在 ed38d39 实现：同行 title 尾 junk 否决整段定义，跨行 title 尾 junk 回退为无 title；工作区无未提交改动（无需重复 commit）。",
+        "oversized_files": [],
+        "guide_note": "Link-ref: junk after title on the same line as the destination fails the def; junk on a later title-ending line drops the title only (`src/blocks/link-ref.ts`).",
+        "self_checked": 6
+      },
+      "attempts": 1
+    },
+    "task-link-title-unescape-only": {
+      "id": "task-link-title-unescape-only",
+      "kind": "leaf",
+      "title": "link-title unescapes only (no entity decode)",
+      "parent": "plan-inlines",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/inline/link-title.ts"
+      ],
+      "spec_sections": [],
+      "notes": "Ensure parseLinkTitle impl returns unescapeMarkdown(raw) only — do NOT decodeEntities here (link-dest facade decodes once). Keep isTitleOpener. Only this file.",
+      "report": {
+        "status": "done",
+        "summary": "确认 link-title 实现符合 decode-once：parseLinkTitle 仅 unescapeMarkdown，无 decodeEntities；补充 JSDoc，多行续行用 isBlankLine 替代 trim。",
+        "oversized_files": [],
+        "guide_note": "link-title.ts 只 unescape；实体解码仅在 link-dest.parseLinkTitle 的 decodeEntities 边界发生一次。",
+        "self_checked": 5
+      },
+      "attempts": 1
+    },
+    "task-code-span-edges": {
+      "id": "task-code-span-edges",
+      "kind": "leaf",
+      "title": "Code span fence matching edge cases",
+      "parent": "plan-inlines",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/inline/code-span.ts"
+      ],
+      "spec_sections": [
+        "Code spans"
+      ],
+      "notes": "ONLY code-span.ts. scanCodeSpan: matching backtick fence lengths; strip one leading/trailing space when both sides have space; collapse interior newlines to space. Return {node:{type:'code',value}, next}. No registration.",
+      "report": {
+        "status": "done",
+        "summary": "确认并实现 scanCodeSpan：匹配等长反引号围栏、换行转空格、双端 ASCII 空格各剥一层；移除 backtickStringLength 死代码；修复 Field Guide 冲突并记录 strip 规则。",
+        "oversized_files": [],
+        "guide_note": "Code span edge-space strip applies only to U+0020 on both ends and skips all-space content; interior \\n normalize before strip.",
+        "self_checked": 12
+      },
+      "attempts": 1
+    },
+    "task-autolink-scheme": {
+      "id": "task-autolink-scheme",
+      "kind": "leaf",
+      "title": "Autolink absolute URI + email rules",
+      "parent": "plan-inlines",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/inline/autolink.ts"
+      ],
+      "spec_sections": [
+        "Autolinks"
+      ],
+      "notes": "ONLY autolink.ts. scanAutolink for <scheme:...> and <email>; emit {type:'autolink', destination, text} with next. No registration.",
+      "report": {
+        "status": "done",
+        "summary": "确认并实现 scanAutolink：URI scheme 2–32 + 冒号 + 正文，以及 HTML5 email 规则；URI 优先于 email；已在分支提交 3ffd87c，构建与规范样例自检通过。",
+        "oversized_files": [],
+        "guide_note": "Autolink 先试 URI（含 MAILTO:…），再试 email；单字符 scheme 的 <m:…> 两种规则均不匹配。",
+        "self_checked": 9
+      },
+      "attempts": 1
+    },
+    "task-raw-html-edges": {
+      "id": "task-raw-html-edges",
+      "kind": "leaf",
+      "title": "Raw HTML inline tag edge cases",
+      "parent": "plan-inlines",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/inline/raw-html.ts"
+      ],
+      "spec_sections": [
+        "Raw HTML"
+      ],
+      "notes": "ONLY raw-html.ts. Keep scanRawHtml; boolean attrs must not consume whitespace before next attr when probing '='. Emit html_inline. No load.ts edits.",
+      "report": {
+        "status": "done",
+        "summary": "Verified scanRawHtml against Raw HTML spec edge cases; extracted attributeEqualsIndex so boolean attributes reset the cursor to nameEnd when no value spec is present (whitespace before the next attribute is not consumed). Emits html_inline; no load.ts changes.",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 10
+      },
+      "attempts": 1
+    },
+    "task-breaks-soft-auth": {
+      "id": "task-breaks-soft-auth",
+      "kind": "leaf",
+      "title": "Softbreak: registry-only scanSoftBreak contract",
+      "parent": "plan-inlines",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/inline/breaks.ts"
+      ],
+      "spec_sections": [
+        "Soft line breaks",
+        "Hard line breaks"
+      ],
+      "notes": "Ensure scanHardBreak/scanSoftBreak match CommonMark (spaces before NL, trim after softbreak). Document that getInlineParsers() is the sole softbreak emitter; no second LF path. Do not edit load.ts or inline-phase.ts.",
+      "report": {
+        "status": "done",
+        "summary": "确认 `scanHardBreak` / `scanSoftBreak` 与 CommonMark 一致（≥2 空格或反斜杠硬换行、块末不产出 break；软换行通过 `softBreakTrimBefore`/`softBreakTrimAfter` 与 inline phase 配合去行尾/下行首空白）。在 `src/inline/breaks.ts` 补充模块与导出函数文档，明确仅经 `getInlineParsers()` 注册的 `scanSoftBreak` 可发射 `softbreak`，禁止第二条 LF 路径。",
+        "oversized_files": [],
+        "guide_note": "Softbreak 只由 registry 的 scanSoftBreak 发射；行尾/下行首空白由 softBreakTrim* 在 phase 侧消费，scanner 的 next 仅越过 \\n。",
+        "self_checked": 6
+      },
+      "attempts": 1
+    },
+    "task-inline-items-api": {
+      "id": "task-inline-items-api",
+      "kind": "leaf",
+      "title": "Emphasis process helpers for inline-stack",
+      "parent": "plan-inlines",
+      "deps": [],
+      "status": "retired",
+      "files_scope": [
+        "src/parse/inline-items.ts"
+      ],
+      "spec_sections": [
+        "Emphasis and strong emphasis"
+      ],
+      "notes": "Export ProcessItem / processEmphasis / flattenItems / textNode usable by inline-stack.ts. Keep ≤200 lines. No phase orchestration here.",
+      "report": {
+        "status": "done",
+        "summary": "完善 `inline-items.ts`：导出 `ProcessItem`、`processEmphasis`、`flattenItems`、`textNode`；未配对的 `*`/`_` 尾段以新的 `delim` 项重新入栈，并在 splice 后将循环索引设为 `openIdx - 1`，使 `***foo***` 等符合规则 14；`ProcessItem` 支持可选 `active` 以配合链接 span。`inline-stack.ts`（cross-scope）改为委托上述 helper，去掉重复的 emphasis 实现。",
+        "oversized_files": [],
+        "guide_note": "Emphasis strong/weak pairing leaves unused */_ as new delim items; after splice, loop index resets to openIdx - 1 so tails still match.",
+        "self_checked": 9
+      },
+      "attempts": 1
+    },
+    "task-inline-link-forms": {
+      "id": "task-inline-link-forms",
+      "kind": "leaf",
+      "title": "Bracket-close helpers using link/image DESIGN APIs",
+      "parent": "plan-inlines",
+      "deps": [],
+      "status": "retired",
+      "files_scope": [
+        "src/parse/inline-link-forms.ts"
+      ],
+      "spec_sections": [
+        "Links",
+        "Images"
+      ],
+      "notes": "tryCloseLink/image must call isLinkOpenerAt/isImageOpenerAt + parseLinkSuffixAfterText/parseImageSuffixAfterAlt with DESIGN arg order (linkRefs before linkText/altText). Failed inline ( ) falls through to refs; lone [ blocks shortcut. ≤200 lines.",
+      "report": {
+        "status": "done",
+        "summary": "在 `inline-link-forms.ts` 中实现 `tryCloseLinkBracket` / `tryCloseImage` / `tryCloseLink`：关闭 `]` 时用 `isLinkOpenerAt` / `isImageOpenerAt` 校验，并用 DESIGN 参数顺序调用 `parseLinkSuffixAfterText` / `parseImageSuffixAfterAlt`（`linkRefs` 在 label 文本之前）；子节点来自 opener 与 `]` 之间的栈项（emph + flatten），以支持 `[![moon](moon.jpg)](/uri)` 等嵌套；Field Guide 已补充一条说明。",
+        "oversized_files": [],
+        "guide_note": "Bracket-close uses stack items between opener and `]` for link/image `children` (emph pass + flatten), not a `noLinks` re-parse of label text.",
+        "self_checked": 5
+      },
+      "attempts": 1
+    },
+    "task-types-link-image": {
+      "id": "task-types-link-image",
+      "kind": "leaf",
+      "title": "Confirm link/image/autolink AST field types",
+      "parent": "plan-foundation",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/types.ts"
+      ],
+      "spec_sections": [
+        "Links",
+        "Images"
+      ],
+      "notes": "Ensure LinkInline/ImageInline have destination, title, children; AutolinkInline has destination+text; LinkRefMap shape matches DESIGN. No parser logic.",
+      "report": {
+        "status": "done",
+        "summary": "确认 link/image/autolink 窄化类型与 LinkRefMap/LinkRefEntry 字段与 DESIGN § AST 一致；补充 LinkRefMap 的 decode-once 与 first-wins JSDoc；tsc 与 3 条 Links/Images/autolink 示例 CLI 自检通过。",
+        "oversized_files": [],
+        "guide_note": "LinkRefMap 值为 LinkRefEntry（destination + title|null），键为 normalizeLinkLabel 结果，非 block AST 节点。",
+        "self_checked": 3
+      },
+      "attempts": 1
+    },
+    "task-html-type7-file": {
+      "id": "task-html-type7-file",
+      "kind": "leaf",
+      "title": "HTML type7 matcher fidelity",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/html-block-type7.ts"
+      ],
+      "spec_sections": [
+        "HTML blocks"
+      ],
+      "notes": "matchType7 must match CommonMark type-7 start condition only; no blank-line helpers here — callers use isBlankLine. Do not edit html-block.ts.",
+      "report": {
+        "status": "done",
+        "summary": "修正 html-block-type7.ts 中 matchType7 的 complete open tag 解析：属性名允许连字符（如 data-foo），无引号属性值与布尔属性处理与 raw-html 一致；仍仅判定 type-7 起始（整行仅空白/tab 尾随），不含 blank-line 逻辑，且排除 pre/script/style/textarea 开标签。",
+        "oversized_files": [],
+        "guide_note": "HTML block type 7 matchType7 属性名需允许 interior `-`，与 inline raw-html 开标签解析一致。",
+        "self_checked": 6
+      },
+      "attempts": 1
+    },
+    "task-html-match-kinds": {
+      "id": "task-html-match-kinds",
+      "kind": "leaf",
+      "title": "HTML block kind classify 1–6 starts",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/html-block-match.ts"
+      ],
+      "spec_sections": [
+        "HTML blocks"
+      ],
+      "notes": "classifyHtmlBlockLine / content-start helpers for types 1–6 accurate; type7 delegated. No load.ts edits.",
+      "report": {
+        "status": "done",
+        "summary": "在 html-block-match.ts 中实现并收紧 CommonMark HTML 块 1–6 的起始分类（htmlBlockContentStart、classifyHtmlBlockLine、lineContainsType1EndTag），检测顺序改为规范顺序 1→6；类型 7 不再在此文件 import，改由 html-block.ts 在 classify 为 null 时调用 matchType7。段落中断逻辑改为仅依据 1–6 分类。",
+        "oversized_files": [],
+        "guide_note": "classifyHtmlBlockLine 只返回 1–6；type 7 在 html-block.ts 通过 matchType7 衔接。",
+        "self_checked": 6
+      },
+      "attempts": 1
+    },
+    "task-image-uu": {
+      "id": "task-image-uu",
+      "kind": "leaf",
+      "title": "Resolve image.ts UU to DESIGN API",
+      "parent": "plan-inlines",
+      "deps": [
+        "task-image-3"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/inline/image.ts"
+      ],
+      "spec_sections": [
+        "Images"
+      ],
+      "notes": "Clear git conflict markers. Export isImageOpenerAt + parseImageSuffixAfterAlt(text, afterCloseBracket, linkRefs, altText) delegating to parseLinkSuffixAfterText. Alias parseImageSuffixAfterText with SAME arg order. git add to clear AA. ≤120 lines.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-bq-lazy": {
+      "id": "task-bq-lazy",
+      "kind": "leaf",
+      "title": "Blockquote lazy paragraph continuation",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/blockquote.ts"
+      ],
+      "spec_sections": [
+        "Block quotes",
+        "Paragraphs"
+      ],
+      "notes": "While a paragraph is open inside the quote, non-interrupting continuation lines (after optional > peel) append to that paragraph. Blanks only via isBlankLine. Nested parse via getBlockParsers() on peeled lines. Do not edit load.ts.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-guide-soft-lazy": {
+      "id": "task-guide-soft-lazy",
+      "kind": "leaf",
+      "title": "Field Guide: softbreak authority + lazy cont",
+      "parent": "plan-pipeline",
+      "deps": [],
+      "status": "retired",
+      "files_scope": [
+        "guide/index.md"
+      ],
+      "spec_sections": [],
+      "notes": "Append ≤3 short findings: (1) softbreak only via registered scanSoftBreak; (2) lazy cont in quote/list; (3) image suffix arg order linkRefs before altText. Keep index under ~80 lines.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-block-phase-setext-first": {
+      "id": "task-block-phase-setext-first",
+      "kind": "leaf",
+      "title": "Block-phase: setext rewrite before try-order (--- after para → h2)",
+      "parent": "plan-pipeline",
+      "deps": [],
+      "status": "retired",
+      "files_scope": [
+        "src/parse/block-phase.ts"
+      ],
+      "spec_sections": [
+        "Setext headings",
+        "Thematic breaks",
+        "Blank lines"
+      ],
+      "notes": "SUPERSEDES prior fold notes. DESIGN: if last block is paragraph and isSetextUnderline(line), call headingFromParagraphUnderline BEFORE the getBlockParsers() loop — including underlines that are also thematic (--- → h2, not hr). Remove legacy link_ref_def AST absorption; only merge result.linkRefs (first wins). Skip parseSetextHeading in try-order when last is paragraph (no double-apply). Skip parseLinkRefDef when lazy-continuing an open paragraph. Blanks via isBlankLine only. Keep ≤400 lines. Do not edit load.ts.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-inline-phase-thin": {
+      "id": "task-inline-phase-thin",
+      "kind": "leaf",
+      "title": "Thin inline-phase: registry + stack only",
+      "parent": "plan-inlines",
+      "deps": [
+        "task-01"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/parse/inline-phase.ts"
+      ],
+      "spec_sections": [],
+      "notes": "After inline-stack exists: rewrite inline-phase.ts to ≤250 lines (hard fail >400). MUST use getInlineParsers() for atomic scans; MUST NOT embed local scanRawHtml/link monolith. Softbreak only via registered scanSoftBreak — no second LF→softbreak path. Call stack API from inline-stack.ts for */_/[ /![ /]. Keep parseInlines + parseInlinesOnBlocks. Prefer text-run helpers from text.ts.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-setext-blank": {
+      "id": "task-setext-blank",
+      "kind": "leaf",
+      "title": "Setext: isBlankLine instead of trim()",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/setext.ts"
+      ],
+      "spec_sections": [
+        "Setext headings",
+        "Blank lines"
+      ],
+      "notes": "Replace any trim()==='' blank checks with isBlankLine from paragraph.ts. Keep isSetextUnderline via expandTabs/indentWidth; isSetextContentLine must reject thematic-break content lines. Export surface unchanged: parseSetextHeading, isSetextUnderline, headingFromParagraphUnderline.",
+      "report": {
+        "status": "done",
+        "summary": "在 `setext.ts` 中从 `paragraph.ts` 引入 `isBlankLine`，`parseSetextHeading` 用其替代 `line.trim() === \"\"`；`headingFromParagraphUnderline` 用 `setextRawContent` 替代 `text.trim()` 判断空标题。导出 API 与 `isSetextContentLine` 对 thematic break 的拒绝逻辑未改。",
+        "oversized_files": [],
+        "guide_note": "Setext 段落升格判空应走 `setextRawContent`（仅首尾 U+0020/U+0009），勿用 `String#trim()`，以免 NBSP 等被误当空白。",
+        "self_checked": 5
+      },
+      "attempts": 1
+    },
+    "task-thematic-export": {
+      "id": "task-thematic-export",
+      "kind": "leaf",
+      "title": "Export isThematicBreakLine from thematic.ts",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/thematic.ts"
+      ],
+      "spec_sections": [
+        "Thematic breaks"
+      ],
+      "notes": "Export isThematicBreakLine for reuse by setext content checks / disambiguation docs. parseThematicBreak unchanged. Prefer shared expandTabs indent rules where helpful. Do not change load.ts. If task-thematic-vs-setext overlaps, keep this file-only export polish minimal.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-index-no-trim": {
+      "id": "task-index-no-trim",
+      "kind": "leaf",
+      "title": "Confirm index wiring: no trim, parseInlinesOnBlocks",
+      "parent": "plan-pipeline",
+      "deps": [],
+      "status": "retired",
+      "files_scope": [
+        "src/index.ts"
+      ],
+      "spec_sections": [],
+      "notes": "Keep index as: import blocks/load + inline/load → normalizeNewlines → split \\n → parseBlocks → parseInlinesOnBlocks → renderDocument. Never trim document. No feature logic.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-entities-alias": {
+      "id": "task-entities-alias",
+      "kind": "leaf",
+      "title": "Entities: ensure decodeEntities public alias",
+      "parent": "plan-foundation",
+      "deps": [],
+      "status": "retired",
+      "files_scope": [
+        "src/util/entities.ts"
+      ],
+      "spec_sections": [
+        "Entity and numeric character references"
+      ],
+      "notes": "Confirm decodeEntities is the public name (alias decodeCharacterReferences if needed). Hex/decimal digit limits per DESIGN/Field Guide. No other files.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-block-phase-flow": {
+      "id": "task-block-phase-flow",
+      "kind": "leaf",
+      "title": "Block-phase: setext-first + open-para continuation + walkBlockLines",
+      "parent": "plan-pipeline",
+      "deps": [],
+      "status": "retired",
+      "files_scope": [
+        "src/parse/block-phase.ts"
+      ],
+      "spec_sections": [
+        "Precedence",
+        "Setext headings",
+        "Thematic breaks",
+        "Paragraphs",
+        "Blank lines"
+      ],
+      "notes": "Implement DESIGN walkBlockLines control flow: (1) blanks via isBlankLine; (2) setext rewrite BEFORE try-order including ---; (3) if open paragraph && !canInterruptParagraph → append line (never let indented/html7/link-ref steal); (4) if open paragraph && interrupt → try parsers skipping parseSetextHeading and parseLinkRefDef; (5) else full try-order. Export walkBlockLines + parseBlocks. Remove legacy link_ref_def absorption; merge linkRefs only. ≤400 lines.",
+      "report": {
+        "status": "done",
+        "summary": "在 block-phase.ts 实现并导出 walkBlockLines：空白行用 isBlankLine；段落下划线 setext 在 try-order 之前提升；paragraphOpen 控制开放段落续行（跳过 parseSetextHeading/parseLinkRefDef）；否则完整 try-order。移除 link_ref_def 遗留吸收，仅 merge linkRefs。cross-scope：paragraph.ts 增加 appendParagraphLine；setext.ts 多行段落提升。",
+        "oversized_files": [],
+        "guide_note": "walkBlockLines 用 paragraphOpen（遇 blank 清零）避免多行 parseParagraph 之后误并下一段。",
+        "self_checked": 8
+      },
+      "attempts": 1
+    },
+    "task-blocks-loader-5": {
+      "id": "task-blocks-loader-5",
+      "kind": "leaf",
+      "title": "Register real ATX + interrupt matrix (Precedence)",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/load.ts"
+      ],
+      "spec_sections": [
+        "Precedence"
+      ],
+      "notes": "Import parseAtxHeading from ./atx.js — delete stub. Register order exactly per DESIGN. Interrupt: htmlBlockInterruptsParagraph (not bare parseHtmlBlock); NO setext interrupt registration; NO link-ref interrupt (or always false when inParagraph); indented never; fenced/thematic/atx/blockquote/list yes.",
+      "report": {
+        "status": "done",
+        "summary": "load.ts 已注册真实 parseAtxHeading 与规范中断矩阵（HTML 用 htmlBlockInterruptsParagraph；无 setext/link-ref/indented 中断）。变更已在 commit d59d051 中，无需额外提交。",
+        "oversized_files": [],
+        "guide_note": "Paragraph interrupt hooks 故意不包含 parseSetextHeading 与 parseLinkRefDef；setext 提升仅由 block-phase 步骤 (1) 处理。",
+        "self_checked": 7
+      },
+      "attempts": 1
+    },
+    "task-bq-walk": {
+      "id": "task-bq-walk",
+      "kind": "leaf",
+      "title": "Blockquote: reuse walkBlockLines / same open-para rules",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/blockquote.ts"
+      ],
+      "spec_sections": [
+        "Block quotes",
+        "Paragraphs",
+        "Precedence"
+      ],
+      "notes": "After > peel, apply same algorithm as DESIGN walkBlockLines (prefer importing walkBlockLines from block-phase). Merge nested linkRefs into caller map if applicable. Lazy continuation = open paragraph + !canInterruptParagraph. Keep ≤400 lines; extract helpers if needed. isBlankLine only.",
+      "report": {
+        "status": "done",
+        "summary": "blockquote 在剥除 `>` 后对内容行调用 `walkBlockLines` 并回传嵌套 linkRefs；行收集阶段的懒惰延续改为「尾部开放段落 + !canInterruptParagraph」，并对未加 `>` 的 setext 下划线行排除懒惰（避免 `---` 被吞进引用）。cross-scope：在 block-phase 实现并导出 DESIGN 版 walkBlockLines，parseBlocks 改为委托它。",
+        "oversized_files": [],
+        "guide_note": "Blockquote laziness: unmarked setext underline after an open paragraph is not lazy even when thematic interrupt is false (setext/thematic tie on `---`).",
+        "self_checked": 9
+      },
+      "attempts": 1
+    },
+    "task-list-walk": {
+      "id": "task-list-walk",
+      "kind": "leaf",
+      "title": "List items: shared walk + lazy continuation fidelity",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/list.ts"
+      ],
+      "spec_sections": [
+        "List items",
+        "Lists",
+        "Paragraphs",
+        "Precedence"
+      ],
+      "notes": "Item body lines must use DESIGN open-paragraph continuation (walkBlockLines or identical). Preserve marker width, residual indent, tight/loose, nested baseColumn=itemContentColumn. Merge linkRefs. Keep ≤400 lines — split marker helpers into same file regions only; do not touch load.ts.",
+      "report": {
+        "status": "done",
+        "summary": "列表项正文改为 residual/lazy 剥离后的虚拟行 + walkBlockLines（合并 linkRefs）；findItemEnd 在空行后不再对未达 contentColumn 的行做 laziness。cross-scope：block-phase 导出 walkBlockLines，空行结束段落续行以免缩进代码被并进段落。",
+        "oversized_files": [],
+        "guide_note": "List item bodies: peel to virtual lines then walkBlockLines; blank lines clear paragraph-continuation in the walker (required before indented code in items).",
+        "self_checked": 8
+      },
+      "attempts": 1
+    },
+    "task-guide-uu-fix": {
+      "id": "task-guide-uu-fix",
+      "kind": "leaf",
+      "title": "Field Guide: resolve UU + softbreak/lazy notes",
+      "parent": "plan-pipeline",
+      "deps": [],
+      "status": "retired",
+      "files_scope": [
+        "guide/index.md"
+      ],
+      "spec_sections": [],
+      "notes": "Resolve <<<<<<< / ======= / >>>>>>> conflict markers. Keep ≤80 lines. Keep both useful findings: softbreak single authority + render inlines-prefer-even-empty; drop stale claim that inline/load stubs rawHtml. Stage file to clear git UU.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-inline-phase-thin-2": {
+      "id": "task-inline-phase-thin-2",
+      "kind": "leaf",
+      "title": "Thin inline-phase: registry + stack only",
+      "parent": "plan-inlines",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/parse/inline-phase.ts"
+      ],
+      "spec_sections": [
+        "Emphasis and strong emphasis",
+        "Links",
+        "Images",
+        "Soft line breaks"
+      ],
+      "notes": "≤250 lines. Loop getInlineParsers() only — remove scanRawHtml fallback. Delimiters/brackets via inline-stack public API (not local monolith). parseInlinesOnBlocks walker only. Softbreak only via registry scanner.",
+      "report": {
+        "status": "done",
+        "summary": "将 `inline-phase.ts` 瘦身为仅依赖 `getInlineParsers()` 循环与 `inline-stack` 公开 API：去掉 `scanRawHtml` 回退及对 `inline-items` / `inline-link-forms` 的本地栈逻辑，强调/链接/图片改由 `pushEmphasisDelimiter`、`pushBracketOpen`、`processCloseBracket`、`processEmphasisStack`、`flattenInlineStackItems` 处理；保留 `parseInlinesOnBlocks` 块遍历。约 175 行。",
+        "oversized_files": [],
+        "guide_note": "Inline phase 在 `inline/load.ts` 已注册 `scanRawHtml` 时无需再直接 import 或 `<` 回退扫描。",
+        "self_checked": 5
+      },
+      "attempts": 1
+    },
+    "task-indented-cont": {
+      "id": "task-indented-cont",
+      "kind": "leaf",
+      "title": "Indented code: never interrupt open paragraph",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/indented-code.ts"
+      ],
+      "spec_sections": [
+        "Indented code blocks",
+        "Precedence"
+      ],
+      "notes": "Ensure parseIndentedCode still requires indent≥4 and blank-line rules per CM; do not change interrupt registration here (load.ts owns that). Reject being the sole consumer of continuation lines — phase must append those; this parser simply matches ≥4-space starts when invoked.",
+      "report": {
+        "status": "done",
+        "summary": "从 `parseIndentedCode` 移除 `wouldInterruptOpenParagraph`；解析器仅在调用时识别 ≥4 空格的非空 chunk 起始行并保留 CM 空白/chunk 规则。cross-scope：在 `block-phase.ts` 中于解析器 try-order 之前处理 `lazyContinue`，由阶段追加段落续行，避免缩进代码抢先消费 hanging indent 行。",
+        "oversized_files": [],
+        "guide_note": "Open-paragraph continuation must run before block parser try-order so ≥4-space lines stay paragraph text unless a blank line precedes a new code block.",
+        "self_checked": 7
+      },
+      "attempts": 1
+    },
+    "task-paragraph-append": {
+      "id": "task-paragraph-append",
+      "kind": "leaf",
+      "title": "Paragraph helpers: append/build for walkBlockLines",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/paragraph.ts"
+      ],
+      "spec_sections": [
+        "Paragraphs",
+        "Blank lines"
+      ],
+      "notes": "Keep isBlankLine / canInterruptParagraph / buildParagraphRawContent. Export a small appendParagraphLine helper if useful. Honor interrupt registry; do not register new checks here. Note: may race with running task-paragraph-interrupt-honor — if file already correct, only add missing exports.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-contracts-phase-api": {
+      "id": "task-contracts-phase-api",
+      "kind": "leaf",
+      "title": "Contracts: re-export parseBlocks + renderDocument",
+      "parent": "plan-pipeline",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/contracts.ts"
+      ],
+      "spec_sections": [],
+      "notes": "Re-export parseBlocks from block-phase and renderDocument from render.ts (keep existing *In / parseInlines*). Do not change implementations.",
+      "report": {
+        "status": "done",
+        "summary": "在 contracts.ts 中新增 parseBlocks（./parse/block-phase.js）与 renderDocument（./render.js）的 re-export，未改动任何实现或其它既有导出。",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 5
+      },
+      "attempts": 1
+    },
+    "task-guide-precedence-note": {
+      "id": "task-guide-precedence-note",
+      "kind": "leaf",
+      "title": "Field Guide: setext-first + remove stale rawhtml note",
+      "parent": "plan-pipeline",
+      "deps": [],
+      "status": "retired",
+      "files_scope": [
+        "guide/index.md"
+      ],
+      "spec_sections": [
+        "Precedence"
+      ],
+      "notes": "Keep ≤~80 lines. Remove/replace stale finding that inline-phase falls back because load stubs raw HTML. Add: walkBlockLines does setext rewrite before try-order so --- after a paragraph is <h2> not <hr />. No UU markers.",
+      "report": {
+        "status": "done",
+        "summary": "更新 guide/index.md：移除 stale rawHtml 与冲突标记，补充 Precedence 与 walkBlockLines setext-first 条目。",
+        "oversized_files": [],
+        "guide_note": "walkBlockLines 在 try-order 之前做 setext 重写，段落后的 --- 是 <h2> 而非 <hr />。",
+        "self_checked": 1
+      },
+      "attempts": 1
+    },
+    "task-inline-stack-exports": {
+      "id": "task-inline-stack-exports",
+      "kind": "leaf",
+      "title": "Inline-stack: public API for thin phase",
+      "parent": "plan-inlines",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/parse/inline-stack.ts"
+      ],
+      "spec_sections": [
+        "Emphasis and strong emphasis",
+        "Links",
+        "Images"
+      ],
+      "notes": "Ensure exports used by thin inline-phase: pushEmphasisAt, pushBracketOpen, processCloseBracket, processEmphasisStack/flatten, deactivate helpers. ≤350 lines. Do not edit inline-phase.ts.",
+      "report": {
+        "status": "done",
+        "summary": "完善 inline-stack 公开 API（emph/bracket/deactivate/flatten 别名与 pushStackNode），修复强调配对后 delimiter 尾段与重扫索引，使栈路径符合 CM 嵌套强调；未改 inline-phase.ts。",
+        "oversized_files": [],
+        "guide_note": "After strong/emph pairing, leftover run length must stay delim stack entries (not literal text) so ***foo*** can re-match emphasis tails.",
+        "self_checked": 7
+      },
+      "attempts": 1
+    },
+    "task-html-facade-confirm": {
+      "id": "task-html-facade-confirm",
+      "kind": "leaf",
+      "title": "HTML facade: type7 start + interrupt 1–6 only",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/html-block.ts"
+      ],
+      "spec_sections": [
+        "HTML blocks",
+        "Precedence"
+      ],
+      "notes": "Confirm parseHtmlBlock types 1–7; mayStartType7HtmlBlock blocks in-paragraph type7; htmlBlockInterruptsParagraph true only for 1–6. Prefer match/type7 helpers; no load.ts edits.",
+      "report": {
+        "status": "done",
+        "summary": "Verified HTML block facade (types 1–7 via html-block-match/type7), exported mayStartType7HtmlBlock, htmlBlockInterruptsParagraph true only for kinds 1–6, parseHtmlBlock gates type 7 in-paragraph; inlined type-1 end helper; fixed guide conflict + note on type-7 paragraph continuation.",
+        "oversized_files": [],
+        "guide_note": "Type-7 HTML blocks rely on parseParagraph continuation (not mayStartType7HtmlBlock alone): interrupt false for kind 7 lets the first paragraph absorb following lines.",
+        "self_checked": 5
+      },
+      "attempts": 1
+    },
+    "task-atx-export-ready": {
+      "id": "task-atx-export-ready",
+      "kind": "leaf",
+      "title": "ATX: confirm parseAtxHeading export for load",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/atx.ts"
+      ],
+      "spec_sections": [
+        "ATX headings"
+      ],
+      "notes": "Confirm exported parseAtxHeading (indent≤3, 1–6 #, trailing # rules, text for inline phase). Do not edit load.ts — loader leaf imports it.",
+      "report": {
+        "status": "done",
+        "summary": "Verified export and behavior of parseAtxHeading in src/blocks/atx.ts (indent≤3, 1–6 opening #, space/EOL after opener, optional closing # with isEscaped, raw text on heading node). load.ts already imports the real parser. No code changes required; build passes.",
+        "oversized_files": [],
+        "guide_note": "ATX closing `#` scan from line end skips backslash-escaped `#`; heading `text` stays escaped for inline (e.g. `foo \\###`).",
+        "self_checked": 18
+      },
+      "attempts": 1
+    },
+    "task-render-tight-lists": {
+      "id": "task-render-tight-lists",
+      "kind": "leaf",
+      "title": "Render: tight list paragraph omission",
+      "parent": "plan-pipeline",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/render.ts"
+      ],
+      "spec_sections": [
+        "Lists"
+      ],
+      "notes": "Tight lists omit <p> around item paragraphs; loose keep them. Prefer inlines AST; autolink/image rules per DESIGN. No silent default for known types.",
+      "report": {
+        "status": "done",
+        "summary": "Verified existing render.ts tight/loose list behavior: item paragraphs omit <p> when list.tight is true, wrap in <p> when loose; nested lists use each list node’s tight flag. No code changes required (identical to main). Build passed; 6+ Lists spec examples matched.",
+        "oversized_files": [],
+        "guide_note": "Nested list tight/loose is independent: renderList reads each list node’s tight; renderBlockInList only passes the enclosing list’s tight to item block children.",
+        "self_checked": 6
+      },
+      "attempts": 1
+    },
+    "task-normalize-confirm": {
+      "id": "task-normalize-confirm",
+      "kind": "leaf",
+      "title": "Normalize: LF + NUL→FFFD, no trim",
+      "parent": "plan-foundation",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/util/normalize.ts"
+      ],
+      "spec_sections": [],
+      "notes": "Confirm normalizeNewlines: CRLF/CR→LF, U+0000→U+FFFD, never trim leading/trailing blanks.",
+      "report": {
+        "status": "done",
+        "summary": "no JSON report",
+        "oversized_files": [],
+        "self_checked": 0
+      },
+      "attempts": 1
+    },
+    "task-cli-stdin-confirm": {
+      "id": "task-cli-stdin-confirm",
+      "kind": "leaf",
+      "title": "CLI: thin stdin/stdout wrapper only",
+      "parent": "plan-pipeline",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/cli.ts"
+      ],
+      "spec_sections": [],
+      "notes": "Keep cli as stdin→renderMarkdown→stdout only; no parsing logic in cli.ts.",
+      "report": {
+        "status": "done",
+        "summary": "no JSON report",
+        "oversized_files": [],
+        "self_checked": 0
+      },
+      "attempts": 1
+    },
+    "task-link-scan-blank": {
+      "id": "task-link-scan-blank",
+      "kind": "leaf",
+      "title": "link-scan: blank/ws = space/tab only",
+      "parent": "plan-inlines",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/inline/link-scan.ts"
+      ],
+      "spec_sections": [
+        "Link reference definitions",
+        "Links"
+      ],
+      "notes": "Whitespace helpers must treat only U+0020/U+0009 as spaces; do not use trim() that collapses Unicode spaces. Export cursor helpers for link-dest.",
+      "report": {
+        "status": "done",
+        "summary": "在 link-scan.ts 中统一链接空白语义：仅 U+0020/U+0009（isSpaceOrTab），新增 restOfLineIsSpacesTabsOnly 与单字符串 scanOptionalWhitespaceIn / skipSpacesTabsOnLineIn；经 link-dest 再导出；link.ts 与 link-ref.ts 改为共用这些 helper，避免 trim/Unicode 空白误判。",
+        "oversized_files": [],
+        "guide_note": "Link dest/title optional whitespace uses `isSpaceOrTab` only (U+0020/U+0009); NBSP stays in plain destinations (`src/inline/link-scan.ts`).",
+        "self_checked": 5
+      },
+      "attempts": 1
+    },
+    "task-text-run-stops": {
+      "id": "task-text-run-stops",
+      "kind": "leaf",
+      "title": "Text runs: stop before specials and LF",
+      "parent": "plan-inlines",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/inline/text.ts"
+      ],
+      "spec_sections": [
+        "Textual content",
+        "Soft line breaks"
+      ],
+      "notes": "scanTextRun/breaksTextRun must stop before [, ], !, *, _, `, <, \\, and \\n so softbreak/atomic scanners own those. Escapes+entities on text path only.",
+      "report": {
+        "status": "done",
+        "summary": "完善 src/inline/text.ts：breaksTextRun 在 [, ], !, *, _, `, <, \\ 与 LF 前终止；scanTextRun 在相同边界停止，并在文本路径内处理反斜杠转义，processTextualContent 仍负责 escapes+entities。已通过 build 与规范嵌入示例自测。",
+        "oversized_files": [],
+        "guide_note": "breaksTextRun 在 \\ 为 true，但 scanTextRun 仍消费 \\ + ASCII 标点（及 lone \\），转义仅走 text 解码路径",
+        "self_checked": 5
+      },
+      "attempts": 1
+    },
+    "task-index-wire-confirm": {
+      "id": "task-index-wire-confirm",
+      "kind": "leaf",
+      "title": "index: loaders + parseInlinesOnBlocks, no trim",
+      "parent": "plan-pipeline",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/index.ts"
+      ],
+      "spec_sections": [],
+      "notes": "Confirm side-effect imports of blocks/load + inline/load; normalize→split→parseBlocks→parseInlinesOnBlocks→renderDocument; never trim document.",
+      "report": {
+        "status": "done",
+        "summary": "no JSON report",
+        "oversized_files": [],
+        "self_checked": 0
+      },
+      "attempts": 1
+    },
+    "task-paragraph-append-2": {
+      "id": "task-paragraph-append-2",
+      "kind": "leaf",
+      "title": "Paragraph: appendParagraphLine for walkers",
+      "parent": "plan-blocks",
+      "deps": [
+        "task-paragraph-interrupt-honor"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/paragraph.ts"
+      ],
+      "spec_sections": [
+        "Paragraphs",
+        "Blank lines"
+      ],
+      "notes": "After interrupt-honor finishes: export appendParagraphLine (or append to interim text via buildParagraphRawContent) for walkBlockLines. Keep isBlankLine = space/tab only. Do not change load.ts.",
+      "report": null,
+      "attempts": 0
+    },
+    "plan-audit": {
+      "id": "plan-audit",
+      "kind": "plan",
+      "title": "Spec example audits before done",
+      "parent": null,
+      "deps": [],
+      "status": "open",
+      "notes": ""
+    },
+    "task-thematic-content-gate": {
+      "id": "task-thematic-content-gate",
+      "kind": "leaf",
+      "title": "Thematic: isThematicBreakLine for setext content reject",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/thematic.ts"
+      ],
+      "spec_sections": [
+        "Thematic breaks",
+        "Setext headings"
+      ],
+      "notes": "Confirm export isThematicBreakLine; parseThematicBreak must not steal setext underlines when walker does step-1 rewrite. Do not edit load.ts or block-phase.ts.",
+      "report": {
+        "status": "done",
+        "summary": "thematic.ts 已导出 isThematicBreakLine，parseThematicBreak 在 setext 下划线可优先（setextHeadingTakesPrecedence 返回 null）时不会抢走 setext。setext.ts 改为从 thematic 导入 isThematicBreakLine，使 isSetextContentLine 与主题分隔判定共用同一实现（cross-scope）。已 build 并核对规范示例：*** / --- / ___、Foo\\n---\\nbar、---\\n---、- foo\\n-----、*-*、- - - 等。",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 6
+      },
+      "attempts": 1
+    },
+    "task-fenced-close-only-ws": {
+      "id": "task-fenced-close-only-ws",
+      "kind": "leaf",
+      "title": "Fenced code: closing fence trailing ws-only",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/blocks/fenced-code.ts"
+      ],
+      "spec_sections": [
+        "Fenced code blocks"
+      ],
+      "notes": "Closing fence: same char, length ≥ open, indent ≤3, only spaces/tabs after run. Info string → lang first word; backtick info cannot contain backticks.",
+      "report": {
+        "status": "done",
+        "summary": "确认并实现 CommonMark 闭合围栏规则：`isClosingFence` 使用按围栏字符区分的正则（`^ {0,3}(`+)[\\t ]*$` / `~+`），要求与开围栏同字符、长度 ≥ 开围栏、行首缩进 ≤3、围栏 run 之后仅允许空格或制表符（含 info 的 ``` aaa 行、4 空格缩进的 ```、围栏内含空格的 ~~~ ~~ 均不会误闭合）。开围栏 info → lang 首词及反引号 info 校验已存在。",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 6
+      },
+      "attempts": 1
+    },
+    "task-emphasis-flank-mod3": {
+      "id": "task-emphasis-flank-mod3",
+      "kind": "leaf",
+      "title": "Emphasis: flanking + mod-3 pair helpers",
+      "parent": "plan-inlines",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/inline/emphasis.ts"
+      ],
+      "spec_sections": [
+        "Emphasis and strong emphasis"
+      ],
+      "notes": "Ensure canPairEmphasisDelimiters / flanking / isBackslashEscaped exports match CM; mod-3 rule: fail when either run is both open+close and sum multiple of 3 unless both lengths multiple of 3.",
+      "report": {
+        "status": "done",
+        "summary": "分支已包含完整的 emphasis 辅助模块：isBackslashEscaped、Unicode 空白/标点 flanking（规则 1–8）、scanDelimiterRun / classifyEmphasisDelimiter、mod3AllowsEmphasisMatch / mod3AllowsStrongMatch，以及 canPairEmphasisDelimiters（含独立 delimiter run 与 mod-3）。构建通过；对 *foo bar*、foo*bar*、*foo**bar*、*foo**bar**baz*、foo***bar***baz、***foo***、aa_\"bb\"_cc、foo-_(bar)_ 等嵌入示例 CLI 输出与规范一致。无需额外提交。",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 12
+      },
+      "attempts": 1
+    },
+    "task-breaks-hard-soft-api": {
+      "id": "task-breaks-hard-soft-api",
+      "kind": "leaf",
+      "title": "Breaks: hard spaces + softbreak registry contract",
+      "parent": "plan-inlines",
+      "deps": [],
+      "status": "running",
+      "files_scope": [
+        "src/inline/breaks.ts"
+      ],
+      "spec_sections": [
+        "Hard line breaks",
+        "Soft line breaks"
+      ],
+      "notes": "scanHardBreak: ≥2 spaces before \\n or \\\\ before \\n. scanSoftBreak: lone \\n. Export any trim helpers phase needs; phase must not duplicate softbreak logic.",
+      "report": null,
+      "attempts": 1
+    },
+    "task-link-suffix-forms": {
+      "id": "task-link-suffix-forms",
+      "kind": "leaf",
+      "title": "Link: inline fail → ref forms; shortcut rules",
+      "parent": "plan-inlines",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/inline/link.ts"
+      ],
+      "spec_sections": [
+        "Links"
+      ],
+      "notes": "Keep isLinkOpenerAt + parseLinkSuffixAfterText. Failed inline (… ) falls through to full/collapsed/shortcut; lone [ blocking collapsed/full blocks shortcut. Dest/title already decode-once from link-dest — do not re-decode.",
+      "report": {
+        "status": "done",
+        "summary": "确认并实现 link 后缀解析：isLinkOpenerAt、内联尾、full/collapsed/shortcut 与 lone `[` 阻断 shortcut；内联失败回退引用形式；dest/title 沿用 link-dest 单次解码。提交将 full/collapsed 尝试顺序对齐 DESIGN。",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 6
+      },
+      "attempts": 1
+    },
+    "task-image-suffix-alias": {
+      "id": "task-image-suffix-alias",
+      "kind": "leaf",
+      "title": "Image: opener ![ + suffix alias",
+      "parent": "plan-inlines",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/inline/image.ts"
+      ],
+      "spec_sections": [
+        "Images"
+      ],
+      "notes": "isImageOpenerAt requires unescaped ![ . parseImageSuffixAfterAlt delegates to link suffix; alias parseImageSuffixAfterText OK with same arg order.",
+      "report": {
+        "status": "done",
+        "summary": "确认并实现 image 模块：isImageOpenerAt 检测未转义 ![；parseImageSuffixAfterAlt 委托 parseLinkSuffixAfterText；导出 parseImageSuffixAfterText 别名。已 build 并通过 7 个 Images 规范示例。",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 7
+      },
+      "attempts": 1
+    },
+    "task-autolink-uri-email": {
+      "id": "task-autolink-uri-email",
+      "kind": "leaf",
+      "title": "Autolink: absolute URI + email in <>",
+      "parent": "plan-inlines",
+      "deps": [],
+      "status": "running",
+      "files_scope": [
+        "src/inline/autolink.ts"
+      ],
+      "spec_sections": [
+        "Autolinks"
+      ],
+      "notes": "Confirm scanAutolink absolute URI scheme + email rules; emit autolink node with destination+text per DESIGN AST.",
+      "report": null,
+      "attempts": 1
+    },
+    "task-code-span-normalize": {
+      "id": "task-code-span-normalize",
+      "kind": "leaf",
+      "title": "Code span: newline→space + edge space strip",
+      "parent": "plan-inlines",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/inline/code-span.ts"
+      ],
+      "spec_sections": [
+        "Code spans"
+      ],
+      "notes": "Equal-length backtick fences; interior \\n → space; strip one U+0020 from both ends only when both ends are space and content not all-spaces.",
+      "report": {
+        "status": "done",
+        "summary": "确认并验证 src/inline/code-span.ts 已实现换行→空格与双端各剥一层 U+0020 的规范化及等长反引号扫描；12 个规范示例 CLI 自测通过，无额外代码改动需提交。",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 12
+      },
+      "attempts": 1
+    },
+    "task-link-ref-no-node": {
+      "id": "task-link-ref-no-node",
+      "kind": "leaf",
+      "title": "Link-ref: parseLinkRefDef returns linkRefs only",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "running",
+      "files_scope": [
+        "src/blocks/link-ref.ts"
+      ],
+      "spec_sections": [
+        "Link reference definitions"
+      ],
+      "notes": "Export only parseLinkRefDef; { next, linkRefs } with no node. Title-ending line remainder spaces/tabs only. Labels normalized; first-wins handled by phase merge.",
+      "report": null,
+      "attempts": 1
+    },
+    "task-escape-html-confirm-2": {
+      "id": "task-escape-html-confirm-2",
+      "kind": "leaf",
+      "title": "escapeHtml: & < > \" for text and attrs",
+      "parent": "plan-foundation",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/util/escape-html.ts"
+      ],
+      "spec_sections": [
+        "Textual content"
+      ],
+      "notes": "Confirm escapeHtml escapes & < > \" ; used by render for text/attrs only — not for html_block/html_inline.",
+      "report": {
+        "status": "done",
+        "summary": "Verified escapeHtml replaces & < > \" in that order (& first); render uses it for text/code/attrs only while html_block/html_inline pass through. Extended JSDoc to document the contract; no algorithm change.",
+        "oversized_files": [],
+        "guide_note": "escapeHtml must replace `&` before `<`/`>`/`\"` so browsers never reinterpret entity-like substrings in attribute/text output.",
+        "self_checked": 4
+      },
+      "attempts": 1
+    },
+    "task-tabs-expand-confirm": {
+      "id": "task-tabs-expand-confirm",
+      "kind": "leaf",
+      "title": "Tabs: expandTabs + indentWidth width-4",
+      "parent": "plan-foundation",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/util/tabs.ts"
+      ],
+      "spec_sections": [
+        "Tabs"
+      ],
+      "notes": "indentWidth only counts leading space/tab; expandTabs column-4. Do not change call sites outside this file.",
+      "report": {
+        "status": "done",
+        "summary": "确认并实现 expandTabs / indentWidth（4 列制表符）；抽取 TAB_WIDTH=4 常量；未改动本文件外的调用点。",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 11
+      },
+      "attempts": 1
+    },
+    "task-types-ast-fields": {
+      "id": "task-types-ast-fields",
+      "kind": "leaf",
+      "title": "types: AST field docs match DESIGN",
+      "parent": "plan-foundation",
+      "deps": [],
+      "status": "done",
+      "files_scope": [
+        "src/types.ts"
+      ],
+      "spec_sections": [],
+      "notes": "Confirm BlockType/InlineType/LinkRefMap fields match DESIGN; link refs not AST. Avoid hardcoding util function names in comments beyond normalizeLinkLabel keying note.",
+      "report": {
+        "status": "done",
+        "summary": "确认 BlockType/InlineType/LinkRefMap 及 narrowing 别名与 DESIGN AST 一致；将 JSDoc 字段表与 DESIGN 对齐，并明确 link ref 非 AST。已提交 f3205d0。",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 0
+      },
+      "attempts": 1
+    },
+    "task-html-type7-start-only": {
+      "id": "task-html-type7-start-only",
+      "kind": "leaf",
+      "title": "HTML type7: start matcher only (no blank end)",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "running",
+      "files_scope": [
+        "src/blocks/html-block-type7.ts"
+      ],
+      "spec_sections": [
+        "HTML blocks"
+      ],
+      "notes": "matchType7 / mayStart helpers: complete open/close tag alone on line; attr names with hyphen; boolean attrs like raw-html; exclude pre/script/style/textarea open; no blank-line end logic here.",
+      "report": null,
+      "attempts": 1
+    },
+    "task-link-dest-finish-once": {
+      "id": "task-link-dest-finish-once",
+      "kind": "leaf",
+      "title": "link-dest: finishLinkValue decode-once",
+      "parent": "plan-inlines",
+      "deps": [],
+      "status": "running",
+      "files_scope": [
+        "src/inline/link-dest.ts"
+      ],
+      "spec_sections": [
+        "Links",
+        "Link reference definitions"
+      ],
+      "notes": "Facade applies unescapeMarkdown+decodeEntities once at return; export multi-line + *In APIs and whitespace helpers. Title path must not double-decode.",
+      "report": null,
+      "attempts": 1
+    },
+    "task-raw-html-bool-attr": {
+      "id": "task-raw-html-bool-attr",
+      "kind": "leaf",
+      "title": "Raw HTML: boolean attr equals probe",
+      "parent": "plan-inlines",
+      "deps": [],
+      "status": "running",
+      "files_scope": [
+        "src/inline/raw-html.ts"
+      ],
+      "spec_sections": [
+        "Raw HTML"
+      ],
+      "notes": "After boolean attribute (no =), do not consume whitespace before next attribute when probing for =. scanRawHtml remains the registry scanner.",
+      "report": null,
+      "attempts": 1
+    },
+    "task-escapes-punct-only": {
+      "id": "task-escapes-punct-only",
+      "kind": "leaf",
+      "title": "Backslash escapes: ASCII punct only",
+      "parent": "plan-foundation",
+      "deps": [],
+      "status": "running",
+      "files_scope": [
+        "src/util/escapes.ts"
+      ],
+      "spec_sections": [
+        "Backslash escapes"
+      ],
+      "notes": "unescapeMarkdown strips \\ only before ASCII punctuation; \\\\ before * → literal \\ + active *.",
+      "report": null,
+      "attempts": 1
+    },
+    "task-normalize-label-fold": {
+      "id": "task-normalize-label-fold",
+      "kind": "leaf",
+      "title": "normalizeLinkLabel: ws collapse + case fold",
+      "parent": "plan-foundation",
+      "deps": [],
+      "status": "running",
+      "files_scope": [
+        "src/util/normalize-label.ts"
+      ],
+      "spec_sections": [
+        "Link reference definitions"
+      ],
+      "notes": "Collapse whitespace runs; Unicode case-fold; used as LinkRefMap key. Keep export normalizeLinkLabel.",
+      "report": null,
+      "attempts": 1
+    },
+    "task-inline-items-restack": {
+      "id": "task-inline-items-restack",
+      "kind": "leaf",
+      "title": "inline-items: unmatched delim restack API",
+      "parent": "plan-inlines",
+      "deps": [],
+      "status": "pending",
+      "files_scope": [
+        "src/parse/inline-items.ts"
+      ],
+      "spec_sections": [
+        "Emphasis and strong emphasis"
+      ],
+      "notes": "Confirm exports ProcessItem, processEmphasis, flattenItems, textNode; unmatched */_ restack; after splice set index to openIdx-1 for rule 14 (***foo***).",
+      "report": null,
+      "attempts": 0
+    },
+    "task-inline-forms-close": {
+      "id": "task-inline-forms-close",
+      "kind": "leaf",
+      "title": "inline-link-forms: tryClose* DESIGN order",
+      "parent": "plan-inlines",
+      "deps": [],
+      "status": "retired",
+      "files_scope": [
+        "src/parse/inline-link-forms.ts"
+      ],
+      "spec_sections": [
+        "Links",
+        "Images"
+      ],
+      "notes": "tryCloseLinkBracket / tryCloseImage / tryCloseLink use isLinkOpenerAt / isImageOpenerAt and DESIGN arg order for parseLinkSuffixAfterText / parseImageSuffixAfterAlt.",
+      "report": null,
+      "attempts": 0
+    },
+    "audit-blocks-core": {
+      "id": "audit-blocks-core",
+      "kind": "leaf",
+      "title": "audit: Precedence + paragraphs + setext/thematic/ATX",
+      "parent": "plan-audit",
+      "deps": [
+        "task-block-phase-flow",
+        "task-blocks-loader-5",
+        "task-setext-blank",
+        "task-paragraph-append-2"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/parse/block-phase.ts",
+        "src/blocks/load.ts",
+        "src/blocks/setext.ts",
+        "src/blocks/thematic.ts",
+        "src/blocks/atx.ts",
+        "src/blocks/paragraph.ts"
+      ],
+      "spec_sections": [
+        "Precedence",
+        "Paragraphs",
+        "Blank lines",
+        "Setext headings",
+        "Thematic breaks",
+        "ATX headings"
+      ],
+      "notes": "Re-read assigned spec sections; build CLI; run embedded examples (esp. --- setext vs hr, open-para indented/type7/link-ref continuation). Fix mismatches only in files_scope.",
+      "report": null,
+      "attempts": 0
+    },
+    "audit-containers": {
+      "id": "audit-containers",
+      "kind": "leaf",
+      "title": "audit: Block quotes + lists lazy/tight",
+      "parent": "plan-audit",
+      "deps": [
+        "task-bq-walk",
+        "task-list-walk",
+        "task-block-phase-flow",
+        "task-render-tight-lists"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/blockquote.ts",
+        "src/blocks/list.ts",
+        "src/render.ts"
+      ],
+      "spec_sections": [
+        "Block quotes",
+        "List items",
+        "Lists"
+      ],
+      "notes": "Re-read sections; run CM examples for lazy > continuation, tight/loose <p> omission, nested lists, marker changes. Fix only in scope.",
+      "report": null,
+      "attempts": 0
+    },
+    "audit-html-code": {
+      "id": "audit-html-code",
+      "kind": "leaf",
+      "title": "audit: HTML blocks + indented/fenced code",
+      "parent": "plan-audit",
+      "deps": [
+        "task-html-match-kinds",
+        "task-html-facade-confirm",
+        "task-indented-cont",
+        "task-fenced-close-only-ws"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/html-block.ts",
+        "src/blocks/html-block-match.ts",
+        "src/blocks/html-block-type7.ts",
+        "src/blocks/indented-code.ts",
+        "src/blocks/fenced-code.ts"
+      ],
+      "spec_sections": [
+        "HTML blocks",
+        "Indented code blocks",
+        "Fenced code blocks"
+      ],
+      "notes": "Re-read sections; verify types 1–7 start/end, type7 non-interrupt, indented never interrupts open para, fence close rules. Fix in scope.",
+      "report": null,
+      "attempts": 0
+    },
+    "audit-inlines-core": {
+      "id": "audit-inlines-core",
+      "kind": "leaf",
+      "title": "audit: Emphasis + links/images + softbreaks",
+      "parent": "plan-audit",
+      "deps": [
+        "task-inline-phase-thin-2",
+        "task-inline-stack-exports",
+        "task-link-suffix-forms",
+        "task-image-suffix-alias"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/parse/inline-phase.ts",
+        "src/parse/inline-stack.ts",
+        "src/inline/emphasis.ts",
+        "src/inline/link.ts",
+        "src/inline/image.ts",
+        "src/inline/breaks.ts"
+      ],
+      "spec_sections": [
+        "Emphasis and strong emphasis",
+        "Links",
+        "Images",
+        "Hard line breaks",
+        "Soft line breaks"
+      ],
+      "notes": "Re-read sections; confirm phase uses stack only (no rawHtml fallback); run emphasis/link/image/break examples; fix in scope.",
+      "report": null,
+      "attempts": 0
+    },
+    "audit-inlines-atomic": {
+      "id": "audit-inlines-atomic",
+      "kind": "leaf",
+      "title": "audit: Code spans + autolink + raw HTML + textual",
+      "parent": "plan-audit",
+      "deps": [
+        "task-code-span-normalize",
+        "task-autolink-uri-email",
+        "task-raw-html-bool-attr",
+        "task-text-run-stops"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/inline/code-span.ts",
+        "src/inline/autolink.ts",
+        "src/inline/raw-html.ts",
+        "src/inline/text.ts",
+        "src/inline/load.ts"
+      ],
+      "spec_sections": [
+        "Code spans",
+        "Autolinks",
+        "Raw HTML",
+        "Textual content"
+      ],
+      "notes": "Re-read sections; run embedded examples via CLI; registry order code→autolink→rawHtml→hard→soft; fix in scope.",
+      "report": null,
+      "attempts": 0
+    },
+    "audit-refs-entities": {
+      "id": "audit-refs-entities",
+      "kind": "leaf",
+      "title": "audit: Link refs + entities + escapes + tabs",
+      "parent": "plan-audit",
+      "deps": [
+        "task-link-ref-no-node",
+        "task-link-dest-finish-once",
+        "task-link-scan-blank",
+        "task-block-phase-flow"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/link-ref.ts",
+        "src/inline/link-dest.ts",
+        "src/inline/link-scan.ts",
+        "src/util/entities.ts",
+        "src/util/escapes.ts",
+        "src/util/tabs.ts"
+      ],
+      "spec_sections": [
+        "Link reference definitions",
+        "Entity and numeric character references",
+        "Backslash escapes",
+        "Tabs"
+      ],
+      "notes": "Re-read sections; first-wins refs, title EOL junk rules, entity hex/decimal limits, tab width-4; fix in scope.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-block-phase-open-para-2": {
+      "id": "task-block-phase-open-para-2",
+      "kind": "leaf",
+      "title": "Block-phase: open-para flag + skip parseParagraph + drop legacy link_ref_def",
+      "parent": "plan-pipeline",
+      "deps": [],
+      "status": "retired",
+      "files_scope": [
+        "src/parse/block-phase.ts"
+      ],
+      "spec_sections": [
+        "Precedence",
+        "Setext headings",
+        "Thematic breaks",
+        "Paragraphs",
+        "Blank lines"
+      ],
+      "notes": "Align walkBlockLines with DESIGN: (1) blank clears paragraphOpen — setext rewrite ONLY when paragraphOpen; (2) on interrupt try skip parseSetextHeading, parseLinkRefDef, AND parseParagraph; (3) delete linkRefsFromLegacyNode / link_ref_def absorption — merge only result.linkRefs; (4) import appendParagraphLine from paragraph.ts (add thin re-export shim only if paragraph export already present — otherwise keep local until task-paragraph-append-2 lands, but prefer importing). Do not edit load.ts.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-setext-use-thematic-line": {
+      "id": "task-setext-use-thematic-line",
+      "kind": "leaf",
+      "title": "Setext: reuse isThematicBreakLine from thematic.ts",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/setext.ts"
+      ],
+      "spec_sections": [
+        "Setext headings",
+        "Thematic breaks"
+      ],
+      "notes": "Remove local isThematicBreakLine duplicate in setext.ts; import isThematicBreakLine from thematic.ts for isSetextContentLine. Keep isBlankLine. Export surface unchanged.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-contracts-walk-export": {
+      "id": "task-contracts-walk-export",
+      "kind": "leaf",
+      "title": "Contracts: re-export walkBlockLines",
+      "parent": "plan-pipeline",
+      "deps": [
+        "task-contracts-phase-api"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/contracts.ts"
+      ],
+      "spec_sections": [],
+      "notes": "After task-contracts-phase-api finishes: export { parseBlocks, walkBlockLines } from block-phase (keep parseInlines*, renderDocument, link-dest *In). Compile-check only; no logic.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-html-match-type1-end": {
+      "id": "task-html-match-type1-end",
+      "kind": "leaf",
+      "title": "HTML match: type1 end-tag lineContains fidelity",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "pending",
+      "files_scope": [
+        "src/blocks/html-block-match.ts"
+      ],
+      "spec_sections": [
+        "HTML blocks"
+      ],
+      "notes": "Confirm classify order 1→6 and lineContainsType1EndTag covers script/style/pre/textarea end tags case-insensitively per CM. No type7 imports. Do not edit html-block.ts.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-guide-open-para-note": {
+      "id": "task-guide-open-para-note",
+      "kind": "leaf",
+      "title": "Field Guide: blank closes open-para / setext",
+      "parent": "plan-pipeline",
+      "deps": [],
+      "status": "retired",
+      "files_scope": [
+        "guide/index.md"
+      ],
+      "spec_sections": [
+        "Precedence",
+        "Blank lines",
+        "Setext headings"
+      ],
+      "notes": "Keep ≤~80 lines. Append one finding: blank clears paragraphOpen so setext cannot promote across blank; interrupt try skips parseParagraph. No conflict markers. Do not paste long code.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-paragraph-append-3": {
+      "id": "task-paragraph-append-3",
+      "kind": "leaf",
+      "title": "Paragraph: export appendParagraphLine + canStartParagraphAt",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "pending",
+      "files_scope": [
+        "src/blocks/paragraph.ts"
+      ],
+      "spec_sections": [
+        "Paragraphs",
+        "Blank lines"
+      ],
+      "notes": "Export appendParagraphLine(paragraph, line): split interim text on \\n, push line, set text=buildParagraphRawContent(lines). Export canStartParagraphAt(lines,pos) (currently private). Keep isBlankLine space/tab-only (no trim). Do not edit block-phase.ts.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-block-phase-fidelity": {
+      "id": "task-block-phase-fidelity",
+      "kind": "leaf",
+      "title": "Block-phase: open-para gate + skip parseParagraph + drop legacy",
+      "parent": "plan-pipeline",
+      "deps": [
+        "task-paragraph-append-3"
+      ],
+      "status": "pending",
+      "files_scope": [
+        "src/parse/block-phase.ts"
+      ],
+      "spec_sections": [
+        "Precedence",
+        "Setext headings",
+        "Thematic breaks",
+        "Paragraphs",
+        "Blank lines"
+      ],
+      "notes": "Match DESIGN walk pseudo-code: (1) setext rewrite ONLY if paragraphOpen; (2) interrupt try skips parseSetextHeading, parseLinkRefDef, AND parseParagraph; after absorb set paragraphOpen=(last node is paragraph) not always false; (3) import appendParagraphLine from paragraph.ts — delete private twin; delete linkRefsFromLegacyNode / link_ref_def; use BlockParseResult from registry (no WalkerParseResult).",
+      "report": null,
+      "attempts": 0
+    },
+    "task-guide-resolve-uu": {
+      "id": "task-guide-resolve-uu",
+      "kind": "leaf",
+      "title": "Field Guide: resolve conflict markers + open-para note",
+      "parent": "plan-pipeline",
+      "deps": [],
+      "status": "retired",
+      "files_scope": [
+        "guide/index.md"
+      ],
+      "spec_sections": [
+        "Precedence",
+        "Blank lines",
+        "Setext headings"
+      ],
+      "notes": "Resolve <<<<<<< / ======= / >>>>>>> markers by keeping BOTH sides' findings (stack leftover delim + type7 continuation + text-run escape path). Add one short note: blank closes open-para so setext cannot promote across blank. Stay under ~80 lines; no code dumps.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-contracts-phase-export-2": {
+      "id": "task-contracts-phase-export-2",
+      "kind": "leaf",
+      "title": "Contracts: walkBlockLines + group phase re-exports",
+      "parent": "plan-pipeline",
+      "deps": [],
+      "status": "pending",
+      "files_scope": [
+        "src/contracts.ts"
+      ],
+      "spec_sections": [],
+      "notes": "Re-export walkBlockLines with parseBlocks from block-phase. Place parseBlocks/walkBlockLines adjacent to parseInlines/parseInlinesOnBlocks (pipeline grouping). Keep renderDocument nearby. No implementation changes; do not add loader side-effects.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-stack-delegate-helpers": {
+      "id": "task-stack-delegate-helpers",
+      "kind": "leaf",
+      "title": "Inline-stack: delegate emphasis/close to items+forms",
+      "parent": "plan-inlines",
+      "deps": [
+        "task-inline-items-restack",
+        "task-inline-forms-close"
+      ],
+      "status": "pending",
+      "files_scope": [
+        "src/parse/inline-stack.ts"
+      ],
+      "spec_sections": [
+        "Emphasis and strong emphasis",
+        "Links",
+        "Images"
+      ],
+      "notes": "After items/forms APIs are complete: import processEmphasis / tryClose* from inline-items.ts and inline-link-forms.ts; remove duplicated pairing/close bodies in stack. Keep public stack API for phase. Stay ≤350 lines. Enforce no nested links; images may contain links (DESIGN delimiter stack section).",
+      "report": null,
+      "attempts": 0
+    },
+    "task-html-type6-tags-dedupe": {
+      "id": "task-html-type6-tags-dedupe",
+      "kind": "leaf",
+      "title": "HTML match: single TYPE6/TYPE1 tag lists",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/html-block-match.ts"
+      ],
+      "spec_sections": [
+        "HTML blocks"
+      ],
+      "notes": "Ensure TYPE1_TAGS and TYPE6_TAGS are authoritative here. Export whatever type7/facade need so html-block-type7.ts does not keep a parallel TYPE1 list. Do not edit type7/facade in this leaf — only match module exports.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-type7-import-tags": {
+      "id": "task-type7-import-tags",
+      "kind": "leaf",
+      "title": "HTML type7: import tags from match module",
+      "parent": "plan-blocks",
+      "deps": [
+        "task-html-type6-tags-dedupe"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/html-block-type7.ts"
+      ],
+      "spec_sections": [
+        "HTML blocks"
+      ],
+      "notes": "Remove local duplicated TYPE1 (and any TYPE6) tag tables; import from html-block-match.ts. Keep matchType7 / start-only semantics (no blank end here). May overlap conceptually with task-html-type7-start-only — if that leaf already landed, only finish dedupe.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-bq-lazy-setext": {
+      "id": "task-bq-lazy-setext",
+      "kind": "leaf",
+      "title": "Blockquote: no lazy setext underline absorb",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "pending",
+      "files_scope": [
+        "src/blocks/blockquote.ts"
+      ],
+      "spec_sections": [
+        "Block quotes",
+        "Setext headings",
+        "Thematic breaks"
+      ],
+      "notes": "Confirm lazy continuation uses open-para + !canInterruptParagraph and never lazily swallows a setext underline (---). Peeled content still walkBlockLines; merge nested linkRefs. Stay ≤400 lines.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-list-blank-lazy": {
+      "id": "task-list-blank-lazy",
+      "kind": "leaf",
+      "title": "List: after blank, no under-indent lazy continue",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/list.ts"
+      ],
+      "spec_sections": [
+        "List items",
+        "Lists"
+      ],
+      "notes": "After a blank inside an item, do not lazy-continue with lines indented below contentColumn. Keep residual peel → walkBlockLines + linkRefs merge; tight/loose blank rules. Stay ≤400 lines.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-hardbreak-two-forms": {
+      "id": "task-hardbreak-two-forms",
+      "kind": "leaf",
+      "title": "Hard break: spaces≥2 or backslash before LF",
+      "parent": "plan-inlines",
+      "deps": [],
+      "status": "retired",
+      "files_scope": [
+        "src/inline/breaks.ts"
+      ],
+      "spec_sections": [
+        "Hard line breaks",
+        "Soft line breaks"
+      ],
+      "notes": "scanHardBreak: (1) ≥2 spaces before \\n OR (2) unescaped \\ before \\n. scanSoftBreak remains registry-only softbreak authority. Export any trim helpers phase already imports. Prefer completing alongside task-breaks-hard-soft-api goals; if duplicate, make this the spaces/backslash fidelity pass.",
+      "report": null,
+      "attempts": 0
+    },
+    "audit-blocks-core-2": {
+      "id": "audit-blocks-core-2",
+      "kind": "leaf",
+      "title": "audit: Precedence + paragraphs + setext/thematic/ATX",
+      "parent": "plan-audit",
+      "deps": [
+        "task-block-phase-fidelity",
+        "task-paragraph-append-3",
+        "task-setext-use-thematic-line"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/parse/block-phase.ts",
+        "src/blocks/load.ts",
+        "src/blocks/setext.ts",
+        "src/blocks/thematic.ts",
+        "src/blocks/atx.ts",
+        "src/blocks/paragraph.ts"
+      ],
+      "spec_sections": [
+        "Precedence",
+        "Paragraphs",
+        "Blank lines",
+        "Setext headings",
+        "Thematic breaks",
+        "ATX headings"
+      ],
+      "notes": "Re-read assigned CM sections; run embedded examples via node dist/cli.js; fix mismatches in scope. Especially: blank closes open-para; --- after para = setext; --- after blank = hr; skip parseParagraph on interrupt try.",
+      "report": null,
+      "attempts": 0
+    },
+    "audit-containers-2": {
+      "id": "audit-containers-2",
+      "kind": "leaf",
+      "title": "audit: Block quotes + lists lazy/tight",
+      "parent": "plan-audit",
+      "deps": [
+        "task-block-phase-fidelity",
+        "task-bq-lazy-setext",
+        "task-list-blank-lazy"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/blockquote.ts",
+        "src/blocks/list.ts",
+        "src/render.ts"
+      ],
+      "spec_sections": [
+        "Block quotes",
+        "List items",
+        "Lists"
+      ],
+      "notes": "Re-read CM container sections; run examples; verify lazy rules, hanging indent, tight omit <p>, loose wrap <p>, nested lists.",
+      "report": null,
+      "attempts": 0
+    },
+    "audit-html-code-2": {
+      "id": "audit-html-code-2",
+      "kind": "leaf",
+      "title": "audit: HTML blocks + indented/fenced code",
+      "parent": "plan-audit",
+      "deps": [
+        "task-block-phase-fidelity",
+        "task-html-match-type1-end",
+        "task-type7-import-tags"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/html-block.ts",
+        "src/blocks/html-block-match.ts",
+        "src/blocks/html-block-type7.ts",
+        "src/blocks/indented-code.ts",
+        "src/blocks/fenced-code.ts"
+      ],
+      "spec_sections": [
+        "HTML blocks",
+        "Indented code blocks",
+        "Fenced code blocks"
+      ],
+      "notes": "Re-read sections; run examples; type7 no para interrupt; closing fence ws-only; indented never interrupts open para.",
+      "report": null,
+      "attempts": 0
+    },
+    "audit-inlines-core-2": {
+      "id": "audit-inlines-core-2",
+      "kind": "leaf",
+      "title": "audit: Emphasis + links/images + breaks",
+      "parent": "plan-audit",
+      "deps": [
+        "task-stack-delegate-helpers",
+        "task-link-suffix-forms",
+        "task-image-suffix-alias",
+        "task-breaks-hard-soft-api"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/parse/inline-phase.ts",
+        "src/parse/inline-stack.ts",
+        "src/inline/emphasis.ts",
+        "src/inline/link.ts",
+        "src/inline/image.ts",
+        "src/inline/breaks.ts"
+      ],
+      "spec_sections": [
+        "Emphasis and strong emphasis",
+        "Links",
+        "Images",
+        "Hard line breaks",
+        "Soft line breaks"
+      ],
+      "notes": "Re-read sections; run examples; mod-3; inline fail→ref fallthrough; softbreak only via registry; no nested links.",
+      "report": null,
+      "attempts": 0
+    },
+    "audit-inlines-atomic-2": {
+      "id": "audit-inlines-atomic-2",
+      "kind": "leaf",
+      "title": "audit: Code spans + autolink + raw HTML + textual",
+      "parent": "plan-audit",
+      "deps": [
+        "task-code-span-normalize",
+        "task-autolink-uri-email",
+        "task-raw-html-bool-attr"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/inline/code-span.ts",
+        "src/inline/autolink.ts",
+        "src/inline/raw-html.ts",
+        "src/inline/text.ts",
+        "src/inline/load.ts"
+      ],
+      "spec_sections": [
+        "Code spans",
+        "Autolinks",
+        "Raw HTML",
+        "Textual content"
+      ],
+      "notes": "Re-read sections; run examples; registry order codeSpan→autolink→rawHtml→hard→soft.",
+      "report": null,
+      "attempts": 0
+    },
+    "audit-refs-entities-2": {
+      "id": "audit-refs-entities-2",
+      "kind": "leaf",
+      "title": "audit: Link refs + entities + escapes + tabs",
+      "parent": "plan-audit",
+      "deps": [
+        "task-link-ref-no-node",
+        "task-link-dest-finish-once",
+        "task-normalize-label-fold"
+      ],
+      "status": "retired",
+      "files_scope": [
+        "src/blocks/link-ref.ts",
+        "src/inline/link-dest.ts",
+        "src/inline/link-scan.ts",
+        "src/util/entities.ts",
+        "src/util/escapes.ts",
+        "src/util/tabs.ts"
+      ],
+      "spec_sections": [
+        "Link reference definitions",
+        "Entity and numeric character references",
+        "Backslash escapes",
+        "Tabs"
+      ],
+      "notes": "Re-read sections; run examples; decode-once at finishLinkValue; first ref wins; tabs width-4.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-list-lazy-interrupt": {
+      "id": "task-list-lazy-interrupt",
+      "kind": "leaf",
+      "title": "List: blank lazy ban + interrupt start=1",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "pending",
+      "files_scope": [
+        "src/blocks/list.ts",
+        "src/blocks/load.ts"
+      ],
+      "spec_sections": [
+        "List items",
+        "Lists",
+        "Precedence"
+      ],
+      "notes": "Export listInterruptsParagraph(lines,pos): bullets always; ordered only when marker.start===1. In load.ts replace blockParserInterrupt(parseList) with that check. Also: after a blank, do not treat under-indented lines as lazy continuation of the item paragraph. Keep walkBlockLines + linkRefs merge. File ≤400.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-guide-open-para": {
+      "id": "task-guide-open-para",
+      "kind": "leaf",
+      "title": "Field Guide: open-para + setext blank note",
+      "parent": "plan-pipeline",
+      "deps": [],
+      "status": "pending",
+      "files_scope": [
+        "guide/index.md"
+      ],
+      "spec_sections": [
+        "Precedence",
+        "Blank lines",
+        "Setext headings"
+      ],
+      "notes": "Keep ≤~80 lines. Append one finding: blank closes paragraphOpen even if last AST node is still paragraph; setext rewrite requires the flag (foo\\n\\n--- → hr not h2). No conflict markers present — do not reintroduce them.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-html-type6-dedupe-2": {
+      "id": "task-html-type6-dedupe-2",
+      "kind": "leaf",
+      "title": "HTML match: single TYPE6/TYPE1 tag lists",
+      "parent": "plan-blocks",
+      "deps": [
+        "task-html-match-type1-end"
+      ],
+      "status": "pending",
+      "files_scope": [
+        "src/blocks/html-block-match.ts"
+      ],
+      "spec_sections": [
+        "HTML blocks"
+      ],
+      "notes": "After type1 end-tag fidelity: TYPE1_TAGS/TYPE6_TAGS live only in html-block-match.ts; export for type7 importer. No duplicate tag arrays.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-type7-import-tags-2": {
+      "id": "task-type7-import-tags-2",
+      "kind": "leaf",
+      "title": "HTML type7: import tags from match module",
+      "parent": "plan-blocks",
+      "deps": [
+        "task-html-type7-start-only",
+        "task-html-type6-dedupe-2"
+      ],
+      "status": "pending",
+      "files_scope": [
+        "src/blocks/html-block-type7.ts"
+      ],
+      "spec_sections": [
+        "HTML blocks"
+      ],
+      "notes": "Import TYPE6/TYPE1 exclusion sets from html-block-match.ts; type7 remains start-matcher only (blank end stays in facade).",
+      "report": null,
+      "attempts": 0
+    },
+    "task-indented-trim-confirm": {
+      "id": "task-indented-trim-confirm",
+      "kind": "leaf",
+      "title": "Indented code: trailing blank trim fidelity",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "pending",
+      "files_scope": [
+        "src/blocks/indented-code.ts"
+      ],
+      "spec_sections": [
+        "Indented code blocks"
+      ],
+      "notes": "Confirm indent≥4, never interrupts open para (interrupt not registered), trailing blank lines trimmed from value, interior blanks kept. Fix if mismatched.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-fenced-lang-decode": {
+      "id": "task-fenced-lang-decode",
+      "kind": "leaf",
+      "title": "Fenced code: info→lang unescape/entities",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "pending",
+      "files_scope": [
+        "src/blocks/fenced-code.ts"
+      ],
+      "spec_sections": [
+        "Fenced code blocks"
+      ],
+      "notes": "Info string first word → lang after unescape (+ entity decode per CM). Closing fence still /^ {0,3}([`~]+)[\\t ]*$/ only. Do not edit load.ts.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-atx-empty-trailing": {
+      "id": "task-atx-empty-trailing",
+      "kind": "leaf",
+      "title": "ATX: empty heading + trailing # rules",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "pending",
+      "files_scope": [
+        "src/blocks/atx.ts"
+      ],
+      "spec_sections": [
+        "ATX headings"
+      ],
+      "notes": "Confirm indent≤3, 1–6 #, space/tab or EOL before content, trailing # run needs preceding space/tab, trailing spaces stripped, empty heading allowed. Export parseAtxHeading only.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-entities-numeric-edge": {
+      "id": "task-entities-numeric-edge",
+      "kind": "leaf",
+      "title": "Entities: hex/decimal digit limits",
+      "parent": "plan-foundation",
+      "deps": [],
+      "status": "pending",
+      "files_scope": [
+        "src/util/entities.ts"
+      ],
+      "spec_sections": [
+        "Entity and numeric character references"
+      ],
+      "notes": "After &#, x/X → hex 1–6 digits; else decimal 1–7; 8 decimal digits before ; stay literal. Export decodeEntities. No other files.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-normalize-lf-nul": {
+      "id": "task-normalize-lf-nul",
+      "kind": "leaf",
+      "title": "Normalize: CRLF/CR→LF + NUL→FFFD",
+      "parent": "plan-foundation",
+      "deps": [],
+      "status": "pending",
+      "files_scope": [
+        "src/util/normalize.ts"
+      ],
+      "spec_sections": [
+        "Tabs"
+      ],
+      "notes": "Confirm normalizeNewlines only: CRLF/CR→LF, U+0000→U+FFFD, no document trim. Spec_sections Tabs is waived association — behavior is input prep; do not change tabs.ts.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-html-block-facade-gate": {
+      "id": "task-html-block-facade-gate",
+      "kind": "leaf",
+      "title": "HTML facade: type7 gate + interrupt 1–6",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "pending",
+      "files_scope": [
+        "src/blocks/html-block.ts"
+      ],
+      "spec_sections": [
+        "HTML blocks"
+      ],
+      "notes": "Keep htmlBlockInterruptsParagraph = kinds 1–6 only; mayStartType7HtmlBlock; parseHtmlBlock gates type7 when in-paragraph. Blank ends type 6/7 in facade. Do not edit load.ts.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-thematic-setext-gate": {
+      "id": "task-thematic-setext-gate",
+      "kind": "leaf",
+      "title": "Thematic: setext precedence null-path",
+      "parent": "plan-blocks",
+      "deps": [],
+      "status": "pending",
+      "files_scope": [
+        "src/blocks/thematic.ts"
+      ],
+      "spec_sections": [
+        "Thematic breaks",
+        "Setext headings"
+      ],
+      "notes": "Keep exported isThematicBreakLine. parseThematicBreak returns null when setext underline should win for open-para promotion. No private copies for setext to reimplement.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-phase-softbreak-only": {
+      "id": "task-phase-softbreak-only",
+      "kind": "leaf",
+      "title": "Inline-phase: softbreak via registry only",
+      "parent": "plan-inlines",
+      "deps": [],
+      "status": "pending",
+      "files_scope": [
+        "src/parse/inline-phase.ts"
+      ],
+      "spec_sections": [
+        "Soft line breaks",
+        "Hard line breaks"
+      ],
+      "notes": "Thin phase ≤250 lines: getInlineParsers() + stack only. No second LF→softbreak path; no embedded raw-html. Softbreak only from registered scanSoftBreak.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-render-img-alt": {
+      "id": "task-render-img-alt",
+      "kind": "leaf",
+      "title": "Render: image alt concat + tight lists",
+      "parent": "plan-pipeline",
+      "deps": [],
+      "status": "pending",
+      "files_scope": [
+        "src/render.ts"
+      ],
+      "spec_sections": [
+        "Images",
+        "Lists"
+      ],
+      "notes": "image alt = textual concat of children then escapeHtml once; optional title attr; tight lists omit <p>; prefer inlines even if []. No silent default for known types.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-emphasis-pair-api": {
+      "id": "task-emphasis-pair-api",
+      "kind": "leaf",
+      "title": "Emphasis: canPair + flanking exports",
+      "parent": "plan-inlines",
+      "deps": [],
+      "status": "pending",
+      "files_scope": [
+        "src/inline/emphasis.ts"
+      ],
+      "spec_sections": [
+        "Emphasis and strong emphasis"
+      ],
+      "notes": "Confirm flanking rules 1–8, mod3Allows*, canPairEmphasisDelimiters. Stack consumes these — do not edit inline-stack.ts here.",
+      "report": null,
+      "attempts": 0
+    },
+    "task-link-nested-forms": {
+      "id": "task-link-nested-forms",
+      "kind": "leaf",
+      "title": "Link forms: close order + nested deactivate helper",
+      "parent": "plan-inlines",
+      "deps": [],
+      "status": "pending",
+      "files_scope": [
+        "src/parse/inline-link-forms.ts"
+      ],
+      "spec_sections": [
+        "Links",
+        "Images"
+      ],
+      "notes": "SUPERSEDES overlap with task-inline-forms-close if both open — implement tryClose* in DESIGN suffix order; on successful link close expose helper to deactivate earlier unmatched link openers in span (images may contain links). Keep ≤400 lines.",
+      "report": null,
+      "attempts": 0
+    },
+    "audit-blocks-core-3": {
+      "id": "audit-blocks-core-3",
+      "kind": "leaf",
+      "title": "audit: Precedence + paragraphs + setext/thematic/ATX",
+      "parent": "plan-audit",
+      "deps": [
+        "task-block-phase-fidelity",
+        "task-paragraph-append-3",
+        "task-list-lazy-interrupt"
+      ],
+      "status": "pending",
+      "files_scope": [
+        "src/parse/block-phase.ts",
+        "src/blocks/load.ts",
+        "src/blocks/setext.ts",
+        "src/blocks/thematic.ts",
+        "src/blocks/atx.ts",
+        "src/blocks/paragraph.ts"
+      ],
+      "spec_sections": [
+        "Precedence",
+        "Paragraphs",
+        "Blank lines",
+        "Setext headings",
+        "Thematic breaks",
+        "ATX headings"
+      ],
+      "notes": "Re-read assigned spec sections; run embedded examples via node dist/cli.js; fix mismatches in scope. Verify paragraphOpen gates setext; interrupt skips parseParagraph; ordered list start=1.",
+      "report": null,
+      "attempts": 0
+    },
+    "audit-containers-3": {
+      "id": "audit-containers-3",
+      "kind": "leaf",
+      "title": "audit: Block quotes + lists lazy/tight",
+      "parent": "plan-audit",
+      "deps": [
+        "task-bq-lazy-setext",
+        "task-list-lazy-interrupt",
+        "task-render-img-alt"
+      ],
+      "status": "pending",
+      "files_scope": [
+        "src/blocks/blockquote.ts",
+        "src/blocks/list.ts",
+        "src/render.ts"
+      ],
+      "spec_sections": [
+        "Block quotes",
+        "List items",
+        "Lists"
+      ],
+      "notes": "Audit lazy continuation, no lazy setext, blank→loose, tight <p> omission; fix in scope.",
+      "report": null,
+      "attempts": 0
+    },
+    "audit-html-code-3": {
+      "id": "audit-html-code-3",
+      "kind": "leaf",
+      "title": "audit: HTML blocks + indented/fenced code",
+      "parent": "plan-audit",
+      "deps": [
+        "task-html-match-type1-end",
+        "task-html-block-facade-gate",
+        "task-fenced-lang-decode",
+        "task-indented-trim-confirm"
+      ],
+      "status": "pending",
+      "files_scope": [
+        "src/blocks/html-block.ts",
+        "src/blocks/html-block-match.ts",
+        "src/blocks/html-block-type7.ts",
+        "src/blocks/indented-code.ts",
+        "src/blocks/fenced-code.ts"
+      ],
+      "spec_sections": [
+        "HTML blocks",
+        "Indented code blocks",
+        "Fenced code blocks"
+      ],
+      "notes": "Re-read spec; run examples; fix end conditions, type7 start gate, fence close ws-only, indented trim.",
+      "report": null,
+      "attempts": 0
+    },
+    "audit-inlines-core-3": {
+      "id": "audit-inlines-core-3",
+      "kind": "leaf",
+      "title": "audit: Emphasis + links/images + breaks",
+      "parent": "plan-audit",
+      "deps": [
+        "task-stack-delegate-helpers",
+        "task-inline-items-restack",
+        "task-link-nested-forms",
+        "task-breaks-hard-soft-api"
+      ],
+      "status": "pending",
+      "files_scope": [
+        "src/parse/inline-phase.ts",
+        "src/parse/inline-stack.ts",
+        "src/inline/emphasis.ts",
+        "src/inline/link.ts",
+        "src/inline/image.ts",
+        "src/inline/breaks.ts"
+      ],
+      "spec_sections": [
+        "Emphasis and strong emphasis",
+        "Links",
+        "Images",
+        "Hard line breaks",
+        "Soft line breaks"
+      ],
+      "notes": "Audit flanking/mod3, link suffix fallthrough, nested-link deactivate, hard/soft breaks; softbreak registry-only.",
+      "report": null,
+      "attempts": 0
+    },
+    "audit-inlines-atomic-3": {
+      "id": "audit-inlines-atomic-3",
+      "kind": "leaf",
+      "title": "audit: Code spans + autolink + raw HTML + textual",
+      "parent": "plan-audit",
+      "deps": [
+        "task-code-span-normalize",
+        "task-autolink-uri-email",
+        "task-raw-html-bool-attr"
+      ],
+      "status": "pending",
+      "files_scope": [
+        "src/inline/code-span.ts",
+        "src/inline/autolink.ts",
+        "src/inline/raw-html.ts",
+        "src/inline/text.ts",
+        "src/inline/load.ts"
+      ],
+      "spec_sections": [
+        "Code spans",
+        "Autolinks",
+        "Raw HTML",
+        "Textual content"
+      ],
+      "notes": "Audit atomic scanners + loader order; fix mismatches in scope.",
+      "report": null,
+      "attempts": 0
+    },
+    "audit-refs-entities-3": {
+      "id": "audit-refs-entities-3",
+      "kind": "leaf",
+      "title": "audit: Link refs + entities + escapes + tabs",
+      "parent": "plan-audit",
+      "deps": [
+        "task-link-dest-finish-once",
+        "task-link-ref-no-node",
+        "task-normalize-label-fold",
+        "task-escapes-punct-only"
+      ],
+      "status": "pending",
+      "files_scope": [
+        "src/blocks/link-ref.ts",
+        "src/inline/link-dest.ts",
+        "src/inline/link-scan.ts",
+        "src/util/entities.ts",
+        "src/util/escapes.ts",
+        "src/util/tabs.ts"
+      ],
+      "spec_sections": [
+        "Link reference definitions",
+        "Entity and numeric character references",
+        "Backslash escapes",
+        "Tabs"
+      ],
+      "notes": "Audit decode-once, first-wins refs, ASCII-punct escapes, tab width-4; fix in scope.",
+      "report": null,
+      "attempts": 0
+    }
+  },
+  "done": false,
+  "planner_rounds": 21,
+  "waived_sections": []
+}

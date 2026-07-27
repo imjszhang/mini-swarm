@@ -6,6 +6,7 @@
 - **Run B (coordinated)**: `npm run run:quick:coordinated -- --run-id=run-b-coordinated-v4`
 - **Run B faithful**: `npm run run:faithful -- --run-id=run-b-faithful-v7`
 - **v13 Cursor-faithful swarm**: `npm run swarm` / `npm run swarm:mock` / `npm run swarm:smoke` (planner tree + zero test signal + review stack; wall-clock budget)
+- **v13.1 event-driven + run-to-done**: `npm run swarm:done` / `npm run swarm -- --run-to-done --concurrency=8` (continuous dispatch, async planner/review, worker self-check, spec coverage gate)
 - **v8/v9/v10/v11/v12 high-contention A/B**: `npm run run:contention:bare` / `npm run run:contention:faithful` (`--task-set=contention`, concurrency 4, seed planner; v9 score-feedback; v10 sync+gate+global repair; v11 holdout+ledger+adaptive repair; v12 Stage B + strong ladder)
 - **Resume interrupted run**: `npm run salvage -- --run-id=RUN_ID --task-set=contention` then original command + `--resume` (task-level; agent/wall times in metrics cover last segment only — see README)
 - **Repair-only continuation**: `npm run run -- --repair-only --from-run=PRIOR --run-id=NEW --task-set=contention [--coord-mode=faithful]`
@@ -59,6 +60,46 @@ Honesty notes:
 - Declared boundary: git worktrees, not custom VCS; concurrency 4, not hundreds of agents.
 
 Compare (observational): `npm run compare -- runs/run-b-faithful-contention-v12/metrics.json runs/run-swarm-v13/metrics.json`
+
+## Runs (2026-07-27/28) — v13.1 run-to-done + event-driven pipeline
+
+| Run ID | Mode | Notes |
+|---|---|---|
+| mock-v13.1-swarm | `--mock` | Event loop + waive/done gate OK; 2 leaves; waived_sections=22; self_check_total=4 |
+| smoke-v13.1-swarm | live, 15 min, conc=2 | Protocol OK: Spec coverage in planner prompt; worktree_sync=6; self_check=53; eff_parallelism=1.79; **22.3%** full |
+| **run-swarm-v13.1** | live, **--run-to-done**, conc=8 | **Salvaged** after host killed process ~140 min in-flight (8 leaves still marked running). Workspace scored post-mortem: **86.7%** full (455/525); visible **86.8%** (381/439); holdout **86.0%** (74/86); gap **+0.7**; 21 planner rounds; 87/194 leaves done; wall ~140 min; agent ~850 min; **effective_parallelism 6.08**; self_check_total **602**; tokens **10.34M** |
+
+Models unchanged: planner/splitter/`review-spec` = `cursor-grok-4.5-high-fast`; workers/merger/`review-diff`/`review-codebase` = `composer-2.5-fast`.
+
+### v13.1 changes (still zero test signal)
+
+Motivation: v13 wall 244 min with concurrency=4 but effective parallelism ~1.3 (batch barrier + blocking planner/review). Three verified defects fixed: fence-aware `getReferenceText`, `requeue_task` resets attempts, event-driven scheduler.
+
+1. **Event-driven dispatch** — continuous fill of N slots; planner/review/observe async; DESIGN.md writes via `MergeQueue.enqueueFn`.
+2. **run-to-done** — `--run-to-done` uses `maxWallMinutes` hard stop; planner `done` gated on spec coverage / waive + idle tree.
+3. **Worker self-check** — prompt requires running embedded `example` blocks from assigned spec sections (still no examples.json / scores).
+4. **Spec coverage ledger** — uncovered/waived sections injected into planner; `waive_section` action.
+5. **Default concurrency 8** + fan-out guidance; pre-merge `syncWorktreeWithMain`.
+
+| Metric | run-swarm-v13 | run-swarm-v13.1 (salvaged) |
+|---|---|---|
+| Full pass rate | 69.1% (363/525) | **86.7%** (455/525) |
+| Visible / holdout | 68.8% / 70.9% | 86.8% / 86.0% |
+| holdout_gap_pp | −2.1 | +0.7 |
+| Wall | ~244.5 min | **~139.8 min** (interrupted) |
+| effective_parallelism | ~1.3 (derived) | **6.08** |
+| self_check_total | 0 | 602 |
+| Tokens (in+out) | 9.59M | 10.34M |
+| Tree leaves done | 38/115 | 87/194 |
+| Architecture | batch sync + budget | event pipeline + run-to-done |
+
+Honesty notes:
+
+- Process was killed by the host before planner `done` / metrics.finish; scores and metrics reconstructed from workspace + agent logs (`salvaged: true` in metrics). In-flight leaves counted failed.
+- Quality rose **without** reintroducing test scores to agents (self-check uses only spec-embedded examples).
+- Hundreds of concurrent agents / custom VCS remain declared boundaries; merge queue is still the serial floor.
+
+Compare: `npm run compare -- runs/run-swarm-v13/metrics.json runs/run-swarm-v13.1/metrics.json`
 
 ## Runs (2026-07-26) — v12 generalization loop
 

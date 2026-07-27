@@ -27,6 +27,7 @@
     "smoke:runner": "node orchestrator/smoke-runner.mjs",
     "swarm": "node orchestrator/swarm.mjs",
     "swarm:mock": "node orchestrator/swarm.mjs --mock",
-    "swarm:smoke": "node orchestrator/swarm.mjs --budget-minutes=15 --concurrency=2"
+    "swarm:smoke": "node orchestrator/swarm.mjs --budget-minutes=15 --concurrency=2",
+    "swarm:done": "node orchestrator/swarm.mjs --run-to-done"
   }
 }

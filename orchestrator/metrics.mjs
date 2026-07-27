@@ -115,6 +115,9 @@ export function buildCoreMetrics(data) {
     time_to_all_tasks_done_ms: timeToAllTasksDoneMs,
     agent_time_ms: agentTimeMs,
     agent_api_time_ms: apiTimeMs || null,
+    effective_parallelism: wallTimeMs && agentTimeMs
+      ? Number((agentTimeMs / wallTimeMs).toFixed(2))
+      : null,
   };
 }
 
@@ -192,6 +195,9 @@ export function createMetricsCollector(runDir) {
     reviews: [],
     splits: [],
     oversized_blocks: [],
+    merge_waits: [],
+    merge_wait_count: 0,
+    self_check_total: 0,
     visible_score: null,
     holdout_score: null,
     holdout_gap_pp: null,
@@ -254,6 +260,10 @@ export function createMetricsCollector(runDir) {
     },
     recordOversizedBlock(entry) {
       data.oversized_blocks.push({ ...entry, at: new Date().toISOString() });
+    },
+    recordMergeWait(entry) {
+      data.merge_waits.push({ ...entry, at: new Date().toISOString() });
+      data.merge_wait_count = data.merge_waits.length;
     },
     recordTask(entry) {
       const idx = data.tasks.findIndex((t) => t.id === entry.id);
@@ -350,6 +360,9 @@ export function normalizeMetrics(raw) {
   m.reviews = m.reviews || [];
   m.splits = m.splits || [];
   m.oversized_blocks = m.oversized_blocks || [];
+  m.merge_waits = m.merge_waits || [];
+  m.merge_wait_count = m.merge_wait_count ?? m.merge_waits.length;
+  m.self_check_total = m.self_check_total ?? 0;
   m.visible_score = m.visible_score ?? null;
   m.holdout_score = m.holdout_score ?? null;
   m.holdout_gap_pp = m.holdout_gap_pp ?? null;

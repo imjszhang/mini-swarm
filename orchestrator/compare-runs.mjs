@@ -177,6 +177,22 @@ row(
   a.tree_stats ? `${a.tree_stats.done}/${a.tree_stats.leaves}` : "-",
   b.tree_stats ? `${b.tree_stats.done}/${b.tree_stats.leaves}` : "-",
 );
+row(
+  "effective_parallelism",
+  a.core_metrics?.effective_parallelism ?? "-",
+  b.core_metrics?.effective_parallelism ?? "-",
+);
+row("self_check_total", a.self_check_total ?? 0, b.self_check_total ?? 0);
+{
+  const medianWait = (waits) => {
+    const xs = (waits || []).map((w) => w.waitMs).filter((n) => typeof n === "number").sort((x, y) => x - y);
+    if (!xs.length) return "-";
+    const mid = Math.floor(xs.length / 2);
+    const med = xs.length % 2 ? xs[mid] : Math.round((xs[mid - 1] + xs[mid]) / 2);
+    return (med / 1000).toFixed(1);
+  };
+  row("merge wait median (s)", medianWait(a.merge_waits), medianWait(b.merge_waits));
+}
 row("agent calls", a.agent_calls?.length, b.agent_calls?.length);
 const aMs = a.agent_calls?.reduce((s, c) => s + (c.elapsedMs || 0), 0) || 0;
 const bMs = b.agent_calls?.reduce((s, c) => s + (c.elapsedMs || 0), 0) || 0;

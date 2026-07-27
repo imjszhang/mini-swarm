@@ -1,0 +1,4581 @@
+{
+  "started_at": "2026-07-27T14:01:59.024Z",
+  "finished_at": "2026-07-27T16:21:46.101Z",
+  "coordination": true,
+  "planner_source": "swarm-planner",
+  "commits": 196,
+  "merge_conflicts": [],
+  "scope_violations": [],
+  "cross_scope_changes": [],
+  "integration_fixes": [],
+  "score_feedbacks": [],
+  "worktree_syncs": [],
+  "merge_gate_rejections": [],
+  "global_repairs": [],
+  "repair_clusters": [],
+  "repair_stage_b": [],
+  "overfit_reviews": [],
+  "decompositions": [],
+  "gen_examples": null,
+  "adjudications": [],
+  "suspected_oracle_bugs": [],
+  "spec_ambiguities": [],
+  "unowned_requirements": [],
+  "oracle_literal_hits": [],
+  "swarm_planner_rounds": 21,
+  "tree_stats": {
+    "total_nodes": 199,
+    "plan_nodes": 5,
+    "leaves": 194,
+    "pending": 28,
+    "running": 8,
+    "done": 87,
+    "blocked": 0,
+    "failed": 0,
+    "retired": 71,
+    "planner_rounds": 21,
+    "done_flag": false
+  },
+  "reviews": [
+    {
+      "at": "2026-07-27T14:14:01.952Z",
+      "log": "review-codebase-1785161554997.log"
+    },
+    {
+      "at": "2026-07-27T14:25:40.988Z",
+      "log": "review-codebase-1785162233329.log"
+    },
+    {
+      "at": "2026-07-27T14:31:46.787Z",
+      "log": "review-codebase-1785162578344.log"
+    },
+    {
+      "at": "2026-07-27T14:35:26.907Z",
+      "log": "review-codebase-1785162843719.log"
+    },
+    {
+      "at": "2026-07-27T14:39:16.151Z",
+      "log": "review-codebase-1785163005753.log"
+    },
+    {
+      "at": "2026-07-27T14:46:11.807Z",
+      "log": "review-codebase-1785163262449.log"
+    },
+    {
+      "at": "2026-07-27T14:52:41.725Z",
+      "log": "review-codebase-1785163776441.log"
+    },
+    {
+      "at": "2026-07-27T15:04:27.721Z",
+      "log": "review-codebase-1785164297537.log"
+    },
+    {
+      "at": "2026-07-27T15:10:39.447Z",
+      "log": "review-codebase-1785164838208.log"
+    },
+    {
+      "at": "2026-07-27T15:22:05.075Z",
+      "log": "review-codebase-1785165533306.log"
+    },
+    {
+      "at": "2026-07-27T15:25:06.683Z",
+      "log": "review-codebase-1785165726544.log"
+    },
+    {
+      "at": "2026-07-27T15:36:02.064Z",
+      "log": "review-codebase-1785166296971.log"
+    },
+    {
+      "at": "2026-07-27T15:40:28.134Z",
+      "log": "review-codebase-1785166675967.log"
+    },
+    {
+      "at": "2026-07-27T15:47:28.233Z",
+      "log": "review-codebase-1785167108514.log"
+    },
+    {
+      "at": "2026-07-27T15:53:53.382Z",
+      "log": "review-codebase-1785167319216.log"
+    },
+    {
+      "at": "2026-07-27T16:15:43.889Z",
+      "log": "review-codebase-1785168718830.log"
+    },
+    {
+      "at": "2026-07-27T14:13:01.443Z",
+      "log": "review-diff-1785161554769.log"
+    },
+    {
+      "at": "2026-07-27T14:25:49.819Z",
+      "log": "review-diff-1785162232944.log"
+    },
+    {
+      "at": "2026-07-27T14:31:03.509Z",
+      "log": "review-diff-1785162578007.log"
+    },
+    {
+      "at": "2026-07-27T14:35:26.908Z",
+      "log": "review-diff-1785162843488.log"
+    },
+    {
+      "at": "2026-07-27T14:39:07.468Z",
+      "log": "review-diff-1785163005531.log"
+    },
+    {
+      "at": "2026-07-27T14:41:36.653Z",
+      "log": "review-diff-1785163262147.log"
+    },
+    {
+      "at": "2026-07-27T14:50:48.624Z",
+      "log": "review-diff-1785163775954.log"
+    },
+    {
+      "at": "2026-07-27T15:01:53.053Z",
+      "log": "review-diff-1785164297047.log"
+    },
+    {
+      "at": "2026-07-27T15:09:00.826Z",
+      "log": "review-diff-1785164838035.log"
+    },
+    {
+      "at": "2026-07-27T15:21:36.802Z",
+      "log": "review-diff-1785165533139.log"
+    },
+    {
+      "at": "2026-07-27T15:22:46.862Z",
+      "log": "review-diff-1785165726255.log"
+    },
+    {
+      "at": "2026-07-27T15:35:07.480Z",
+      "log": "review-diff-1785166296756.log"
+    },
+    {
+      "at": "2026-07-27T15:38:27.965Z",
+      "log": "review-diff-1785166675777.log"
+    },
+    {
+      "at": "2026-07-27T15:45:57.092Z",
+      "log": "review-diff-1785167108284.log"
+    },
+    {
+      "at": "2026-07-27T15:50:11.354Z",
+      "log": "review-diff-1785167318930.log"
+    },
+    {
+      "at": "2026-07-27T16:13:25.091Z",
+      "log": "review-diff-1785168718406.log"
+    },
+    {
+      "at": "2026-07-27T14:13:44.541Z",
+      "log": "review-spec-1785161555019.log"
+    },
+    {
+      "at": "2026-07-27T14:25:34.042Z",
+      "log": "review-spec-1785162233404.log"
+    },
+    {
+      "at": "2026-07-27T14:31:04.966Z",
+      "log": "review-spec-1785162578431.log"
+    },
+    {
+      "at": "2026-07-27T14:35:26.908Z",
+      "log": "review-spec-1785162843761.log"
+    },
+    {
+      "at": "2026-07-27T14:39:00.320Z",
+      "log": "review-spec-1785163005797.log"
+    },
+    {
+      "at": "2026-07-27T14:47:43.842Z",
+      "log": "review-spec-1785163262543.log"
+    },
+    {
+      "at": "2026-07-27T14:52:41.725Z",
+      "log": "review-spec-1785163776503.log"
+    },
+    {
+      "at": "2026-07-27T15:03:43.399Z",
+      "log": "review-spec-1785164297618.log"
+    },
+    {
+      "at": "2026-07-27T15:09:25.990Z",
+      "log": "review-spec-1785164838262.log"
+    },
+    {
+      "at": "2026-07-27T15:21:36.803Z",
+      "log": "review-spec-1785165533340.log"
+    },
+    {
+      "at": "2026-07-27T15:24:29.356Z",
+      "log": "review-spec-1785165726613.log"
+    },
+    {
+      "at": "2026-07-27T15:35:07.480Z",
+      "log": "review-spec-1785166297027.log"
+    },
+    {
+      "at": "2026-07-27T15:40:37.914Z",
+      "log": "review-spec-1785166676015.log"
+    },
+    {
+      "at": "2026-07-27T15:47:28.235Z",
+      "log": "review-spec-1785167108605.log"
+    },
+    {
+      "at": "2026-07-27T15:50:31.616Z",
+      "log": "review-spec-1785167319302.log"
+    },
+    {
+      "at": "2026-07-27T16:14:10.226Z",
+      "log": "review-spec-1785168718917.log"
+    }
+  ],
+  "splits": [],
+  "oversized_blocks": [],
+  "merge_waits": [],
+  "merge_wait_count": 0,
+  "self_check_total": 602,
+  "visible_score": {
+    "rate": 0.8678815489749431,
+    "passed": 381,
+    "total": 439
+  },
+  "holdout_score": {
+    "rate": 0.8604651162790697,
+    "passed": 74,
+    "total": 86
+  },
+  "holdout_gap_pp": 0.7,
+  "overfit_alarm": false,
+  "adjudication_parse_failures": 0,
+  "merge_conflict_count": 0,
+  "scope_violation_count": 0,
+  "cross_scope_change_count": 0,
+  "integration_fix_count": 0,
+  "score_feedback_count": 0,
+  "worktree_sync_count": 0,
+  "worktree_sync_conflict_count": 0,
+  "merge_gate_rejection_count": 0,
+  "global_repair_count": 0,
+  "conflict_count": 0,
+  "tasks": [
+    {
+      "id": "task-tabs",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "新增 expandTabs(line)（整行 \\t → 空格，列宽 4）与 indentWidth(line)（仅统计行首空格/制表符的列宽）。npm run build 通过。Tabs 节的端到端 spec 示例需后续 block 解析器接入本 util 后才能在 CLI 上对齐；已用 node 对制表符缩进、>+双 tab 等场景做了单元级自检。",
+        "oversized_files": [],
+        "guide_note": "indentWidth 只统计行首 space/tab；块标记（如 >）需先剥离再对剩余部分用 expandTabs 量缩进。",
+        "self_checked": 6
+      }
+    },
+    {
+      "id": "task-escapes",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "CommonMark 反斜杠转义工具已在 src/util/escapes.ts 实现：isAsciiPunctuation 与 unescapeMarkdown；仅当下一码元为 ASCII 标点时去掉 \\，否则保留字面反斜杠。已 build，并对规范片段做了 6 项函数级自检。",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 6
+      }
+    },
+    {
+      "id": "task-entities",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "Implemented src/util/entities.ts with embedded HTML5 named-entity map, decimal/hex numeric reference parsing (invalid/U+0000 → U+FFFD), and decodeCharacterReference / decodeCharacterReferences exports for inline and destination decoding.",
+        "oversized_files": [],
+        "guide_note": "Numeric refs: after &#, x/X selects hex (1–6 digits); otherwise decimal (1–7 digits). Eight decimal digits before ; is a non-entity.",
+        "self_checked": 8
+      }
+    },
+    {
+      "id": "task-escape-html",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "新增 escapeHtml(s)，用链式 replace 转义 & < > \"，供 render 侧文本与属性值使用；npm run build 通过，已对转义用例与 spec「Textual content」三则示例做自检。",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 3
+      }
+    },
+    {
+      "id": "task-types",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "在 types.ts 中记录块/内联 AST 字段约定、LinkRefMap，并导出与 DESIGN.md 对齐的 narrowing 别名；contracts.ts 同步 re-export。构建通过。",
+        "oversized_files": [],
+        "guide_note": "LinkRefMap 与 LinkRefEntry 现由 types.ts 定义，block-phase 可直接 import 而无需重复声明。",
+        "self_checked": 0
+      }
+    },
+    {
+      "id": "task-thematic",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "新增 src/blocks/thematic.ts，导出 parseThematicBreak；按规范识别主题分隔线并产出 thematic_break 节点。",
+        "oversized_files": [],
+        "guide_note": "第 4 个前导空格须在「至多 3 个缩进空格」之后立刻判失败，不能当作 -/_/* 序列前的空白。",
+        "self_checked": 17
+      }
+    },
+    {
+      "id": "task-atx",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "新增 src/blocks/atx.ts，导出 parseAtxHeading：≤3 空格缩进、1–6 个未转义 opening #、内容与 # 之间需空白（空标题除外）、可选 closing #（前需空白、尾部仅空白、尊重反斜杠转义），产出 { type: 'heading', level, text }。cross-scope：load.ts 注册、index 引入 load、render 输出 h1–h6 以便 CLI 自测。",
+        "oversized_files": [],
+        "guide_note": "ATX closing # 在 opening # 之后的整段 rest（含分隔空白）上自尾扫描，空标题 ### ### 才正确。",
+        "self_checked": 9
+      }
+    },
+    {
+      "id": "task-setext",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "实现 src/blocks/setext.ts：isSetextUnderline、多行 parseSetextHeading、段落提升 helper 及段落型内容行校验；通过 load.ts 注册。cross-scope 在 index.ts 做段落→Setext 提升，render.ts 输出 heading 与最小 inline 以便自测。",
+        "oversized_files": [],
+        "guide_note": "Setext paragraph promotion must reject content lines that are thematic breaks (`---`), or `---`/`---` pairs become spurious `<h2>`.",
+        "self_checked": 10
+      }
+    },
+    {
+      "id": "task-indented-code",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "新增 src/blocks/indented-code.ts：导出 parseIndentedCode / wouldInterruptOpenParagraph，按 CommonMark 解析缩进代码块（≥4 列缩进、块内空行、去掉 4 列、尾随空行不纳入块）。cross-scope：在 load.ts 注册解析器；在 block-phase 增加悬挂缩进段落延续，避免缩进代码打断未闭合段落。",
+        "oversized_files": [],
+        "guide_note": "Indented code blank lines: ≥4 columns of leading ws lose four columns in value; shorter whitespace-only lines become empty lines in the block.",
+        "self_checked": 7
+      }
+    },
+    {
+      "id": "task-fenced-code",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "新增 src/blocks/fenced-code.ts（parseFencedCode）：开头最多 3 空格、≥3 同字符围栏、反引号 info 禁含 `、闭合同型且长度≥开头且行尾仅空白、内容缩进剥离、未闭合吃到文档末；cross-scope 注册解析器并渲染 code_block。自测 7 个 spec 样例通过 CLI。",
+        "oversized_files": [],
+        "guide_note": "Closing fence lines must match /^ {0,3}([`~]+)[\\t ]*$/ only — any non-whitespace after the run keeps the line in the block.",
+        "self_checked": 7
+      }
+    },
+    {
+      "id": "task-html-block",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "在 src/blocks/html-block.ts 实现并导出 parseHtmlBlock：识别 CommonMark HTML 块类型 1–7 的起始条件，按规范延伸至对应结束条件，输出 { type: 'html_block', value }。为 CLI 自检做了最小 cross-scope：在 index 注册解析器、在 render 原样输出 html_block。",
+        "oversized_files": [],
+        "guide_note": "HTML 块分类顺序：CDATA(5) 须在 declaration(4) 之前，<!-- 须在 <!+letter 之前。",
+        "self_checked": 7
+      }
+    },
+    {
+      "id": "task-paragraph",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "Implemented src/blocks/paragraph.ts (parseParagraph, isBlankLine, buildParagraphRawContent, interrupt hook registry). Added load.ts registration, block walker blank-line skipping and no document trim in index.ts, interim hard-break rendering in render.ts. Self-checked 7 embedded Paragraphs examples via dist/cli.js (stdin).",
+        "oversized_files": [],
+        "guide_note": "Paragraph fallback skips blank lines in the block walker; interrupt hooks end continuation.",
+        "self_checked": 7
+      }
+    },
+    {
+      "id": "task-blockquote",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "Added block quote parser with marker scan/strip helpers, line collection (consecutiveness + laziness via contentLineStartsBlock and parseBlockChildren comparison), nested children parsing, and minimal registration/rendering for CLI self-check.",
+        "oversized_files": [],
+        "guide_note": "Block quote laziness: same top-level block count after adding the line and the last block's text grows.",
+        "self_checked": 7
+      }
+    },
+    {
+      "id": "task-list",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "新增 `src/blocks/list.ts`：导出 `parseList` / `parseListMarker`，实现列表标记宽度、嵌套子列表（`baseColumn`）、项内缩进代码、紧/松列表与有序 `start`（≤9 位数字）。cross-scope：在 `index.ts` 注册解析器，在 `render.ts` 输出 ul/ol 与 tight/loose 的 `<p>` 规则。",
+        "oversized_files": [],
+        "guide_note": "Nested list markers use parseListMarker(line, parentContentColumn).",
+        "self_checked": 8
+      }
+    },
+    {
+      "id": "task-code-span",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "新增 scanCodeSpan/tryParseCodeSpan：匹配等长 backtick 串、内容换行转空格、双侧 ASCII 空格时各剥一层（全非空格除外）；未闭合返回 null。",
+        "oversized_files": [],
+        "guide_note": "Closing fence must be a full backtick string of exactly openLen; use backtickStringLength at each candidate `.",
+        "self_checked": 13
+      }
+    },
+    {
+      "id": "task-emphasis",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "新增 src/inline/emphasis.ts：scanDelimiterRun、classifyEmphasisDelimiter（规则 1–8）、flanking/mod-3/canPairEmphasisDelimiters 等导出；guide 补充 mod-3 说明。CLI 尚未接 inline-phase 强调，故用 dist 模块对 spec 样例（*foo bar*、foo*bar*、foo_bar_、*foo**bar*、**foo bar** 等）做分类/配对自检。",
+        "oversized_files": [],
+        "guide_note": "Emphasis mod-3: sum≡0 (mod 3) 且任一侧 both open+close 时，仅当两侧 run 长度均为 3 的倍数才允许配对。",
+        "self_checked": 8
+      }
+    },
+    {
+      "id": "task-link",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "Confirmed link.ts suffix helpers (inline/full/collapsed/shortcut + dest/title via link-dest); integrated inline phase tryCloseLink to parseLinkSuffixAfterText so empty () and failed-inline fallthrough match the spec.",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 7
+      }
+    },
+    {
+      "id": "task-image",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "新增 src/inline/image.ts：isImageOpenerAt、parseImageSuffixAfterText（委托 parseLinkSuffixAfterText）、参考标签别名、tryParse*ImageAfter 重导出、imageNodeFromSuffix 产出 {type:'image',destination,title,children}。cross-scope 引入 link.ts 与 link-dest 的 *In 扫描器以便后缀解析可编译；构建通过，8 项 helper 自检（inline/angle/empty-alt/full/collapsed/shortcut/转义 !/节点形状）均 OK。",
+        "oversized_files": [],
+        "guide_note": "Image suffix parsing reuses link tail helpers: parseImageSuffixAfterText → parseLinkSuffixAfterText with the same index-after-] contract.",
+        "self_checked": 8
+      }
+    },
+    {
+      "id": "task-autolink",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "新增 autolink 扫描器：URI scheme/body 与 HTML5 邮箱正则，导出 scanAutolink/tryParseAutolink，已提交。",
+        "oversized_files": [],
+        "guide_note": "Try URI autolinks before email so `<mailto:…>` keeps a literal mailto: URI destination, not mailto:mailto:.",
+        "self_checked": 10
+      }
+    },
+    {
+      "id": "task-raw-html",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "新增 scanRawHtml / tryParseHtmlInline，实现 CommonMark Raw HTML 内联扫描（标签/注释/PI/声明/CDATA）及布尔属性与后续属性并存的解析修复；guide 补充一行说明。",
+        "oversized_files": [],
+        "guide_note": "Raw HTML inline: after a boolean attribute (no `=`), do not consume the whitespace before the next attribute when probing for `=`.",
+        "self_checked": 18
+      }
+    },
+    {
+      "id": "task-breaks",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "no JSON report",
+        "oversized_files": [],
+        "self_checked": 0
+      }
+    },
+    {
+      "id": "task-normalize-input",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "新增 normalizeNewlines(s)：CRLF/CR → LF，不 trim；已通过 npm run build 与行尾转换自检。",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 0
+      }
+    },
+    {
+      "id": "task-normalize-label",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "no JSON report",
+        "oversized_files": [],
+        "self_checked": 0
+      }
+    },
+    {
+      "id": "task-textual",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "新增 src/inline/text.ts：纯函数处理并 emit text 节点（反斜杠转义 + 实体解码）、扫描纯文本 run 与 push/合并辅助；不在 code span 内解码。",
+        "oversized_files": [],
+        "guide_note": "Plain-text inline runs include \\ and & until processTextualContent; breaksTextRun only stops at delimiters/breaks/HTML/autolink starters.",
+        "self_checked": 3
+      }
+    },
+    {
+      "id": "task-block-parse-result",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "Added BlockParseResult type and updated BlockParser in registry.ts; re-exported in contracts.ts; blockquote nested walker skips AST push when node is absent (link-ref-only matches). Build passes.",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 0
+      }
+    },
+    {
+      "id": "task-inlines-loader",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "新增 src/inline/load.ts：按 code-span → autolink → raw-html(stub) → hardbreak → softbreak 顺序 registerInlineParser，并导出 inlineScanners；未注册 emphasis/link。",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 0
+      }
+    },
+    {
+      "id": "task-parse-block",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "新增 src/parse/block-phase.ts，导出 parseBlocks(lines) → { blocks, linkRefs }：按 getBlockParsers() 顺序尝试；合并 linkRefs（normalizeLinkLabel，先定义优先）；仅在存在 node 时入 AST，并兼容 legacy link_ref_def 与可选 linkRefs 字段；空白行跳过；懒段落延续（跳过 link-ref 解析器以免打断段落）；开放段落的 setext 下划线提升；不 trim 输入。",
+        "oversized_files": [],
+        "guide_note": "Top-level lazy paragraph continuation: when canInterruptParagraph(..., true) is false but parseParagraph returned null, append the line and skip parseLinkRefDef for that line so [label]: dest stays paragraph text.",
+        "self_checked": 3
+      }
+    },
+    {
+      "id": "task-parse-inline",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "精简 inline-phase：用 getInlineParsers、link/image opener 与 raw-html 回退做原子扫描；tryCloseLink 改为 parseLinkSuffixAfterText/parseImageSuffixAfterText（修复失败 inline dest 后 shortcut 回落）。分隔符栈仍在 inline-items。",
+        "oversized_files": [],
+        "guide_note": "Emphasis 栈在 canClose/canCloseStrong 均为 false 时仍须按 canOpen/canOpenStrong 入栈，否则 *em* 会落成字面星号（见 inline-items processEmphasis）。",
+        "self_checked": 7
+      }
+    },
+    {
+      "id": "task-atx-recreate",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "新增 parseAtxHeading（indentWidth、开/闭 # 序列与转义处理、raw 正文 trim），仅导出；已 build 并通过 13 条 ATX 规范样例自测。",
+        "oversized_files": [],
+        "guide_note": "ATX 闭合 # 从行尾回溯时，奇数个前导 \\ 的 # 不计入闭合序列（与 opening 相同 isEscaped 规则）。",
+        "self_checked": 13
+      }
+    },
+    {
+      "id": "task-entities-export",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "Added export function decodeEntities(s) delegating to decodeCharacterReferences; build succeeds.",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 0
+      }
+    },
+    {
+      "id": "task-link-ref-pure",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "parseLinkRefDef 现返回 { next, linkRefs }（已规范化 label），无 node；移除 link_ref_def AST 与 normalizeLinkLabel 再导出；保留既有 CommonMark 标签/目的地/标题解析。",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 9
+      }
+    },
+    {
+      "id": "task-render-html-2",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "Implemented recursive HTML serialization in src/render.ts for every BlockType and InlineType: escapeHtml on text/attributes and code blocks, raw html_block/html_inline, tight-list paragraph omission, ordered start attribute, and inlines-first with interim text fallback.",
+        "oversized_files": [],
+        "guide_note": "Image alt for <img> should be plain text from text/code descendants only, then escapeHtml once for the attribute.",
+        "self_checked": 7
+      }
+    },
+    {
+      "id": "task-wire-pipeline-2",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "index.ts 接入 block-phase 与 inline-phase，完成 normalize→block→inline→render 管线；移除重复 block  walker 与 documentHasNonBlankContent 早退。cross-scope 新增最小 inline-phase.ts 作为 parseInlines 导入目标。",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 5
+      }
+    },
+    {
+      "id": "task-contracts-reexport",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "Synced contracts.ts: kept BlockParseResult/BlockParser from registry plus types and parser/render re-exports; removed feature-module re-exports (setext, link-ref, normalize-label, link-dest).",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 0
+      }
+    },
+    {
+      "id": "task-cli-thin",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "cli.ts 改为 readFileSync(0, utf8) + renderMarkdown + stdout.write，仅依赖 index 的 renderMarkdown，无 trim/解析/注册。",
+        "oversized_files": [],
+        "guide_note": "readFileSync(0, \"utf8\") 是 Node 下最薄的 stdin 全量读取方式，且不会改动字节内容。",
+        "self_checked": 5
+      }
+    },
+    {
+      "id": "task-link-dest-2",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "在 link-dest.ts 中保留多行 parseLinkDestination/parseLinkTitle（含 link-scan 辅助导出）；新增 parseLinkDestinationIn/parseLinkTitleIn；所有返回的 destination/title 经 finishLinkValue（unescapeMarkdown + decodeEntities）处理；parseLinkTitle 包装 link-title 扫描后再 decodeEntities。",
+        "oversized_files": [],
+        "guide_note": "link-dest 的 parseLinkTitle 在 link-title 已 unescape 后再 decodeEntities；destination 路径用 finishLinkValue 一次完成两步。",
+        "self_checked": 4
+      }
+    },
+    {
+      "id": "task-link-ref-2",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "重写并完善 `parseLinkRefDef`：仅导出该函数，成功时返回 `{ next, linkRefs }`（无 node），label 经 `normalizeLinkLabel` 规范化；支持多行 label/dest/title；下一行 title 通过 `scanOptionalWhitespace` 解析，若 title 解析后行尾仍有非空白则回退为无 title 定义（如 `/url` + `\"title\" ok`）；校验 label 长度 1–999。cross-scope：修正 `link-dest` 尖括号 destination 允许空格（`<my url>`）。",
+        "oversized_files": [],
+        "guide_note": "Ref-def title on the next line: if parseLinkTitle succeeds but the rest of the line is not spaces/tabs, rewind the cursor and treat the def as title-less (not invalid).",
+        "self_checked": 11
+      }
+    },
+    {
+      "id": "task-setext-tabs",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "在 setext.ts 中删除本地 expandTabs/leadingIndentWidth，改为从 util/tabs 引入 expandTabs 与 indentWidth；保留 isSetextUnderline 与 parseSetextHeading 语义，isSetextContentLine 仍用 isThematicBreakLine 排除主题分隔行作为标题内容；新增 isSetextHeadingUnderline 别名。",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 5
+      }
+    },
+    {
+      "id": "task-indented-code-2",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "src/blocks/indented-code.ts 已实现 parseIndentedCode（tabs 测缩进、4 列剥离、块内空行/chunk、不打断段落、尾随空白行裁剪）；构建通过，8 个规范示例 CLI 自检通过；变更已在 commit b3eb3e4。",
+        "oversized_files": [],
+        "guide_note": "Indented code 在 expandTabs 全行上去掉 4 列后保留余下前导空格（>4 的首行缩进会进 value）。",
+        "self_checked": 8
+      }
+    },
+    {
+      "id": "task-link-3",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "新增 src/inline/link.ts：isLinkOpenerAt、parseLinkLabelSpan、parseLinkSuffixAfterText（行内/完整/折叠/快捷引用）；DESIGN.md 补充 linkText 参数与 parseLinkLabelSpan 导出。",
+        "oversized_files": [],
+        "guide_note": "无效行内 (…) 解析失败时会回退到快捷引用，而非整段放弃成链接。",
+        "self_checked": 11
+      }
+    },
+    {
+      "id": "task-image-3",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "新增 src/inline/image.ts：isImageOpenerAt 识别未转义的 `![`；parseImageSuffixAfterText（及 DESIGN 别名 parseImageSuffixAfterAlt）在 alt 闭合 `]` 后将 inline / full / collapsed / shortcut 解析委托给 link.ts 的 tryParseLinkTail，不重复实现 destination/title 扫描。构建通过；对 5 组后缀形态做了模块级自测。CLI 端到端 Images 示例尚依赖未实现的 inline-stack/inline-phase，暂未比对 HTML。",
+        "oversized_files": [],
+        "guide_note": "Image `]` 后缀与 link 共用 tryParseLinkTail，需由栈传入 alt 纯文本供 collapsed/shortcut 查表。",
+        "self_checked": 5
+      }
+    },
+    {
+      "id": "task-inline-load-rawhtml",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "在 `src/inline/load.ts` 中删除 `scanRawHtml` 本地桩，改为从 `./raw-html.js` 导入；注册顺序仍为 code-span → autolink → raw-html → hardbreak → softbreak，未注册 emphasis/link/image。已通过 `npm run build`，并用 `<span>x</span>` 验证内联 HTML 输出。",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 0
+      }
+    },
+    {
+      "id": "task-link-scan-ws",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "Hardened LinkScanCursor helpers: lineAt bounds check, scanOptionalWhitespace returns false on a second line break and stops at EOF without advancing past the last line, documented skipSpacesTabsOnLine as line-local only.",
+        "oversized_files": [],
+        "guide_note": "scanOptionalWhitespace treats EOF after trailing line spaces as one line end—not a second break—so the cursor stays on the last line.",
+        "self_checked": 5
+      }
+    },
+    {
+      "id": "task-list-isblank",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "在 src/blocks/list.ts 中从 paragraph.ts 引入 isBlankLine，将所有 line.trim()==='' 形式的空白行判断替换为 isBlankLine（共 15 处），未改动列表 marker/缩进/tight-loose 逻辑。构建通过，并用 5 个规范列表示例自测。",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 5
+      }
+    },
+    {
+      "id": "task-emphasis-stack-api",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "src/inline/emphasis.ts 已导出 scanDelimiterRun、flanking 谓词、mod3Allows*、canPairEmphasisDelimiters、classifyEmphasisDelimiter；build 通过，helpers 行为与 spec 规则 1–10 一致。分支相对 main 无 diff，未新增 commit（实现已在 7fe2c5e）。",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 8
+      }
+    },
+    {
+      "id": "task-text-run-api",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "完善 text.ts：processTextualContent/emitText/pushText 经 unescapeMarkdown 再 decodeEntities；breaksTextRun 在 \\ ` * _ [ ] ! < 与换行处截断；scanTextRun/pushTextRun 扫描并合并 text 节点。",
+        "oversized_files": [],
+        "guide_note": "breaksTextRun 在反斜杠处截断，转义由 inline 阶段在 run 外逐字处理，避免整段 scan 时过早 unescape。",
+        "self_checked": 3
+      }
+    },
+    {
+      "id": "task-fenced-info",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "确认 parseFencedCode 满足开栏≤3 空格、info→首词 lang、闭栏规则与内容缩进剥离；10 个规范用例 CLI 自检通过。实现已在 5e6e063，无需新 diff。",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 10
+      }
+    },
+    {
+      "id": "task-thematic-vs-setext",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "Exported isThematicBreakLine with expandTabs + CM regex; parseThematicBreak defers to setext when prior non-blank lines are valid setext content and the line is both thematic and an underline.",
+        "oversized_files": [],
+        "guide_note": "parseThematicBreak null when thematic line follows valid setext content so promotion wins.",
+        "self_checked": 8
+      }
+    },
+    {
+      "id": "task-html-type7-start",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "在 `html-block.ts` 中为 type 7 增加 `mayStartType7HtmlBlock`（仅文档/容器开头或前一行为空行时才启动 HTML 块），使段内续行不会误开 type 7；保留 types 1–7 的 `parseHtmlBlock` 与 types 6/7 共用的 `isBlankLine` 结束逻辑；`htmlBlockInterruptsParagraph` 仍仅对 types 1–6 为 true。cross-scope：`load.ts` 在段续写时用该谓词而非裸 `parseHtmlBlock !== null`。",
+        "oversized_files": [],
+        "guide_note": "Type 7 的 parseHtmlBlock 在前一行非空时必须返回 null，否则块阶段会在 lazy 续段之前抢先消费该行。",
+        "self_checked": 6
+      }
+    },
+    {
+      "id": "task-render-inlines-ast",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "完善 render.ts：全块/内联 AST 渲染、inlines 优先（含 []）、 interim 仅 escape+硬换行、未知类型抛错、支持 list_item；移除 renderInlineText；Field Guide 补充 inlines  precedence。",
+        "oversized_files": [],
+        "guide_note": "After inline phase, `inlines !== undefined` wins even when `[]`; interim `text` is only when `inlines` was never set (`src/render.ts`).",
+        "self_checked": 6
+      }
+    },
+    {
+      "id": "task-01",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "新增 src/parse/inline-stack.ts（约 257 行）：导出 InlineStackItem / EmphasisStackEntry、pushEmphasisAt / pushBracketOpen、processCloseBracket（parseLinkSuffixAfterText / parseImageSuffixAfterAlt）、deactivateDelimitersInBracketSpan、processEmphasisStack 与 flattenInlineStackItems，强调配对复用 emphasis.ts 的 classify 与 canPair* / mod3*。cross-scope：修正 inline-link-forms 中图片后缀 API 名称与参数顺序以通过 tsc。未改 inline-phase.ts（仍用 inline-items），后续可切到本模块公共 API。",
+        "oversized_files": [],
+        "guide_note": "processCloseBracket 在 splice 成 link/image 前对 bracket 内 delim 设 active=false，processEmphasisStack 只处理 active delim。",
+        "self_checked": 6
+      }
+    },
+    {
+      "id": "task-blocks-loader-4",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "在 load.ts 中注册真实 parseAtxHeading，按规范修正段落中断矩阵（HTML 仅用 htmlBlockInterruptsParagraph；移除 setext 与 link-ref 中断注册）。",
+        "oversized_files": [],
+        "guide_note": "registerParagraphInterruptCheck 的 HTML 钩子应始终调用 htmlBlockInterruptsParagraph；type 7 是否可起块由 parseHtmlBlock 在 try-order 中决定，而非裸 parseHtmlBlock 探测。",
+        "self_checked": 5
+      }
+    },
+    {
+      "id": "task-resolve-link-dest-3",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "确认 `link-dest.ts` 无冲突标记且双 API 完整（多行 parseLinkDestination/Title + 单串 parseLinkDestinationIn/TitleIn，并 re-export 光标辅助函数）。将 title 的 unescape+decode 统一到 facade 的 `finishLinkValue`，`link-title.ts` 仅返回原始扫描串以避免重复解码。已 build 通过并提交。",
+        "oversized_files": [],
+        "guide_note": "link-title 应返回原始 title 串；`finishLinkValue` 只在 `link-dest.ts` 出口对 dest/title 各执行一次。",
+        "self_checked": 4
+      }
+    },
+    {
+      "id": "task-contracts-dest-in",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "在 contracts 门面中 re-export parseLinkDestinationIn / parseLinkTitleIn，与 DESIGN 要求的 link-dest 双 API 一致；其余导出保持不变。",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 0
+      }
+    },
+    {
+      "id": "task-atx-trailing-hash",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "parseAtxHeading 已在 atx.ts 中完整实现（opening 1–6 #、≤3 缩进、# 后空白/EOL、CM closing # 剥离、text 供 inline 阶段）；未改 load.ts。npm run build 通过，14 条 spec 嵌入式样例经 parseAtxHeading→parseInlinesOnBlocks→render 验证通过。工作区无新 diff，无需额外提交。",
+        "oversized_files": [],
+        "guide_note": "ATX closing `#` 仅在 run 前有空格/制表符时剥离；`# foo#` 保留字面 `#`（`foo#`）。",
+        "self_checked": 14
+      }
+    },
+    {
+      "id": "task-link-ref-title-eol",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "link-ref 标题结束行空白规则已在 ed38d39 实现：同行 title 尾 junk 否决整段定义，跨行 title 尾 junk 回退为无 title；工作区无未提交改动（无需重复 commit）。",
+        "oversized_files": [],
+        "guide_note": "Link-ref: junk after title on the same line as the destination fails the def; junk on a later title-ending line drops the title only (`src/blocks/link-ref.ts`).",
+        "self_checked": 6
+      }
+    },
+    {
+      "id": "task-link-title-unescape-only",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "确认 link-title 实现符合 decode-once：parseLinkTitle 仅 unescapeMarkdown，无 decodeEntities；补充 JSDoc，多行续行用 isBlankLine 替代 trim。",
+        "oversized_files": [],
+        "guide_note": "link-title.ts 只 unescape；实体解码仅在 link-dest.parseLinkTitle 的 decodeEntities 边界发生一次。",
+        "self_checked": 5
+      }
+    },
+    {
+      "id": "task-code-span-edges",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "确认并实现 scanCodeSpan：匹配等长反引号围栏、换行转空格、双端 ASCII 空格各剥一层；移除 backtickStringLength 死代码；修复 Field Guide 冲突并记录 strip 规则。",
+        "oversized_files": [],
+        "guide_note": "Code span edge-space strip applies only to U+0020 on both ends and skips all-space content; interior \\n normalize before strip.",
+        "self_checked": 12
+      }
+    },
+    {
+      "id": "task-autolink-scheme",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "确认并实现 scanAutolink：URI scheme 2–32 + 冒号 + 正文，以及 HTML5 email 规则；URI 优先于 email；已在分支提交 3ffd87c，构建与规范样例自检通过。",
+        "oversized_files": [],
+        "guide_note": "Autolink 先试 URI（含 MAILTO:…），再试 email；单字符 scheme 的 <m:…> 两种规则均不匹配。",
+        "self_checked": 9
+      }
+    },
+    {
+      "id": "task-raw-html-edges",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "Verified scanRawHtml against Raw HTML spec edge cases; extracted attributeEqualsIndex so boolean attributes reset the cursor to nameEnd when no value spec is present (whitespace before the next attribute is not consumed). Emits html_inline; no load.ts changes.",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 10
+      }
+    },
+    {
+      "id": "task-breaks-soft-auth",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "确认 `scanHardBreak` / `scanSoftBreak` 与 CommonMark 一致（≥2 空格或反斜杠硬换行、块末不产出 break；软换行通过 `softBreakTrimBefore`/`softBreakTrimAfter` 与 inline phase 配合去行尾/下行首空白）。在 `src/inline/breaks.ts` 补充模块与导出函数文档，明确仅经 `getInlineParsers()` 注册的 `scanSoftBreak` 可发射 `softbreak`，禁止第二条 LF 路径。",
+        "oversized_files": [],
+        "guide_note": "Softbreak 只由 registry 的 scanSoftBreak 发射；行尾/下行首空白由 softBreakTrim* 在 phase 侧消费，scanner 的 next 仅越过 \\n。",
+        "self_checked": 6
+      }
+    },
+    {
+      "id": "task-types-link-image",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "确认 link/image/autolink 窄化类型与 LinkRefMap/LinkRefEntry 字段与 DESIGN § AST 一致；补充 LinkRefMap 的 decode-once 与 first-wins JSDoc；tsc 与 3 条 Links/Images/autolink 示例 CLI 自检通过。",
+        "oversized_files": [],
+        "guide_note": "LinkRefMap 值为 LinkRefEntry（destination + title|null），键为 normalizeLinkLabel 结果，非 block AST 节点。",
+        "self_checked": 3
+      }
+    },
+    {
+      "id": "task-setext-blank",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "在 `setext.ts` 中从 `paragraph.ts` 引入 `isBlankLine`，`parseSetextHeading` 用其替代 `line.trim() === \"\"`；`headingFromParagraphUnderline` 用 `setextRawContent` 替代 `text.trim()` 判断空标题。导出 API 与 `isSetextContentLine` 对 thematic break 的拒绝逻辑未改。",
+        "oversized_files": [],
+        "guide_note": "Setext 段落升格判空应走 `setextRawContent`（仅首尾 U+0020/U+0009），勿用 `String#trim()`，以免 NBSP 等被误当空白。",
+        "self_checked": 5
+      }
+    },
+    {
+      "id": "task-blocks-loader-5",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "load.ts 已注册真实 parseAtxHeading 与规范中断矩阵（HTML 用 htmlBlockInterruptsParagraph；无 setext/link-ref/indented 中断）。变更已在 commit d59d051 中，无需额外提交。",
+        "oversized_files": [],
+        "guide_note": "Paragraph interrupt hooks 故意不包含 parseSetextHeading 与 parseLinkRefDef；setext 提升仅由 block-phase 步骤 (1) 处理。",
+        "self_checked": 7
+      }
+    },
+    {
+      "id": "task-bq-walk",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "blockquote 在剥除 `>` 后对内容行调用 `walkBlockLines` 并回传嵌套 linkRefs；行收集阶段的懒惰延续改为「尾部开放段落 + !canInterruptParagraph」，并对未加 `>` 的 setext 下划线行排除懒惰（避免 `---` 被吞进引用）。cross-scope：在 block-phase 实现并导出 DESIGN 版 walkBlockLines，parseBlocks 改为委托它。",
+        "oversized_files": [],
+        "guide_note": "Blockquote laziness: unmarked setext underline after an open paragraph is not lazy even when thematic interrupt is false (setext/thematic tie on `---`).",
+        "self_checked": 9
+      }
+    },
+    {
+      "id": "task-list-walk",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "列表项正文改为 residual/lazy 剥离后的虚拟行 + walkBlockLines（合并 linkRefs）；findItemEnd 在空行后不再对未达 contentColumn 的行做 laziness。cross-scope：block-phase 导出 walkBlockLines，空行结束段落续行以免缩进代码被并进段落。",
+        "oversized_files": [],
+        "guide_note": "List item bodies: peel to virtual lines then walkBlockLines; blank lines clear paragraph-continuation in the walker (required before indented code in items).",
+        "self_checked": 8
+      }
+    },
+    {
+      "id": "task-inline-phase-thin-2",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "将 `inline-phase.ts` 瘦身为仅依赖 `getInlineParsers()` 循环与 `inline-stack` 公开 API：去掉 `scanRawHtml` 回退及对 `inline-items` / `inline-link-forms` 的本地栈逻辑，强调/链接/图片改由 `pushEmphasisDelimiter`、`pushBracketOpen`、`processCloseBracket`、`processEmphasisStack`、`flattenInlineStackItems` 处理；保留 `parseInlinesOnBlocks` 块遍历。约 175 行。",
+        "oversized_files": [],
+        "guide_note": "Inline phase 在 `inline/load.ts` 已注册 `scanRawHtml` 时无需再直接 import 或 `<` 回退扫描。",
+        "self_checked": 5
+      }
+    },
+    {
+      "id": "task-indented-cont",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "从 `parseIndentedCode` 移除 `wouldInterruptOpenParagraph`；解析器仅在调用时识别 ≥4 空格的非空 chunk 起始行并保留 CM 空白/chunk 规则。cross-scope：在 `block-phase.ts` 中于解析器 try-order 之前处理 `lazyContinue`，由阶段追加段落续行，避免缩进代码抢先消费 hanging indent 行。",
+        "oversized_files": [],
+        "guide_note": "Open-paragraph continuation must run before block parser try-order so ≥4-space lines stay paragraph text unless a blank line precedes a new code block.",
+        "self_checked": 7
+      }
+    },
+    {
+      "id": "task-contracts-phase-api",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "在 contracts.ts 中新增 parseBlocks（./parse/block-phase.js）与 renderDocument（./render.js）的 re-export，未改动任何实现或其它既有导出。",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 5
+      }
+    },
+    {
+      "id": "task-inline-stack-exports",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "完善 inline-stack 公开 API（emph/bracket/deactivate/flatten 别名与 pushStackNode），修复强调配对后 delimiter 尾段与重扫索引，使栈路径符合 CM 嵌套强调；未改 inline-phase.ts。",
+        "oversized_files": [],
+        "guide_note": "After strong/emph pairing, leftover run length must stay delim stack entries (not literal text) so ***foo*** can re-match emphasis tails.",
+        "self_checked": 7
+      }
+    },
+    {
+      "id": "task-html-facade-confirm",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "Verified HTML block facade (types 1–7 via html-block-match/type7), exported mayStartType7HtmlBlock, htmlBlockInterruptsParagraph true only for kinds 1–6, parseHtmlBlock gates type 7 in-paragraph; inlined type-1 end helper; fixed guide conflict + note on type-7 paragraph continuation.",
+        "oversized_files": [],
+        "guide_note": "Type-7 HTML blocks rely on parseParagraph continuation (not mayStartType7HtmlBlock alone): interrupt false for kind 7 lets the first paragraph absorb following lines.",
+        "self_checked": 5
+      }
+    },
+    {
+      "id": "task-atx-export-ready",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "Verified export and behavior of parseAtxHeading in src/blocks/atx.ts (indent≤3, 1–6 opening #, space/EOL after opener, optional closing # with isEscaped, raw text on heading node). load.ts already imports the real parser. No code changes required; build passes.",
+        "oversized_files": [],
+        "guide_note": "ATX closing `#` scan from line end skips backslash-escaped `#`; heading `text` stays escaped for inline (e.g. `foo \\###`).",
+        "self_checked": 18
+      }
+    },
+    {
+      "id": "task-render-tight-lists",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "Verified existing render.ts tight/loose list behavior: item paragraphs omit <p> when list.tight is true, wrap in <p> when loose; nested lists use each list node’s tight flag. No code changes required (identical to main). Build passed; 6+ Lists spec examples matched.",
+        "oversized_files": [],
+        "guide_note": "Nested list tight/loose is independent: renderList reads each list node’s tight; renderBlockInList only passes the enclosing list’s tight to item block children.",
+        "self_checked": 6
+      }
+    },
+    {
+      "id": "task-normalize-confirm",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "no JSON report",
+        "oversized_files": [],
+        "self_checked": 0
+      }
+    },
+    {
+      "id": "task-cli-stdin-confirm",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "no JSON report",
+        "oversized_files": [],
+        "self_checked": 0
+      }
+    },
+    {
+      "id": "task-link-scan-blank",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "在 link-scan.ts 中统一链接空白语义：仅 U+0020/U+0009（isSpaceOrTab），新增 restOfLineIsSpacesTabsOnly 与单字符串 scanOptionalWhitespaceIn / skipSpacesTabsOnLineIn；经 link-dest 再导出；link.ts 与 link-ref.ts 改为共用这些 helper，避免 trim/Unicode 空白误判。",
+        "oversized_files": [],
+        "guide_note": "Link dest/title optional whitespace uses `isSpaceOrTab` only (U+0020/U+0009); NBSP stays in plain destinations (`src/inline/link-scan.ts`).",
+        "self_checked": 5
+      }
+    },
+    {
+      "id": "task-text-run-stops",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "完善 src/inline/text.ts：breaksTextRun 在 [, ], !, *, _, `, <, \\ 与 LF 前终止；scanTextRun 在相同边界停止，并在文本路径内处理反斜杠转义，processTextualContent 仍负责 escapes+entities。已通过 build 与规范嵌入示例自测。",
+        "oversized_files": [],
+        "guide_note": "breaksTextRun 在 \\ 为 true，但 scanTextRun 仍消费 \\ + ASCII 标点（及 lone \\），转义仅走 text 解码路径",
+        "self_checked": 5
+      }
+    },
+    {
+      "id": "task-index-wire-confirm",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "no JSON report",
+        "oversized_files": [],
+        "self_checked": 0
+      }
+    },
+    {
+      "id": "task-thematic-content-gate",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "thematic.ts 已导出 isThematicBreakLine，parseThematicBreak 在 setext 下划线可优先（setextHeadingTakesPrecedence 返回 null）时不会抢走 setext。setext.ts 改为从 thematic 导入 isThematicBreakLine，使 isSetextContentLine 与主题分隔判定共用同一实现（cross-scope）。已 build 并核对规范示例：*** / --- / ___、Foo\\n---\\nbar、---\\n---、- foo\\n-----、*-*、- - - 等。",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 6
+      }
+    },
+    {
+      "id": "task-fenced-close-only-ws",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "确认并实现 CommonMark 闭合围栏规则：`isClosingFence` 使用按围栏字符区分的正则（`^ {0,3}(`+)[\\t ]*$` / `~+`），要求与开围栏同字符、长度 ≥ 开围栏、行首缩进 ≤3、围栏 run 之后仅允许空格或制表符（含 info 的 ``` aaa 行、4 空格缩进的 ```、围栏内含空格的 ~~~ ~~ 均不会误闭合）。开围栏 info → lang 首词及反引号 info 校验已存在。",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 6
+      }
+    },
+    {
+      "id": "task-emphasis-flank-mod3",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "分支已包含完整的 emphasis 辅助模块：isBackslashEscaped、Unicode 空白/标点 flanking（规则 1–8）、scanDelimiterRun / classifyEmphasisDelimiter、mod3AllowsEmphasisMatch / mod3AllowsStrongMatch，以及 canPairEmphasisDelimiters（含独立 delimiter run 与 mod-3）。构建通过；对 *foo bar*、foo*bar*、*foo**bar*、*foo**bar**baz*、foo***bar***baz、***foo***、aa_\"bb\"_cc、foo-_(bar)_ 等嵌入示例 CLI 输出与规范一致。无需额外提交。",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 12
+      }
+    },
+    {
+      "id": "task-breaks-hard-soft-api",
+      "status": "failed",
+      "report": {
+        "status": "interrupted",
+        "summary": "process killed while running"
+      }
+    },
+    {
+      "id": "task-link-suffix-forms",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "确认并实现 link 后缀解析：isLinkOpenerAt、内联尾、full/collapsed/shortcut 与 lone `[` 阻断 shortcut；内联失败回退引用形式；dest/title 沿用 link-dest 单次解码。提交将 full/collapsed 尝试顺序对齐 DESIGN。",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 6
+      }
+    },
+    {
+      "id": "task-image-suffix-alias",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "确认并实现 image 模块：isImageOpenerAt 检测未转义 ![；parseImageSuffixAfterAlt 委托 parseLinkSuffixAfterText；导出 parseImageSuffixAfterText 别名。已 build 并通过 7 个 Images 规范示例。",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 7
+      }
+    },
+    {
+      "id": "task-autolink-uri-email",
+      "status": "failed",
+      "report": {
+        "status": "interrupted",
+        "summary": "process killed while running"
+      }
+    },
+    {
+      "id": "task-code-span-normalize",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "确认并验证 src/inline/code-span.ts 已实现换行→空格与双端各剥一层 U+0020 的规范化及等长反引号扫描；12 个规范示例 CLI 自测通过，无额外代码改动需提交。",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 12
+      }
+    },
+    {
+      "id": "task-link-ref-no-node",
+      "status": "failed",
+      "report": {
+        "status": "interrupted",
+        "summary": "process killed while running"
+      }
+    },
+    {
+      "id": "task-escape-html-confirm-2",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "Verified escapeHtml replaces & < > \" in that order (& first); render uses it for text/code/attrs only while html_block/html_inline pass through. Extended JSDoc to document the contract; no algorithm change.",
+        "oversized_files": [],
+        "guide_note": "escapeHtml must replace `&` before `<`/`>`/`\"` so browsers never reinterpret entity-like substrings in attribute/text output.",
+        "self_checked": 4
+      }
+    },
+    {
+      "id": "task-tabs-expand-confirm",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "确认并实现 expandTabs / indentWidth（4 列制表符）；抽取 TAB_WIDTH=4 常量；未改动本文件外的调用点。",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 11
+      }
+    },
+    {
+      "id": "task-types-ast-fields",
+      "status": "done",
+      "report": {
+        "status": "done",
+        "summary": "确认 BlockType/InlineType/LinkRefMap 及 narrowing 别名与 DESIGN AST 一致；将 JSDoc 字段表与 DESIGN 对齐，并明确 link ref 非 AST。已提交 f3205d0。",
+        "oversized_files": [],
+        "guide_note": "",
+        "self_checked": 0
+      }
+    },
+    {
+      "id": "task-html-type7-start-only",
+      "status": "failed",
+      "report": {
+        "status": "interrupted",
+        "summary": "process killed while running"
+      }
+    },
+    {
+      "id": "task-link-dest-finish-once",
+      "status": "failed",
+      "report": {
+        "status": "interrupted",
+        "summary": "process killed while running"
+      }
+    },
+    {
+      "id": "task-raw-html-bool-attr",
+      "status": "failed",
+      "report": {
+        "status": "interrupted",
+        "summary": "process killed while running"
+      }
+    },
+    {
+      "id": "task-escapes-punct-only",
+      "status": "failed",
+      "report": {
+        "status": "interrupted",
+        "summary": "process killed while running"
+      }
+    },
+    {
+      "id": "task-normalize-label-fold",
+      "status": "failed",
+      "report": {
+        "status": "interrupted",
+        "summary": "process killed while running"
+      }
+    }
+  ],
+  "score_curve": [],
+  "agent_calls": [
+    {
+      "role": "merger",
+      "ok": true,
+      "elapsedMs": 137797,
+      "api_ms": 117556,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 25595,
+      "tokens_out": 4883,
+      "tokens_cache_read": 202464,
+      "tokens_cache_write": 0,
+      "logKey": "merger-split-1785163072104-merge-1",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.150Z"
+    },
+    {
+      "role": "merger",
+      "ok": true,
+      "elapsedMs": 50428,
+      "api_ms": 40112,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 17937,
+      "tokens_out": 779,
+      "tokens_cache_read": 32672,
+      "tokens_cache_write": 0,
+      "logKey": "merger-task-atx-merge-1",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.151Z"
+    },
+    {
+      "role": "merger",
+      "ok": true,
+      "elapsedMs": 100974,
+      "api_ms": 92670,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 50045,
+      "tokens_out": 3744,
+      "tokens_cache_read": 103520,
+      "tokens_cache_write": 0,
+      "logKey": "merger-task-blockquote-merge-1",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.151Z"
+    },
+    {
+      "role": "merger",
+      "ok": true,
+      "elapsedMs": 124375,
+      "api_ms": 112998,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 53109,
+      "tokens_out": 2089,
+      "tokens_cache_read": 114272,
+      "tokens_cache_write": 0,
+      "logKey": "merger-task-bq-walk-merge-1",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.151Z"
+    },
+    {
+      "role": "merger",
+      "ok": true,
+      "elapsedMs": 103232,
+      "api_ms": 90540,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 15716,
+      "tokens_out": 1002,
+      "tokens_cache_read": 52288,
+      "tokens_cache_write": 0,
+      "logKey": "merger-task-code-span-edges-merge-1",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.151Z"
+    },
+    {
+      "role": "merger",
+      "ok": true,
+      "elapsedMs": 106255,
+      "api_ms": 47417,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 43223,
+      "tokens_out": 1157,
+      "tokens_cache_read": 45600,
+      "tokens_cache_write": 0,
+      "logKey": "merger-task-emphasis-merge-1",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.151Z"
+    },
+    {
+      "role": "merger",
+      "ok": true,
+      "elapsedMs": 82790,
+      "api_ms": 39135,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 43335,
+      "tokens_out": 929,
+      "tokens_cache_read": 24800,
+      "tokens_cache_write": 0,
+      "logKey": "merger-task-entities-merge-1",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.152Z"
+    },
+    {
+      "role": "merger",
+      "ok": true,
+      "elapsedMs": 58048,
+      "api_ms": 47959,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 20081,
+      "tokens_out": 882,
+      "tokens_cache_read": 47264,
+      "tokens_cache_write": 0,
+      "logKey": "merger-task-fenced-code-merge-1",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.152Z"
+    },
+    {
+      "role": "merger",
+      "ok": true,
+      "elapsedMs": 60903,
+      "api_ms": 50232,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 14294,
+      "tokens_out": 1680,
+      "tokens_cache_read": 91360,
+      "tokens_cache_write": 0,
+      "logKey": "merger-task-html-block-merge-1",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.152Z"
+    },
+    {
+      "role": "merger",
+      "ok": true,
+      "elapsedMs": 60025,
+      "api_ms": 49394,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 58097,
+      "tokens_out": 1110,
+      "tokens_cache_read": 46880,
+      "tokens_cache_write": 0,
+      "logKey": "merger-task-html-facade-confirm-merge-1",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.152Z"
+    },
+    {
+      "role": "merger",
+      "ok": true,
+      "elapsedMs": 342469,
+      "api_ms": 152439,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 5864,
+      "tokens_out": 1160,
+      "tokens_cache_read": 50048,
+      "tokens_cache_write": 0,
+      "logKey": "merger-task-image-3-merge-1",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.153Z"
+    },
+    {
+      "role": "merger",
+      "ok": true,
+      "elapsedMs": 114028,
+      "api_ms": 96381,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 54637,
+      "tokens_out": 3412,
+      "tokens_cache_read": 93568,
+      "tokens_cache_write": 0,
+      "logKey": "merger-task-image-merge-1",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.154Z"
+    },
+    {
+      "role": "merger",
+      "ok": true,
+      "elapsedMs": 63156,
+      "api_ms": 50170,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 59400,
+      "tokens_out": 1833,
+      "tokens_cache_read": 69216,
+      "tokens_cache_write": 0,
+      "logKey": "merger-task-inline-stack-exports-merge-1",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.154Z"
+    },
+    {
+      "role": "merger",
+      "ok": true,
+      "elapsedMs": 165609,
+      "api_ms": 144145,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 82818,
+      "tokens_out": 5918,
+      "tokens_cache_read": 101984,
+      "tokens_cache_write": 0,
+      "logKey": "merger-task-link-3-merge-1",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.154Z"
+    },
+    {
+      "role": "merger",
+      "ok": true,
+      "elapsedMs": 127679,
+      "api_ms": 116406,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 17477,
+      "tokens_out": 907,
+      "tokens_cache_read": 35904,
+      "tokens_cache_write": 0,
+      "logKey": "merger-task-link-merge-1",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.154Z"
+    },
+    {
+      "role": "merger",
+      "ok": true,
+      "elapsedMs": 49802,
+      "api_ms": 42600,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 25922,
+      "tokens_out": 1389,
+      "tokens_cache_read": 45440,
+      "tokens_cache_write": 0,
+      "logKey": "merger-task-link-scan-blank-merge-1",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.154Z"
+    },
+    {
+      "role": "merger",
+      "ok": true,
+      "elapsedMs": 168909,
+      "api_ms": 161577,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 67857,
+      "tokens_out": 3404,
+      "tokens_cache_read": 157568,
+      "tokens_cache_write": 0,
+      "logKey": "merger-task-link-title-unescape-only-merge-1",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.154Z"
+    },
+    {
+      "role": "merger",
+      "ok": true,
+      "elapsedMs": 102330,
+      "api_ms": 90028,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 64924,
+      "tokens_out": 4840,
+      "tokens_cache_read": 110624,
+      "tokens_cache_write": 0,
+      "logKey": "merger-task-list-merge-1",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.155Z"
+    },
+    {
+      "role": "merger",
+      "ok": true,
+      "elapsedMs": 71325,
+      "api_ms": 56212,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 44981,
+      "tokens_out": 3575,
+      "tokens_cache_read": 59744,
+      "tokens_cache_write": 0,
+      "logKey": "merger-task-list-walk-merge-1",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.155Z"
+    },
+    {
+      "role": "merger",
+      "ok": true,
+      "elapsedMs": 108038,
+      "api_ms": 97411,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 63120,
+      "tokens_out": 3353,
+      "tokens_cache_read": 97312,
+      "tokens_cache_write": 0,
+      "logKey": "merger-task-paragraph-merge-1",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.155Z"
+    },
+    {
+      "role": "merger",
+      "ok": true,
+      "elapsedMs": 50449,
+      "api_ms": 38995,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 30702,
+      "tokens_out": 1037,
+      "tokens_cache_read": 29760,
+      "tokens_cache_write": 0,
+      "logKey": "merger-task-raw-html-merge-1",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.155Z"
+    },
+    {
+      "role": "merger",
+      "ok": true,
+      "elapsedMs": 145727,
+      "api_ms": 86683,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 12961,
+      "tokens_out": 724,
+      "tokens_cache_read": 36192,
+      "tokens_cache_write": 0,
+      "logKey": "merger-task-render-inlines-ast-merge-1",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.155Z"
+    },
+    {
+      "role": "merger",
+      "ok": true,
+      "elapsedMs": 149389,
+      "api_ms": 98940,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 30649,
+      "tokens_out": 5384,
+      "tokens_cache_read": 174720,
+      "tokens_cache_write": 0,
+      "logKey": "merger-task-setext-merge-1",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.155Z"
+    },
+    {
+      "role": "merger",
+      "ok": true,
+      "elapsedMs": 47707,
+      "api_ms": 41623,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 18183,
+      "tokens_out": 978,
+      "tokens_cache_read": 52320,
+      "tokens_cache_write": 0,
+      "logKey": "merger-task-text-run-stops-merge-2",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.156Z"
+    },
+    {
+      "role": "merger",
+      "ok": true,
+      "elapsedMs": 125103,
+      "api_ms": 116147,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 46391,
+      "tokens_out": 480,
+      "tokens_cache_read": 20608,
+      "tokens_cache_write": 0,
+      "logKey": "merger-task-thematic-vs-setext-merge-1",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.156Z"
+    },
+    {
+      "role": "review-codebase",
+      "ok": true,
+      "elapsedMs": 86951,
+      "api_ms": 74440,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 60329,
+      "tokens_out": 3148,
+      "tokens_cache_read": 48000,
+      "tokens_cache_write": 0,
+      "logKey": "review-codebase-1785161554997",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.156Z"
+    },
+    {
+      "role": "review-codebase",
+      "ok": true,
+      "elapsedMs": 107653,
+      "api_ms": 49895,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 86019,
+      "tokens_out": 3370,
+      "tokens_cache_read": 60128,
+      "tokens_cache_write": 0,
+      "logKey": "review-codebase-1785162233329",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.156Z"
+    },
+    {
+      "role": "review-codebase",
+      "ok": true,
+      "elapsedMs": 128440,
+      "api_ms": 68235,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 75174,
+      "tokens_out": 5333,
+      "tokens_cache_read": 263648,
+      "tokens_cache_write": 0,
+      "logKey": "review-codebase-1785162578344",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.156Z"
+    },
+    {
+      "role": "review-codebase",
+      "ok": true,
+      "elapsedMs": 83185,
+      "api_ms": 50901,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 37282,
+      "tokens_out": 4565,
+      "tokens_cache_read": 273056,
+      "tokens_cache_write": 0,
+      "logKey": "review-codebase-1785162843719",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.157Z"
+    },
+    {
+      "role": "review-codebase",
+      "ok": true,
+      "elapsedMs": 150387,
+      "api_ms": 83544,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 86374,
+      "tokens_out": 4323,
+      "tokens_cache_read": 274304,
+      "tokens_cache_write": 0,
+      "logKey": "review-codebase-1785163005753",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.157Z"
+    },
+    {
+      "role": "review-codebase",
+      "ok": true,
+      "elapsedMs": 309356,
+      "api_ms": 237880,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 99033,
+      "tokens_out": 5792,
+      "tokens_cache_read": 641952,
+      "tokens_cache_write": 0,
+      "logKey": "review-codebase-1785163262449",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.157Z"
+    },
+    {
+      "role": "review-codebase",
+      "ok": true,
+      "elapsedMs": 185280,
+      "api_ms": 119824,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 50904,
+      "tokens_out": 4996,
+      "tokens_cache_read": 286048,
+      "tokens_cache_write": 0,
+      "logKey": "review-codebase-1785163776441",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.157Z"
+    },
+    {
+      "role": "review-codebase",
+      "ok": true,
+      "elapsedMs": 370179,
+      "api_ms": 177753,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 56523,
+      "tokens_out": 5098,
+      "tokens_cache_read": 417888,
+      "tokens_cache_write": 0,
+      "logKey": "review-codebase-1785164297537",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.157Z"
+    },
+    {
+      "role": "review-codebase",
+      "ok": true,
+      "elapsedMs": 201238,
+      "api_ms": 186609,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 39686,
+      "tokens_out": 3967,
+      "tokens_cache_read": 286944,
+      "tokens_cache_write": 0,
+      "logKey": "review-codebase-1785164838208",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.157Z"
+    },
+    {
+      "role": "review-codebase",
+      "ok": true,
+      "elapsedMs": 191767,
+      "api_ms": 115308,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 79229,
+      "tokens_out": 4577,
+      "tokens_cache_read": 339680,
+      "tokens_cache_write": 0,
+      "logKey": "review-codebase-1785165533306",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.158Z"
+    },
+    {
+      "role": "review-codebase",
+      "ok": true,
+      "elapsedMs": 180145,
+      "api_ms": 163800,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 17052,
+      "tokens_out": 2688,
+      "tokens_cache_read": 142528,
+      "tokens_cache_write": 0,
+      "logKey": "review-codebase-1785165726544",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.158Z"
+    },
+    {
+      "role": "review-codebase",
+      "ok": true,
+      "elapsedMs": 265087,
+      "api_ms": 181805,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 3609,
+      "tokens_out": 2982,
+      "tokens_cache_read": 215136,
+      "tokens_cache_write": 0,
+      "logKey": "review-codebase-1785166296971",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.158Z"
+    },
+    {
+      "role": "review-codebase",
+      "ok": true,
+      "elapsedMs": 152169,
+      "api_ms": 97871,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 45155,
+      "tokens_out": 6125,
+      "tokens_cache_read": 406912,
+      "tokens_cache_write": 0,
+      "logKey": "review-codebase-1785166675967",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.158Z"
+    },
+    {
+      "role": "review-codebase",
+      "ok": true,
+      "elapsedMs": 139712,
+      "api_ms": 96862,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 91771,
+      "tokens_out": 5325,
+      "tokens_cache_read": 351680,
+      "tokens_cache_write": 0,
+      "logKey": "review-codebase-1785167108514",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.158Z"
+    },
+    {
+      "role": "review-codebase",
+      "ok": true,
+      "elapsedMs": 314156,
+      "api_ms": 221284,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 12,
+      "tokens_out": 1588,
+      "tokens_cache_read": 45152,
+      "tokens_cache_write": 0,
+      "logKey": "review-codebase-1785167319216",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.159Z"
+    },
+    {
+      "role": "review-codebase",
+      "ok": true,
+      "elapsedMs": 225054,
+      "api_ms": 157536,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 90735,
+      "tokens_out": 5428,
+      "tokens_cache_read": 345440,
+      "tokens_cache_write": 0,
+      "logKey": "review-codebase-1785168718830",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.159Z"
+    },
+    {
+      "role": "review-diff",
+      "ok": true,
+      "elapsedMs": 26670,
+      "api_ms": 15845,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 5699,
+      "tokens_out": 1756,
+      "tokens_cache_read": 5152,
+      "tokens_cache_write": 0,
+      "logKey": "review-diff-1785161554769",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.159Z"
+    },
+    {
+      "role": "review-diff",
+      "ok": true,
+      "elapsedMs": 116869,
+      "api_ms": 59179,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 5841,
+      "tokens_out": 9401,
+      "tokens_cache_read": 5120,
+      "tokens_cache_write": 0,
+      "logKey": "review-diff-1785162232944",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.159Z"
+    },
+    {
+      "role": "review-diff",
+      "ok": true,
+      "elapsedMs": 85503,
+      "api_ms": 22813,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 8965,
+      "tokens_out": 2878,
+      "tokens_cache_read": 2464,
+      "tokens_cache_write": 0,
+      "logKey": "review-diff-1785162578007",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.160Z"
+    },
+    {
+      "role": "review-diff",
+      "ok": true,
+      "elapsedMs": 83418,
+      "api_ms": 30377,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 8331,
+      "tokens_out": 1714,
+      "tokens_cache_read": 2464,
+      "tokens_cache_write": 0,
+      "logKey": "review-diff-1785162843488",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.160Z"
+    },
+    {
+      "role": "review-diff",
+      "ok": true,
+      "elapsedMs": 141933,
+      "api_ms": 13915,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 8207,
+      "tokens_out": 2134,
+      "tokens_cache_read": 5184,
+      "tokens_cache_write": 0,
+      "logKey": "review-diff-1785163005531",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.162Z"
+    },
+    {
+      "role": "review-diff",
+      "ok": true,
+      "elapsedMs": 34502,
+      "api_ms": 15463,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 8262,
+      "tokens_out": 2248,
+      "tokens_cache_read": 5184,
+      "tokens_cache_write": 0,
+      "logKey": "review-diff-1785163262147",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.162Z"
+    },
+    {
+      "role": "review-diff",
+      "ok": true,
+      "elapsedMs": 72665,
+      "api_ms": 54992,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 57759,
+      "tokens_out": 5697,
+      "tokens_cache_read": 37920,
+      "tokens_cache_write": 0,
+      "logKey": "review-diff-1785163775954",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.162Z"
+    },
+    {
+      "role": "review-diff",
+      "ok": true,
+      "elapsedMs": 215996,
+      "api_ms": 35194,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 8520,
+      "tokens_out": 2829,
+      "tokens_cache_read": 5120,
+      "tokens_cache_write": 0,
+      "logKey": "review-diff-1785164297047",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.162Z"
+    },
+    {
+      "role": "review-diff",
+      "ok": true,
+      "elapsedMs": 102790,
+      "api_ms": 92259,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 3427,
+      "tokens_out": 2259,
+      "tokens_cache_read": 10272,
+      "tokens_cache_write": 0,
+      "logKey": "review-diff-1785164838035",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.162Z"
+    },
+    {
+      "role": "review-diff",
+      "ok": true,
+      "elapsedMs": 163662,
+      "api_ms": 66690,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 37659,
+      "tokens_out": 5618,
+      "tokens_cache_read": 57888,
+      "tokens_cache_write": 0,
+      "logKey": "review-diff-1785165533139",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.163Z"
+    },
+    {
+      "role": "review-diff",
+      "ok": true,
+      "elapsedMs": 40602,
+      "api_ms": 22078,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 11862,
+      "tokens_out": 2642,
+      "tokens_cache_read": 1760,
+      "tokens_cache_write": 0,
+      "logKey": "review-diff-1785165726255",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.163Z"
+    },
+    {
+      "role": "review-diff",
+      "ok": true,
+      "elapsedMs": 210724,
+      "api_ms": 71211,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 26895,
+      "tokens_out": 3666,
+      "tokens_cache_read": 106048,
+      "tokens_cache_write": 0,
+      "logKey": "review-diff-1785166296756",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.163Z"
+    },
+    {
+      "role": "review-diff",
+      "ok": true,
+      "elapsedMs": 32187,
+      "api_ms": 18636,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 16199,
+      "tokens_out": 2120,
+      "tokens_cache_read": 20096,
+      "tokens_cache_write": 0,
+      "logKey": "review-diff-1785166675777",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.163Z"
+    },
+    {
+      "role": "review-diff",
+      "ok": true,
+      "elapsedMs": 48807,
+      "api_ms": 39311,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 42246,
+      "tokens_out": 3230,
+      "tokens_cache_read": 100096,
+      "tokens_cache_write": 0,
+      "logKey": "review-diff-1785167108284",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.163Z"
+    },
+    {
+      "role": "review-diff",
+      "ok": true,
+      "elapsedMs": 92420,
+      "api_ms": 13102,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 10961,
+      "tokens_out": 2186,
+      "tokens_cache_read": 2464,
+      "tokens_cache_write": 0,
+      "logKey": "review-diff-1785167318930",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.163Z"
+    },
+    {
+      "role": "review-diff",
+      "ok": true,
+      "elapsedMs": 86682,
+      "api_ms": 15666,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 10340,
+      "tokens_out": 2209,
+      "tokens_cache_read": 3200,
+      "tokens_cache_write": 0,
+      "logKey": "review-diff-1785168718406",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.164Z"
+    },
+    {
+      "role": "review-spec",
+      "ok": true,
+      "elapsedMs": 69519,
+      "api_ms": 57958,
+      "timedOut": false,
+      "model": "cursor-grok-4.5-high-fast",
+      "tokens_in": 19317,
+      "tokens_out": 4153,
+      "tokens_cache_read": 40000,
+      "tokens_cache_write": 0,
+      "logKey": "review-spec-1785161555019",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.164Z"
+    },
+    {
+      "role": "review-spec",
+      "ok": true,
+      "elapsedMs": 100631,
+      "api_ms": 45544,
+      "timedOut": false,
+      "model": "cursor-grok-4.5-high-fast",
+      "tokens_in": 18549,
+      "tokens_out": 4153,
+      "tokens_cache_read": 30336,
+      "tokens_cache_write": 0,
+      "logKey": "review-spec-1785162233404",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.164Z"
+    },
+    {
+      "role": "review-spec",
+      "ok": true,
+      "elapsedMs": 86524,
+      "api_ms": 31901,
+      "timedOut": false,
+      "model": "cursor-grok-4.5-high-fast",
+      "tokens_in": 17786,
+      "tokens_out": 3275,
+      "tokens_cache_read": 29952,
+      "tokens_cache_write": 0,
+      "logKey": "review-spec-1785162578431",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.164Z"
+    },
+    {
+      "role": "review-spec",
+      "ok": true,
+      "elapsedMs": 83144,
+      "api_ms": 45108,
+      "timedOut": false,
+      "model": "cursor-grok-4.5-high-fast",
+      "tokens_in": 18819,
+      "tokens_out": 4794,
+      "tokens_cache_read": 32256,
+      "tokens_cache_write": 0,
+      "logKey": "review-spec-1785162843761",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.164Z"
+    },
+    {
+      "role": "review-spec",
+      "ok": true,
+      "elapsedMs": 134522,
+      "api_ms": 61357,
+      "timedOut": false,
+      "model": "cursor-grok-4.5-high-fast",
+      "tokens_in": 22363,
+      "tokens_out": 4244,
+      "tokens_cache_read": 50944,
+      "tokens_cache_write": 0,
+      "logKey": "review-spec-1785163005797",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.164Z"
+    },
+    {
+      "role": "review-spec",
+      "ok": true,
+      "elapsedMs": 401302,
+      "api_ms": 76782,
+      "timedOut": false,
+      "model": "cursor-grok-4.5-high-fast",
+      "tokens_in": 24639,
+      "tokens_out": 5317,
+      "tokens_cache_read": 50752,
+      "tokens_cache_write": 0,
+      "logKey": "review-spec-1785163262543",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.164Z"
+    },
+    {
+      "role": "review-spec",
+      "ok": true,
+      "elapsedMs": 185217,
+      "api_ms": 130452,
+      "timedOut": false,
+      "model": "cursor-grok-4.5-high-fast",
+      "tokens_in": 16,
+      "tokens_out": 1474,
+      "tokens_cache_read": 27968,
+      "tokens_cache_write": 0,
+      "logKey": "review-spec-1785163776503",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.164Z"
+    },
+    {
+      "role": "review-spec",
+      "ok": true,
+      "elapsedMs": 325774,
+      "api_ms": 143163,
+      "timedOut": false,
+      "model": "cursor-grok-4.5-high-fast",
+      "tokens_in": 30422,
+      "tokens_out": 5683,
+      "tokens_cache_read": 94400,
+      "tokens_cache_write": 0,
+      "logKey": "review-spec-1785164297618",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.165Z"
+    },
+    {
+      "role": "review-spec",
+      "ok": true,
+      "elapsedMs": 127720,
+      "api_ms": 118226,
+      "timedOut": false,
+      "model": "cursor-grok-4.5-high-fast",
+      "tokens_in": 3121,
+      "tokens_out": 3197,
+      "tokens_cache_read": 38912,
+      "tokens_cache_write": 0,
+      "logKey": "review-spec-1785164838262",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.165Z"
+    },
+    {
+      "role": "review-spec",
+      "ok": true,
+      "elapsedMs": 142740,
+      "api_ms": 123984,
+      "timedOut": false,
+      "model": "cursor-grok-4.5-high-fast",
+      "tokens_in": 35,
+      "tokens_out": 1795,
+      "tokens_cache_read": 21184,
+      "tokens_cache_write": 0,
+      "logKey": "review-spec-1785165726613",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.165Z"
+    },
+    {
+      "role": "review-spec",
+      "ok": true,
+      "elapsedMs": 210452,
+      "api_ms": 71694,
+      "timedOut": false,
+      "model": "cursor-grok-4.5-high-fast",
+      "tokens_in": 25655,
+      "tokens_out": 5516,
+      "tokens_cache_read": 75968,
+      "tokens_cache_write": 0,
+      "logKey": "review-spec-1785166297027",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.165Z"
+    },
+    {
+      "role": "review-spec",
+      "ok": true,
+      "elapsedMs": 161893,
+      "api_ms": 62615,
+      "timedOut": false,
+      "model": "cursor-grok-4.5-high-fast",
+      "tokens_in": 26930,
+      "tokens_out": 4108,
+      "tokens_cache_read": 74880,
+      "tokens_cache_write": 0,
+      "logKey": "review-spec-1785166676015",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.165Z"
+    },
+    {
+      "role": "review-spec",
+      "ok": true,
+      "elapsedMs": 139623,
+      "api_ms": 63747,
+      "timedOut": false,
+      "model": "cursor-grok-4.5-high-fast",
+      "tokens_in": 24974,
+      "tokens_out": 4668,
+      "tokens_cache_read": 58816,
+      "tokens_cache_write": 0,
+      "logKey": "review-spec-1785167108605",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.165Z"
+    },
+    {
+      "role": "review-spec",
+      "ok": true,
+      "elapsedMs": 112314,
+      "api_ms": 43518,
+      "timedOut": false,
+      "model": "cursor-grok-4.5-high-fast",
+      "tokens_in": 25816,
+      "tokens_out": 4620,
+      "tokens_cache_read": 57536,
+      "tokens_cache_write": 0,
+      "logKey": "review-spec-1785167319302",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.166Z"
+    },
+    {
+      "role": "review-spec",
+      "ok": true,
+      "elapsedMs": 131305,
+      "api_ms": 61017,
+      "timedOut": false,
+      "model": "cursor-grok-4.5-high-fast",
+      "tokens_in": 24383,
+      "tokens_out": 4176,
+      "tokens_cache_read": 57408,
+      "tokens_cache_write": 0,
+      "logKey": "review-spec-1785168718917",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.166Z"
+    },
+    {
+      "role": "splitter",
+      "ok": true,
+      "elapsedMs": 443865,
+      "api_ms": 435595,
+      "timedOut": false,
+      "model": "cursor-grok-4.5-high-fast",
+      "tokens_in": 37336,
+      "tokens_out": 11366,
+      "tokens_cache_read": 585088,
+      "tokens_cache_write": 0,
+      "logKey": "splitter-split-1785161884924",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.166Z"
+    },
+    {
+      "role": "splitter",
+      "ok": true,
+      "elapsedMs": 201925,
+      "api_ms": 138989,
+      "timedOut": false,
+      "model": "cursor-grok-4.5-high-fast",
+      "tokens_in": 26963,
+      "tokens_out": 5020,
+      "tokens_cache_read": 191872,
+      "tokens_cache_write": 0,
+      "logKey": "splitter-split-1785162724482",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.166Z"
+    },
+    {
+      "role": "splitter",
+      "ok": true,
+      "elapsedMs": 591351,
+      "api_ms": 466335,
+      "timedOut": false,
+      "model": "cursor-grok-4.5-high-fast",
+      "tokens_in": 52114,
+      "tokens_out": 13631,
+      "tokens_cache_read": 754304,
+      "tokens_cache_write": 0,
+      "logKey": "splitter-split-1785163072104",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.166Z"
+    },
+    {
+      "role": "splitter",
+      "ok": true,
+      "elapsedMs": 346464,
+      "api_ms": 235296,
+      "timedOut": false,
+      "model": "cursor-grok-4.5-high-fast",
+      "tokens_in": 34580,
+      "tokens_out": 11154,
+      "tokens_cache_read": 317376,
+      "tokens_cache_write": 0,
+      "logKey": "splitter-split-1785163559754",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.166Z"
+    },
+    {
+      "role": "integration-fix",
+      "ok": true,
+      "elapsedMs": 56819,
+      "api_ms": 47610,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 22891,
+      "tokens_out": 1359,
+      "tokens_cache_read": 50560,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-integration-task-parse-inline-1",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.166Z"
+    },
+    {
+      "role": "swarm-planner",
+      "ok": true,
+      "elapsedMs": 139871,
+      "api_ms": 122283,
+      "timedOut": false,
+      "model": "cursor-grok-4.5-high-fast",
+      "tokens_in": 18646,
+      "tokens_out": 11357,
+      "tokens_cache_read": 51200,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-planner-1",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.167Z"
+    },
+    {
+      "role": "swarm-planner",
+      "ok": true,
+      "elapsedMs": 457606,
+      "api_ms": 343290,
+      "timedOut": false,
+      "model": "cursor-grok-4.5-high-fast",
+      "tokens_in": 58974,
+      "tokens_out": 19335,
+      "tokens_cache_read": 403712,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-planner-10",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.167Z"
+    },
+    {
+      "role": "swarm-planner",
+      "ok": true,
+      "elapsedMs": 342424,
+      "api_ms": 153526,
+      "timedOut": false,
+      "model": "cursor-grok-4.5-high-fast",
+      "tokens_in": 38798,
+      "tokens_out": 12528,
+      "tokens_cache_read": 106368,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-planner-11",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.167Z"
+    },
+    {
+      "role": "swarm-planner",
+      "ok": true,
+      "elapsedMs": 205246,
+      "api_ms": 177473,
+      "timedOut": false,
+      "model": "cursor-grok-4.5-high-fast",
+      "tokens_in": 39122,
+      "tokens_out": 12455,
+      "tokens_cache_read": 132864,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-planner-12",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.167Z"
+    },
+    {
+      "role": "swarm-planner",
+      "ok": true,
+      "elapsedMs": 327864,
+      "api_ms": 191779,
+      "timedOut": false,
+      "model": "cursor-grok-4.5-high-fast",
+      "tokens_in": 37152,
+      "tokens_out": 13753,
+      "tokens_cache_read": 108288,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-planner-14",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.168Z"
+    },
+    {
+      "role": "swarm-planner",
+      "ok": true,
+      "elapsedMs": 301623,
+      "api_ms": 232867,
+      "timedOut": false,
+      "model": "cursor-grok-4.5-high-fast",
+      "tokens_in": 7901,
+      "tokens_out": 15725,
+      "tokens_cache_read": 62976,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-planner-15",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.168Z"
+    },
+    {
+      "role": "swarm-planner",
+      "ok": true,
+      "elapsedMs": 403327,
+      "api_ms": 392624,
+      "timedOut": false,
+      "model": "cursor-grok-4.5-high-fast",
+      "tokens_in": 16,
+      "tokens_out": 8441,
+      "tokens_cache_read": 41984,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-planner-16",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.169Z"
+    },
+    {
+      "role": "swarm-planner",
+      "ok": true,
+      "elapsedMs": 255440,
+      "api_ms": 161296,
+      "timedOut": false,
+      "model": "cursor-grok-4.5-high-fast",
+      "tokens_in": 39816,
+      "tokens_out": 16581,
+      "tokens_cache_read": 153216,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-planner-17",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.169Z"
+    },
+    {
+      "role": "swarm-planner",
+      "ok": true,
+      "elapsedMs": 212311,
+      "api_ms": 140877,
+      "timedOut": false,
+      "model": "cursor-grok-4.5-high-fast",
+      "tokens_in": 46804,
+      "tokens_out": 13636,
+      "tokens_cache_read": 240768,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-planner-18",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.169Z"
+    },
+    {
+      "role": "swarm-planner",
+      "ok": true,
+      "elapsedMs": 577798,
+      "api_ms": 501769,
+      "timedOut": false,
+      "model": "cursor-grok-4.5-high-fast",
+      "tokens_in": 13051,
+      "tokens_out": 10458,
+      "tokens_cache_read": 42368,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-planner-19",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.170Z"
+    },
+    {
+      "role": "swarm-planner",
+      "ok": true,
+      "elapsedMs": 203246,
+      "api_ms": 196667,
+      "timedOut": false,
+      "model": "cursor-grok-4.5-high-fast",
+      "tokens_in": 32,
+      "tokens_out": 5684,
+      "tokens_cache_read": 16832,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-planner-2",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.170Z"
+    },
+    {
+      "role": "swarm-planner",
+      "ok": true,
+      "elapsedMs": 245004,
+      "api_ms": 176573,
+      "timedOut": false,
+      "model": "cursor-grok-4.5-high-fast",
+      "tokens_in": 46633,
+      "tokens_out": 17032,
+      "tokens_cache_read": 119808,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-planner-20",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.171Z"
+    },
+    {
+      "role": "swarm-planner",
+      "ok": true,
+      "elapsedMs": 148210,
+      "api_ms": 97986,
+      "timedOut": false,
+      "model": "cursor-grok-4.5-high-fast",
+      "tokens_in": 25168,
+      "tokens_out": 9963,
+      "tokens_cache_read": 49664,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-planner-3",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.171Z"
+    },
+    {
+      "role": "swarm-planner",
+      "ok": true,
+      "elapsedMs": 95347,
+      "api_ms": 84298,
+      "timedOut": false,
+      "model": "cursor-grok-4.5-high-fast",
+      "tokens_in": 22790,
+      "tokens_out": 7777,
+      "tokens_cache_read": 52160,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-planner-4",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.171Z"
+    },
+    {
+      "role": "swarm-planner",
+      "ok": true,
+      "elapsedMs": 163144,
+      "api_ms": 153961,
+      "timedOut": false,
+      "model": "cursor-grok-4.5-high-fast",
+      "tokens_in": 46249,
+      "tokens_out": 10376,
+      "tokens_cache_read": 125056,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-planner-5",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.171Z"
+    },
+    {
+      "role": "swarm-planner",
+      "ok": true,
+      "elapsedMs": 255968,
+      "api_ms": 176880,
+      "timedOut": false,
+      "model": "cursor-grok-4.5-high-fast",
+      "tokens_in": 40340,
+      "tokens_out": 14073,
+      "tokens_cache_read": 108096,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-planner-6",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.171Z"
+    },
+    {
+      "role": "swarm-planner",
+      "ok": true,
+      "elapsedMs": 354764,
+      "api_ms": 206652,
+      "timedOut": false,
+      "model": "cursor-grok-4.5-high-fast",
+      "tokens_in": 40876,
+      "tokens_out": 14949,
+      "tokens_cache_read": 272320,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-planner-7",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.173Z"
+    },
+    {
+      "role": "swarm-planner",
+      "ok": true,
+      "elapsedMs": 220569,
+      "api_ms": 134599,
+      "timedOut": false,
+      "model": "cursor-grok-4.5-high-fast",
+      "tokens_in": 40848,
+      "tokens_out": 13556,
+      "tokens_cache_read": 160512,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-planner-8",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.173Z"
+    },
+    {
+      "role": "swarm-planner",
+      "ok": true,
+      "elapsedMs": 165206,
+      "api_ms": 152817,
+      "timedOut": false,
+      "model": "cursor-grok-4.5-high-fast",
+      "tokens_in": 39989,
+      "tokens_out": 13623,
+      "tokens_cache_read": 169536,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-planner-9",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.173Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-01",
+      "ok": true,
+      "elapsedMs": 542073,
+      "api_ms": 471775,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 4918,
+      "tokens_out": 6629,
+      "tokens_cache_read": 505696,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-01",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.173Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-atx-export-ready",
+      "ok": true,
+      "elapsedMs": 269090,
+      "api_ms": 193511,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 21005,
+      "tokens_out": 7756,
+      "tokens_cache_read": 316736,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-atx-export-ready",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.174Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-atx-recreate",
+      "ok": true,
+      "elapsedMs": 274271,
+      "api_ms": 179183,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 120604,
+      "tokens_out": 8193,
+      "tokens_cache_read": 224576,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-atx-recreate",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.174Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-atx-trailing-hash",
+      "ok": true,
+      "elapsedMs": 320142,
+      "api_ms": 208875,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 59734,
+      "tokens_out": 8163,
+      "tokens_cache_read": 227520,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-atx-trailing-hash",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.174Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-atx",
+      "ok": true,
+      "elapsedMs": 233284,
+      "api_ms": 223092,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 72248,
+      "tokens_out": 11017,
+      "tokens_cache_read": 304416,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-atx",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.174Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-autolink-scheme",
+      "ok": true,
+      "elapsedMs": 304387,
+      "api_ms": 294612,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 2452,
+      "tokens_out": 1048,
+      "tokens_cache_read": 80352,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-autolink-scheme",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.174Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-autolink",
+      "ok": true,
+      "elapsedMs": 189792,
+      "api_ms": 133206,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 21823,
+      "tokens_out": 6227,
+      "tokens_cache_read": 245792,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-autolink",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.174Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-block-parse-result",
+      "ok": true,
+      "elapsedMs": 161409,
+      "api_ms": 102541,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 13900,
+      "tokens_out": 2746,
+      "tokens_cache_read": 188320,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-block-parse-result",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.174Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-block-phase-flow",
+      "ok": true,
+      "elapsedMs": 296639,
+      "api_ms": 284993,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 34217,
+      "tokens_out": 2229,
+      "tokens_cache_read": 230304,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-block-phase-flow",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.174Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-blockquote-blank",
+      "ok": true,
+      "elapsedMs": 253154,
+      "api_ms": 140159,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 14414,
+      "tokens_out": 1805,
+      "tokens_cache_read": 173984,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-blockquote-blank",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.175Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-blockquote",
+      "ok": true,
+      "elapsedMs": 374446,
+      "api_ms": 363135,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 91845,
+      "tokens_out": 20210,
+      "tokens_cache_read": 719584,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-blockquote",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.175Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-blocks-loader-2",
+      "ok": true,
+      "elapsedMs": 297808,
+      "api_ms": 270626,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 100725,
+      "tokens_out": 6609,
+      "tokens_cache_read": 456000,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-blocks-loader-2",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.175Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-blocks-loader-4",
+      "ok": true,
+      "elapsedMs": 228455,
+      "api_ms": 159227,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 52876,
+      "tokens_out": 3356,
+      "tokens_cache_read": 213152,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-blocks-loader-4",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.175Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-blocks-loader-5",
+      "ok": true,
+      "elapsedMs": 259403,
+      "api_ms": 248232,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 20581,
+      "tokens_out": 1663,
+      "tokens_cache_read": 93664,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-blocks-loader-5",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.175Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-blocks-loader",
+      "ok": true,
+      "elapsedMs": 273080,
+      "api_ms": 213098,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 25737,
+      "tokens_out": 6629,
+      "tokens_cache_read": 469472,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-blocks-loader",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.175Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-bq-walk",
+      "ok": true,
+      "elapsedMs": 463670,
+      "api_ms": 400331,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 5269,
+      "tokens_out": 5829,
+      "tokens_cache_read": 598048,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-bq-walk",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.175Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-breaks-soft-auth",
+      "ok": true,
+      "elapsedMs": 295849,
+      "api_ms": 280781,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 56529,
+      "tokens_out": 2829,
+      "tokens_cache_read": 185440,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-breaks-soft-auth",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.176Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-breaks",
+      "ok": true,
+      "elapsedMs": 208750,
+      "api_ms": 199052,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 22774,
+      "tokens_out": 8970,
+      "tokens_cache_read": 367072,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-breaks",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.176Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-cli-stdin-confirm",
+      "ok": true,
+      "elapsedMs": 326537,
+      "api_ms": 197748,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 74802,
+      "tokens_out": 3010,
+      "tokens_cache_read": 182016,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-cli-stdin-confirm",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.176Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-cli-thin",
+      "ok": true,
+      "elapsedMs": 213910,
+      "api_ms": 180117,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 56030,
+      "tokens_out": 4160,
+      "tokens_cache_read": 218336,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-cli-thin",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.176Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-code-span-edges",
+      "ok": true,
+      "elapsedMs": 408798,
+      "api_ms": 387592,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 5429,
+      "tokens_out": 4493,
+      "tokens_cache_read": 339488,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-code-span-edges",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.176Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-code-span-normalize",
+      "ok": true,
+      "elapsedMs": 301400,
+      "api_ms": 228689,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 149632,
+      "tokens_out": 5471,
+      "tokens_cache_read": 110464,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-code-span-normalize",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.176Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-code-span",
+      "ok": true,
+      "elapsedMs": 175355,
+      "api_ms": 163212,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 51062,
+      "tokens_out": 7323,
+      "tokens_cache_read": 263072,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-code-span",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.176Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-contracts-dest-in",
+      "ok": true,
+      "elapsedMs": 144413,
+      "api_ms": 82348,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 81749,
+      "tokens_out": 1653,
+      "tokens_cache_read": 60384,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-contracts-dest-in",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.177Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-contracts-phase-api",
+      "ok": true,
+      "elapsedMs": 214746,
+      "api_ms": 203698,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 59723,
+      "tokens_out": 1774,
+      "tokens_cache_read": 224096,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-contracts-phase-api",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.177Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-contracts-reexport",
+      "ok": true,
+      "elapsedMs": 213587,
+      "api_ms": 136681,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 18715,
+      "tokens_out": 2690,
+      "tokens_cache_read": 213440,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-contracts-reexport",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.177Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-emphasis-flank-mod3",
+      "ok": true,
+      "elapsedMs": 374570,
+      "api_ms": 364731,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 48,
+      "tokens_out": 359,
+      "tokens_cache_read": 43808,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-emphasis-flank-mod3",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.177Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-emphasis-stack-api",
+      "ok": true,
+      "elapsedMs": 815898,
+      "api_ms": 588228,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 12146,
+      "tokens_out": 4026,
+      "tokens_cache_read": 271744,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-emphasis-stack-api",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.177Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-emphasis",
+      "ok": true,
+      "elapsedMs": 218793,
+      "api_ms": 208325,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 81650,
+      "tokens_out": 13966,
+      "tokens_cache_read": 411136,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-emphasis",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.177Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-entities-export",
+      "ok": true,
+      "elapsedMs": 144465,
+      "api_ms": 84122,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 53468,
+      "tokens_out": 1212,
+      "tokens_cache_read": 116768,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-entities-export",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.177Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-entities",
+      "ok": true,
+      "elapsedMs": 407004,
+      "api_ms": 398767,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 121569,
+      "tokens_out": 11118,
+      "tokens_cache_read": 570144,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-entities",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.177Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-escape-html-confirm-2",
+      "ok": true,
+      "elapsedMs": 428788,
+      "api_ms": 357121,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 64585,
+      "tokens_out": 4717,
+      "tokens_cache_read": 322208,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-escape-html-confirm-2",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.178Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-escape-html",
+      "ok": true,
+      "elapsedMs": 126281,
+      "api_ms": 118802,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 62899,
+      "tokens_out": 3081,
+      "tokens_cache_read": 71776,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-escape-html",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.178Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-escapes",
+      "ok": true,
+      "elapsedMs": 149528,
+      "api_ms": 104911,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 64716,
+      "tokens_out": 4133,
+      "tokens_cache_read": 118144,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-escapes",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.178Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-fenced-close-only-ws",
+      "ok": true,
+      "elapsedMs": 523759,
+      "api_ms": 512210,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 29772,
+      "tokens_out": 3497,
+      "tokens_cache_read": 456768,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-fenced-close-only-ws",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.178Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-fenced-code",
+      "ok": true,
+      "elapsedMs": 243382,
+      "api_ms": 234511,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 89003,
+      "tokens_out": 10008,
+      "tokens_cache_read": 379584,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-fenced-code",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.178Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-fenced-info",
+      "ok": true,
+      "elapsedMs": 582956,
+      "api_ms": 562969,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 580,
+      "tokens_out": 852,
+      "tokens_cache_read": 115776,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-fenced-info",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.178Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-fix-conflicts",
+      "ok": true,
+      "elapsedMs": 231751,
+      "api_ms": 131643,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 55368,
+      "tokens_out": 5130,
+      "tokens_cache_read": 161216,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-fix-conflicts",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.178Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-guide-precedence-note",
+      "ok": true,
+      "elapsedMs": 158914,
+      "api_ms": 125684,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 21160,
+      "tokens_out": 2972,
+      "tokens_cache_read": 204384,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-guide-precedence-note",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.178Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-html-block",
+      "ok": true,
+      "elapsedMs": 324863,
+      "api_ms": 262268,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 100552,
+      "tokens_out": 11094,
+      "tokens_cache_read": 439392,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-html-block",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.179Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-html-facade-confirm",
+      "ok": true,
+      "elapsedMs": 429535,
+      "api_ms": 375714,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 101626,
+      "tokens_out": 12210,
+      "tokens_cache_read": 846720,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-html-facade-confirm",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.179Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-html-match-kinds",
+      "ok": true,
+      "elapsedMs": 496233,
+      "api_ms": 486928,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 9333,
+      "tokens_out": 3884,
+      "tokens_cache_read": 460320,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-html-match-kinds",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.179Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-html-type7-file",
+      "ok": true,
+      "elapsedMs": 502527,
+      "api_ms": 419839,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 41944,
+      "tokens_out": 2455,
+      "tokens_cache_read": 369152,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-html-type7-file",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.179Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-html-type7-start",
+      "ok": true,
+      "elapsedMs": 595152,
+      "api_ms": 559770,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 40872,
+      "tokens_out": 1311,
+      "tokens_cache_read": 128736,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-html-type7-start",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.179Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-image-3",
+      "ok": true,
+      "elapsedMs": 250336,
+      "api_ms": 233413,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 68446,
+      "tokens_out": 6375,
+      "tokens_cache_read": 420896,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-image-3",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.179Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-image-suffix-alias",
+      "ok": true,
+      "elapsedMs": 361456,
+      "api_ms": 287690,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 49519,
+      "tokens_out": 3746,
+      "tokens_cache_read": 321120,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-image-suffix-alias",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.180Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-image",
+      "ok": true,
+      "elapsedMs": 593267,
+      "api_ms": 420929,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 109280,
+      "tokens_out": 12514,
+      "tokens_cache_read": 1088000,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-image",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.180Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-indented-code-2",
+      "ok": true,
+      "elapsedMs": 244534,
+      "api_ms": 149426,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 62283,
+      "tokens_out": 3646,
+      "tokens_cache_read": 211968,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-indented-code-2",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.180Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-indented-code",
+      "ok": true,
+      "elapsedMs": 302332,
+      "api_ms": 290738,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 95365,
+      "tokens_out": 15798,
+      "tokens_cache_read": 642144,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-indented-code",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.180Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-indented-cont",
+      "ok": true,
+      "elapsedMs": 319096,
+      "api_ms": 266329,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 47574,
+      "tokens_out": 8750,
+      "tokens_cache_read": 440192,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-indented-cont",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.180Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-index-wire-confirm",
+      "ok": true,
+      "elapsedMs": 149531,
+      "api_ms": 138325,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 59513,
+      "tokens_out": 2379,
+      "tokens_cache_read": 187296,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-index-wire-confirm",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.180Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-inline-items-api",
+      "ok": true,
+      "elapsedMs": 316885,
+      "api_ms": 302726,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 54206,
+      "tokens_out": 14105,
+      "tokens_cache_read": 554560,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-inline-items-api",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.180Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-inline-link-forms",
+      "ok": true,
+      "elapsedMs": 458316,
+      "api_ms": 437052,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 165520,
+      "tokens_out": 12617,
+      "tokens_cache_read": 1047680,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-inline-link-forms",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.180Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-inline-load-rawhtml",
+      "ok": true,
+      "elapsedMs": 360660,
+      "api_ms": 170746,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 84921,
+      "tokens_out": 1725,
+      "tokens_cache_read": 151648,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-inline-load-rawhtml",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.181Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-inline-phase-thin-2",
+      "ok": true,
+      "elapsedMs": 324215,
+      "api_ms": 226837,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 39507,
+      "tokens_out": 7831,
+      "tokens_cache_read": 850496,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-inline-phase-thin-2",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.181Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-inline-registry",
+      "ok": true,
+      "elapsedMs": 396713,
+      "api_ms": 294161,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 127892,
+      "tokens_out": 4684,
+      "tokens_cache_read": 256800,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-inline-registry",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.181Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-inline-stack-exports",
+      "ok": true,
+      "elapsedMs": 346122,
+      "api_ms": 332011,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 47497,
+      "tokens_out": 10210,
+      "tokens_cache_read": 1086272,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-inline-stack-exports",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.181Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-inlines-loader",
+      "ok": true,
+      "elapsedMs": 106722,
+      "api_ms": 93538,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 56642,
+      "tokens_out": 3307,
+      "tokens_cache_read": 134944,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-inlines-loader",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.182Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-link-3",
+      "ok": true,
+      "elapsedMs": 371569,
+      "api_ms": 282783,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 76748,
+      "tokens_out": 13097,
+      "tokens_cache_read": 761376,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-link-3",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.182Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-link-dest-2",
+      "ok": true,
+      "elapsedMs": 285949,
+      "api_ms": 211684,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 40669,
+      "tokens_out": 8011,
+      "tokens_cache_read": 637536,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-link-dest-2",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.183Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-link-ref-2",
+      "ok": true,
+      "elapsedMs": 476729,
+      "api_ms": 392087,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 129510,
+      "tokens_out": 12270,
+      "tokens_cache_read": 608448,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-link-ref-2",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.183Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-link-ref-pure",
+      "ok": true,
+      "elapsedMs": 156907,
+      "api_ms": 139237,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 77117,
+      "tokens_out": 3481,
+      "tokens_cache_read": 221440,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-link-ref-pure",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.183Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-link-ref-title-eol",
+      "ok": true,
+      "elapsedMs": 536544,
+      "api_ms": 459789,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 34395,
+      "tokens_out": 7092,
+      "tokens_cache_read": 392416,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-link-ref-title-eol",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.183Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-link-ref",
+      "ok": true,
+      "elapsedMs": 421099,
+      "api_ms": 410189,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 121476,
+      "tokens_out": 21771,
+      "tokens_cache_read": 713280,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-link-ref",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.183Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-link-scan-blank",
+      "ok": true,
+      "elapsedMs": 353954,
+      "api_ms": 287488,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 75059,
+      "tokens_out": 9504,
+      "tokens_cache_read": 808448,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-link-scan-blank",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.183Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-link-scan-ws",
+      "ok": true,
+      "elapsedMs": 527386,
+      "api_ms": 305401,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 64462,
+      "tokens_out": 8286,
+      "tokens_cache_read": 268640,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-link-scan-ws",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.184Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-link-suffix-forms",
+      "ok": true,
+      "elapsedMs": 385062,
+      "api_ms": 363923,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 35733,
+      "tokens_out": 5207,
+      "tokens_cache_read": 383296,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-link-suffix-forms",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.184Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-link-title-unescape-only",
+      "ok": true,
+      "elapsedMs": 465303,
+      "api_ms": 369721,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 32364,
+      "tokens_out": 2910,
+      "tokens_cache_read": 369888,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-link-title-unescape-only",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.184Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-link",
+      "ok": true,
+      "elapsedMs": 820533,
+      "api_ms": 624742,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 9705,
+      "tokens_out": 3750,
+      "tokens_cache_read": 438304,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-link",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.184Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-list-isblank",
+      "ok": true,
+      "elapsedMs": 404618,
+      "api_ms": 219443,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 54140,
+      "tokens_out": 3437,
+      "tokens_cache_read": 278432,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-list-isblank",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.184Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-list-walk",
+      "ok": true,
+      "elapsedMs": 461512,
+      "api_ms": 381058,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 27902,
+      "tokens_out": 12647,
+      "tokens_cache_read": 765568,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-list-walk",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.184Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-list",
+      "ok": true,
+      "elapsedMs": 490827,
+      "api_ms": 424965,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 109443,
+      "tokens_out": 31719,
+      "tokens_cache_read": 1544064,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-list",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.184Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-normalize-confirm",
+      "ok": true,
+      "elapsedMs": 150312,
+      "api_ms": 138218,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 42773,
+      "tokens_out": 2803,
+      "tokens_cache_read": 164064,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-normalize-confirm",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.185Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-normalize-input",
+      "ok": true,
+      "elapsedMs": 82854,
+      "api_ms": 69546,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 46489,
+      "tokens_out": 1584,
+      "tokens_cache_read": 81824,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-normalize-input",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.185Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-normalize-label",
+      "ok": true,
+      "elapsedMs": 171290,
+      "api_ms": 122942,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 83074,
+      "tokens_out": 4829,
+      "tokens_cache_read": 122048,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-normalize-label",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.185Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-normalize-nul",
+      "ok": true,
+      "elapsedMs": 200080,
+      "api_ms": 187701,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 59946,
+      "tokens_out": 1826,
+      "tokens_cache_read": 115328,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-normalize-nul",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.185Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-paragraph",
+      "ok": true,
+      "elapsedMs": 253504,
+      "api_ms": 228836,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 100957,
+      "tokens_out": 9605,
+      "tokens_cache_read": 271296,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-paragraph",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.185Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-parse-block",
+      "ok": true,
+      "elapsedMs": 286814,
+      "api_ms": 204971,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 79528,
+      "tokens_out": 10093,
+      "tokens_cache_read": 442272,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-parse-block",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.185Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-parse-inline",
+      "ok": true,
+      "elapsedMs": 694319,
+      "api_ms": 505989,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 568,
+      "tokens_out": 552,
+      "tokens_cache_read": 118400,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-parse-inline",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.186Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-raw-html-edges",
+      "ok": true,
+      "elapsedMs": 780801,
+      "api_ms": 708298,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 25691,
+      "tokens_out": 6561,
+      "tokens_cache_read": 657696,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-raw-html-edges",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.186Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-raw-html",
+      "ok": true,
+      "elapsedMs": 483678,
+      "api_ms": 424248,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 32054,
+      "tokens_out": 19845,
+      "tokens_cache_read": 1404960,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-raw-html",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.186Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-render-html-2",
+      "ok": true,
+      "elapsedMs": 487485,
+      "api_ms": 305966,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 29061,
+      "tokens_out": 7649,
+      "tokens_cache_read": 414784,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-render-html-2",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.186Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-render-inlines-ast",
+      "ok": true,
+      "elapsedMs": 285869,
+      "api_ms": 275943,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 13929,
+      "tokens_out": 4442,
+      "tokens_cache_read": 284576,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-render-inlines-ast",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.186Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-render-tight-lists",
+      "ok": true,
+      "elapsedMs": 281660,
+      "api_ms": 247245,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 136463,
+      "tokens_out": 6807,
+      "tokens_cache_read": 317248,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-render-tight-lists",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.186Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-resolve-link-dest-3",
+      "ok": true,
+      "elapsedMs": 386641,
+      "api_ms": 376592,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 56479,
+      "tokens_out": 6261,
+      "tokens_cache_read": 346080,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-resolve-link-dest-3",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.186Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-setext-blank",
+      "ok": true,
+      "elapsedMs": 372962,
+      "api_ms": 291336,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 55099,
+      "tokens_out": 1425,
+      "tokens_cache_read": 142944,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-setext-blank",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.186Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-setext-tabs",
+      "ok": true,
+      "elapsedMs": 393367,
+      "api_ms": 228019,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 22155,
+      "tokens_out": 6889,
+      "tokens_cache_read": 370624,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-setext-tabs",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.187Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-setext",
+      "ok": true,
+      "elapsedMs": 508034,
+      "api_ms": 499273,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 231498,
+      "tokens_out": 14930,
+      "tokens_cache_read": 385120,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-setext",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.187Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-tabs-expand-confirm",
+      "ok": true,
+      "elapsedMs": 569032,
+      "api_ms": 452895,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 94671,
+      "tokens_out": 7194,
+      "tokens_cache_read": 301984,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-tabs-expand-confirm",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.187Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-tabs",
+      "ok": true,
+      "elapsedMs": 193965,
+      "api_ms": 139956,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 14427,
+      "tokens_out": 4396,
+      "tokens_cache_read": 185120,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-tabs",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.187Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-text-run-api",
+      "ok": true,
+      "elapsedMs": 349535,
+      "api_ms": 282433,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 66319,
+      "tokens_out": 3914,
+      "tokens_cache_read": 333472,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-text-run-api",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.187Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-text-run-stops",
+      "ok": true,
+      "elapsedMs": 268989,
+      "api_ms": 242148,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 133497,
+      "tokens_out": 8529,
+      "tokens_cache_read": 458848,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-text-run-stops",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.187Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-textual",
+      "ok": true,
+      "elapsedMs": 267214,
+      "api_ms": 179130,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 112167,
+      "tokens_out": 6672,
+      "tokens_cache_read": 446944,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-textual",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.187Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-thematic-content-gate",
+      "ok": true,
+      "elapsedMs": 427738,
+      "api_ms": 363061,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 2190,
+      "tokens_out": 436,
+      "tokens_cache_read": 66272,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-thematic-content-gate",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.187Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-thematic-vs-setext",
+      "ok": true,
+      "elapsedMs": 442047,
+      "api_ms": 424109,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 10422,
+      "tokens_out": 1967,
+      "tokens_cache_read": 219744,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-thematic-vs-setext",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.188Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-thematic",
+      "ok": true,
+      "elapsedMs": 144810,
+      "api_ms": 133112,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 39450,
+      "tokens_out": 4766,
+      "tokens_cache_read": 143616,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-thematic",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.188Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-types-ast-fields",
+      "ok": true,
+      "elapsedMs": 580439,
+      "api_ms": 431018,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 100916,
+      "tokens_out": 4856,
+      "tokens_cache_read": 356736,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-types-ast-fields",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.188Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-types-link-image",
+      "ok": true,
+      "elapsedMs": 223413,
+      "api_ms": 135241,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 73599,
+      "tokens_out": 3249,
+      "tokens_cache_read": 255872,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-types-link-image",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.188Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-types",
+      "ok": true,
+      "elapsedMs": 111472,
+      "api_ms": 102002,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 60486,
+      "tokens_out": 3194,
+      "tokens_cache_read": 93408,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-types",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.188Z"
+    },
+    {
+      "role": "worker",
+      "taskId": "task-wire-pipeline-2",
+      "ok": true,
+      "elapsedMs": 424361,
+      "api_ms": 336606,
+      "timedOut": false,
+      "model": "composer-2.5-fast",
+      "tokens_in": 78818,
+      "tokens_out": 6423,
+      "tokens_cache_read": 626368,
+      "tokens_cache_write": 0,
+      "logKey": "swarm-worker-task-wire-pipeline-2",
+      "salvaged": true,
+      "at": "2026-07-27T21:14:32.188Z"
+    }
+  ],
+  "loc": 4991,
+  "final_score": {
+    "rate": 0.8666666666666667,
+    "passed": 455,
+    "total": 525,
+    "by_section": {
+      "Tabs": {
+        "passed": 6,
+        "total": 11,
+        "rate": 0.5454545454545454
+      },
+      "Backslash escapes": {
+        "passed": 10,
+        "total": 13,
+        "rate": 0.7692307692307693
+      },
+      "Precedence": {
+        "passed": 1,
+        "total": 1,
+        "rate": 1
+      },
+      "Thematic breaks": {
+        "passed": 17,
+        "total": 19,
+        "rate": 0.8947368421052632
+      },
+      "ATX headings": {
+        "passed": 18,
+        "total": 18,
+        "rate": 1
+      },
+      "Setext headings": {
+        "passed": 24,
+        "total": 27,
+        "rate": 0.8888888888888888
+      },
+      "Indented code blocks": {
+        "passed": 12,
+        "total": 12,
+        "rate": 1
+      },
+      "Fenced code blocks": {
+        "passed": 28,
+        "total": 29,
+        "rate": 0.9655172413793104
+      },
+      "Paragraphs": {
+        "passed": 8,
+        "total": 8,
+        "rate": 1
+      },
+      "Blank lines": {
+        "passed": 1,
+        "total": 1,
+        "rate": 1
+      },
+      "Block quotes": {
+        "passed": 23,
+        "total": 25,
+        "rate": 0.92
+      },
+      "List items": {
+        "passed": 37,
+        "total": 48,
+        "rate": 0.7708333333333334
+      },
+      "Lists": {
+        "passed": 17,
+        "total": 27,
+        "rate": 0.6296296296296297
+      },
+      "Code spans": {
+        "passed": 21,
+        "total": 22,
+        "rate": 0.9545454545454546
+      },
+      "Emphasis and strong emphasis": {
+        "passed": 130,
+        "total": 132,
+        "rate": 0.9848484848484849
+      },
+      "Links": {
+        "passed": 64,
+        "total": 90,
+        "rate": 0.7111111111111111
+      },
+      "Images": {
+        "passed": 18,
+        "total": 22,
+        "rate": 0.8181818181818182
+      },
+      "Hard line breaks": {
+        "passed": 15,
+        "total": 15,
+        "rate": 1
+      },
+      "Soft line breaks": {
+        "passed": 2,
+        "total": 2,
+        "rate": 1
+      },
+      "Textual content": {
+        "passed": 3,
+        "total": 3,
+        "rate": 1
+      }
+    }
+  },
+  "coordination_mode": "faithful-swarm",
+  "task_set": "swarm-tree",
+  "swarm": true,
+  "architecture": "v13.1-swarm",
+  "run_to_done": true,
+  "salvaged": true,
+  "salvage_note": "Process killed mid-run (~140 min); metrics reconstructed from logs + salvage scores",
+  "repair_time_ms": 0,
+  "adjudication_time_ms": 0,
+  "strong_model_time_ms": 9071253,
+  "global_repair_time_ms": 0,
+  "phase_cost_curve": {
+    "pool": {
+      "agent_ms": 34509709,
+      "passed_delta": 0
+    },
+    "feedback": {
+      "agent_ms": 0,
+      "passed_delta": 0
+    },
+    "repair-rung1": {
+      "agent_ms": 0,
+      "passed_delta": 0
+    },
+    "repair-rung2": {
+      "agent_ms": 0,
+      "passed_delta": 0
+    },
+    "repair-rung3": {
+      "agent_ms": 0,
+      "passed_delta": 0
+    },
+    "repair-stage-b": {
+      "agent_ms": 0,
+      "passed_delta": 0
+    }
+  },
+  "churn": {
+    "total_added": 7280,
+    "total_deleted": 1727,
+    "churn_ratio": 0.23722527472527472
+  },
+  "core_metrics": {
+    "task_completion": {
+      "done": 87,
+      "total": 95,
+      "rate": 0.9158
+    },
+    "pass_rate_full": 0.8666666666666667,
+    "pass_rate_visible": 0.8678815489749431,
+    "pass_rate_holdout": 0.8604651162790697,
+    "task_time_ms": null,
+    "tokens": {
+      "input": 9166990,
+      "output": 1174619,
+      "cache_read": 49135296,
+      "cache_write": 0,
+      "total": 10341609,
+      "calls_with_usage": 196,
+      "calls_total": 196,
+      "by_model": {
+        "composer-2.5-fast": {
+          "input": 8129967,
+          "output": 830973,
+          "cache_read": 44127616,
+          "cache_write": 0,
+          "total": 8960940,
+          "calls": 158
+        },
+        "cursor-grok-4.5-high-fast": {
+          "input": 1037023,
+          "output": 343646,
+          "cache_read": 5007680,
+          "cache_write": 0,
+          "total": 1380669,
+          "calls": 38
+        }
+      },
+      "by_role": {
+        "merger": {
+          "input": 967318,
+          "output": 56649,
+          "cache_read": 1896128,
+          "cache_write": 0,
+          "total": 1023967,
+          "calls": 25
+        },
+        "review-codebase": {
+          "input": 918887,
+          "output": 69305,
+          "cache_read": 4398496,
+          "cache_write": 0,
+          "total": 988192,
+          "calls": 16
+        },
+        "review-diff": {
+          "input": 271173,
+          "output": 52587,
+          "cache_read": 370432,
+          "cache_write": 0,
+          "total": 323760,
+          "calls": 16
+        },
+        "review-spec": {
+          "input": 282825,
+          "output": 61173,
+          "cache_read": 741312,
+          "cache_write": 0,
+          "total": 343998,
+          "calls": 15
+        },
+        "splitter": {
+          "input": 150993,
+          "output": 41171,
+          "cache_read": 1848640,
+          "cache_write": 0,
+          "total": 192164,
+          "calls": 4
+        },
+        "integration-fix": {
+          "input": 22891,
+          "output": 1359,
+          "cache_read": 50560,
+          "cache_write": 0,
+          "total": 24250,
+          "calls": 1
+        },
+        "swarm-planner": {
+          "input": 603205,
+          "output": 241302,
+          "cache_read": 2417728,
+          "cache_write": 0,
+          "total": 844507,
+          "calls": 19
+        },
+        "worker": {
+          "input": 5949698,
+          "output": 651073,
+          "cache_read": 37412000,
+          "cache_write": 0,
+          "total": 6600771,
+          "calls": 100
+        }
+      }
+    },
+    "wall_time_ms": 8387077,
+    "time_to_all_tasks_done_ms": null,
+    "agent_time_ms": 51000517,
+    "agent_api_time_ms": 39403478,
+    "effective_parallelism": 6.08
+  }
+}

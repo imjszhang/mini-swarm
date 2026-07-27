@@ -102,17 +102,39 @@ export function scoreScope(workspaceDir, jsonOut, opts = {}) {
 /**
  * Task-plugin hook: return normative reference text for a group name.
  * Opaque to mechanism modules (they treat it as a string blob).
+ * Fence-aware: lines inside 32-backtick example blocks are ignored when
+ * looking for the next ## heading (avoids cutting on embedded "## foo").
  */
 export function getReferenceText(group, maxChars = 8000) {
   if (!group || !existsSync(SPEC_TEXT_PATH)) return "";
   const text = readFileSync(SPEC_TEXT_PATH, "utf8");
   const heading = `## ${group}`;
-  const start = text.indexOf(heading);
-  if (start < 0) return "";
-  const rest = text.slice(start + heading.length);
-  const next = rest.search(/\n## /);
-  const body = next >= 0 ? rest.slice(0, next) : rest;
-  const out = `${heading}\n${body}`.trim();
+  const lines = text.split(/\r?\n/);
+  const fence = "`".repeat(32);
+  let startIdx = -1;
+  for (let i = 0; i < lines.length; i += 1) {
+    if (lines[i] === heading || lines[i].startsWith(`${heading} `)) {
+      startIdx = i;
+      break;
+    }
+  }
+  if (startIdx < 0) return "";
+
+  let inFence = false;
+  let endIdx = lines.length;
+  for (let i = startIdx + 1; i < lines.length; i += 1) {
+    const line = lines[i];
+    if (line.startsWith(fence)) {
+      inFence = !inFence;
+      continue;
+    }
+    if (!inFence && /^## /.test(line)) {
+      endIdx = i;
+      break;
+    }
+  }
+
+  const out = lines.slice(startIdx, endIdx).join("\n").trim();
   return out.length <= maxChars ? out : `${out.slice(0, maxChars)}…`;
 }
 

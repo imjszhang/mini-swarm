@@ -23,6 +23,7 @@ export function createEmptyTree() {
     nodes: {},
     done: false,
     planner_rounds: 0,
+    waived_sections: [],
   };
 }
 
@@ -141,7 +142,18 @@ export function applyAction(tree, action, { maxTreeDepth = 2 } = {}) {
     if (!node || node.kind !== "leaf") return { ok: false, error: `requeue_task: missing leaf ${id}` };
     node.status = "pending";
     node.report = null;
+    node.attempts = 0;
     return { ok: true, id };
+  }
+
+  if (type === "waive_section") {
+    const section = typeof action.section === "string" ? action.section.trim() : "";
+    if (!section) return { ok: false, error: "waive_section: empty section" };
+    if (!Array.isArray(tree.waived_sections)) tree.waived_sections = [];
+    if (!tree.waived_sections.includes(section)) {
+      tree.waived_sections.push(section);
+    }
+    return { ok: true, section, reason: action.reason || "" };
   }
 
   return { ok: false, error: `unknown action type: ${type}` };
@@ -202,21 +214,31 @@ export function treeStats(tree) {
 /** Compact tree summary for planner prompts (no test scores). */
 export function formatTreeForPlanner(tree) {
   const lines = ["# Task tree", ""];
+  let retiredHidden = 0;
   for (const n of Object.values(tree.nodes)) {
     if (n.kind === "plan") {
       lines.push(`- PLAN ${n.id}: ${n.title} [${n.status}] parent=${n.parent || "-"}`);
-    } else {
-      lines.push(
-        `- LEAF ${n.id}: ${n.title} [${n.status}] scope=${JSON.stringify(n.files_scope || [])}`
-          + ` sections=${JSON.stringify(n.spec_sections || [])}`
-          + ` attempts=${n.attempts || 0}`,
-      );
-      if (n.report?.summary) lines.push(`  report: ${String(n.report.summary).slice(0, 240)}`);
-      if (n.report?.oversized_files?.length) {
-        lines.push(`  oversized: ${n.report.oversized_files.join(", ")}`);
-      }
+      continue;
+    }
+    if (n.status === "retired") {
+      retiredHidden += 1;
+      continue;
+    }
+    if (n.status === "done") {
+      lines.push(`- LEAF ${n.id}: ${n.title} [done]`);
+      continue;
+    }
+    lines.push(
+      `- LEAF ${n.id}: ${n.title} [${n.status}] scope=${JSON.stringify(n.files_scope || [])}`
+        + ` sections=${JSON.stringify(n.spec_sections || [])}`
+        + ` attempts=${n.attempts || 0}`,
+    );
+    if (n.report?.summary) lines.push(`  report: ${String(n.report.summary).slice(0, 160)}`);
+    if (n.report?.oversized_files?.length) {
+      lines.push(`  oversized: ${n.report.oversized_files.join(", ")}`);
     }
   }
+  if (retiredHidden > 0) lines.push(`(+${retiredHidden} retired leaves hidden)`);
   if (!Object.keys(tree.nodes).length) lines.push("_Empty — please create the initial decomposition._");
   return lines.join("\n");
 }

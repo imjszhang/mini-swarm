@@ -56,7 +56,24 @@ export class MergeQueue {
 
   enqueue(item) {
     return new Promise((resolve, reject) => {
-      this.queue.push({ ...item, resolve, reject });
+      this.queue.push({ ...item, enqueuedAt: Date.now(), resolve, reject });
+      this._pump();
+    });
+  }
+
+  /**
+   * Serialize an arbitrary main-workspace mutation through the same FIFO
+   * as merges (e.g. planner writing DESIGN.md while merger may be active).
+   */
+  enqueueFn(fn, label = "fn") {
+    return new Promise((resolve, reject) => {
+      this.queue.push({
+        fn,
+        taskId: label,
+        enqueuedAt: Date.now(),
+        resolve,
+        reject,
+      });
       this._pump();
     });
   }
@@ -66,7 +83,13 @@ export class MergeQueue {
     this.processing = true;
     while (this.queue.length) {
       const item = this.queue.shift();
+      const waitMs = item.enqueuedAt != null ? Date.now() - item.enqueuedAt : 0;
+      this.metrics.recordMergeWait?.({ taskId: item.taskId, waitMs, label: item.fn ? "fn" : "merge" });
       try {
+        if (typeof item.fn === "function") {
+          item.resolve(await item.fn());
+          continue;
+        }
         const result = await this._mergeOne(item);
         if (result.ok && item.afterMerge) {
           result.postMerge = await item.afterMerge();

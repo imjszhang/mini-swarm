@@ -35,10 +35,12 @@ npm run contention:report -- runs/RUN_ID/metrics.json
 npm run spec:generate         # synthetic gen-examples for Stage B self-verify
 npm run preflight:models      # probe composer + strong model slugs
 
-# v13 Cursor-faithful swarm (S-A-008; zero test signal; wall-clock budget)
+# v13 / v13.1 Cursor-faithful swarm (S-A-008; zero test signal)
 npm run swarm:mock            # scripted planner/worker end-to-end
-npm run swarm                 # full swarm (default 240 min budget)
+npm run swarm                 # budget mode (default 240 min)
+npm run swarm:done            # run-to-done (hard stop maxWallMinutes, default 480)
 npm run swarm:smoke           # live smoke: 15 min, concurrency 2
+# npm run swarm -- --run-to-done --concurrency=8 --run-id=run-swarm-v13.1
 
 # Resume an interrupted run (task-level; requires progress.json)
 npm run salvage -- --run-id=RUN_ID --task-set=contention   # rebuild progress from wreckage
@@ -168,7 +170,9 @@ are **not** claimed as Cursor fidelity.
 | 9 | Multi-perspective low-correlation review stack | `review-diff` / `review-codebase` / `review-spec` (mixed model tiers) |
 | 10 | Field Guide folder (`index.md` inject + line budget) | `guide/index.md` (+ notes); workers append surprises |
 | 11 | Spec-as-prompt; scoring tests **hidden from agents** | Zero test signal: agents never see examples / pass-fail / VERIFY_CMD; scorer is harness-only observation |
-| 12 | Fixed wall-clock budget + metrics | `swarm.budgetMinutes` (default 240); four core metrics + commits/conflicts/LOC |
+| 12 | Fixed wall-clock budget + metrics | `swarm.budgetMinutes` (default 240) or `--run-to-done` + `maxWallMinutes`; four core metrics + commits/conflicts/LOC |
+
+**v13.1 parallelism note**: event-driven pipeline (continuous dispatch, async planner/review) raised measured `effective_parallelism` from ~1.3 (v13 batch barrier) to ~6 at concurrency=8. Hundreds of concurrent agents remain a declared boundary (git merge queue serial floor).
 
 ### Explicitly NOT claimed (absent from S-A-008 raw)
 
@@ -176,7 +180,7 @@ are **not** claimed as Cursor fidelity.
 - Supervisor that kills stuck agents / auto re-dispatch
 - Named Judge acceptance gate
 - Swarm-authored tests
-- Fixed parallelism N / hundreds of concurrent agents (we keep concurrency ≈ 4)
+- Fixed parallelism N / hundreds of concurrent agents (we keep concurrency ≈ 8; not hundreds)
 - 835-page SQL spec scale (we use CommonMark `spec/spec.txt`)
 
 ### Legacy pipeline (v8–v12)

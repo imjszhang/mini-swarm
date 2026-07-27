@@ -48,13 +48,18 @@
   },
   "swarm": {
     "budgetMinutes": 240,
-    "concurrency": 4,
-    "reviewEveryNMerges": 3,
+    "runToDone": false,
+    "maxWallMinutes": 480,
+    "concurrency": 8,
+    "plannerReportBatch": 3,
+    "reviewEveryNMerges": 5,
     "reviewPerspectives": 3,
     "oversizedFileLines": 400,
     "maxTreeDepth": 2,
     "guideMaxLines": 80,
-    "observeScoreEveryMerges": 1
+    "observeScoreEveryMerges": 3,
+    "specTextMaxChars": 64000,
+    "maxLeafAttempts": 3
   },
   "guideMaxLines": 80,
   "agentCommand": "cursor-agent"

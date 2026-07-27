@@ -19,6 +19,10 @@ the tree — there is no fixed topology.
 
 {{TREE_SUMMARY}}
 
+## Spec coverage
+
+{{COVERAGE}}
+
 ## Current DESIGN.md
 
 ```
@@ -39,9 +43,13 @@ the tree — there is no fixed topology.
 
 {{REVIEW_FINDINGS}}
 
+## Previous action errors
+
+{{ACTION_ERRORS}}
+
 ## Budget
 
-Wall-clock remaining: **{{BUDGET_REMAINING_MIN}}** minutes.
+{{BUDGET_LINE}}
 Do not invent score numbers or ask for test results — none are available to you.
 
 ## Output
@@ -66,6 +74,7 @@ Reply with a single JSON object (no prose outside it):
     { "type": "split_task", "from": "task-05", "children": [ { "title": "...", "files_scope": [], "spec_sections": [] } ] },
     { "type": "retire_task", "id": "task-03" },
     { "type": "requeue_task", "id": "task-04" },
+    { "type": "waive_section", "section": "HTML blocks", "reason": "..." },
     { "type": "done" }
   ],
   "rationale": "short note"
@@ -75,6 +84,9 @@ Reply with a single JSON object (no prose outside it):
 Rules:
 - Prefer small leaves with clear `files_scope` and `spec_sections`.
 - Put interface decisions in `design_md` / DESIGN.md yourself — do not ask workers to invent architecture.
-- Use `done` only when you believe the renderer is complete enough for the remaining budget.
+- Keep at least {{FANOUT_TARGET}} ready leaves with empty deps and disjoint files_scope while uncovered sections remain. Use deps only when compilation truly requires them.
+- waive_section removes a section from the done-gate with your stated reason. Use it for sections you deliberately leave out.
+- "done" is accepted by the harness only when every spec section is covered by a done leaf or waived, and no leaf is pending or running. Premature done is rejected and reported back as an action error.
+- Before declaring done, schedule audit leaves (title starting with "audit:") that re-read the assigned sections' spec text, run the embedded examples against the current build, and fix mismatches. Declare done only after audits are done.
 - If a worker reported oversized files or blocked, prefer `split_task` or `requeue_task`.
 - Max tree depth is {{MAX_TREE_DEPTH}}.

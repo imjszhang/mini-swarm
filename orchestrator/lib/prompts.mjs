@@ -247,7 +247,10 @@ export function buildSwarmPlannerPrompt({
   guideIndex,
   workerReports,
   reviewFindings,
-  budgetRemainingMin,
+  coverage,
+  actionErrors,
+  budgetLine,
+  fanoutTarget,
   maxTreeDepth,
 }) {
   return fillTemplate(loadPrompt("swarm-planner"), {
@@ -257,7 +260,10 @@ export function buildSwarmPlannerPrompt({
     GUIDE_INDEX: guideIndex || "_Empty._",
     WORKER_REPORTS: workerReports || "_None yet._",
     REVIEW_FINDINGS: reviewFindings || "_None yet._",
-    BUDGET_REMAINING_MIN: String(budgetRemainingMin ?? "?"),
+    COVERAGE: coverage || "_None._",
+    ACTION_ERRORS: actionErrors || "_None._",
+    BUDGET_LINE: budgetLine || "_None._",
+    FANOUT_TARGET: String(fanoutTarget ?? 8),
     MAX_TREE_DEPTH: String(maxTreeDepth ?? 2),
   });
 }
