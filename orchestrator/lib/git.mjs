@@ -1,16 +1,19 @@
-import { execSync } from "node:child_process";
+import { execFileSync } from "node:child_process";
 import { existsSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
+/** Hidden console on Windows — shell:true flashes a cmd window per call. */
 function git(cwd, args, opts = {}) {
-  const quoted = args.map((a) => (/\s/.test(a) ? JSON.stringify(a) : a));
-  return execSync(`git ${quoted.join(" ")}`, {
+  const { stdio = "pipe", ...rest } = opts;
+  const out = execFileSync("git", args, {
     cwd,
     encoding: "utf8",
-    stdio: opts.stdio || "pipe",
-    shell: true,
-    ...opts,
-  }).trim();
+    stdio,
+    ...rest,
+    shell: false,
+    windowsHide: true,
+  });
+  return String(out ?? "").trim();
 }
 
 export function initRepo(workspaceDir) {
@@ -134,7 +137,7 @@ export function commitAll(dir, message) {
   try {
     git(dir, ["add", "-A"]);
     try {
-      execSync("git diff --cached --quiet", { cwd: dir, stdio: "pipe", shell: true });
+      git(dir, ["diff", "--cached", "--quiet"]);
       return false; // nothing staged
     } catch {
       git(dir, ["commit", "-m", message]);
@@ -265,12 +268,7 @@ export function filesChangedInWorktree(wtDir) {
  */
 export function computeChurn(workspaceDir) {
   try {
-    const out = execSync("git log --numstat --format=", {
-      cwd: workspaceDir,
-      encoding: "utf8",
-      stdio: "pipe",
-      shell: true,
-    });
+    const out = git(workspaceDir, ["log", "--numstat", "--format="]);
     let total_added = 0;
     let total_deleted = 0;
     for (const line of out.split("\n")) {

@@ -2,11 +2,11 @@
  * Workspace skeleton helpers shared by swarm entry (v13).
  * Intentionally duplicated from run.mjs so the legacy pipeline stays untouched.
  */
-import { execSync } from "node:child_process";
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
-import { initRepo } from "./git.mjs";
+import { commitAll, initRepo } from "./git.mjs";
 import { initGuideFolder } from "./guide.mjs";
+import { npmExec } from "./win-exec.mjs";
 
 function writeContentionStubs(workspaceDir) {
   mkdirSync(path.join(workspaceDir, "src", "blocks"), { recursive: true });
@@ -160,12 +160,10 @@ process.stdin.on("end", () => { process.stdout.write(renderMarkdown(input)); });
   writeContentionStubs(workspaceDir);
 
   if (mock) {
-    execSync("npm install", { cwd: workspaceDir, stdio: "ignore", shell: true });
-    execSync("npm run build", { cwd: workspaceDir, stdio: "ignore", shell: true });
-    execSync("git add -A && git commit -m \"mock skeleton\"", { cwd: workspaceDir, shell: true, stdio: "ignore" });
+    npmExec(["install"], { cwd: workspaceDir, stdio: "ignore" });
+    npmExec(["run", "build"], { cwd: workspaceDir, stdio: "ignore" });
+    commitAll(workspaceDir, "mock skeleton");
   } else {
-    try {
-      execSync("git add -A && git commit -m \"chore: skeleton\"", { cwd: workspaceDir, shell: true, stdio: "ignore" });
-    } catch { /* ignore */ }
+    commitAll(workspaceDir, "chore: skeleton");
   }
 }

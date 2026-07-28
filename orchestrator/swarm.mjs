@@ -5,7 +5,7 @@
  * + detach / heartbeat / checkpoint / resume.
  * Legacy test-driven pipeline remains in run.mjs / repair-engine.mjs.
  */
-import { execSync, spawn } from "node:child_process";
+import { spawn } from "node:child_process";
 import { existsSync, mkdirSync, openSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -21,6 +21,7 @@ import {
   removeWorktree,
   syncWorktreeWithMain,
 } from "./lib/git.mjs";
+import { npmExec, powershellCommand, taskkillPid } from "./lib/win-exec.mjs";
 import { appendGuideNote, readGuideIndex } from "./lib/guide.mjs";
 import { ensureHoldout, holdoutFilePath } from "./lib/holdout.mjs";
 import { extractJsonObject } from "./lib/json-parse.mjs";
@@ -106,9 +107,9 @@ function usage() {
 function ensureBuilt(workspaceDir) {
   try {
     if (!existsSync(path.join(workspaceDir, "node_modules"))) {
-      execSync("npm install", { cwd: workspaceDir, stdio: "ignore", shell: true });
+      npmExec(["install"], { cwd: workspaceDir, stdio: "ignore" });
     }
-    execSync("npm run build", { cwd: workspaceDir, encoding: "utf8", shell: true });
+    npmExec(["run", "build"], { cwd: workspaceDir, encoding: "utf8" });
     return { ok: true };
   } catch (err) {
     return { ok: false, stderr: String(err.stderr || err.stdout || err.message || "") };
@@ -285,18 +286,15 @@ function killOrphanAgents(runDir) {
       "  Where-Object { $_.CommandLine -and $_.CommandLine.ToLower().Contains($n) -and $_.Name -match 'cursor-agent|node|cmd' } |",
       "  Select-Object -ExpandProperty ProcessId",
     ].join(" ");
-    const out = execSync(`powershell -NoProfile -Command "${ps}"`, {
-      encoding: "utf8",
-      stdio: ["ignore", "pipe", "pipe"],
-      windowsHide: true,
+    const out = powershellCommand(ps, {
       timeout: 60000,
       maxBuffer: 2 * 1024 * 1024,
     });
-    for (const line of out.split(/\r?\n/)) {
+    for (const line of String(out).split(/\r?\n/)) {
       const pid = Number(line.trim());
       if (!pid || pid === process.pid) continue;
       try {
-        execSync(`taskkill /PID ${pid} /T /F`, { stdio: "ignore", windowsHide: true });
+        taskkillPid(pid);
         killed.push(pid);
       } catch {
         /* ignore */

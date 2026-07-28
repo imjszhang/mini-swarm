@@ -1,5 +1,5 @@
-import { execSync, spawn } from "node:child_process";
-import { existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { execFileSync, spawn } from "node:child_process";
+import { existsSync, mkdirSync, readdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { resolveModel } from "./lib/config.mjs";
 
@@ -8,7 +8,10 @@ function killAgentTree(child) {
   if (!child?.pid) return;
   if (process.platform === "win32") {
     try {
-      execSync(`taskkill /PID ${child.pid} /T /F`, { stdio: "ignore", windowsHide: true });
+      execFileSync("taskkill", ["/PID", String(child.pid), "/T", "/F"], {
+        stdio: "ignore",
+        windowsHide: true,
+      });
       return;
     } catch {
       /* fall through */
@@ -18,12 +21,64 @@ function killAgentTree(child) {
   try { child.kill("SIGKILL"); } catch { /* ignore */ }
 }
 
+/**
+ * Version directory sort key matching cursor-agent.ps1 (YYYYMMDD as int).
+ * Avoids launching cursor-agent.cmd → powershell → node (two console flashes).
+ */
+function versionSortKey(name) {
+  const datePart = String(name).split("-")[0];
+  const parts = datePart.split(".");
+  if (parts.length !== 3) return 0;
+  const year = parts[0];
+  const month = parts[1].padStart(2, "0");
+  const day = parts[2].padStart(2, "0");
+  const n = Number(`${year}${month}${day}`);
+  return Number.isFinite(n) ? n : 0;
+}
+
+/**
+ * Resolve agent launch to a direct node.exe + index.js on Windows when possible.
+ * @returns {{ executable: string, argsPrefix: string[], shell: boolean }}
+ */
 function resolveAgentExecutable(configured) {
   if (process.platform === "win32") {
-    const cmd = path.join(process.env.LOCALAPPDATA || "", "cursor-agent", "cursor-agent.cmd");
-    if (existsSync(cmd)) return { executable: cmd, shell: true };
+    const base = path.join(process.env.LOCALAPPDATA || "", "cursor-agent");
+    const versionsDir = path.join(base, "versions");
+    if (existsSync(versionsDir)) {
+      let dirs = [];
+      try {
+        dirs = readdirSync(versionsDir, { withFileTypes: true })
+          .filter((d) => d.isDirectory() && /^\d{4}\.\d{1,2}\.\d{1,2}/.test(d.name))
+          .map((d) => d.name)
+          .sort((a, b) => versionSortKey(b) - versionSortKey(a));
+      } catch {
+        dirs = [];
+      }
+      for (const name of dirs) {
+        const nodePath = path.join(versionsDir, name, "node.exe");
+        const indexPath = path.join(versionsDir, name, "index.js");
+        if (existsSync(nodePath) && existsSync(indexPath)) {
+          return {
+            executable: nodePath,
+            argsPrefix: [indexPath],
+            shell: false,
+            envExtra: { CURSOR_INVOKED_AS: "cursor-agent" },
+          };
+        }
+      }
+    }
+    // Last resort: .cmd still needs a shell, but windowsHide suppresses the window.
+    const cmd = path.join(base, "cursor-agent.cmd");
+    if (existsSync(cmd)) {
+      return { executable: cmd, argsPrefix: [], shell: true, envExtra: {} };
+    }
   }
-  return { executable: configured || "cursor-agent", shell: false };
+  return {
+    executable: configured || "cursor-agent",
+    argsPrefix: [],
+    shell: false,
+    envExtra: {},
+  };
 }
 
 /**
@@ -81,10 +136,11 @@ export function spawnAgent({
   }
 
   const cmd = config.agentCommand || "cursor-agent";
-  const { executable, shell } = resolveAgentExecutable(cmd);
+  const { executable, shell, argsPrefix, envExtra } = resolveAgentExecutable(cmd);
   // Prompt goes through stdin, not argv: coordinated prompts (DESIGN.md + GUIDE.md
   // inlined) exceed the Windows cmd.exe 8191-char argv limit and fail to spawn.
   const args = [
+    ...argsPrefix,
     "-p",
     "--force",
     "--trust",
@@ -109,7 +165,13 @@ export function spawnAgent({
       cwd,
       shell,
       windowsHide: true,
-      env: { ...process.env },
+      env: {
+        ...process.env,
+        ...envExtra,
+        // Prefer Node compile cache like the official launcher.
+        NODE_COMPILE_CACHE: process.env.NODE_COMPILE_CACHE
+          || path.join(process.env.LOCALAPPDATA || "", "cursor-compile-cache"),
+      },
     });
 
     child.stdin?.on("error", () => {});

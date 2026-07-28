@@ -1,8 +1,9 @@
-import { execSync } from "node:child_process";
+import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import {
   abortMerge,
+  commitAll,
   filesChangedSince,
   findConflictMarkers,
   headSha,
@@ -13,6 +14,14 @@ import {
 } from "./lib/git.mjs";
 import { buildMergerPrompt } from "./lib/prompts.mjs";
 import { agentUsage, spawnAgent } from "./runner.mjs";
+
+function gitStatus(cwd) {
+  return execFileSync("git", ["status"], {
+    cwd,
+    encoding: "utf8",
+    windowsHide: true,
+  });
+}
 
 /** Source files over the line budget (S-A-008 oversized-file gate). */
 export function findOversizedFiles(dir, files, maxLines) {
@@ -181,21 +190,13 @@ export class MergeQueue {
           `Unmerged files: ${stillConflict.join(", ")}`,
           "",
           "Git status:",
-          execSync("git status", { cwd: this.mainDir, encoding: "utf8" }),
+          gitStatus(this.mainDir),
         ].join("\n");
         continue;
       }
 
       // Ensure any staged resolution is committed.
-      try {
-        execSync("git diff --cached --quiet", { cwd: this.mainDir, stdio: "pipe" });
-      } catch {
-        try {
-          execSync("git commit -m \"merge: resolve conflict\"", { cwd: this.mainDir, stdio: "pipe" });
-        } catch {
-          /* may already be committed */
-        }
-      }
+      commitAll(this.mainDir, "merge: resolve conflict");
 
       const hits = this._markerHits(preSha, initialFiles);
       if (hits.length) {
@@ -207,7 +208,7 @@ export class MergeQueue {
           "keep the build green, stage and commit. Do not leave markers in the tree.",
           "",
           "Git status:",
-          execSync("git status", { cwd: this.mainDir, encoding: "utf8" }),
+          gitStatus(this.mainDir),
         ].join("\n");
         continue;
       }
@@ -241,7 +242,7 @@ export class MergeQueue {
         "keep the build green, stage and commit. Do not leave markers in the tree.",
         "",
         "Git status:",
-        execSync("git status", { cwd: this.mainDir, encoding: "utf8" }),
+        gitStatus(this.mainDir),
       ].join("\n");
       return this._resolveLoop({
         preSha,
@@ -262,13 +263,7 @@ export class MergeQueue {
 
     let statusText = "(git status unavailable)";
     try {
-      statusText = execSync("git status", {
-        cwd: this.mainDir,
-        encoding: "utf8",
-        stdio: ["ignore", "pipe", "pipe"],
-        shell: true,
-        windowsHide: true,
-      });
+      statusText = gitStatus(this.mainDir);
     } catch (err) {
       statusText = `(git status failed: ${err.message || err})`;
     }
