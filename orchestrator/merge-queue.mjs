@@ -260,12 +260,24 @@ export class MergeQueue {
     const files = listConflictFiles(this.mainDir);
     this.metrics.recordMergeConflict({ taskId, branch, files });
 
+    let statusText = "(git status unavailable)";
+    try {
+      statusText = execSync("git status", {
+        cwd: this.mainDir,
+        encoding: "utf8",
+        stdio: ["ignore", "pipe", "pipe"],
+        shell: true,
+        windowsHide: true,
+      });
+    } catch (err) {
+      statusText = `(git status failed: ${err.message || err})`;
+    }
     const initialContext = [
       `Merge conflict merging branch ${branch} for task ${taskId}.`,
       `Conflict files: ${files.join(", ") || "(unknown)"}`,
       "",
       "Git status:",
-      execSync("git status", { cwd: this.mainDir, encoding: "utf8" }),
+      statusText,
     ].join("\n");
 
     return this._resolveLoop({

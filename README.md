@@ -35,14 +35,16 @@ npm run contention:report -- runs/RUN_ID/metrics.json
 npm run spec:generate         # synthetic gen-examples for Stage B self-verify
 npm run preflight:models      # probe composer + strong model slugs
 
-# v13 / v13.1 Cursor-faithful swarm (S-A-008; zero test signal)
+# v13 / v13.1 / v13.2 Cursor-faithful swarm (S-A-008; zero test signal)
 npm run swarm:mock            # scripted planner/worker end-to-end
 npm run swarm                 # budget mode (default 240 min)
 npm run swarm:done            # run-to-done (hard stop maxWallMinutes, default 480)
 npm run swarm:smoke           # live smoke: 15 min, concurrency 2
-# npm run swarm -- --run-to-done --concurrency=8 --run-id=run-swarm-v13.1
+npm run swarm:detached -- --run-id=run-swarm-v13.2 --concurrency=8   # long run outside IDE terminal
+npm run swarm:resume -- --run-id=RUN_ID              # resume interrupted swarm (tree.json + checkpoint)
+npm run swarm:finalize -- --run-id=RUN_ID            # score+finalize metrics without resuming
 
-# Resume an interrupted run (task-level; requires progress.json)
+# Resume an interrupted legacy run (task-level; requires progress.json)
 npm run salvage -- --run-id=RUN_ID --task-set=contention   # rebuild progress from wreckage
 npm run run:contention:bare -- --run-id=RUN_ID --resume    # continue skipped done tasks
 
@@ -173,6 +175,25 @@ are **not** claimed as Cursor fidelity.
 | 12 | Fixed wall-clock budget + metrics | `swarm.budgetMinutes` (default 240) or `--run-to-done` + `maxWallMinutes`; four core metrics + commits/conflicts/LOC |
 
 **v13.1 parallelism note**: event-driven pipeline (continuous dispatch, async planner/review) raised measured `effective_parallelism` from ~1.3 (v13 batch barrier) to ~6 at concurrency=8. Hundreds of concurrent agents remain a declared boundary (git merge queue serial floor).
+
+**v13.2 anti-interrupt note**: long runs must use `swarm:detached` so the process is not reaped with the IDE terminal. `heartbeat.json` + `metrics.json` checkpoints enable `--resume`; `swarm:finalize` scores a dead run without continuing. Segmented wall time excludes death gaps.
+
+### Long-run ops (v13.2)
+
+```bash
+# Start (detached from Cursor/IDE terminal)
+npm run swarm:detached -- --run-id=run-swarm-v13.2 --concurrency=8
+# Monitor
+#   runs/<id>/console.log
+#   runs/<id>/heartbeat.json   # stalls → sync block; stop updating → process dead
+#   runs/<id>/metrics.json     # finalized:false while running
+
+# If killed mid-flight (heartbeat stale >2 min):
+npm run swarm:resume -- --run-id=run-swarm-v13.2 --concurrency=8
+
+# Or score-only salvage (no more agents):
+npm run swarm:finalize -- --run-id=run-swarm-v13.2
+```
 
 ### Explicitly NOT claimed (absent from S-A-008 raw)
 

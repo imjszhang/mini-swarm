@@ -84,6 +84,8 @@ Reply with a single JSON object (no prose outside it):
 Rules:
 - Prefer small leaves with clear `files_scope` and `spec_sections`.
 - Put interface decisions in `design_md` / DESIGN.md yourself — do not ask workers to invent architecture.
+- Omit `design_md` unless you are actually changing DESIGN.md. When you do include it, keep it under ~200 lines — a contract table, not a change log. Giant design_md payloads often fail JSON parse.
+- Never reuse an ID listed under "All existing IDs" (including retired). Always invent fresh ids.
 - Keep at least {{FANOUT_TARGET}} ready leaves with empty deps and disjoint files_scope while uncovered sections remain. Use deps only when compilation truly requires them.
 - waive_section removes a section from the done-gate with your stated reason. Use it for sections you deliberately leave out.
 - "done" is accepted by the harness only when every spec section is covered by a done leaf or waived, and no leaf is pending or running. Premature done is rejected and reported back as an action error.

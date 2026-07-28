@@ -240,5 +240,10 @@ export function formatTreeForPlanner(tree) {
   }
   if (retiredHidden > 0) lines.push(`(+${retiredHidden} retired leaves hidden)`);
   if (!Object.keys(tree.nodes).length) lines.push("_Empty — please create the initial decomposition._");
+  const allIds = Object.keys(tree.nodes || {}).sort();
+  if (allIds.length) {
+    lines.push("");
+    lines.push(`All existing IDs (never reuse, incl. retired): ${allIds.join(", ")}`);
+  }
   return lines.join("\n");
 }

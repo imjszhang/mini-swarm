@@ -28,6 +28,9 @@
     "swarm": "node orchestrator/swarm.mjs",
     "swarm:mock": "node orchestrator/swarm.mjs --mock",
     "swarm:smoke": "node orchestrator/swarm.mjs --budget-minutes=15 --concurrency=2",
-    "swarm:done": "node orchestrator/swarm.mjs --run-to-done"
+    "swarm:done": "node orchestrator/swarm.mjs --run-to-done",
+    "swarm:detached": "node orchestrator/swarm.mjs --run-to-done --detach",
+    "swarm:resume": "node orchestrator/swarm.mjs --resume",
+    "swarm:finalize": "node orchestrator/finalize-swarm-run.mjs"
   }
 }

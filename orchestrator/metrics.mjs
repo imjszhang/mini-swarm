@@ -68,9 +68,21 @@ export function buildCoreMetrics(data) {
   const apiTimeMs = agentCalls.reduce((s, c) => s + (c.api_ms || 0), 0);
   const { totals, byModel, byRole, covered } = aggregateTokens(agentCalls);
 
-  const wallTimeMs = data.started_at && data.finished_at
-    ? Date.parse(data.finished_at) - Date.parse(data.started_at)
-    : null;
+  // Prefer active segments (excludes death gaps between resume attempts).
+  let wallTimeMs = null;
+  const segments = data.segments || [];
+  if (segments.length) {
+    let sum = 0;
+    for (const seg of segments) {
+      if (!seg?.started_at) continue;
+      const end = seg.ended_at ? Date.parse(seg.ended_at) : Date.now();
+      const start = Date.parse(seg.started_at);
+      if (Number.isFinite(start) && Number.isFinite(end) && end >= start) sum += end - start;
+    }
+    wallTimeMs = sum || null;
+  } else if (data.started_at && data.finished_at) {
+    wallTimeMs = Date.parse(data.finished_at) - Date.parse(data.started_at);
+  }
 
   // Time from run start until the last task finished (总完成任务时长 in the
   // strict sense; excludes repair/review phases that follow the pool).
@@ -165,10 +177,13 @@ function buildPhaseCostCurve(data) {
   return buckets;
 }
 
-export function createMetricsCollector(runDir) {
-  const data = {
+function emptyMetricsData() {
+  return {
     started_at: new Date().toISOString(),
     finished_at: null,
+    finalized: false,
+    salvaged: false,
+    segments: [],
     coordination: false,
     planner_source: null,
     commits: 0,
@@ -191,6 +206,7 @@ export function createMetricsCollector(runDir) {
     unowned_requirements: [],
     oracle_literal_hits: [],
     swarm_planner_rounds: 0,
+    planner_parse_failures: 0,
     tree_stats: null,
     reviews: [],
     splits: [],
@@ -219,6 +235,73 @@ export function createMetricsCollector(runDir) {
     loc: null,
     final_score: null,
   };
+}
+
+function applyDerivedFields(data, extra = {}) {
+  recomputeConflictTotals(data);
+  const agentCalls = data.agent_calls || [];
+  const repair_time_ms = agentCalls
+    .filter((c) => c.role === "repair" || c.role === "repair-candidate" || c.role === "repair-strong" || c.role === "global-repair")
+    .reduce((s, c) => s + (c.elapsedMs || 0), 0);
+  const adjudication_time_ms = agentCalls
+    .filter((c) => c.role === "adjudicator" || c.role === "cluster")
+    .reduce((s, c) => s + (c.elapsedMs || 0), 0);
+  const strong_model_time_ms = agentCalls
+    .filter((c) => [
+      "repair-strong", "decomposer", "adjudicator", "cluster",
+      "swarm-planner", "splitter", "review-spec", "json-repair",
+    ].includes(c.role))
+    .reduce((s, c) => s + (c.elapsedMs || 0), 0);
+  Object.assign(data, {
+    repair_time_ms,
+    adjudication_time_ms,
+    strong_model_time_ms,
+    global_repair_time_ms: data.global_repair_time_ms ?? repair_time_ms,
+    phase_cost_curve: buildPhaseCostCurve(data),
+  }, extra);
+  data.core_metrics = buildCoreMetrics(data);
+}
+
+function touchCurrentSegment(data) {
+  if (!Array.isArray(data.segments)) data.segments = [];
+  if (!data.segments.length) {
+    data.segments.push({ started_at: data.started_at || new Date().toISOString(), ended_at: null });
+  }
+  const seg = data.segments[data.segments.length - 1];
+  seg.ended_at = new Date().toISOString();
+}
+
+/**
+ * @param {string} runDir
+ * @param {{ seed?: object, resume?: boolean }} [opts]
+ */
+export function createMetricsCollector(runDir, opts = {}) {
+  const seed = opts.seed && typeof opts.seed === "object" ? opts.seed : null;
+  const data = seed
+    ? { ...emptyMetricsData(), ...seed }
+    : emptyMetricsData();
+
+  if (!Array.isArray(data.segments)) data.segments = [];
+  data.finalized = false;
+  data.finished_at = null;
+
+  if (opts.resume) {
+    // New active segment after interruption gap.
+    data.segments.push({ started_at: new Date().toISOString(), ended_at: null });
+  } else if (!data.segments.length) {
+    data.segments.push({ started_at: data.started_at || new Date().toISOString(), ended_at: null });
+  }
+  if (!seed) {
+    data.started_at = data.segments[0].started_at;
+  }
+
+  function persist(finalized) {
+    touchCurrentSegment(data);
+    data.finalized = !!finalized;
+    const out = path.join(runDir, "metrics.json");
+    writeFileSync(out, `${JSON.stringify(data, null, 2)}\n`, "utf8");
+    return out;
+  }
 
   return {
     data,
@@ -276,37 +359,47 @@ export function createMetricsCollector(runDir) {
     setMeta(partial) {
       Object.assign(data, partial);
     },
+    /** Periodic / post-leaf persistence. Does not set finished_at. */
+    checkpoint(extra = {}) {
+      applyDerivedFields(data, extra);
+      return persist(false);
+    },
     finish(extra = {}) {
       data.finished_at = new Date().toISOString();
-      recomputeConflictTotals(data);
-      const agentCalls = data.agent_calls || [];
-      const repair_time_ms = agentCalls
-        .filter((c) => c.role === "repair" || c.role === "repair-candidate" || c.role === "repair-strong" || c.role === "global-repair")
-        .reduce((s, c) => s + (c.elapsedMs || 0), 0);
-      const adjudication_time_ms = agentCalls
-        .filter((c) => c.role === "adjudicator" || c.role === "cluster")
-        .reduce((s, c) => s + (c.elapsedMs || 0), 0);
-      const strong_model_time_ms = agentCalls
-        .filter((c) => [
-          "repair-strong", "decomposer", "adjudicator", "cluster",
-          "swarm-planner", "splitter", "review-spec",
-        ].includes(c.role))
-        .reduce((s, c) => s + (c.elapsedMs || 0), 0);
-      Object.assign(data, {
-        repair_time_ms,
-        adjudication_time_ms,
-        strong_model_time_ms,
-        // Keep legacy alias for compare scripts.
-        global_repair_time_ms: data.global_repair_time_ms ?? repair_time_ms,
-        phase_cost_curve: buildPhaseCostCurve(data),
-      }, extra);
-      // After extra so final_score/visible_score/holdout_score are in place.
-      data.core_metrics = buildCoreMetrics(data);
-      const out = path.join(runDir, "metrics.json");
-      writeFileSync(out, `${JSON.stringify(data, null, 2)}\n`, "utf8");
-      return out;
+      applyDerivedFields(data, extra);
+      return persist(true);
     },
   };
+}
+
+/** Load metrics.json seed for resume / finalize (null if missing). */
+export function loadMetricsSeed(runDir) {
+  const p = path.join(runDir, "metrics.json");
+  if (!existsSync(p)) return null;
+  try {
+    return JSON.parse(readFileSync(p, "utf8"));
+  } catch {
+    return null;
+  }
+}
+
+/** Active wall minutes from segments (excludes death gaps). */
+export function activeWallMinutes(data) {
+  const segments = data?.segments || [];
+  if (!segments.length) {
+    if (data?.started_at) {
+      return Math.max(0, (Date.now() - Date.parse(data.started_at)) / 60000);
+    }
+    return 0;
+  }
+  let sum = 0;
+  for (const seg of segments) {
+    if (!seg?.started_at) continue;
+    const end = seg.ended_at ? Date.parse(seg.ended_at) : Date.now();
+    const start = Date.parse(seg.started_at);
+    if (Number.isFinite(start) && Number.isFinite(end) && end >= start) sum += end - start;
+  }
+  return sum / 60000;
 }
 
 export function countLoc(workspaceDir) {
@@ -356,6 +449,7 @@ export function normalizeMetrics(raw) {
   m.unowned_requirements = m.unowned_requirements || [];
   m.oracle_literal_hits = m.oracle_literal_hits || [];
   m.swarm_planner_rounds = m.swarm_planner_rounds ?? 0;
+  m.planner_parse_failures = m.planner_parse_failures ?? 0;
   m.tree_stats = m.tree_stats ?? null;
   m.reviews = m.reviews || [];
   m.splits = m.splits || [];
@@ -363,6 +457,9 @@ export function normalizeMetrics(raw) {
   m.merge_waits = m.merge_waits || [];
   m.merge_wait_count = m.merge_wait_count ?? m.merge_waits.length;
   m.self_check_total = m.self_check_total ?? 0;
+  m.segments = m.segments || [];
+  m.finalized = m.finalized ?? true;
+  m.salvaged = !!m.salvaged;
   m.visible_score = m.visible_score ?? null;
   m.holdout_score = m.holdout_score ?? null;
   m.holdout_gap_pp = m.holdout_gap_pp ?? null;

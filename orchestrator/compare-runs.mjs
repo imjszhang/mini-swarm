@@ -169,7 +169,13 @@ row(
 );
 row("loc", a.loc, b.loc);
 row("swarm_planner_rounds", a.swarm_planner_rounds ?? 0, b.swarm_planner_rounds ?? 0);
-row("swarm reviews", (a.reviews || []).length, (b.reviews || []).length);
+row("review stacks", (a.reviews || []).length, (b.reviews || []).length);
+row("planner parse failures", a.planner_parse_failures ?? 0, b.planner_parse_failures ?? 0);
+row(
+  "active segments",
+  (a.segments || []).length || "-",
+  (b.segments || []).length || "-",
+);
 row("swarm splits", (a.splits || []).length, (b.splits || []).length);
 row("oversized_blocks", (a.oversized_blocks || []).length, (b.oversized_blocks || []).length);
 row(

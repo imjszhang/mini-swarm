@@ -1,5 +1,5 @@
 import { execSync } from "node:child_process";
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
 function git(cwd, args, opts = {}) {
@@ -349,4 +349,61 @@ export function listTrackedFiles(dir) {
   } catch {
     return [];
   }
+}
+
+/**
+ * Resume cleanup: abort half-merge, drop index.lock, remove residual worktrees
+ * and unmerged task/* branches so createWorktree(-b) won't collide.
+ */
+export function cleanupInterruptedRun(workspaceDir, worktreesRoot) {
+  const report = { abortedMerge: false, removedLock: false, worktreesRemoved: [], branchesDeleted: [] };
+
+  if (existsSync(path.join(workspaceDir, ".git", "MERGE_HEAD"))) {
+    abortMerge(workspaceDir);
+    report.abortedMerge = true;
+  }
+
+  const lockPath = path.join(workspaceDir, ".git", "index.lock");
+  if (existsSync(lockPath)) {
+    try {
+      rmSync(lockPath, { force: true });
+      report.removedLock = true;
+    } catch {
+      /* ignore */
+    }
+  }
+
+  if (existsSync(worktreesRoot)) {
+    for (const name of readdirSync(worktreesRoot)) {
+      const wtPath = path.join(worktreesRoot, name);
+      try {
+        git(workspaceDir, ["worktree", "remove", wtPath, "--force"]);
+        report.worktreesRemoved.push(name);
+      } catch {
+        try {
+          rmSync(wtPath, { recursive: true, force: true });
+          report.worktreesRemoved.push(name);
+        } catch {
+          /* ignore */
+        }
+      }
+    }
+  }
+  try {
+    git(workspaceDir, ["worktree", "prune"]);
+  } catch {
+    /* ignore */
+  }
+
+  // Force-delete all task/* tip names. History already on main is unaffected;
+  // per-branch merge-base checks hang/timeout on large trees after long runs.
+  for (const branch of listTaskBranches(workspaceDir)) {
+    try {
+      git(workspaceDir, ["branch", "-D", branch]);
+      report.branchesDeleted.push(branch);
+    } catch {
+      /* ignore */
+    }
+  }
+  return report;
 }

@@ -7,6 +7,7 @@
 - **Run B faithful**: `npm run run:faithful -- --run-id=run-b-faithful-v7`
 - **v13 Cursor-faithful swarm**: `npm run swarm` / `npm run swarm:mock` / `npm run swarm:smoke` (planner tree + zero test signal + review stack; wall-clock budget)
 - **v13.1 event-driven + run-to-done**: `npm run swarm:done` / `npm run swarm -- --run-to-done --concurrency=8` (continuous dispatch, async planner/review, worker self-check, spec coverage gate)
+- **v13.2 anti-interrupt**: `npm run swarm:detached` (run-to-done + detach) / `npm run swarm:resume -- --run-id=ID` / `npm run swarm:finalize -- --run-id=ID` (heartbeat + metrics checkpoint + segment wall time)
 - **v8/v9/v10/v11/v12 high-contention A/B**: `npm run run:contention:bare` / `npm run run:contention:faithful` (`--task-set=contention`, concurrency 4, seed planner; v9 score-feedback; v10 sync+gate+global repair; v11 holdout+ledger+adaptive repair; v12 Stage B + strong ladder)
 - **Resume interrupted run**: `npm run salvage -- --run-id=RUN_ID --task-set=contention` then original command + `--resume` (task-level; agent/wall times in metrics cover last segment only — see README)
 - **Repair-only continuation**: `npm run run -- --repair-only --from-run=PRIOR --run-id=NEW --task-set=contention [--coord-mode=faithful]`
@@ -100,6 +101,51 @@ Honesty notes:
 - Hundreds of concurrent agents / custom VCS remain declared boundaries; merge queue is still the serial floor.
 
 Compare: `npm run compare -- runs/run-swarm-v13/metrics.json runs/run-swarm-v13.1/metrics.json`
+
+## Runs (2026-07-28) — v13.2 anti-interrupt + planner protocol hardening
+
+| Run ID | Mode | Notes |
+|---|---|---|
+| run-swarm-v13.2-mock | `--mock` | Mock e2e OK; metrics `finalized:true`, 1 segment |
+| run-swarm-v13.2-drill | mock resume | Synthetic interrupt → `--resume --mock`: reset running→pending, 2 segments, finalize OK |
+| run-swarm-v13.2-kill-resume | live kill→resume | Real smoke killed mid-flight; resume cleaned worktrees/branches, 2 segments, `finalized:true`, full **28.4%** (budget stop) |
+| run-swarm-v13.2-finalize-test | `swarm:finalize` | Salvage-only scoring writes `salvaged:true` without resuming |
+| **run-swarm-v13.2** | **detached** `--run-to-done` conc=8 | Mid-run `git status` crash → **`--resume` continued** (2 segments). Hard-stop at active wall ~493 min. **92.4%** full (485/525); visible **92.7%** (407/439); holdout **90.7%** (78/86); gap **+2.0**; 91 planner rounds; 58 review stacks; 340/623 leaves done; **effective_parallelism 7.9**; self_check **2738**; tokens **50.69M**; parse_failures **7** |
+
+### Interruption post-mortem (v13.1 → v13.2 motivation)
+
+v13.1 acceptance was **not** a software hang. Evidence: no `MERGE_HEAD`/`index.lock`; death during `Promise.race` idle; no agent `.log` close handlers after 0:21:48; orphan cursor-agent processes wrote worktrees until ~0:27. Host/Cursor terminal teardown killed the orchestrator. Metrics lived only in memory until `finish()`, so the run needed salvage.
+
+### v13.2 changes (still zero test signal)
+
+1. **`--detach`** — respawn with `detached:true`, console → `console.log`, PID → `swarm.pid` (life decoupled from IDE terminal).
+2. **Heartbeat** — `heartbeat.json` every 30s (gap = sync stall; stop = death).
+3. **Metrics checkpoint** — periodic + post-leaf; `finalized`/`segments` for active wall time across resume gaps.
+4. **`--resume`** — refuse if heartbeat fresh; kill orphans; `cleanupInterruptedRun`; reset `running`→`pending` with attempts rollback.
+5. **`swarm:finalize`** — shared `finalizeRun()` scores wreckage without continuing the loop.
+6. **Planner protocol** — JSON parse failure restores spliced queues + one cheap `json-repair` retry; full ID ledger in tree summary; `design_md` size discipline.
+
+| Metric | run-swarm-v13 | run-swarm-v13.1 (salvaged) | run-swarm-v13.2 |
+|---|---|---|---|
+| Full pass rate | 69.1% (363/525) | 86.7% (455/525) | **92.4%** (485/525) |
+| Visible / holdout | 68.8% / 70.9% | 86.8% / 86.0% | **92.7%** / **90.7%** |
+| holdout_gap_pp | −2.1 | +0.7 | +2.0 |
+| Active wall | ~244.5 min | ~139.8 min (killed) | **~492.9 min** (2 segments) |
+| effective_parallelism | ~1.3 | 6.08 | **7.9** |
+| self_check_total | 0 | 602 | **2738** |
+| Tokens (in+out) | 9.59M | 10.34M | 50.69M |
+| Tree leaves done | 38/115 | 87/194 | 340/623 |
+| planner parse failures | n/a | n/a (lost) | 7 (queues restored) |
+| Survival | finish-only metrics | salvaged post-mortem | **detach + checkpoint + resume** |
+
+Honesty notes:
+
+- Run survived a mid-flight `git status` crash (Windows status `0xC0000409`) via `--resume`; scores are live `finalized:true`, not salvage.
+- Hard-stopped on remaining `maxWallMinutes` after resume (planner never reached `done`); quality still rose vs interrupted v13.1.
+- Duplicate task IDs still waste some planner rounds despite ID ledger — recorded as action errors, not silent loss.
+- Zero test signal retained; agents never saw suite scores.
+
+Compare: `npm run compare -- runs/run-swarm-v13.1/metrics.json runs/run-swarm-v13.2/metrics.json`
 
 ## Runs (2026-07-26) — v12 generalization loop
 
