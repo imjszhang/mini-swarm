@@ -1,10 +1,15 @@
 {
   "models": {
-    "planner": "composer-2.5-fast",
+    "planner": "cursor-grok-4.5-high-fast",
     "worker": "composer-2.5-fast",
     "merger": "composer-2.5-fast",
     "reviewer": "composer-2.5-fast",
-    "strong": "cursor-grok-4.5-high-fast"
+    "strong": "cursor-grok-4.5-high-fast",
+    "swarm-planner": "cursor-grok-4.5-high-fast",
+    "splitter": "cursor-grok-4.5-high-fast",
+    "review-spec": "cursor-grok-4.5-high-fast",
+    "review-diff": "composer-2.5-fast",
+    "review-codebase": "composer-2.5-fast"
   },
   "concurrency": 2,
   "coordination": false,

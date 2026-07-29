@@ -129,12 +129,118 @@ export function initSwarmWorkspace(workspaceDir, { guideMaxLines = 80 } = {}) {
   writeFileSync(path.join(workspaceDir, "DESIGN.md"), "# Design\n\n(Planner will expand this.)\n", "utf8");
   initGuideFolder(workspaceDir, { maxLines: guideMaxLines });
   writeFileSync(path.join(workspaceDir, ".gitignore"), "node_modules/\ndist/\n", "utf8");
+  // Append-only Field Guide: union merge absorbs concurrent worker edits if any slip through.
+  writeFileSync(
+    path.join(workspaceDir, ".gitattributes"),
+    "guide/index.md merge=union\n",
+    "utf8",
+  );
 }
 
-export function initSwarmSkeleton(workspaceDir, { mock = false } = {}) {
+function writeTomlStubs(workspaceDir) {
+  mkdirSync(path.join(workspaceDir, "src", "values"), { recursive: true });
+  mkdirSync(path.join(workspaceDir, "src", "tables"), { recursive: true });
+
+  writeFileSync(path.join(workspaceDir, "src", "types.ts"), `/** Tagged toml-test JSON node or nested table/array. */
+export type TomlJson =
+  | { type: string; value: string }
+  | { [key: string]: TomlJson }
+  | TomlJson[];
+`, "utf8");
+
+  writeFileSync(path.join(workspaceDir, "src", "values", "registry.ts"), `import type { TomlJson } from "../types.js";
+
+export type ValueParser = (
+  text: string,
+  pos: number,
+) => { node: TomlJson; next: number } | null;
+
+const parsers: ValueParser[] = [];
+
+export function registerValueParser(p: ValueParser): void {
+  parsers.push(p);
+}
+
+export function getValueParsers(): ValueParser[] {
+  return parsers.slice();
+}
+`, "utf8");
+
+  writeFileSync(path.join(workspaceDir, "src", "tables", "registry.ts"), `import type { TomlJson } from "../types.js";
+
+export type TableHandler = {
+  name: string;
+};
+
+const handlers: TableHandler[] = [];
+
+export function registerTableHandler(h: TableHandler): void {
+  handlers.push(h);
+}
+
+export function getTableHandlers(): TableHandler[] {
+  return handlers.slice();
+}
+
+export type { TomlJson };
+`, "utf8");
+
+  writeFileSync(path.join(workspaceDir, "src", "parse.ts"), `import type { TomlJson } from "./types.js";
+
+/** Parse TOML document into toml-test tagged JSON. Throws on invalid input. */
+export function parseDocument(input: string): TomlJson {
+  const trimmed = input.replace(/^\\uFEFF/, "");
+  if (!trimmed.trim()) return {};
+  // Skeleton canary: bare \`key = integer\` so merge health checks pass; workers replace.
+  const m = trimmed.match(/^\\s*([A-Za-z_][A-Za-z0-9_]*)\\s*=\\s*(-?\\d+)\\s*$/);
+  if (m) {
+    return { [m[1]]: { type: "integer", value: m[2] } };
+  }
+  throw new Error("parseDocument: not implemented");
+}
+`, "utf8");
+
+  writeFileSync(path.join(workspaceDir, "src", "index.ts"), `import { parseDocument } from "./parse.js";
+import type { TomlJson } from "./types.js";
+
+export type { TomlJson };
+export { parseDocument };
+
+export function parseToml(input: string): TomlJson {
+  return parseDocument(input);
+}
+`, "utf8");
+
+  writeFileSync(path.join(workspaceDir, "src", "contracts.ts"), `/**
+ * Compile-checked design references for the TOML decoder.
+ */
+export type { TomlJson } from "./types.js";
+export type { ValueParser } from "./values/registry.js";
+export { registerValueParser, getValueParsers } from "./values/registry.js";
+export { registerTableHandler, getTableHandlers } from "./tables/registry.js";
+export { parseDocument, parseToml } from "./index.js";
+`, "utf8");
+
+  writeFileSync(path.join(workspaceDir, "src", "cli.ts"), `import { parseToml } from "./index.js";
+let input = "";
+process.stdin.setEncoding("utf8");
+process.stdin.on("data", (c) => { input += c; });
+process.stdin.on("end", () => {
+  try {
+    const out = parseToml(input);
+    process.stdout.write(JSON.stringify(out));
+  } catch (err) {
+    console.error(err instanceof Error ? err.message : String(err));
+    process.exit(1);
+  }
+});
+`, "utf8");
+}
+
+export function initSwarmSkeleton(workspaceDir, { mock = false, skeleton = "commonmark" } = {}) {
   mkdirSync(path.join(workspaceDir, "src"), { recursive: true });
   const pkg = {
-    name: "mini-commonmark",
+    name: skeleton === "toml-json" ? "mini-toml" : "mini-commonmark",
     type: "module",
     scripts: { build: "tsc" },
     devDependencies: { typescript: "^5.6.0", "@types/node": "^22.0.0" },
@@ -151,13 +257,18 @@ export function initSwarmSkeleton(workspaceDir, { mock = false } = {}) {
     },
     include: ["src/**/*"],
   }, null, 2)}\n`, "utf8");
-  writeFileSync(path.join(workspaceDir, "src", "cli.ts"), `import { renderMarkdown } from "./index.js";
+
+  if (skeleton === "toml-json") {
+    writeTomlStubs(workspaceDir);
+  } else {
+    writeFileSync(path.join(workspaceDir, "src", "cli.ts"), `import { renderMarkdown } from "./index.js";
 let input = "";
 process.stdin.setEncoding("utf8");
 process.stdin.on("data", (c) => { input += c; });
 process.stdin.on("end", () => { process.stdout.write(renderMarkdown(input)); });
 `);
-  writeContentionStubs(workspaceDir);
+    writeContentionStubs(workspaceDir);
+  }
 
   if (mock) {
     npmExec(["install"], { cwd: workspaceDir, stdio: "ignore" });

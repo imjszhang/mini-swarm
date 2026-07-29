@@ -2,8 +2,9 @@
  * Shared final scoring + metrics finish for swarm runs.
  * Used by swarm.mjs (normal end) and finalize-swarm-run.mjs (salvage).
  */
+import { existsSync, rmSync } from "node:fs";
 import path from "node:path";
-import { commitCount, computeChurn } from "./git.mjs";
+import { abortMerge, commitCount, computeChurn } from "./git.mjs";
 import { holdoutFilePath } from "./holdout.mjs";
 import { saveTree, treeStats } from "./tree.mjs";
 import {
@@ -12,6 +13,18 @@ import {
   scoreScope,
 } from "./verifier.mjs";
 import { countLoc } from "../metrics.mjs";
+
+function abortLeftoverMerge(workspaceDir) {
+  const mergeHead = path.join(workspaceDir, ".git", "MERGE_HEAD");
+  if (!existsSync(mergeHead)) return false;
+  console.warn("[finalize] aborting leftover MERGE_HEAD before scoring");
+  abortMerge(workspaceDir);
+  // Salvage path: if merge --abort cannot run (corrupt marker), drop the marker.
+  if (existsSync(mergeHead)) {
+    try { rmSync(mergeHead, { force: true }); } catch { /* ignore */ }
+  }
+  return true;
+}
 
 /**
  * @param {{
@@ -31,6 +44,8 @@ export function finalizeRun({
   config,
   salvaged = false,
 }) {
+  abortLeftoverMerge(workspaceDir);
+
   const visible = scoreScope(workspaceDir, path.join(runDir, "score-visible.json"), {
     holdoutFile: holdoutFilePath(runDir),
     holdoutMode: "exclude",
@@ -82,3 +97,4 @@ export function finalizeRun({
     oracleHits,
   };
 }
+

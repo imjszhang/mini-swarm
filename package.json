@@ -31,6 +31,11 @@
     "swarm:done": "node orchestrator/swarm.mjs --run-to-done",
     "swarm:detached": "node orchestrator/swarm.mjs --run-to-done --detach",
     "swarm:resume": "node orchestrator/swarm.mjs --resume",
-    "swarm:finalize": "node orchestrator/finalize-swarm-run.mjs"
+    "swarm:finalize": "node orchestrator/finalize-swarm-run.mjs",
+    "task:toml:import": "node tasks/toml-json/scripts/import-toml-test.mjs && node tasks/toml-json/scripts/gen-spec-txt.mjs",
+    "swarm:toml:mock": "node orchestrator/swarm.mjs --mock --task=toml-json",
+    "swarm:toml:smoke": "node orchestrator/swarm.mjs --task=toml-json --budget-minutes=20 --concurrency=2",
+    "swarm:toml:detached": "node orchestrator/swarm.mjs --task=toml-json --run-to-done --detach",
+    "report:task-run": "node orchestrator/report-task-run.mjs"
   }
 }

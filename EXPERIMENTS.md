@@ -8,6 +8,8 @@
 - **v13 Cursor-faithful swarm**: `npm run swarm` / `npm run swarm:mock` / `npm run swarm:smoke` (planner tree + zero test signal + review stack; wall-clock budget)
 - **v13.1 event-driven + run-to-done**: `npm run swarm:done` / `npm run swarm -- --run-to-done --concurrency=8` (continuous dispatch, async planner/review, worker self-check, spec coverage gate)
 - **v13.2 anti-interrupt**: `npm run swarm:detached` (run-to-done + detach) / `npm run swarm:resume -- --run-id=ID` / `npm run swarm:finalize -- --run-id=ID` (heartbeat + metrics checkpoint + segment wall time)
+- **v13.3 conflict/health hardening**: serial Field Guide notes + CLI canary + observe redline + planner ID remap (`npm run swarm:detached -- --run-id=run-swarm-v13.3`)
+- **v13.3 second sample (TOML→toml-test JSON)**: `npm run swarm:toml:detached -- --run-id=run-swarm-toml-v13.3` / `npm run report:task-run -- --run-id=run-swarm-toml-v13.3 --baseline=run-swarm-v13.3` (`--task=toml-json`, oracle = BurntSushi toml-test)
 - **v8/v9/v10/v11/v12 high-contention A/B**: `npm run run:contention:bare` / `npm run run:contention:faithful` (`--task-set=contention`, concurrency 4, seed planner; v9 score-feedback; v10 sync+gate+global repair; v11 holdout+ledger+adaptive repair; v12 Stage B + strong ladder)
 - **Resume interrupted run**: `npm run salvage -- --run-id=RUN_ID --task-set=contention` then original command + `--resume` (task-level; agent/wall times in metrics cover last segment only — see README)
 - **Repair-only continuation**: `npm run run -- --repair-only --from-run=PRIOR --run-id=NEW --task-set=contention [--coord-mode=faithful]`
@@ -146,6 +148,87 @@ Honesty notes:
 - Zero test signal retained; agents never saw suite scores.
 
 Compare: `npm run compare -- runs/run-swarm-v13.1/metrics.json runs/run-swarm-v13.2/metrics.json`
+
+## Runs (2026-07-28/29) — v13.3 conflict storm + health redline
+
+| Run ID | Mode | Notes |
+|---|---|---|
+| run-swarm-v13.3-mock | `--mock` | Mock e2e OK; `guide/index.md` serial notes (`task-*` stamps); `.gitattributes` `merge=union`; conflicts **0** |
+| run-swarm-v13.3-drill | mock resume | Synthetic interrupt → `--resume --mock`: reset running→pending, **2 segments**, finalize OK |
+| unit drills | local | duplicate-id idempotent + remap/deps; done-leaf compression; throw-on-import canary; finalize clears leftover `MERGE_HEAD` |
+| **run-swarm-v13.3** | **detached** `--run-to-done` conc=8 | **Finalized** (idle tree). **98.1%** full; visible **97.7%**; holdout **100%**; conflicts **39**; zero-pass observe **0**; planner_rounds **65**; active wall ~**279** min. Compare: `npm run compare -- runs/run-swarm-v13.2/metrics.json runs/run-swarm-v13.3/metrics.json` |
+
+### v13.2 late-run stall post-mortem (motivation for v13.3)
+
+v13.2 hard-stopped at **92.4%** with budget exhausted — not planner `done`. Three linked losses in the last ~3h:
+
+1. **`guide/index.md` conflict storm** — 65/82 merge conflicts hit the shared Field Guide (workers appended in their own worktrees). Late merges spent minutes resolving noise; leftover unmerged state forced planner to spawn cleanup tasks that never ran.
+2. **0% observe windows (~40 min)** — a bad merge left `entities.js` throwing on import; `tsc` still green so `ensureBuiltWithRepair` passed. Zero-signal means no agent saw the suite collapse.
+3. **Planner round waste** — 7 JSON parse failures + batches of duplicate IDs (`task-06/07/08` recycled) despite the ID ledger; done-leaf lines bloated the prompt (~340 lines).
+
+### v13.3 changes (still zero test signal)
+
+1. **Serial Field Guide** — workers must not edit `guide/index.md`; harness appends `guide_note` on main via `MergeQueue.enqueueFn` after a successful merge. `.gitattributes` `guide/index.md merge=union` as a backstop.
+2. **CLI canary** — after build, `node dist/cli.js` must accept a trivial stdin line (15s). Failure reuses integration-fix with a runtime-crash prompt (no suite leakage).
+3. **Observe redline** — if observe sees `total>0 && passed===0`, push an `URGENT` repair hint into `actionErrors` (canary stderr first line only).
+4. **Stop/finalize cleanup** — abort leftover `MERGE_HEAD` before final score (salvage path force-drops a corrupt marker).
+5. **Merge-queue hardening** — `safeGitStatus()` never throws through `_pump`; `executeLeaf` catches enqueue exceptions.
+6. **Planner efficiency** — duplicate IDs are idempotent (same title) or remapped (deps/parent rewritten in-batch); parse failures dump to `planner-parse-fail-*.txt`; done leaves compressed to one ledger line.
+
+Honesty notes:
+
+- Canary / observe redline use **binary health only** (CLI starts / any example can render). They do not expose pass lists, expected HTML, or section scores to agents.
+- Live CommonMark acceptance (`run-swarm-v13.3`) finalized at **98.1%** full with healthy observe (no 0% windows) and conflicts far below the v13.2 guide-storm peak (39 vs 82).
+
+## Runs (2026-07-29) — v13.3 second sample: TOML → toml-test JSON
+
+Goal: reuse the **same** zero-signal swarm (v13.3) on a second verifiable task pack to test migration — not to match CommonMark’s absolute score on the first pass.
+
+| Run ID | Mode | Notes |
+|---|---|---|
+| swarm:toml:mock | `--mock --task=toml-json` | Skeleton ~67% floor; guide serial; conflicts 0 |
+| run-swarm-toml-smoke* | live smoke | Protocol OK under `auto` after grok/composer quota exhaustion on prior account |
+| run-swarm-toml-v13.3 (auto, aborted) | detached | Wrong model tier (`auto`); later worktree collision on restart → archived |
+| **run-swarm-toml-v13.3** | **detached** `--task=toml-json --run-to-done` conc=8 | **Finalized** (idle tree). **76.4%** full (425/556); visible **75.7%** (352/465); holdout **80.2%** (73/91); gap **−4.5**; conflicts **11**; zero-pass observe **0**; planner_rounds **9**; parse_failures **2**; self_check **142**; eff_parallelism **5.29**; tokens **3.81M**; wall ~**38.9** min |
+
+Models (acceptance): planner/splitter/`review-spec` = `cursor-grok-4.5-high-fast`; workers/merger/`review-diff`/`review-codebase` = `composer-2.5-fast` — **same tier as CommonMark v13.3** (not `auto`).
+
+### Task pack
+
+- Oracle: BurntSushi `toml-test` @ v1.6.0 → `tasks/toml-json/spec/examples.json` (556 cases: 185 valid + 371 invalid).
+- Harness: `--task=toml-json` via `orchestrator/lib/task-pack.mjs`; scorer supports `input` / `expected` / `expect_error`.
+- Report: `runs/run-swarm-toml-v13.3/REPORT.md` (`npm run report:task-run -- --run-id=run-swarm-toml-v13.3 --baseline=run-swarm-v13.3`).
+
+### Compare vs CommonMark v13.3 (same protocol/models)
+
+| Metric | run-swarm-toml-v13.3 | run-swarm-v13.3 |
+|---|---|---|
+| task_pack | toml-json | commonmark |
+| Full pass rate | **76.4%** (425/556) | **98.1%** |
+| Visible / holdout | 75.7% / **80.2%** | 97.7% / **100%** |
+| holdout_gap_pp | **−4.5** | (CM holdout ≥ visible) |
+| merge_conflict_count | **11** | 39 |
+| zero-pass observe | **0** | 0 |
+| planner_rounds | **9** | **65** |
+| Active wall | ~**38.9** min | ~**278.7** min |
+| self_check_total | 142 | 2376 |
+| effective_parallelism | 5.29 | (higher long-run) |
+| Stop | idle_tree | idle_tree |
+
+### Reading
+
+1. **Protocol migrates** — second sample finalized under zero test signal; holdout healthy; no observe redline trips; conflicts low.
+2. **Absolute quality does not yet migrate** — 76.4% ≪ 90% bar and ≪ CM 98.1%. Observe plateaued ~75.5% after early gains from the ~67% skeleton.
+3. **Early idle, not budget** — only 9 planner rounds; end-game JSON parse failures + many pending/blocked/retired leaves (done only 19/55) → “no productive planner actions” while work remained.
+4. **Weak sections** — Spec Examples / Control / Keys / Strings / Tables; sampled fails skew to **invalid accepted** (Control/Encoding).
+
+Honesty notes:
+
+- Do **not** treat 39 min TOML vs 279 min CM as a fair quality race; migration claim is about harness transfer + process health, not equalized asymptotes.
+- An earlier `auto`-model attempt was aborted; acceptance numbers above are from the clean grok/composer rerun only.
+- Failure arrays in score JSON are truncated samples; use `failure_count` + `by_section` for totals.
+
+Compare: `npm run compare -- runs/run-swarm-v13.3/metrics.json runs/run-swarm-toml-v13.3/metrics.json`
 
 ## Runs (2026-07-26) — v12 generalization loop
 

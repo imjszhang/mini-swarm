@@ -7,16 +7,19 @@ import { existsSync } from "node:fs";
 import path from "node:path";
 import { loadConfig, projectRoot } from "./lib/config.mjs";
 import { finalizeRun } from "./lib/finalize.mjs";
+import { setActiveTaskPack } from "./lib/task-pack.mjs";
 import { loadTree } from "./lib/tree.mjs";
 import { createMetricsCollector, loadMetricsSeed } from "./metrics.mjs";
 
 function parseArgs(argv) {
-  const args = { runId: null, help: false };
+  const args = { runId: null, task: null, help: false };
   for (let i = 0; i < argv.length; i += 1) {
     const a = argv[i];
     if (a === "--help" || a === "-h") args.help = true;
     else if (a === "--run-id") args.runId = argv[++i];
     else if (a.startsWith("--run-id=")) args.runId = a.slice("--run-id=".length);
+    else if (a === "--task") args.task = argv[++i];
+    else if (a.startsWith("--task=")) args.task = a.slice("--task=".length);
   }
   return args;
 }
@@ -44,11 +47,14 @@ async function main() {
 
   const tree = loadTree(runDir);
   const seed = loadMetricsSeed(runDir);
+  const taskId = cli.task || seed?.task_pack || "commonmark";
+  setActiveTaskPack(taskId);
   const metrics = createMetricsCollector(runDir, { seed: seed || undefined, resume: false });
   metrics.setMeta({
     coordination: true,
     coordination_mode: "faithful-swarm",
-    architecture: seed?.architecture || "v13.2-swarm",
+    architecture: seed?.architecture || "v13.3-swarm",
+    task_pack: taskId,
     swarm: true,
   });
 

@@ -1,0 +1,996 @@
+# TOML v1.0 Decoder (experiment subset)
+
+This document is the normative reference for the mini-swarm toml-json task.
+Implement a decoder that:
+
+- Accepts TOML on stdin.
+- On valid input: exit 0 and print toml-test tagged JSON on stdout.
+- On invalid input: exit non-zero.
+
+Tagged values look like `{"type":"string","value":"hi"}` (see toml-test).
+Do not consult `examples.json` or external score signals.
+
+Embedded examples use a fence of 32 backticks labeled `example`.
+Between the input and expected output is a single line containing only `.`.
+For invalid cases the expected side is the literal line `ERROR` (must reject).
+
+
+## Comments
+
+Section **Comments** covers the corresponding TOML v1.0 constructs.
+
+### Valid
+
+```````````````````````````````` example
+inf=inf#infinity
+nan=nan#not a number
+true=true#true
+false=false#false
+.
+{"false":{"type":"bool","value":"false"},"inf":{"type":"float","value":"inf"},"nan":{"type":"float","value":"nan"},"true":{"type":"bool","value":"true"}}
+````````````````````````````````
+
+```````````````````````````````` example
+# This is a full-line comment
+key = "value" # This is a comment at the end of a line
+.
+{"key":{"type":"string","value":"value"}}
+````````````````````````````````
+
+```````````````````````````````` example
+# This is a full-line comment
+key = "value" # This is a comment at the end of a line
+.
+{"key":{"type":"string","value":"value"}}
+````````````````````````````````
+
+```````````````````````````````` example
+# Top comment.
+  # Top comment.
+# Top comment.
+
+# [no-extraneous-groups-please]
+
+[group] # Comment
+answer = 42 # Comment
+# no-extraneous-keys-please = 999
+# Inbetween comment.
+more = [ # Comment
+  # What about multiple # comments?
+  # Can you handle it?
+  #
+          # Evil.
+# Evil.
+  42, 42, # Comments within arrays are fun.
+  # What about multiple # comments?
+  # Can you handle it?
+  #
+          # Evil.
+# Evil.
+# ] Did I fool you?
+] # Hopefully not.
+
+# Make sure the space between the datetime and "#" isn't lexed.
+dt = 1979-05-27T07:32:12-07:00  # c
+d = 1979-05-27 # Comment
+.
+{"group":{"answer":{"type":"integer","value":"42"},"d":{"type":"date-local","value":"1979-05-27"},"dt":{"type":"datetime","value":"1979-05-27T07:32:12-07:00"},"more":[{"type":"integer","value":"42"},{"type":"integer","value":"42"}]}}
+````````````````````````````````
+
+```````````````````````````````` example
+# single comment without any eol characters
+.
+{}
+````````````````````````````````
+
+
+## Keys
+
+Section **Keys** covers the corresponding TOML v1.0 constructs.
+
+### Valid
+
+```````````````````````````````` example
+alpha = "a"
+123 = "num"
+000111 = "leading"
+10e3 = "false float"
+one1two2 = "mixed"
+with-dash = "dashed"
+under_score = "___"
+34-11 = 23
+
+[2018_10]
+001 = 1
+
+[a-a-a]
+_ = false
+.
+{"123":{"type":"string","value":"num"},"000111":{"type":"string","value":"leading"},"10e3":{"type":"string","value":"false float"},"34-11":{"type":"integer","value":"23"},"alpha":{"type":"string","value":"a"},"one1two2":{"type":"string","value":"mixed"},"under_score":{"type":"string","value":"___"},"with-dash":{"type":"string","value":"dashed"},"2018_10":{"001":{"type":"integer","value":"1"}},"a-a-a":{"_":{"type":"bool","value":"false"}}}
+````````````````````````````````
+
+```````````````````````````````` example
+sectioN = "NN"
+
+[section]
+name = "lower"
+NAME = "upper"
+Name = "capitalized"
+
+[Section]
+name = "different section!!"
+"μ" = "greek small letter mu"
+"Μ" = "greek capital letter MU"
+M = "latin letter M"
+
+.
+{"sectioN":{"type":"string","value":"NN"},"Section":{"M":{"type":"string","value":"latin letter M"},"name":{"type":"string","value":"different section!!"},"Μ":{"type":"string","value":"greek capital letter MU"},"μ":{"type":"string","value":"greek small letter mu"}},"section":{"NAME":{"type":"string","value":"upper"},"Name":{"type":"string","value":"capitalized"},"name":{"type":"string","value":"lower"}}}
+````````````````````````````````
+
+```````````````````````````````` example
+name.first = "Arthur"
+"name".'last' = "Dent"
+
+many.dots.dot.dot.dot = 42
+.
+{"many":{"dots":{"dot":{"dot":{"dot":{"type":"integer","value":"42"}}}}},"name":{"first":{"type":"string","value":"Arthur"},"last":{"type":"string","value":"Dent"}}}
+````````````````````````````````
+
+```````````````````````````````` example
+# Note: this file contains literal tab characters.
+
+# Space are ignored, and key parts can be quoted.
+count.a       = 1
+count . b     = 2
+"count"."c"   = 3
+"count" . "d" = 4
+'count'.'e'   = 5
+'count' . 'f' = 6
+"count".'g'   = 7
+"count" . 'h' = 8
+count.'i'     = 9
+count 	.	 'j'	   = 10
+"count".k     = 11
+"count" . l   = 12
+.
+{"count":{"a":{"type":"integer","value":"1"},"b":{"type":"integer","value":"2"},"c":{"type":"integer","value":"3"},"d":{"type":"integer","value":"4"},"e":{"type":"integer","value":"5"},"f":{"type":"integer","value":"6"},"g":{"type":"integer","value":"7"},"h":{"type":"integer","value":"8"},"i":{"type":"integer","value":"9"},"j":{"type":"integer","value":"10"},"k":{"type":"integer","value":"11"},"l":{"type":"integer","value":"12"}}}
+````````````````````````````````
+
+```````````````````````````````` example
+top.key = 1
+
+[tbl]
+a.b.c = 42.666
+
+[a.few.dots]
+polka.dot = "again?"
+polka.dance-with = "Dot"
+
+.
+{"a":{"few":{"dots":{"polka":{"dance-with":{"type":"string","value":"Dot"},"dot":{"type":"string","value":"again?"}}}}},"tbl":{"a":{"b":{"c":{"type":"float","value":"42.666"}}}},"top":{"key":{"type":"integer","value":"1"}}}
+````````````````````````````````
+
+### Invalid (must reject)
+
+```````````````````````````````` example
+[[agencies]] owner = "S Cjelli"
+.
+ERROR
+````````````````````````````````
+
+```````````````````````````````` example
+[error] this = "should not be here"
+.
+ERROR
+````````````````````````````````
+
+
+## Strings
+
+Section **Strings** covers the corresponding TOML v1.0 constructs.
+
+### Valid
+
+```````````````````````````````` example
+test = "\"one\""
+.
+{"test":{"type":"string","value":"\"one\""}}
+````````````````````````````````
+
+```````````````````````````````` example
+answer = ""
+.
+{"answer":{"type":"string","value":""}}
+````````````````````````````````
+
+```````````````````````````````` example
+beee = """
+heeee
+geeee\  
+
+
+      """
+.
+{"beee":{"type":"string","value":"heeee\ngeeee"}}
+````````````````````````````````
+
+```````````````````````````````` example
+end_esc = "String does not end here\" but ends here\\"
+lit_end_esc = 'String ends here\'
+
+multiline_unicode = """
+\u00a0"""
+
+multiline_not_unicode = """
+\\u0041"""
+
+multiline_end_esc = """When will it end? \"""...""\" should be here\""""
+
+lit_multiline_not_unicode = '''
+\u007f'''
+
+lit_multiline_end = '''There is no escape\'''
+.
+{"end_esc":{"type":"string","value":"String does not end here\" but ends here\\"},"lit_end_esc":{"type":"string","value":"String ends here\\"},"lit_multiline_end":{"type":"string","value":"There is no escape\\"},"lit_multiline_not_unicode":{"type":"string","value":"\\u007f"},"multiline_end_esc":{"type":"string","value":"When will it end? \"\"\"...\"\"\" should be here\""},"multiline_not_unicode":{"type":"string","value":"\\u0041"},"multiline_unicode":{"type":"string","value":" "}}
+````````````````````````````````
+
+```````````````````````````````` example
+answer = "\\x64"
+.
+{"answer":{"type":"string","value":"\\x64"}}
+````````````````````````````````
+
+### Invalid (must reject)
+
+```````````````````````````````` example
+naughty = "\xAg"
+.
+ERROR
+````````````````````````````````
+
+```````````````````````````````` example
+no_concat = "first" "second"
+.
+ERROR
+````````````````````````````````
+
+
+## Integers
+
+Section **Integers** covers the corresponding TOML v1.0 constructs.
+
+### Valid
+
+```````````````````````````````` example
+# Maximum and minimum safe float64 natural numbers. Mainly here for
+# -int-as-float.
+max_int =  9_007_199_254_740_991
+min_int = -9_007_199_254_740_991
+.
+{"max_int":{"type":"integer","value":"9007199254740991"},"min_int":{"type":"integer","value":"-9007199254740991"}}
+````````````````````````````````
+
+```````````````````````````````` example
+answer = 42
+posanswer = +42
+neganswer = -42
+zero = 0
+.
+{"answer":{"type":"integer","value":"42"},"neganswer":{"type":"integer","value":"-42"},"posanswer":{"type":"integer","value":"42"},"zero":{"type":"integer","value":"0"}}
+````````````````````````````````
+
+```````````````````````````````` example
+bin1 = 0b11010110
+bin2 = 0b1_0_1
+
+oct1 = 0o01234567
+oct2 = 0o755
+oct3 = 0o7_6_5
+
+hex1 = 0xDEADBEEF
+hex2 = 0xdeadbeef
+hex3 = 0xdead_beef
+hex4 = 0x00987
+.
+{"bin1":{"type":"integer","value":"214"},"bin2":{"type":"integer","value":"5"},"hex1":{"type":"integer","value":"3735928559"},"hex2":{"type":"integer","value":"3735928559"},"hex3":{"type":"integer","value":"3735928559"},"hex4":{"type":"integer","value":"2439"},"oct1":{"type":"integer","value":"342391"},"oct2":{"type":"integer","value":"493"},"oct3":{"type":"integer","value":"501"}}
+````````````````````````````````
+
+```````````````````````````````` example
+# int64 "should" be supported, but is not mandatory. It's fine to skip this
+# test.
+int64-max     = 9223372036854775807
+int64-max-neg = -9223372036854775808
+.
+{"int64-max":{"type":"integer","value":"9223372036854775807"},"int64-max-neg":{"type":"integer","value":"-9223372036854775808"}}
+````````````````````````````````
+
+```````````````````````````````` example
+kilo = 1_000
+x = 1_1_1_1
+.
+{"kilo":{"type":"integer","value":"1000"},"x":{"type":"integer","value":"1111"}}
+````````````````````````````````
+
+### Invalid (must reject)
+
+```````````````````````````````` example
+capital-bin = 0B0
+.
+ERROR
+````````````````````````````````
+
+```````````````````````````````` example
+capital-hex = 0X1
+.
+ERROR
+````````````````````````````````
+
+
+## Floats
+
+Section **Floats** covers the corresponding TOML v1.0 constructs.
+
+### Valid
+
+```````````````````````````````` example
+lower = 3e2
+upper = 3E2
+neg = 3e-2
+pos = 3E+2
+zero = 3e0
+pointlower = 3.1e2
+pointupper = 3.1E2
+minustenth = -1E-1
+.
+{"lower":{"type":"float","value":"300.0"},"minustenth":{"type":"float","value":"-0.1"},"neg":{"type":"float","value":"0.03"},"pointlower":{"type":"float","value":"310.0"},"pointupper":{"type":"float","value":"310.0"},"pos":{"type":"float","value":"300.0"},"upper":{"type":"float","value":"300.0"},"zero":{"type":"float","value":"3.0"}}
+````````````````````````````````
+
+```````````````````````````````` example
+pi = 3.14
+pospi = +3.14
+negpi = -3.14
+zero-intpart = 0.123
+leading-zero-fractional = 0.0123
+.
+{"negpi":{"type":"float","value":"-3.14"},"pi":{"type":"float","value":"3.14"},"pospi":{"type":"float","value":"3.14"},"zero-intpart":{"type":"float","value":"0.123"},"leading-zero-fractional":{"type":"float","value":"0.0123"}}
+````````````````````````````````
+
+```````````````````````````````` example
+# We don't encode +nan and -nan back with the signs; many languages don't
+# support a sign on NaN (it doesn't really make much sense).
+nan = nan
+nan_neg = -nan
+nan_plus = +nan
+infinity = inf
+infinity_neg = -inf
+infinity_plus = +inf
+.
+{"infinity":{"type":"float","value":"inf"},"infinity_neg":{"type":"float","value":"-inf"},"infinity_plus":{"type":"float","value":"inf"},"nan":{"type":"float","value":"nan"},"nan_neg":{"type":"float","value":"nan"},"nan_plus":{"type":"float","value":"nan"}}
+````````````````````````````````
+
+```````````````````````````````` example
+longpi = 3.141592653589793
+neglongpi = -3.141592653589793
+.
+{"longpi":{"type":"float","value":"3.141592653589793"},"neglongpi":{"type":"float","value":"-3.141592653589793"}}
+````````````````````````````````
+
+```````````````````````````````` example
+# Maximum and minimum safe natural numbers.
+max_float =  9_007_199_254_740_991.0
+min_float = -9_007_199_254_740_991.0
+.
+{"max_float":{"type":"float","value":"9007199254740991"},"min_float":{"type":"float","value":"-9007199254740991"}}
+````````````````````````````````
+
+### Invalid (must reject)
+
+```````````````````````````````` example
+double-point-1 = 0..1
+.
+ERROR
+````````````````````````````````
+
+```````````````````````````````` example
+double-point-2 = 0.1.2
+.
+ERROR
+````````````````````````````````
+
+
+## Booleans
+
+Section **Booleans** covers the corresponding TOML v1.0 constructs.
+
+### Valid
+
+```````````````````````````````` example
+t = true
+f = false
+.
+{"f":{"type":"bool","value":"false"},"t":{"type":"bool","value":"true"}}
+````````````````````````````````
+
+### Invalid (must reject)
+
+```````````````````````````````` example
+almost-false            = fals
+.
+ERROR
+````````````````````````````````
+
+```````````````````````````````` example
+almost-false-with-extra = falsify
+.
+ERROR
+````````````````````````````````
+
+
+## Offset Date-Time
+
+Section **Offset Date-Time** covers the corresponding TOML v1.0 constructs.
+
+### Valid
+
+```````````````````````````````` example
+space = 1987-07-05 17:45:00Z
+
+# ABNF is case-insensitive, both "Z" and "z" must be supported.
+lower = 1987-07-05t17:45:00z
+.
+{"lower":{"type":"datetime","value":"1987-07-05T17:45:00Z"},"space":{"type":"datetime","value":"1987-07-05T17:45:00Z"}}
+````````````````````````````````
+
+```````````````````````````````` example
+first-offset = 0001-01-01 00:00:00Z
+first-local  = 0001-01-01 00:00:00
+first-date   = 0001-01-01
+
+last-offset = 9999-12-31 23:59:59Z
+last-local  = 9999-12-31 23:59:59
+last-date   = 9999-12-31
+.
+{"first-date":{"type":"date-local","value":"0001-01-01"},"first-local":{"type":"datetime-local","value":"0001-01-01T00:00:00"},"first-offset":{"type":"datetime","value":"0001-01-01T00:00:00Z"},"last-date":{"type":"date-local","value":"9999-12-31"},"last-local":{"type":"datetime-local","value":"9999-12-31T23:59:59"},"last-offset":{"type":"datetime","value":"9999-12-31T23:59:59Z"}}
+````````````````````````````````
+
+```````````````````````````````` example
+2000-datetime       = 2000-02-29 15:15:15Z
+2000-datetime-local = 2000-02-29 15:15:15
+2000-date           = 2000-02-29
+
+2024-datetime       = 2024-02-29 15:15:15Z
+2024-datetime-local = 2024-02-29 15:15:15
+2024-date           = 2024-02-29
+.
+{"2000-date":{"type":"date-local","value":"2000-02-29"},"2000-datetime":{"type":"datetime","value":"2000-02-29T15:15:15Z"},"2000-datetime-local":{"type":"datetime-local","value":"2000-02-29T15:15:15"},"2024-date":{"type":"date-local","value":"2024-02-29"},"2024-datetime":{"type":"datetime","value":"2024-02-29T15:15:15Z"},"2024-datetime-local":{"type":"datetime-local","value":"2024-02-29T15:15:15"}}
+````````````````````````````````
+
+```````````````````````````````` example
+local = 1987-07-05T17:45:00
+milli = 1977-12-21T10:32:00.555
+space = 1987-07-05 17:45:00
+.
+{"local":{"type":"datetime-local","value":"1987-07-05T17:45:00"},"milli":{"type":"datetime-local","value":"1977-12-21T10:32:00.555"},"space":{"type":"datetime-local","value":"1987-07-05T17:45:00"}}
+````````````````````````````````
+
+```````````````````````````````` example
+bestdayever = 1987-07-05
+.
+{"bestdayever":{"type":"date-local","value":"1987-07-05"}}
+````````````````````````````````
+
+### Invalid (must reject)
+
+```````````````````````````````` example
+"not a leap year" = 2100-02-29T15:15:15Z
+.
+ERROR
+````````````````````````````````
+
+```````````````````````````````` example
+"only 28 or 29 days in february" = 1988-02-30T15:15:15Z
+.
+ERROR
+````````````````````````````````
+
+
+## Arrays
+
+Section **Arrays** covers the corresponding TOML v1.0 constructs.
+
+### Valid
+
+```````````````````````````````` example
+ints = [1, 2, 3, ]
+floats = [1.1, 2.1, 3.1]
+strings = ["a", "b", "c"]
+dates = [
+  1987-07-05T17:45:00Z,
+  1979-05-27T07:32:00Z,
+  2006-06-01T11:00:00Z,
+]
+comments = [
+         1,
+         2, #this is ok
+]
+.
+{"comments":[{"type":"integer","value":"1"},{"type":"integer","value":"2"}],"dates":[{"type":"datetime","value":"1987-07-05T17:45:00Z"},{"type":"datetime","value":"1979-05-27T07:32:00Z"},{"type":"datetime","value":"2006-06-01T11:00:00Z"}],"floats":[{"type":"float","value":"1.1"},{"type":"float","value":"2.1"},{"type":"float","value":"3.1"}],"ints":[{"type":"integer","value":"1"},{"type":"integer","value":"2"},{"type":"integer","value":"3"}],"strings":[{"type":"string","value":"a"},{"type":"string","value":"b"},{"type":"string","value":"c"}]}
+````````````````````````````````
+
+```````````````````````````````` example
+[[arr]]
+[arr.subtab]
+val=1
+
+[[arr]]
+[arr.subtab]
+val=2
+.
+{"arr":[{"subtab":{"val":{"type":"integer","value":"1"}}},{"subtab":{"val":{"type":"integer","value":"2"}}}]}
+````````````````````````````````
+
+```````````````````````````````` example
+a = [true, false]
+.
+{"a":[{"type":"bool","value":"true"},{"type":"bool","value":"false"}]}
+````````````````````````````````
+
+```````````````````````````````` example
+thevoid = [[[[[]]]]]
+.
+{"thevoid":[[[[[]]]]]}
+````````````````````````````````
+
+```````````````````````````````` example
+mixed = [[1, 2], ["a", "b"], [1.1, 2.1]]
+.
+{"mixed":[[{"type":"integer","value":"1"},{"type":"integer","value":"2"}],[{"type":"string","value":"a"},{"type":"string","value":"b"}],[{"type":"float","value":"1.1"},{"type":"float","value":"2.1"}]]}
+````````````````````````````````
+
+### Invalid (must reject)
+
+```````````````````````````````` example
+double-comma-1 = [1,,2]
+.
+ERROR
+````````````````````````````````
+
+```````````````````````````````` example
+double-comma-2 = [1,2,,]
+.
+ERROR
+````````````````````````````````
+
+
+## Tables
+
+Section **Tables** covers the corresponding TOML v1.0 constructs.
+
+### Valid
+
+```````````````````````````````` example
+[[albums.songs]]
+name = "Glory Days"
+.
+{"albums":{"songs":[{"name":{"type":"string","value":"Glory Days"}}]}}
+````````````````````````````````
+
+```````````````````````````````` example
+[[a.b]]
+x = 1
+
+[a]
+y = 2
+.
+{"a":{"b":[{"x":{"type":"integer","value":"1"}}],"y":{"type":"integer","value":"2"}}}
+````````````````````````````````
+
+```````````````````````````````` example
+[[people]]
+first_name = "Bruce"
+last_name = "Springsteen"
+
+[[people]]
+first_name = "Eric"
+last_name = "Clapton"
+
+[[people]]
+first_name = "Bob"
+last_name = "Seger"
+.
+{"people":[{"first_name":{"type":"string","value":"Bruce"},"last_name":{"type":"string","value":"Springsteen"}},{"first_name":{"type":"string","value":"Eric"},"last_name":{"type":"string","value":"Clapton"}},{"first_name":{"type":"string","value":"Bob"},"last_name":{"type":"string","value":"Seger"}}]}
+````````````````````````````````
+
+```````````````````````````````` example
+[[albums]]
+name = "Born to Run"
+
+  [[albums.songs]]
+  name = "Jungleland"
+
+  [[albums.songs]]
+  name = "Meeting Across the River"
+
+[[albums]]
+name = "Born in the USA"
+  
+  [[albums.songs]]
+  name = "Glory Days"
+
+  [[albums.songs]]
+  name = "Dancing in the Dark"
+.
+{"albums":[{"name":{"type":"string","value":"Born to Run"},"songs":[{"name":{"type":"string","value":"Jungleland"}},{"name":{"type":"string","value":"Meeting Across the River"}}]},{"name":{"type":"string","value":"Born in the USA"},"songs":[{"name":{"type":"string","value":"Glory Days"}},{"name":{"type":"string","value":"Dancing in the Dark"}}]}]}
+````````````````````````````````
+
+```````````````````````````````` example
+[[people]]
+first_name = "Bruce"
+last_name = "Springsteen"
+.
+{"people":[{"first_name":{"type":"string","value":"Bruce"},"last_name":{"type":"string","value":"Springsteen"}}]}
+````````````````````````````````
+
+### Invalid (must reject)
+
+```````````````````````````````` example
+[[a.b]]
+
+[a]
+b.y = 2
+.
+ERROR
+````````````````````````````````
+
+```````````````````````````````` example
+# First a.b.c defines a table: a.b.c = {z=9}
+#
+# Then we define a.b.c.t = "str" to add a str to the above table, making it:
+#
+#   a.b.c = {z=9, t="..."}
+#
+# While this makes sense, logically, it was decided this is not valid TOML as
+# it's too confusing/convoluted.
+# 
+# See: https://github.com/toml-lang/toml/issues/846
+#      https://github.com/toml-lang/toml/pull/859
+
+[a.b.c]
+  z = 9
+
+[a]
+  b.c.t = "Using dotted keys to add to [a.b.c] after explicitly defining it above is not allowed"
+.
+ERROR
+````````````````````````````````
+
+
+## Inline Tables
+
+Section **Inline Tables** covers the corresponding TOML v1.0 constructs.
+
+### Valid
+
+```````````````````````````````` example
+arr = [ {'a'= 1}, {'a'= 2} ]
+
+people = [{first_name = "Bruce", last_name = "Springsteen"},
+          {first_name = "Eric", last_name = "Clapton"},
+          {first_name = "Bob", last_name = "Seger"}]
+.
+{"arr":[{"a":{"type":"integer","value":"1"}},{"a":{"type":"integer","value":"2"}}],"people":[{"first_name":{"type":"string","value":"Bruce"},"last_name":{"type":"string","value":"Springsteen"}},{"first_name":{"type":"string","value":"Eric"},"last_name":{"type":"string","value":"Clapton"}},{"first_name":{"type":"string","value":"Bob"},"last_name":{"type":"string","value":"Seger"}}]}
+````````````````````````````````
+
+```````````````````````````````` example
+# "No newlines are allowed between the curly braces unless they are valid within
+# a value"
+
+a = { a = [
+]}
+
+b = { a = [
+		1,
+		2,
+	], b = [
+		3,
+		4,
+	]}
+.
+{"a":{"a":[]},"b":{"a":[{"type":"integer","value":"1"},{"type":"integer","value":"2"}],"b":[{"type":"integer","value":"3"},{"type":"integer","value":"4"}]}}
+````````````````````````````````
+
+```````````````````````````````` example
+a = {a = true, b = false}
+.
+{"a":{"a":{"type":"bool","value":"true"},"b":{"type":"bool","value":"false"}}}
+````````````````````````````````
+
+```````````````````````````````` example
+empty1 = {}
+empty2 = { }
+empty_in_array = [ { not_empty = 1 }, {} ]
+empty_in_array2 = [{},{not_empty=1}]
+many_empty = [{},{},{}]
+nested_empty = {"empty"={}}
+with_cmt ={            }#nothing here
+.
+{"empty1":{},"empty2":{},"with_cmt":{},"empty_in_array":[{"not_empty":{"type":"integer","value":"1"}},{}],"empty_in_array2":[{},{"not_empty":{"type":"integer","value":"1"}}],"many_empty":[{},{},{}],"nested_empty":{"empty":{}}}
+````````````````````````````````
+
+```````````````````````````````` example
+black = { python=">3.6", version=">=18.9b0", allow_prereleases=true }
+.
+{"black":{"allow_prereleases":{"type":"bool","value":"true"},"python":{"type":"string","value":">3.6"},"version":{"type":"string","value":">=18.9b0"}}}
+````````````````````````````````
+
+### Invalid (must reject)
+
+```````````````````````````````` example
+tbl = { a = 1, [b] }
+.
+ERROR
+````````````````````````````````
+
+```````````````````````````````` example
+t = {x=3,,y=4}
+.
+ERROR
+````````````````````````````````
+
+
+## Spec Examples
+
+Section **Spec Examples** covers the corresponding TOML v1.0 constructs.
+
+### Valid
+
+```````````````````````````````` example
+integers = [ 1, 2, 3 ]
+colors = [ "red", "yellow", "green" ]
+nested_arrays_of_ints = [ [ 1, 2 ], [3, 4, 5] ]
+nested_mixed_array = [ [ 1, 2 ], ["a", "b", "c"] ]
+string_array = [ "all", 'strings', """are the same""", '''type''' ]
+
+# Mixed-type arrays are allowed
+numbers = [ 0.1, 0.2, 0.5, 1, 2, 5 ]
+contributors = [
+  "Foo Bar <foo@example.com>",
+  { name = "Baz Qux", email = "bazqux@example.com", url = "https://example.com/bazqux" }
+]
+.
+{"colors":[{"type":"string","value":"red"},{"type":"string","value":"yellow"},{"type":"string","value":"green"}],"contributors":[{"type":"string","value":"Foo Bar <foo@example.com>"},{"email":{"type":"string","value":"bazqux@example.com"},"name":{"type":"string","value":"Baz Qux"},"url":{"type":"string","value":"https://example.com/bazqux"}}],"integers":[{"type":"integer","value":"1"},{"type":"integer","value":"2"},{"type":"integer","value":"3"}],"nested_arrays_of_ints":[[{"type":"integer","value":"1"},{"type":"integer","value":"2"}],[{"type":"integer","value":"3"},{"type":"integer","value":"4"},{"type":"integer","value":"5"}]],"nested_mixed_array":[[{"type":"integer","value":"1"},{"type":"integer","value":"2"}],[{"type":"string","value":"a"},{"type":"string","value":"b"},{"type":"string","value":"c"}]],"numbers":[{"type":"float","value":"0.1"},{"type":"float","value":"0.2"},{"type":"float","value":"0.5"},{"type":"integer","value":"1"},{"type":"integer","value":"2"},{"type":"integer","value":"5"}],"string_array":[{"type":"string","value":"all"},{"type":"string","value":"strings"},{"type":"string","value":"are the same"},{"type":"string","value":"type"}]}
+````````````````````````````````
+
+```````````````````````````````` example
+integers2 = [
+  1, 2, 3
+]
+
+integers3 = [
+  1,
+  2, # this is ok
+]
+.
+{"integers2":[{"type":"integer","value":"1"},{"type":"integer","value":"2"},{"type":"integer","value":"3"}],"integers3":[{"type":"integer","value":"1"},{"type":"integer","value":"2"}]}
+````````````````````````````````
+
+```````````````````````````````` example
+[[products]]
+name = "Hammer"
+sku = 738594937
+
+[[products]]  # empty table within the array
+
+[[products]]
+name = "Nail"
+sku = 284758393
+
+color = "gray"
+.
+{"products":[{"name":{"type":"string","value":"Hammer"},"sku":{"type":"integer","value":"738594937"}},{},{"color":{"type":"string","value":"gray"},"name":{"type":"string","value":"Nail"},"sku":{"type":"integer","value":"284758393"}}]}
+````````````````````````````````
+
+```````````````````````````````` example
+[[fruits]]
+name = "apple"
+
+[fruits.physical]  # subtable
+color = "red"
+shape = "round"
+
+[[fruits.varieties]]  # nested array of tables
+name = "red delicious"
+
+[[fruits.varieties]]
+name = "granny smith"
+
+
+[[fruits]]
+name = "banana"
+
+[[fruits.varieties]]
+name = "plantain"
+.
+{"fruits":[{"name":{"type":"string","value":"apple"},"physical":{"color":{"type":"string","value":"red"},"shape":{"type":"string","value":"round"}},"varieties":[{"name":{"type":"string","value":"red delicious"}},{"name":{"type":"string","value":"granny smith"}}]},{"name":{"type":"string","value":"banana"},"varieties":[{"name":{"type":"string","value":"plantain"}}]}]}
+````````````````````````````````
+
+```````````````````````````````` example
+points = [ { x = 1, y = 2, z = 3 },
+           { x = 7, y = 8, z = 9 },
+           { x = 2, y = 4, z = 8 } ]
+.
+{"points":[{"x":{"type":"integer","value":"1"},"y":{"type":"integer","value":"2"},"z":{"type":"integer","value":"3"}},{"x":{"type":"integer","value":"7"},"y":{"type":"integer","value":"8"},"z":{"type":"integer","value":"9"}},{"x":{"type":"integer","value":"2"},"y":{"type":"integer","value":"4"},"z":{"type":"integer","value":"8"}}]}
+````````````````````````````````
+
+### Invalid (must reject)
+
+```````````````````````````````` example
+[product]
+type = { name = "Nail" }
+type.edible = false  # INVALID
+.
+ERROR
+````````````````````````````````
+
+```````````````````````````````` example
+[product]
+type.name = "Nail"
+type = { edible = false }  # INVALID
+.
+ERROR
+````````````````````````````````
+
+
+## Root
+
+Section **Root** covers the corresponding TOML v1.0 constructs.
+
+### Valid
+
+```````````````````````````````` example
+
+.
+{}
+````````````````````````````````
+
+```````````````````````````````` example
+best-day-ever = 1987-07-05T17:45:00Z
+
+[numtheory]
+boring = false
+perfection = [6, 28, 496]
+.
+{"best-day-ever":{"type":"datetime","value":"1987-07-05T17:45:00Z"},"numtheory":{"boring":{"type":"bool","value":"false"},"perfection":[{"type":"integer","value":"6"},{"type":"integer","value":"28"},{"type":"integer","value":"496"}]}}
+````````````````````````````````
+
+```````````````````````````````` example
+[a.b.c]
+answer = 42
+
+[a]
+better = 43
+.
+{"a":{"better":{"type":"integer","value":"43"},"b":{"c":{"answer":{"type":"integer","value":"42"}}}}}
+````````````````````````````````
+
+```````````````````````````````` example
+[a]
+better = 43
+
+[a.b.c]
+answer = 42
+.
+{"a":{"better":{"type":"integer","value":"43"},"b":{"c":{"answer":{"type":"integer","value":"42"}}}}}
+````````````````````````````````
+
+```````````````````````````````` example
+[a.b.c]
+answer = 42
+.
+{"a":{"b":{"c":{"answer":{"type":"integer","value":"42"}}}}}
+````````````````````````````````
+
+
+## Control
+
+Section **Control** covers the corresponding TOML v1.0 constructs.
+
+### Invalid (must reject)
+
+```````````````````````````````` example
+# The following line contains a single carriage return control character
+
+.
+ERROR
+````````````````````````````````
+
+```````````````````````````````` example
+bare-formfeed     = 
+.
+ERROR
+````````````````````````````````
+
+
+## Encoding
+
+Section **Encoding** covers the corresponding TOML v1.0 constructs.
+
+### Invalid (must reject)
+
+```````````````````````````````` example
+# Invalid codepoint U+D800 : ���
+.
+ERROR
+````````````````````````````````
+
+```````````````````````````````` example
+# There is a 0xda at after the quotes, and no EOL at the end of the file.
+#
+# This is a bit of an edge case: This indicates there should be two bytes
+# (0b1101_1010) but there is no byte to follow because it's the end of the file.
+x = """"""�
+.
+ERROR
+````````````````````````````````
+
+
+## Local Date
+
+Section **Local Date** covers the corresponding TOML v1.0 constructs.
+
+### Invalid (must reject)
+
+```````````````````````````````` example
+"not a leap year" = 2100-02-29
+.
+ERROR
+````````````````````````````````
+
+```````````````````````````````` example
+"only 28 or 29 days in february" = 1988-02-30
+
+.
+ERROR
+````````````````````````````````
+
+
+## Local Datetime
+
+Section **Local Datetime** covers the corresponding TOML v1.0 constructs.
+
+### Invalid (must reject)
+
+```````````````````````````````` example
+"not a leap year" = 2100-02-29T15:15:15
+.
+ERROR
+````````````````````````````````
+
+```````````````````````````````` example
+"only 28 or 29 days in february" = 1988-02-30T15:15:15
+
+.
+ERROR
+````````````````````````````````
+
+
+## Local Time
+
+Section **Local Time** covers the corresponding TOML v1.0 constructs.
+
+### Invalid (must reject)
+
+```````````````````````````````` example
+# time-hour       = 2DIGIT  ; 00-23
+d = 24:00:00
+.
+ERROR
+````````````````````````````````
+
+```````````````````````````````` example
+# time-minute     = 2DIGIT  ; 00-59
+d = 00:60:00
+.
+ERROR
+````````````````````````````````
+

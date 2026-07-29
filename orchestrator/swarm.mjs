@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 /**
- * v13.2 Cursor-faithful swarm entry (S-A-008).
+ * v13.3 Cursor-faithful swarm entry (S-A-008).
  * Event-driven planner/worker pipeline + run-to-done + zero test signal
- * + detach / heartbeat / checkpoint / resume.
+ * + detach / heartbeat / checkpoint / resume
+ * + serial Field Guide notes / CLI canary / planner ID remap.
  * Legacy test-driven pipeline remains in run.mjs / repair-engine.mjs.
  */
-import { spawn } from "node:child_process";
-import { existsSync, mkdirSync, openSync, readFileSync, writeFileSync } from "node:fs";
+import { spawn, spawnSync } from "node:child_process";
+import { existsSync, mkdirSync, openSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadConfig, projectRoot, resolveModel } from "./lib/config.mjs";
@@ -47,6 +48,7 @@ import {
   getReferenceText,
   scoreScope,
 } from "./lib/verifier.mjs";
+import { getActiveTaskPack, setActiveTaskPack } from "./lib/task-pack.mjs";
 import { initSwarmSkeleton, initSwarmWorkspace } from "./lib/workspace.mjs";
 import { MergeQueue, checkScopeViolation, findOversizedFiles } from "./merge-queue.mjs";
 import {
@@ -70,6 +72,7 @@ function parseArgs(argv) {
     maxWallMinutes: null,
     detach: false,
     resume: false,
+    task: "commonmark",
     help: false,
   };
   for (let i = 0; i < argv.length; i += 1) {
@@ -81,6 +84,8 @@ function parseArgs(argv) {
     else if (a === "--resume") args.resume = true;
     else if (a === "--run-id") args.runId = argv[++i];
     else if (a.startsWith("--run-id=")) args.runId = a.slice("--run-id=".length);
+    else if (a === "--task") args.task = argv[++i];
+    else if (a.startsWith("--task=")) args.task = a.slice("--task=".length);
     else if (a === "--budget-minutes") args.budgetMinutes = Number(argv[++i]);
     else if (a.startsWith("--budget-minutes=")) args.budgetMinutes = Number(a.slice("--budget-minutes=".length));
     else if (a === "--concurrency") args.concurrency = Number(argv[++i]);
@@ -94,6 +99,7 @@ function parseArgs(argv) {
 function usage() {
   console.log(`Usage: node orchestrator/swarm.mjs [options]
   --run-id=ID
+  --task=commonmark|toml-json   Task pack (default commonmark)
   --budget-minutes=N   Wall-clock budget when not --run-to-done (default config.swarm.budgetMinutes)
   --run-to-done        Run until planner declares done (hard stop: maxWallMinutes)
   --max-wall-minutes=N Hard safety stop for --run-to-done (default config.swarm.maxWallMinutes)
@@ -116,24 +122,76 @@ function ensureBuilt(workspaceDir) {
   }
 }
 
+/** Runtime smoke: CLI must accept pack canary stdin with exit 0. No suite oracle. */
+function runCliCanary(workspaceDir) {
+  const pack = getActiveTaskPack();
+  const cli = path.join(workspaceDir, "dist", "cli.js");
+  if (!existsSync(cli)) {
+    return { ok: false, stderr: `Missing ${cli}` };
+  }
+  const result = spawnSync(process.execPath, [cli], {
+    cwd: workspaceDir,
+    input: pack.canaryInput || "canary\n",
+    encoding: "utf8",
+    timeout: 15_000,
+    windowsHide: true,
+    maxBuffer: 1024 * 1024,
+  });
+  if (result.error) {
+    return { ok: false, stderr: String(result.error.message || result.error) };
+  }
+  if (result.status !== 0) {
+    return {
+      ok: false,
+      stderr: String(result.stderr || result.stdout || `cli exit ${result.status}`).trim(),
+    };
+  }
+  return { ok: true };
+}
+
 async function ensureBuiltWithRepair({ workspaceDir, config, runDir, metrics, taskId }) {
   const max = config.maxIntegrationFixRetries ?? 2;
   for (let attempt = 1; attempt <= max + 1; attempt += 1) {
     const build = ensureBuilt(workspaceDir);
-    if (build.ok) return { ok: true, attempts: attempt - 1 };
-    if (attempt > max) return { ok: false, stderr: build.stderr, attempts: attempt - 1 };
-    const prompt = [
-      "The TypeScript build failed after a merge/integration.",
-      "Fix compile errors with the smallest change. Update DESIGN.md / contracts.ts if interfaces changed.",
-      "Do not look for external test oracles.",
-      "",
-      "Build error:",
-      "```",
-      (build.stderr || "").slice(0, 4000),
-      "```",
-      "",
-      "Say INTEGRATION_FIXED when done.",
-    ].join("\n");
+    let failureKind = null;
+    let failureText = "";
+    if (!build.ok) {
+      failureKind = "build";
+      failureText = build.stderr || "";
+    } else {
+      const canary = runCliCanary(workspaceDir);
+      if (canary.ok) return { ok: true, attempts: attempt - 1 };
+      failureKind = "canary";
+      failureText = canary.stderr || "";
+    }
+    if (attempt > max) {
+      return { ok: false, stderr: failureText, attempts: attempt - 1, canary: failureKind === "canary" };
+    }
+    const prompt = failureKind === "canary"
+      ? [
+        "After a merge/integration, `node dist/cli.js` crashes on startup (or exits non-zero) when fed a trivial stdin line.",
+        "Fix the runtime import/init error with the smallest change. Update DESIGN.md / contracts.ts if interfaces changed.",
+        "Do not look for external test oracles. Do not add import-time assertions that throw on module load.",
+        "",
+        "Runtime error:",
+        "```",
+        failureText.slice(0, 4000),
+        "```",
+        "",
+        "Say INTEGRATION_FIXED when done.",
+      ].join("\n")
+      : [
+        "The TypeScript build failed after a merge/integration.",
+        "Fix compile errors with the smallest change. Update DESIGN.md / contracts.ts if interfaces changed.",
+        "Do not look for external test oracles.",
+        "",
+        "Build error:",
+        "```",
+        failureText.slice(0, 4000),
+        "```",
+        "",
+        "Say INTEGRATION_FIXED when done.",
+      ].join("\n");
     const result = await spawnAgent({
       role: "integration-fix",
       prompt,
@@ -150,9 +208,29 @@ async function ensureBuiltWithRepair({ workspaceDir, config, runDir, metrics, ta
       ok: result.ok,
       ...agentUsage(result),
     });
-    metrics.recordIntegrationFix?.({ taskId, attempt, ok: result.ok });
+    metrics.recordIntegrationFix?.({ taskId, attempt, ok: result.ok, kind: failureKind });
   }
   return { ok: false };
+}
+
+function abortLeftoverMerge(workspaceDir, label = "swarm") {
+  const mergeHead = path.join(workspaceDir, ".git", "MERGE_HEAD");
+  if (!existsSync(mergeHead)) return false;
+  console.warn(`[${label}] aborting leftover MERGE_HEAD before finalize`);
+  abortMerge(workspaceDir);
+  if (existsSync(mergeHead)) {
+    try { rmSync(mergeHead, { force: true }); } catch { /* ignore */ }
+  }
+  return true;
+}
+
+function dumpPlannerParseFail(runDir, logRound, text, suffix = "") {
+  try {
+    const name = `planner-parse-fail-${logRound}${suffix}.txt`;
+    writeFileSync(path.join(runDir, name), String(text || ""), "utf8");
+  } catch {
+    /* ignore */
+  }
 }
 
 function uncoveredSections(tree) {
@@ -193,6 +271,42 @@ function formatBudgetLine(swarm, startedAtMs, hardDeadlineMs) {
 
 function mockPlannerActions(tree, round) {
   if (round === 0 && !Object.keys(tree.nodes).length) {
+    const pack = getActiveTaskPack();
+    if (pack.id === "toml-json") {
+      return {
+        design_md: [
+          "# Design",
+          "",
+          "Pipeline: lex/parse TOML → tagged JSON (toml-test shape).",
+          "Register value parsers in values/registry; table handlers in tables/registry.",
+          "contracts.ts mirrors public interfaces.",
+          "",
+        ].join("\n"),
+        actions: [
+          { type: "add_plan_node", id: "plan-01", title: "TOML core", parent: null },
+          {
+            type: "add_task",
+            id: "task-01",
+            title: "Integers + parse entry",
+            parent: "plan-01",
+            files_scope: ["src/parse.ts", "src/index.ts"],
+            spec_sections: ["Integers"],
+            notes: "Accept integer assignments into tagged JSON.",
+          },
+          {
+            type: "add_task",
+            id: "task-02",
+            title: "Booleans",
+            parent: "plan-01",
+            deps: [],
+            files_scope: ["src/values/bool.ts", "src/values/registry.ts"],
+            spec_sections: ["Booleans"],
+            notes: "Register boolean value parser.",
+          },
+        ],
+        rationale: "mock initial toml tree",
+      };
+    }
     return {
       design_md: [
         "# Design",
@@ -409,6 +523,7 @@ async function invitePlanner({
 
   // One cheap JSON-repair retry (role falls back to worker model).
   console.warn("[swarm] planner JSON parse failed; attempting json-repair");
+  dumpPlannerParseFail(runDir, logRound, result.output || "");
   const repairPrompt = [
     "The following text was supposed to be a single JSON object for a swarm planner.",
     "Fix it so it is valid JSON with keys design_md (optional), actions (array), rationale (string).",
@@ -437,6 +552,7 @@ async function invitePlanner({
   if (parsed) return parsed;
 
   console.warn("[swarm] planner JSON parse failed after repair");
+  dumpPlannerParseFail(runDir, logRound, repair.output || result.output || "", "-repair");
   return null;
 }
 
@@ -580,8 +696,6 @@ async function executeLeaf({
     metrics.recordCrossScopeChange({ taskId: task.id, files: realViolations });
   }
 
-  if (report.guide_note) appendGuideNote(wt.path, report.guide_note);
-
   if (report.status === "oversized" || report.status === "blocked") {
     removeWorktree(workspaceDir, wt.path);
     metrics.recordTask({
@@ -597,17 +711,34 @@ async function executeLeaf({
   if (sync.conflict) abortMerge(wt.path);
   metrics.recordWorktreeSync({ taskId: task.id, conflict: !!sync.conflict });
 
-  const mergeResult = await mergeQueue.enqueue({
-    branch: wt.branch,
-    taskId: task.id,
-    afterMerge: () => ensureBuiltWithRepair({
-      workspaceDir,
-      config,
-      runDir,
-      metrics,
+  let mergeResult;
+  try {
+    mergeResult = await mergeQueue.enqueue({
+      branch: wt.branch,
       taskId: task.id,
-    }),
-  });
+      afterMerge: () => ensureBuiltWithRepair({
+        workspaceDir,
+        config,
+        runDir,
+        metrics,
+        taskId: task.id,
+      }),
+    });
+  } catch (err) {
+    removeWorktree(workspaceDir, wt.path);
+    const failedReport = {
+      ...report,
+      status: "blocked",
+      summary: `merge exception: ${err?.message || err}`,
+    };
+    metrics.recordTask({
+      id: task.id,
+      status: "failed",
+      elapsedMs: Date.now() - started,
+      report: failedReport,
+    });
+    return { task, ok: false, report: failedReport };
+  }
   removeWorktree(workspaceDir, wt.path);
 
   if (mergeResult.oversized) {
@@ -627,6 +758,16 @@ async function executeLeaf({
   }
 
   const ok = mergeResult.ok && mergeResult.postMerge?.ok !== false;
+  if (ok && report.guide_note) {
+    try {
+      await mergeQueue.enqueueFn(() => {
+        appendGuideNote(workspaceDir, `[${task.id}] ${report.guide_note}`);
+        commitAll(workspaceDir, `guide: note from ${task.id}`);
+      }, "guide-note");
+    } catch (err) {
+      console.warn(`[swarm] guide-note append failed for ${task.id}: ${err?.message || err}`);
+    }
+  }
   metrics.recordTask({
     id: task.id,
     status: ok ? "done" : "failed",
@@ -652,6 +793,14 @@ async function main() {
   }
   if (cli.resume && !cli.runId) {
     console.error("[swarm] --resume requires --run-id");
+    process.exit(1);
+  }
+
+  let taskPack;
+  try {
+    taskPack = setActiveTaskPack(cli.task || "commonmark");
+  } catch (err) {
+    console.error(`[swarm] ${err.message || err}`);
     process.exit(1);
   }
 
@@ -731,7 +880,7 @@ async function main() {
     startedAtMs = Date.now();
     hardDeadlineMs = startedAtMs + (swarm.runToDone ? swarm.maxWallMinutes : swarm.budgetMinutes) * 60 * 1000;
     initSwarmWorkspace(workspaceDir, { guideMaxLines: swarm.guideMaxLines });
-    initSwarmSkeleton(workspaceDir, { mock: cli.mock });
+    initSwarmSkeleton(workspaceDir, { mock: cli.mock, skeleton: taskPack.skeleton });
     ensureHoldout(runDir, examplesPath(), config);
     tree = createEmptyTree();
     saveTree(runDir, tree);
@@ -742,14 +891,15 @@ async function main() {
     coordination_mode: "faithful-swarm",
     planner_source: cli.mock ? "mock-swarm" : "swarm-planner",
     task_set: "swarm-tree",
+    task_pack: taskPack.id,
     swarm: true,
-    architecture: "v13.2-swarm",
+    architecture: "v13.3-swarm",
     run_to_done: !!swarm.runToDone,
     resumed: !!cli.resume,
   });
 
   console.log(
-    `[swarm] id=${runId} mock=${cli.mock} resume=${cli.resume} runToDone=${swarm.runToDone}`
+    `[swarm] id=${runId} task=${taskPack.id} mock=${cli.mock} resume=${cli.resume} runToDone=${swarm.runToDone}`
       + ` hardStop=${swarm.runToDone ? swarm.maxWallMinutes : swarm.budgetMinutes}m`
       + ` concurrency=${swarm.concurrency}`,
   );
@@ -976,7 +1126,16 @@ async function main() {
         const label = `m${mergeSuccessCount}`;
         const obsJob = (async () => {
           try {
-            observeScore({ workspaceDir, runDir, metrics, label });
+            const report = observeScore({ workspaceDir, runDir, metrics, label });
+            if (report && report.total > 0 && report.passed === 0) {
+              const canary = runCliCanary(workspaceDir);
+              const hint = (canary.stderr || "cli canary failed").split("\n")[0].slice(0, 160);
+              console.warn(`[swarm] observe redline: zero passes (m${mergeSuccessCount}); canary=${canary.ok}`);
+              actionErrors.push(
+                `URGENT: main workspace CLI appears broken (observe all-fail). `
+                  + `Schedule a fix task immediately. Hint: ${hint}`,
+              );
+            }
             return { kind: "observe" };
           } finally {
             observeInFlight = false;
@@ -1094,6 +1253,8 @@ async function main() {
           if (!r.ok) {
             console.warn(`[swarm] action failed: ${r.error}`);
             actionErrors.push(r.error);
+          } else if (r.remapped && r.from) {
+            console.warn(`[swarm] remapped duplicate id ${r.from} → ${r.id}`);
           }
         }
 
@@ -1141,6 +1302,7 @@ async function main() {
     clearInterval(heartbeatTimer);
   }
 
+  abortLeftoverMerge(workspaceDir);
   ensureBuilt(workspaceDir);
   const result = finalizeRun({
     workspaceDir,

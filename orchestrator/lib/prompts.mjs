@@ -1,9 +1,16 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { projectRoot } from "./config.mjs";
+import { getActiveTaskPack } from "./task-pack.mjs";
 
-export function loadPrompt(name) {
-  return readFileSync(path.join(projectRoot(), "prompts", `${name}.md`), "utf8");
+export function loadPrompt(name, promptsDir = null) {
+  const dir = promptsDir || path.join(projectRoot(), "prompts");
+  const p = path.join(dir, `${name}.md`);
+  if (!existsSync(p) && promptsDir) {
+    // Fall back to root prompts for shared templates (splitter/reviews).
+    return readFileSync(path.join(projectRoot(), "prompts", `${name}.md`), "utf8");
+  }
+  return readFileSync(p, "utf8");
 }
 
 export function fillTemplate(template, vars) {
@@ -252,8 +259,10 @@ export function buildSwarmPlannerPrompt({
   budgetLine,
   fanoutTarget,
   maxTreeDepth,
+  promptsDir = null,
 }) {
-  return fillTemplate(loadPrompt("swarm-planner"), {
+  const dir = promptsDir || getActiveTaskPack().promptsDir;
+  return fillTemplate(loadPrompt("swarm-planner", dir), {
     SPEC_TOC: specToc || "_None._",
     TREE_SUMMARY: treeSummary || "_Empty._",
     DESIGN_MD: designMd || "_None._",
@@ -274,8 +283,10 @@ export function buildSwarmWorkerPrompt({
   designMd,
   guideIndex,
   oversizedLines,
+  promptsDir = null,
 }) {
-  return fillTemplate(loadPrompt("swarm-worker"), {
+  const dir = promptsDir || getActiveTaskPack().promptsDir;
+  return fillTemplate(loadPrompt("swarm-worker", dir), {
     TASK_JSON: JSON.stringify(task, null, 2),
     SPEC_TEXT: specText || "_No sections assigned._",
     DESIGN_MD: designMd || "_None._",

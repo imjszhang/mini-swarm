@@ -35,12 +35,12 @@ npm run contention:report -- runs/RUN_ID/metrics.json
 npm run spec:generate         # synthetic gen-examples for Stage B self-verify
 npm run preflight:models      # probe composer + strong model slugs
 
-# v13 / v13.1 / v13.2 Cursor-faithful swarm (S-A-008; zero test signal)
+# v13 / v13.1 / v13.2 / v13.3 Cursor-faithful swarm (S-A-008; zero test signal)
 npm run swarm:mock            # scripted planner/worker end-to-end
 npm run swarm                 # budget mode (default 240 min)
 npm run swarm:done            # run-to-done (hard stop maxWallMinutes, default 480)
 npm run swarm:smoke           # live smoke: 15 min, concurrency 2
-npm run swarm:detached -- --run-id=run-swarm-v13.2 --concurrency=8   # long run outside IDE terminal
+npm run swarm:detached -- --run-id=run-swarm-v13.3 --concurrency=8   # long run outside IDE terminal
 npm run swarm:resume -- --run-id=RUN_ID              # resume interrupted swarm (tree.json + checkpoint)
 npm run swarm:finalize -- --run-id=RUN_ID            # score+finalize metrics without resuming
 
@@ -170,7 +170,7 @@ are **not** claimed as Cursor fidelity.
 | 7 | Oversized file: mark → block commit → external split | merge-queue line-count gate → `splitter` (strong) |
 | 8 | Cross-scope destructive patches + compiler-driven fix | faithful worktrees + integration-fix on build fail |
 | 9 | Multi-perspective low-correlation review stack | `review-diff` / `review-codebase` / `review-spec` (mixed model tiers) |
-| 10 | Field Guide folder (`index.md` inject + line budget) | `guide/index.md` (+ notes); workers append surprises |
+| 10 | Field Guide folder (`index.md` inject + line budget) | `guide/index.md`; harness serial-appends `guide_note` on main (workers must not edit the file) |
 | 11 | Spec-as-prompt; scoring tests **hidden from agents** | Zero test signal: agents never see examples / pass-fail / VERIFY_CMD; scorer is harness-only observation |
 | 12 | Fixed wall-clock budget + metrics | `swarm.budgetMinutes` (default 240) or `--run-to-done` + `maxWallMinutes`; four core metrics + commits/conflicts/LOC |
 
@@ -178,21 +178,23 @@ are **not** claimed as Cursor fidelity.
 
 **v13.2 anti-interrupt note**: long runs must use `swarm:detached` so the process is not reaped with the IDE terminal. `heartbeat.json` + `metrics.json` checkpoints enable `--resume`; `swarm:finalize` scores a dead run without continuing. Segmented wall time excludes death gaps.
 
-### Long-run ops (v13.2)
+**v13.3 survivability note**: serial Field Guide notes + `guide/index.md merge=union` kill the late-run conflict storm; post-merge CLI canary + observe all-fail redline close 0% windows without leaking suite scores; duplicate planner IDs remap/idempotent instead of wasting rounds.
+
+### Long-run ops (v13.2+)
 
 ```bash
 # Start (detached from Cursor/IDE terminal)
-npm run swarm:detached -- --run-id=run-swarm-v13.2 --concurrency=8
+npm run swarm:detached -- --run-id=run-swarm-v13.3 --concurrency=8
 # Monitor
 #   runs/<id>/console.log
 #   runs/<id>/heartbeat.json   # stalls → sync block; stop updating → process dead
 #   runs/<id>/metrics.json     # finalized:false while running
 
 # If killed mid-flight (heartbeat stale >2 min):
-npm run swarm:resume -- --run-id=run-swarm-v13.2 --concurrency=8
+npm run swarm:resume -- --run-id=run-swarm-v13.3 --concurrency=8
 
 # Or score-only salvage (no more agents):
-npm run swarm:finalize -- --run-id=run-swarm-v13.2
+npm run swarm:finalize -- --run-id=run-swarm-v13.3
 ```
 
 ### Explicitly NOT claimed (absent from S-A-008 raw)

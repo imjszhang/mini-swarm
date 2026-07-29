@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 /**
- * Score workspace CommonMark renderer against spec/examples.json.
+ * Score workspace CLI against examples.json.
  *
- * Contract: workspace provides `node dist/cli.js` (stdin markdown → stdout HTML).
+ * Contract: workspace provides `node dist/cli.js` (stdin → stdout).
+ * Compatible with CommonMark (markdown/html) and toml-json (input/expected/expect_error).
  */
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
@@ -69,31 +70,55 @@ function normalizeOutput(text) {
   return String(text ?? "").replace(/\r\n/g, "\n").replace(/\n+$/, "");
 }
 
+function normalizeExpected(text) {
+  const s = normalizeOutput(text);
+  const t = s.trim();
+  if ((t.startsWith("{") && t.endsWith("}")) || (t.startsWith("[") && t.endsWith("]"))) {
+    try {
+      return JSON.stringify(JSON.parse(t));
+    } catch {
+      /* fall through */
+    }
+  }
+  return s;
+}
+
 function truncate(text, n) {
   const s = String(text ?? "");
   if (!Number.isFinite(n) || n <= 0) return s;
   return s.length <= n ? s : s.slice(0, n);
 }
 
-function renderMarkdown(cwd, markdown) {
+function exampleInput(ex) {
+  return ex.input ?? ex.markdown ?? "";
+}
+
+function exampleExpected(ex) {
+  return ex.expected ?? ex.html ?? "";
+}
+
+function runCli(cwd, input) {
   const cli = path.join(cwd, "dist", "cli.js");
   if (!existsSync(cli)) {
-    return { ok: false, error: `Missing ${cli}. Run npm run build in workspace.` };
+    return { ok: false, error: `Missing ${cli}. Run npm run build in workspace.`, status: null };
   }
   const result = spawnSync(process.execPath, [cli], {
     cwd,
-    input: markdown,
+    input,
     encoding: "utf8",
     maxBuffer: 10 * 1024 * 1024,
     timeout: 30_000,
+    windowsHide: true,
   });
   if (result.error) {
-    return { ok: false, error: result.error.message };
+    return { ok: false, error: result.error.message, status: null };
   }
-  if (result.status !== 0) {
-    return { ok: false, error: (result.stderr || result.stdout || "cli failed").trim() };
-  }
-  return { ok: true, html: result.stdout };
+  return {
+    ok: true,
+    status: result.status,
+    stdout: result.stdout ?? "",
+    stderr: result.stderr ?? "",
+  };
 }
 
 function scoreWorkspace(workspaceDir, examples, { limit, truncateChars, maxFailures }) {
@@ -103,24 +128,62 @@ function scoreWorkspace(workspaceDir, examples, { limit, truncateChars, maxFailu
   const failures = [];
 
   for (const ex of subset) {
-    const rendered = renderMarkdown(workspaceDir, ex.markdown);
-    if (!rendered.ok) {
+    const input = exampleInput(ex);
+    const expectError = !!ex.expect_error;
+    const rendered = runCli(workspaceDir, input);
+    sectionStats[ex.section] = sectionStats[ex.section] || { passed: 0, total: 0 };
+    sectionStats[ex.section].total += 1;
+
+    if (!rendered.ok && rendered.status == null) {
       failures.push({
         id: ex.id,
         section: ex.section,
         reason: rendered.error,
-        markdown: truncate(ex.markdown, truncateChars),
+        markdown: truncate(input, truncateChars),
+        input: truncate(input, truncateChars),
       });
-      sectionStats[ex.section] = sectionStats[ex.section] || { passed: 0, total: 0 };
-      sectionStats[ex.section].total += 1;
       continue;
     }
-    const expected = normalizeOutput(ex.html);
-    const actual = normalizeOutput(rendered.html);
-    const ok = actual === expected;
-    sectionStats[ex.section] = sectionStats[ex.section] || { passed: 0, total: 0 };
-    sectionStats[ex.section].total += 1;
-    if (ok) {
+
+    if (expectError) {
+      if (rendered.status !== 0) {
+        passed += 1;
+        sectionStats[ex.section].passed += 1;
+      } else {
+        failures.push({
+          id: ex.id,
+          section: ex.section,
+          reason: "expected non-zero exit (invalid input accepted)",
+          markdown: truncate(input, truncateChars),
+          input: truncate(input, truncateChars),
+          actual: truncate(normalizeOutput(rendered.stdout), truncateChars),
+        });
+      }
+      continue;
+    }
+
+    if (rendered.status !== 0) {
+      failures.push({
+        id: ex.id,
+        section: ex.section,
+        reason: (rendered.stderr || rendered.stdout || "cli failed").trim() || `exit ${rendered.status}`,
+        markdown: truncate(input, truncateChars),
+        input: truncate(input, truncateChars),
+      });
+      continue;
+    }
+
+    const expected = normalizeExpected(exampleExpected(ex));
+    let actual = normalizeOutput(rendered.stdout);
+    // If expected is canonical JSON, canonicalize actual too.
+    if (expected.startsWith("{") || expected.startsWith("[")) {
+      try {
+        actual = JSON.stringify(JSON.parse(actual));
+      } catch {
+        /* compare raw */
+      }
+    }
+    if (actual === expected) {
       passed += 1;
       sectionStats[ex.section].passed += 1;
     } else {
@@ -128,7 +191,8 @@ function scoreWorkspace(workspaceDir, examples, { limit, truncateChars, maxFailu
         id: ex.id,
         section: ex.section,
         reason: "output mismatch",
-        markdown: truncate(ex.markdown, truncateChars),
+        markdown: truncate(input, truncateChars),
+        input: truncate(input, truncateChars),
         expected: truncate(expected, truncateChars),
         actual: truncate(actual, truncateChars),
       });
@@ -161,7 +225,7 @@ const args = parseArgs(process.argv.slice(2));
 const examplesPath = args.examples || EXAMPLES_PATH;
 if (!existsSync(examplesPath)) {
   console.error(`Missing examples file: ${examplesPath}`);
-  if (!args.examples) console.error("Run: npm run spec:extract");
+  if (!args.examples) console.error("Run: npm run spec:extract  (or task:toml:import)");
   process.exit(1);
 }
 let examples = JSON.parse(readFileSync(examplesPath, "utf8"));

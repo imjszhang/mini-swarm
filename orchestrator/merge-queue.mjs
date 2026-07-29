@@ -15,12 +15,16 @@ import {
 import { buildMergerPrompt } from "./lib/prompts.mjs";
 import { agentUsage, spawnAgent } from "./runner.mjs";
 
-function gitStatus(cwd) {
-  return execFileSync("git", ["status"], {
-    cwd,
-    encoding: "utf8",
-    windowsHide: true,
-  });
+function safeGitStatus(cwd) {
+  try {
+    return execFileSync("git", ["status"], {
+      cwd,
+      encoding: "utf8",
+      windowsHide: true,
+    });
+  } catch (err) {
+    return `(git status failed: ${err.message || err})`;
+  }
 }
 
 /** Source files over the line budget (S-A-008 oversized-file gate). */
@@ -190,7 +194,7 @@ export class MergeQueue {
           `Unmerged files: ${stillConflict.join(", ")}`,
           "",
           "Git status:",
-          gitStatus(this.mainDir),
+          safeGitStatus(this.mainDir),
         ].join("\n");
         continue;
       }
@@ -208,7 +212,7 @@ export class MergeQueue {
           "keep the build green, stage and commit. Do not leave markers in the tree.",
           "",
           "Git status:",
-          gitStatus(this.mainDir),
+          safeGitStatus(this.mainDir),
         ].join("\n");
         continue;
       }
@@ -242,7 +246,7 @@ export class MergeQueue {
         "keep the build green, stage and commit. Do not leave markers in the tree.",
         "",
         "Git status:",
-        gitStatus(this.mainDir),
+        safeGitStatus(this.mainDir),
       ].join("\n");
       return this._resolveLoop({
         preSha,
@@ -261,18 +265,12 @@ export class MergeQueue {
     const files = listConflictFiles(this.mainDir);
     this.metrics.recordMergeConflict({ taskId, branch, files });
 
-    let statusText = "(git status unavailable)";
-    try {
-      statusText = gitStatus(this.mainDir);
-    } catch (err) {
-      statusText = `(git status failed: ${err.message || err})`;
-    }
     const initialContext = [
       `Merge conflict merging branch ${branch} for task ${taskId}.`,
       `Conflict files: ${files.join(", ") || "(unknown)"}`,
       "",
       "Git status:",
-      statusText,
+      safeGitStatus(this.mainDir),
     ].join("\n");
 
     return this._resolveLoop({

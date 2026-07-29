@@ -51,12 +51,44 @@ function depthOf(tree, nodeId, seen = new Set()) {
   return 1 + depthOf(tree, n.parent, seen);
 }
 
+function normalizeTitle(title) {
+  return String(title || "").trim().toLowerCase().replace(/\s+/g, " ");
+}
+
+function resolveRemappedId(id, idRemap) {
+  if (!id || !idRemap) return id;
+  let cur = id;
+  const seen = new Set();
+  while (idRemap.has(cur) && !seen.has(cur)) {
+    seen.add(cur);
+    cur = idRemap.get(cur);
+  }
+  return cur;
+}
+
+/** Translate deps/parent/from through a batch-local id remap table. */
+function remapActionRefs(action, idRemap) {
+  if (!action || typeof action !== "object" || !idRemap?.size) return action;
+  const a = { ...action };
+  if (a.parent) a.parent = resolveRemappedId(a.parent, idRemap);
+  if (a.from) a.from = resolveRemappedId(a.from, idRemap);
+  if (Array.isArray(a.deps)) {
+    a.deps = a.deps.map((d) => resolveRemappedId(d, idRemap));
+  }
+  if (Array.isArray(a.children)) {
+    a.children = a.children.map((c) => remapActionRefs(c, idRemap));
+  }
+  return a;
+}
+
 /**
- * Apply a single planner action. Returns { ok, error?, id? }.
+ * Apply a single planner action. Returns { ok, error?, id?, remapped?, idempotent? }.
+ * When `idRemap` (Map) is provided, duplicate IDs are remapped or treated as idempotent.
  */
-export function applyAction(tree, action, { maxTreeDepth = 2 } = {}) {
+export function applyAction(tree, action, { maxTreeDepth = 2, idRemap = null } = {}) {
   if (!action || typeof action !== "object") return { ok: false, error: "invalid action" };
-  const type = action.type;
+  const a = remapActionRefs(action, idRemap);
+  const type = a.type;
 
   if (type === "done") {
     tree.done = true;
@@ -65,55 +97,85 @@ export function applyAction(tree, action, { maxTreeDepth = 2 } = {}) {
 
   if (type === "update_design") {
     // DESIGN.md content is written by the caller; action only acknowledges.
-    return { ok: true, design: action.content || action.design || "" };
+    return { ok: true, design: a.content || a.design || "" };
   }
 
   if (type === "add_plan_node") {
-    const id = action.id || allocId(tree, "plan");
-    if (tree.nodes[id]) return { ok: false, error: `duplicate id ${id}` };
-    const parent = action.parent || null;
+    let id = a.id || allocId(tree, "plan");
+    const requestedId = a.id || null;
+    if (tree.nodes[id]) {
+      const existing = tree.nodes[id];
+      const same =
+        existing.kind === "plan"
+        && normalizeTitle(existing.title) === normalizeTitle(a.title || id);
+      if (same) return { ok: true, id, idempotent: true };
+      const newId = allocId(tree, "plan");
+      if (requestedId && idRemap) idRemap.set(requestedId, newId);
+      id = newId;
+    }
+    const parent = a.parent || null;
     const depth = parent ? depthOf(tree, parent) + 1 : 0;
     if (depth > maxTreeDepth) return { ok: false, error: `maxTreeDepth ${maxTreeDepth} exceeded` };
     tree.nodes[id] = {
       id,
       kind: "plan",
-      title: action.title || id,
+      title: a.title || id,
       parent,
-      deps: action.deps || [],
+      deps: a.deps || [],
       status: "open",
-      notes: action.notes || "",
+      notes: a.notes || "",
     };
-    return { ok: true, id };
+    return {
+      ok: true,
+      id,
+      remapped: !!(requestedId && requestedId !== id),
+      from: requestedId && requestedId !== id ? requestedId : undefined,
+    };
   }
 
   if (type === "add_task") {
-    const id = action.id || allocId(tree, "task");
-    if (tree.nodes[id]) return { ok: false, error: `duplicate id ${id}` };
-    const parent = action.parent || null;
+    let id = a.id || allocId(tree, "task");
+    const requestedId = a.id || null;
+    if (tree.nodes[id]) {
+      const existing = tree.nodes[id];
+      const same =
+        existing.kind === "leaf"
+        && normalizeTitle(existing.title) === normalizeTitle(a.title || id);
+      if (same) return { ok: true, id, idempotent: true };
+      const newId = allocId(tree, "task");
+      if (requestedId && idRemap) idRemap.set(requestedId, newId);
+      id = newId;
+    }
+    const parent = a.parent || null;
     const depth = parent ? depthOf(tree, parent) + 1 : 0;
     if (depth > maxTreeDepth) return { ok: false, error: `maxTreeDepth ${maxTreeDepth} exceeded` };
     tree.nodes[id] = {
       id,
       kind: "leaf",
-      title: action.title || id,
+      title: a.title || id,
       parent,
-      deps: action.deps || [],
+      deps: a.deps || [],
       status: "pending",
-      files_scope: action.files_scope || [],
-      spec_sections: action.spec_sections || [],
-      notes: action.notes || "",
+      files_scope: a.files_scope || [],
+      spec_sections: a.spec_sections || [],
+      notes: a.notes || "",
       report: null,
       attempts: 0,
     };
-    return { ok: true, id };
+    return {
+      ok: true,
+      id,
+      remapped: !!(requestedId && requestedId !== id),
+      from: requestedId && requestedId !== id ? requestedId : undefined,
+    };
   }
 
   if (type === "split_task") {
-    const from = action.from || action.id;
+    const from = a.from || a.id;
     const node = tree.nodes[from];
     if (!node || node.kind !== "leaf") return { ok: false, error: `split_task: missing leaf ${from}` };
     node.status = "retired";
-    const children = action.children || [];
+    const children = a.children || [];
     const ids = [];
     for (const child of children) {
       const r = applyAction(tree, {
@@ -121,7 +183,7 @@ export function applyAction(tree, action, { maxTreeDepth = 2 } = {}) {
         ...child,
         parent: node.parent || from,
         deps: child.deps || node.deps,
-      }, { maxTreeDepth });
+      }, { maxTreeDepth, idRemap });
       if (!r.ok) return r;
       ids.push(r.id);
     }
@@ -129,7 +191,7 @@ export function applyAction(tree, action, { maxTreeDepth = 2 } = {}) {
   }
 
   if (type === "retire_task") {
-    const id = action.id;
+    const id = a.id;
     const node = tree.nodes[id];
     if (!node) return { ok: false, error: `retire_task: missing ${id}` };
     node.status = "retired";
@@ -137,7 +199,7 @@ export function applyAction(tree, action, { maxTreeDepth = 2 } = {}) {
   }
 
   if (type === "requeue_task") {
-    const id = action.id;
+    const id = a.id;
     const node = tree.nodes[id];
     if (!node || node.kind !== "leaf") return { ok: false, error: `requeue_task: missing leaf ${id}` };
     node.status = "pending";
@@ -147,22 +209,23 @@ export function applyAction(tree, action, { maxTreeDepth = 2 } = {}) {
   }
 
   if (type === "waive_section") {
-    const section = typeof action.section === "string" ? action.section.trim() : "";
+    const section = typeof a.section === "string" ? a.section.trim() : "";
     if (!section) return { ok: false, error: "waive_section: empty section" };
     if (!Array.isArray(tree.waived_sections)) tree.waived_sections = [];
     if (!tree.waived_sections.includes(section)) {
       tree.waived_sections.push(section);
     }
-    return { ok: true, section, reason: action.reason || "" };
+    return { ok: true, section, reason: a.reason || "" };
   }
 
   return { ok: false, error: `unknown action type: ${type}` };
 }
 
 export function applyActions(tree, actions, opts = {}) {
+  const idRemap = opts.idRemap || new Map();
   const results = [];
   for (const action of actions || []) {
-    results.push(applyAction(tree, action, opts));
+    results.push(applyAction(tree, action, { ...opts, idRemap }));
   }
   return results;
 }
@@ -215,6 +278,7 @@ export function treeStats(tree) {
 export function formatTreeForPlanner(tree) {
   const lines = ["# Task tree", ""];
   let retiredHidden = 0;
+  const doneIds = [];
   for (const n of Object.values(tree.nodes)) {
     if (n.kind === "plan") {
       lines.push(`- PLAN ${n.id}: ${n.title} [${n.status}] parent=${n.parent || "-"}`);
@@ -225,7 +289,7 @@ export function formatTreeForPlanner(tree) {
       continue;
     }
     if (n.status === "done") {
-      lines.push(`- LEAF ${n.id}: ${n.title} [done]`);
+      doneIds.push(n.id);
       continue;
     }
     lines.push(
@@ -238,6 +302,9 @@ export function formatTreeForPlanner(tree) {
       lines.push(`  oversized: ${n.report.oversized_files.join(", ")}`);
     }
   }
+  if (doneIds.length) {
+    lines.push(`Done leaves (${doneIds.length}): ${doneIds.join(", ")}`);
+  }
   if (retiredHidden > 0) lines.push(`(+${retiredHidden} retired leaves hidden)`);
   if (!Object.keys(tree.nodes).length) lines.push("_Empty — please create the initial decomposition._");
   const allIds = Object.keys(tree.nodes || {}).sort();
@@ -247,3 +314,4 @@ export function formatTreeForPlanner(tree) {
   }
   return lines.join("\n");
 }
+

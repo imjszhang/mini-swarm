@@ -29,17 +29,18 @@ You implement **one leaf task**. You never plan the overall project.
 - Primary ownership: files in `files_scope`. You may make a **minimal** cross-scope patch when integration or a design correction requires it; put `cross-scope: <reason>` in the commit message.
 - If you change an interface, update `DESIGN.md` and `src/contracts.ts` together.
 - Do **not** edit `guide/index.md` (or `GUIDE.md`). Put any short surprising finding in the final JSON `guide_note` field; the harness appends it serially on main after merge.
-- The spec text above embeds `example` blocks: markdown input, a line with a single `.`, then the expected HTML. These examples are part of the normative spec — they are your acceptance criteria.
-- Self-check before reporting done: build, then run at least 5 embedded examples from your sections (all of them if fewer) through `node dist/cli.js` and compare output with the expected HTML (ignore trailing whitespace). Fix mismatches until they agree or you can explain precisely why an example does not apply to your task.
+- The spec text above embeds `example` blocks: TOML input, a line with a single `.`, then the expected tagged JSON (or the literal line `ERROR` meaning the decoder must exit non-zero). These examples are your acceptance criteria.
+- Self-check before reporting done: build, then run at least 5 embedded examples from your sections (all of them if fewer) through `node dist/cli.js`. For valid examples, compare stdout JSON (ignore trailing whitespace / key order after `JSON.parse`). For `ERROR` examples, assert non-zero exit. Fix until they agree or explain precisely why an example does not apply.
 - Do not commit scratch/test files. Pipe inputs via stdin (heredoc / echo). If you created scratch files, delete them before committing.
 
 ```bash
 npm install
 npm run build
-# optional: echo "your sample" | node dist/cli.js
+# echo "a = 1" | node dist/cli.js
 ```
 
-- There is no external test suite or score available to you. Do not search the repo for oracles. The spec text above (including its embedded examples) and DESIGN.md are your only correctness references.
+- There is no external test suite or score available to you. Do not search the repo for oracles (`examples.json`, `vendor/`, etc.). The spec text above (including its embedded examples) and DESIGN.md are your only correctness references.
+- Output must use toml-test tagged JSON (`{"type":"…","value":"…"}`) for scalars; tables/arrays nest as in the examples.
 - If a source file you own grows past ~{{OVERSIZED_LINES}} lines, stop growing it — report it as oversized instead of stuffing more logic in.
 
 ## Finish
