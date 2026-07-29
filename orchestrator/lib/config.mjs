@@ -95,6 +95,10 @@ function normalizeSwarm(raw) {
     observeScoreEveryMerges: s.observeScoreEveryMerges ?? 3,
     specTextMaxChars: s.specTextMaxChars ?? 64000,
     maxLeafAttempts: s.maxLeafAttempts ?? 3,
+    maxPlannerParseFails: s.maxPlannerParseFails ?? 5,
+    maxUnproductivePlannerRounds: s.maxUnproductivePlannerRounds ?? 3,
+    maxBlockedRescueWaves: s.maxBlockedRescueWaves ?? 2,
+    plannerCompactRetry: s.plannerCompactRetry !== false,
   };
 }
 

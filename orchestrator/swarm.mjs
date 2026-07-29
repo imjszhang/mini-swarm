@@ -34,6 +34,12 @@ import {
 import { formatFindingsForPlanner, runReviewStack } from "./lib/review-stack.mjs";
 import { formatSpecToc, listSpecSections } from "./lib/spec-toc.mjs";
 import {
+  appliedActionsAreProductive,
+  nextStreaks,
+  shouldStop,
+  stopConsoleMessage,
+} from "./lib/swarm-stop-policy.mjs";
+import {
   applyActions,
   createEmptyTree,
   formatTreeForPlanner,
@@ -553,7 +559,64 @@ async function invitePlanner({
 
   console.warn("[swarm] planner JSON parse failed after repair");
   dumpPlannerParseFail(runDir, logRound, repair.output || result.output || "", "-repair");
+
+  // Same-role compact retry (configured swarm-planner model; no model switch).
+  if (swarm.plannerCompactRetry !== false) {
+    console.warn("[swarm] planner compact retry (same role)");
+    const treeSnap = formatTreeForPlanner(tree).slice(0, 6000);
+    const compactPrompt = [
+      "Your previous swarm-planner output was not valid JSON.",
+      "Reply with ONLY a single JSON object. No markdown fences, no prose.",
+      'Required shape: { "actions": [ ... ], "rationale": "..." }',
+      "Do NOT include design_md. Prefer requeue_task / add_task / waive_section.",
+      "Keep actions under 12 items.",
+      "",
+      "Current task tree (truncated):",
+      treeSnap,
+      "",
+      "Recent action errors:",
+      String(actionErrors || "_None._").slice(0, 2000),
+      "",
+      "Broken output (truncated):",
+      "```",
+      String(repair.output || result.output || "").slice(0, 12000),
+      "```",
+    ].join("\n");
+    const compact = await spawnAgent({
+      role: "swarm-planner",
+      prompt: compactPrompt,
+      cwd: workspaceDir,
+      config,
+      runDir,
+      logKey: `swarm-planner-${logRound}-compact`,
+      timeoutMs: Math.min((config.taskTimeoutMinutes || 20) * 60 * 1000, 5 * 60 * 1000),
+    });
+    metrics.recordAgentCall({
+      role: "swarm-planner",
+      ok: compact.ok,
+      ...agentUsage(compact),
+    });
+    parsed = extractJsonObject(compact.output || "");
+    if (parsed) return parsed;
+    dumpPlannerParseFail(runDir, logRound, compact.output || "", "-compact");
+    console.warn("[swarm] planner JSON parse failed after compact retry");
+  }
+
   return null;
+}
+
+function blockedLeafIds(tree) {
+  return Object.values(tree.nodes || {})
+    .filter((n) => n.kind === "leaf" && n.status === "blocked")
+    .map((n) => n.id);
+}
+
+function harnessRequeueBlocked(tree, limit) {
+  const ids = blockedLeafIds(tree).slice(0, Math.max(0, limit));
+  if (!ids.length) return [];
+  const actions = ids.map((id) => ({ type: "requeue_task", id }));
+  applyActions(tree, actions);
+  return ids;
 }
 
 async function runSplitter({
@@ -924,7 +987,10 @@ async function main() {
   let actionErrors = [];
   let mergesSinceReview = 0;
   let sinceObserve = 0;
-  let idlePlannerRounds = 0;
+  let parseFailStreak = 0;
+  let unproductiveStreak = 0;
+  let blockedRescueWaves = 0;
+  let stopReason = null;
   let reviewInFlight = false;
   let observeInFlight = false;
   /** @type {Map<string, any>} */
@@ -933,6 +999,51 @@ async function main() {
   let plannerSettled = false;
   /** Snapshots to restore if planner returns null. */
   let plannerSnap = null;
+
+  function checkpointStopPolicy() {
+    metrics.data.parse_fail_streak = parseFailStreak;
+    metrics.data.unproductive_streak = unproductiveStreak;
+    metrics.data.blocked_rescue_waves = blockedRescueWaves;
+    if (stopReason) metrics.data.stop_reason = stopReason;
+  }
+
+  function requestStop(reason) {
+    stopReason = reason;
+    metrics.data.stop_reason = reason;
+    checkpointStopPolicy();
+    console.log(stopConsoleMessage(reason));
+    const resetN = resetRunningLeaves(tree);
+    if (resetN) {
+      console.log(`[swarm] reset ${resetN} in-flight leaves → pending before stop`);
+      saveTree(runDir, tree);
+    }
+  }
+
+  async function drainInflightAfterStop(graceMs = 30000) {
+    const pending = [...running.values(), plannerPromise, ...auxJobs].filter(Boolean);
+    if (!pending.length) return;
+    console.log(`[swarm] draining ${pending.length} in-flight jobs (grace ${graceMs}ms)`);
+    let timedOut = false;
+    await Promise.race([
+      Promise.allSettled(pending),
+      new Promise((resolve) => {
+        setTimeout(() => {
+          timedOut = true;
+          resolve();
+        }, graceMs);
+      }),
+    ]);
+    if (timedOut) console.warn("[swarm] drain grace elapsed; continuing finalize");
+    // Drop late results without applying — tree already reset for stop.
+    leafResults.clear();
+    running.clear();
+    plannerPromise = null;
+    plannerSettled = false;
+    plannerResult = null;
+    // Re-assert pending for any leaf still marked running after late writes.
+    const resetN = resetRunningLeaves(tree);
+    if (resetN) saveTree(runDir, tree);
+  }
 
   if (resumeNotice) {
     actionErrors.push("run resumed after interruption; recent worker reports may be missing");
@@ -985,16 +1096,24 @@ async function main() {
         && !plannerPromise
         && readyNow().length === 0
       ) {
-        console.log("[swarm] planner declared done");
+        requestStop("planner_done");
         break;
       }
       if (pastDeadline && running.size === 0 && auxJobs.size === 0 && !plannerPromise) {
-        console.log("[swarm] wall-clock budget exhausted");
+        requestStop("wall_budget");
         break;
       }
-      if (idlePlannerRounds >= 2) {
-        console.log("[swarm] idle tree and no productive planner actions; stopping");
-        break;
+      {
+        const stop = shouldStop({
+          parseFailStreak,
+          unproductiveStreak,
+          maxPlannerParseFails: swarm.maxPlannerParseFails,
+          maxUnproductivePlannerRounds: swarm.maxUnproductivePlannerRounds,
+        });
+        if (stop.stop) {
+          requestStop(stop.reason);
+          break;
+        }
       }
 
       if (!pastDeadline) {
@@ -1161,6 +1280,9 @@ async function main() {
         leafResults.delete(taskId);
         running.delete(taskId);
 
+        // After stop, ignore late worker settles so resetRunningLeaves stays authoritative.
+        if (stopReason) continue;
+
         let report = out.report || {};
         const attempts = tree.nodes[taskId]?.attempts || 0;
 
@@ -1172,6 +1294,7 @@ async function main() {
         } else if (out.oversized) {
           markLeaf(tree, out.task.id, "blocked", report);
           const splitJob = (async () => {
+            if (stopReason) return { kind: "splitter" };
             const split = await runSplitter({
               workspaceDir,
               worktreesRoot,
@@ -1219,6 +1342,8 @@ async function main() {
         plannerSettled = false;
         plannerResult = null;
 
+        if (stopReason) continue;
+
         if (plan == null) {
           // Roll back spliced queues so the next invite sees them.
           metrics.data.planner_parse_failures = (metrics.data.planner_parse_failures || 0) + 1;
@@ -1229,7 +1354,25 @@ async function main() {
             plannerSnap = null;
           }
           actionErrors.push("planner JSON parse failed (queues restored)");
-          idlePlannerRounds += 1;
+          const next = nextStreaks({
+            parseOk: false,
+            productive: false,
+            stalled: false,
+            blockedCount: 0,
+            blockedRescueWaves,
+            maxBlockedRescueWaves: swarm.maxBlockedRescueWaves,
+            parseFailStreak,
+            unproductiveStreak,
+          });
+          parseFailStreak = next.parseFailStreak;
+          // unproductiveStreak intentionally unchanged on parse fail
+          checkpointStopPolicy();
+          metrics.checkpoint({
+            tree_stats: treeStats(tree),
+            swarm_planner_rounds: tree.planner_rounds,
+            parse_fail_streak: parseFailStreak,
+            unproductive_streak: unproductiveStreak,
+          });
           continue;
         }
         plannerSnap = null;
@@ -1245,7 +1388,6 @@ async function main() {
 
         const doneActions = actions.filter((a) => a?.type === "done");
         const preDoneActions = actions.filter((a) => a?.type !== "done");
-        const readyBefore = readyNow().length;
         const preResults = applyActions(tree, preDoneActions, {
           maxTreeDepth: swarm.maxTreeDepth,
         });
@@ -1280,26 +1422,47 @@ async function main() {
             }
           }
         }
+
+        const readyAfter = readyNow().length;
+        const productive = appliedActionsAreProductive(preDoneActions, preResults, tree.done);
+        const stalledAfter = running.size === 0 && readyAfter === 0 && !tree.done;
+        const blockedIds = blockedLeafIds(tree);
+        const next = nextStreaks({
+          parseOk: true,
+          productive,
+          stalled: stalledAfter,
+          blockedCount: blockedIds.length,
+          blockedRescueWaves,
+          maxBlockedRescueWaves: swarm.maxBlockedRescueWaves,
+          parseFailStreak,
+          unproductiveStreak,
+        });
+        if (next.didRescue) {
+          const requeued = harnessRequeueBlocked(tree, swarm.concurrency);
+          actionErrors.push(`harness requeued blocked: ${requeued.join(", ") || "(none)"}`);
+          console.log(`[swarm] harness rescue wave ${next.blockedRescueWaves}: requeued ${requeued.length} blocked leaves`);
+        }
+        parseFailStreak = next.parseFailStreak;
+        unproductiveStreak = next.unproductiveStreak;
+        blockedRescueWaves = next.blockedRescueWaves;
+        checkpointStopPolicy();
+
         saveTree(runDir, tree);
         metrics.checkpoint({
           tree_stats: treeStats(tree),
           swarm_planner_rounds: tree.planner_rounds,
+          parse_fail_streak: parseFailStreak,
+          unproductive_streak: unproductiveStreak,
+          blocked_rescue_waves: blockedRescueWaves,
         });
-
-        const readyAfter = readyNow().length;
-        const productive = preDoneActions.some((a) => [
-          "add_task", "split_task", "requeue_task", "add_plan_node", "waive_section",
-        ].includes(a?.type)) || tree.done;
-        const stalledAfter = running.size === 0 && readyAfter === 0 && !tree.done;
-        if (stalledAfter && !productive) {
-          idlePlannerRounds += 1;
-        } else if (readyAfter > readyBefore || productive || tree.done) {
-          idlePlannerRounds = 0;
-        }
       }
     }
   } finally {
     clearInterval(heartbeatTimer);
+  }
+
+  if (stopReason) {
+    await drainInflightAfterStop(30_000);
   }
 
   abortLeftoverMerge(workspaceDir);

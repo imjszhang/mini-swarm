@@ -36,6 +36,7 @@
     "swarm:toml:mock": "node orchestrator/swarm.mjs --mock --task=toml-json",
     "swarm:toml:smoke": "node orchestrator/swarm.mjs --task=toml-json --budget-minutes=20 --concurrency=2",
     "swarm:toml:detached": "node orchestrator/swarm.mjs --task=toml-json --run-to-done --detach",
-    "report:task-run": "node orchestrator/report-task-run.mjs"
+    "report:task-run": "node orchestrator/report-task-run.mjs",
+    "test:stop-policy": "node orchestrator/swarm-stop-policy.test.mjs"
   }
 }

@@ -219,7 +219,7 @@ Models (acceptance): planner/splitter/`review-spec` = `cursor-grok-4.5-high-fast
 
 1. **Protocol migrates** — second sample finalized under zero test signal; holdout healthy; no observe redline trips; conflicts low.
 2. **Absolute quality does not yet migrate** — 76.4% ≪ 90% bar and ≪ CM 98.1%. Observe plateaued ~75.5% after early gains from the ~67% skeleton.
-3. **Early idle, not budget** — only 9 planner rounds; end-game JSON parse failures + many pending/blocked/retired leaves (done only 19/55) → “no productive planner actions” while work remained.
+3. **Early idle, not budget** — only 9 planner rounds; end-game JSON parse failures + many pending/blocked/retired leaves (done only 19/55) → “no productive planner actions” while work remained. **Root cause**: parse-fail and true-idle shared one counter (`idlePlannerRounds >= 2`), so two bad planner JSONs stopped the run while work remained.
 4. **Weak sections** — Spec Examples / Control / Keys / Strings / Tables; sampled fails skew to **invalid accepted** (Control/Encoding).
 
 Honesty notes:
@@ -227,6 +227,7 @@ Honesty notes:
 - Do **not** treat 39 min TOML vs 279 min CM as a fair quality race; migration claim is about harness transfer + process health, not equalized asymptotes.
 - An earlier `auto`-model attempt was aborted; acceptance numbers above are from the clean grok/composer rerun only.
 - Failure arrays in score JSON are truncated samples; use `failure_count` + `by_section` for totals.
+- **Harness fix (post-run)**: stop policy splits `parseFailStreak` vs `unproductiveStreak`, same-role compact retry, blocked rescue waves; no auto model switch (`orchestrator/lib/swarm-stop-policy.mjs`).
 
 Compare: `npm run compare -- runs/run-swarm-v13.3/metrics.json runs/run-swarm-toml-v13.3/metrics.json`
 

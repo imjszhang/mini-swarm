@@ -91,8 +91,10 @@ function failBuckets(score) {
   return { n: fails.length, expectErrorAccepted, mismatch, other };
 }
 
-function stopReason(consoleLog) {
+function stopReason(metrics, consoleLog) {
+  if (metrics?.stop_reason) return metrics.stop_reason;
   if (!consoleLog) return "unknown";
+  if (consoleLog.includes("planner parse exhausted")) return "planner_parse_exhausted";
   if (consoleLog.includes("planner declared done")) return "planner_done";
   if (consoleLog.includes("idle tree")) return "idle_tree";
   if (consoleLog.includes("wall-clock budget exhausted")) return "wall_budget";
@@ -154,7 +156,7 @@ function main() {
   lines.push(`| started / finished | ${m.started_at || "?"} / ${m.finished_at || "?"} |`);
   lines.push(`| segments | ${(m.segments || []).length} |`);
   lines.push(`| active wall (min) | ${wall.toFixed(1)} |`);
-  lines.push(`| stop reason | ${stopReason(consoleLog)} |`);
+  lines.push(`| stop reason | ${stopReason(m, consoleLog)} |`);
   lines.push(`| finalized / salvaged | ${!!m.finalized} / ${!!m.salvaged} |`);
   lines.push("");
   lines.push("## 2. Core metrics");

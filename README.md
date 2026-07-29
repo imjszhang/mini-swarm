@@ -180,6 +180,8 @@ are **not** claimed as Cursor fidelity.
 
 **v13.3 survivability note**: serial Field Guide notes + `guide/index.md merge=union` kill the late-run conflict storm; post-merge CLI canary + observe all-fail redline close 0% windows without leaking suite scores; duplicate planner IDs remap/idempotent instead of wasting rounds.
 
+**Planner stop policy**: JSON parse failures do **not** share the idle-tree counter (`maxPlannerParseFails` vs `maxUnproductivePlannerRounds`). Recovery retries stay on the configured `swarm-planner` / `json-repair` roles — harness never auto-switches models. Blocked leaves can be harness-requeued (`maxBlockedRescueWaves`) before a true idle stop.
+
 ### Long-run ops (v13.2+)
 
 ```bash
