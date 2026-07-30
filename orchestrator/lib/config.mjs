@@ -79,6 +79,17 @@ function normalizeHoldout(raw) {
   };
 }
 
+/**
+ * Token budget cap: null / 0 / NaN / negative → unlimited (null).
+ * Positive integers kept as-is.
+ */
+export function normalizeMaxTokensInOut(value) {
+  if (value == null || value === "") return null;
+  const n = Number(value);
+  if (!Number.isFinite(n) || n <= 0) return null;
+  return Math.floor(n);
+}
+
 function normalizeSwarm(raw) {
   const s = raw.swarm && typeof raw.swarm === "object" ? raw.swarm : {};
   return {
@@ -101,6 +112,7 @@ function normalizeSwarm(raw) {
     plannerCompactRetry: s.plannerCompactRetry !== false,
     leafHealthRepairAttempts: s.leafHealthRepairAttempts ?? 1,
     harnessSelfCheckExamples: s.harnessSelfCheckExamples ?? 5,
+    maxTokensInOut: normalizeMaxTokensInOut(s.maxTokensInOut),
   };
 }
 

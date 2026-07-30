@@ -70,7 +70,8 @@
     "maxBlockedRescueWaves": 2,
     "plannerCompactRetry": true,
     "leafHealthRepairAttempts": 1,
-    "harnessSelfCheckExamples": 5
+    "harnessSelfCheckExamples": 5,
+    "maxTokensInOut": null
   },
   "guideMaxLines": 80,
   "agentCommand": "cursor-agent"

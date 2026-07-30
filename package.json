@@ -38,6 +38,7 @@
     "swarm:toml:detached": "node orchestrator/swarm.mjs --task=toml-json --run-to-done --detach",
     "report:task-run": "node orchestrator/report-task-run.mjs",
     "test:stop-policy": "node orchestrator/swarm-stop-policy.test.mjs",
-    "test:eng-feedback": "node orchestrator/lib/swarm-health.test.mjs && node orchestrator/lib/spec-embedded-check.test.mjs"
+    "test:eng-feedback": "node orchestrator/lib/swarm-health.test.mjs && node orchestrator/lib/spec-embedded-check.test.mjs",
+    "test:token-budget": "node orchestrator/lib/token-budget.test.mjs && node orchestrator/swarm-stop-policy.test.mjs"
   }
 }

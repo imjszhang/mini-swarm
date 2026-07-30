@@ -10,6 +10,7 @@
 - **v13.2 anti-interrupt**: `npm run swarm:detached` (run-to-done + detach) / `npm run swarm:resume -- --run-id=ID` / `npm run swarm:finalize -- --run-id=ID` (heartbeat + metrics checkpoint + segment wall time)
 - **v13.3 conflict/health hardening**: serial Field Guide notes + CLI canary + observe redline + planner ID remap (`npm run swarm:detached -- --run-id=run-swarm-v13.3`)
 - **v13.3 engineering feedback loop**: pre-merge build/canary + harness self-check on **spec-embedded** examples (not `examples.json`); failures → leaf summary + planner `ACTION_ERRORS`; shared `leafHealthRepairAttempts` (default 1). Hidden grader unchanged.
+- **Token budget (optional)**: `swarm.maxTokensInOut` / `--max-tokens=N` — hard stop on sum(`tokens_in`+`tokens_out`); default unlimited; `stop_reason=token_budget`; cache not counted.
 - **v13.3 second sample (TOML→toml-test JSON)**: `npm run swarm:toml:detached -- --run-id=run-swarm-toml-v13.3` / `npm run report:task-run -- --run-id=run-swarm-toml-v13.3 --baseline=run-swarm-v13.3` (`--task=toml-json`, oracle = BurntSushi toml-test)
 - **v8/v9/v10/v11/v12 high-contention A/B**: `npm run run:contention:bare` / `npm run run:contention:faithful` (`--task-set=contention`, concurrency 4, seed planner; v9 score-feedback; v10 sync+gate+global repair; v11 holdout+ledger+adaptive repair; v12 Stage B + strong ladder)
 - **Resume interrupted run**: `npm run salvage -- --run-id=RUN_ID --task-set=contention` then original command + `--resume` (task-level; agent/wall times in metrics cover last segment only — see README)

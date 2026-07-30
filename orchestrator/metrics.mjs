@@ -384,6 +384,19 @@ export function loadMetricsSeed(runDir) {
   }
 }
 
+/**
+ * Sum tokens_in + tokens_out across agent_calls (excludes cache_read/write).
+ * Used for optional swarm token budget hard-stop.
+ */
+export function totalTokensInOut(data) {
+  let sum = 0;
+  for (const c of data?.agent_calls || []) {
+    sum += Number(c.tokens_in) || 0;
+    sum += Number(c.tokens_out) || 0;
+  }
+  return sum;
+}
+
 /** Active wall minutes from segments (excludes death gaps). */
 export function activeWallMinutes(data) {
   const segments = data?.segments || [];

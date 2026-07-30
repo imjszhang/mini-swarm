@@ -134,6 +134,11 @@ run("parse streak hits max → planner_parse_exhausted", () => {
   assert.match(stopConsoleMessage(stop.reason), /parse exhausted/);
 });
 
+run("stopConsoleMessage token_budget", () => {
+  assert.match(stopConsoleMessage("token_budget"), /token budget exhausted/);
+  assert.match(stopConsoleMessage("wall_budget"), /wall-clock budget exhausted/);
+});
+
 run("actionsAreProductive recognizes productive types", () => {
   assert.equal(actionsAreProductive([{ type: "retire_task" }]), false);
   assert.equal(actionsAreProductive([{ type: "add_task" }]), true);

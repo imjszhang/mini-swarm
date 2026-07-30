@@ -98,6 +98,7 @@ function stopReason(metrics, consoleLog) {
   if (consoleLog.includes("planner declared done")) return "planner_done";
   if (consoleLog.includes("idle tree")) return "idle_tree";
   if (consoleLog.includes("wall-clock budget exhausted")) return "wall_budget";
+  if (consoleLog.includes("token budget exhausted")) return "token_budget";
   return "other";
 }
 

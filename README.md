@@ -172,7 +172,7 @@ are **not** claimed as Cursor fidelity.
 | 9 | Multi-perspective low-correlation review stack | `review-diff` / `review-codebase` / `review-spec` (mixed model tiers) |
 | 10 | Field Guide folder (`index.md` inject + line budget) | `guide/index.md`; harness serial-appends `guide_note` on main (workers must not edit the file) |
 | 11 | Spec-as-prompt; scoring suite **hidden from agents** | **Hidden grader**: agents never see `examples.json` / suite pass-fail / VERIFY_CMD / observe scores. Engineering feedback (build, CLI canary, merge conflicts, reviews, harness checks on **spec-embedded** examples) is required and surfaces via `ACTION_ERRORS` / leaf reports. Scorer remains harness-only observation for experimenters. |
-| 12 | Fixed wall-clock budget + metrics | `swarm.budgetMinutes` (default 240) or `--run-to-done` + `maxWallMinutes`; four core metrics + commits/conflicts/LOC |
+| 12 | Fixed wall-clock budget + metrics | `swarm.budgetMinutes` (default 240) or `--run-to-done` + `maxWallMinutes`; optional `maxTokensInOut` / `--max-tokens` (default unlimited; stops on `tokens_in+tokens_out`, not cache); four core metrics + commits/conflicts/LOC |
 
 **v13.1 parallelism note**: event-driven pipeline (continuous dispatch, async planner/review) raised measured `effective_parallelism` from ~1.3 (v13 batch barrier) to ~6 at concurrency=8. Hundreds of concurrent agents remain a declared boundary (git merge queue serial floor).
 
@@ -181,6 +181,8 @@ are **not** claimed as Cursor fidelity.
 **v13.3 survivability note**: serial Field Guide notes + `guide/index.md merge=union` kill the late-run conflict storm; post-merge CLI canary + observe all-fail redline close 0% windows without leaking suite scores; duplicate planner IDs remap/idempotent instead of wasting rounds.
 
 **Hidden grader vs engineering feedback**: S-A-008 withholds the *scoring* suite from the swarm; it does not withhold compile/runtime/merge reality. Pre-merge build+canary and optional harness self-check on section-embedded examples (`leafHealthRepairAttempts`, `harnessSelfCheckExamples`) feed failures into planner `ACTION_ERRORS`. Suite fail lists and observe rates stay metrics-only.
+
+**Token budget (optional)**: `swarm.maxTokensInOut` / `--max-tokens=N` hard-stops when cumulative `tokens_in+tokens_out` reaches the cap (`stop_reason=token_budget`). Default `null` = unlimited. Cache tokens are not counted. In-flight agents drain before stop (same pattern as wall budget).
 
 **Planner stop policy**: JSON parse failures do **not** share the idle-tree counter (`maxPlannerParseFails` vs `maxUnproductivePlannerRounds`). Recovery retries stay on the configured `swarm-planner` / `json-repair` roles — harness never auto-switches models. Blocked leaves can be harness-requeued (`maxBlockedRescueWaves`) before a true idle stop.
 

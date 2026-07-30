@@ -11,7 +11,7 @@ import { spawn } from "node:child_process";
 import { existsSync, mkdirSync, openSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { loadConfig, projectRoot, resolveModel } from "./lib/config.mjs";
+import { loadConfig, normalizeMaxTokensInOut, projectRoot, resolveModel } from "./lib/config.mjs";
 import { finalizeRun } from "./lib/finalize.mjs";
 import {
   abortMerge,
@@ -71,6 +71,7 @@ import {
   activeWallMinutes,
   createMetricsCollector,
   loadMetricsSeed,
+  totalTokensInOut,
 } from "./metrics.mjs";
 import { agentUsage, spawnAgent } from "./runner.mjs";
 
@@ -86,6 +87,7 @@ function parseArgs(argv) {
     concurrency: null,
     runToDone: false,
     maxWallMinutes: null,
+    maxTokens: null,
     detach: false,
     resume: false,
     task: "commonmark",
@@ -108,6 +110,8 @@ function parseArgs(argv) {
     else if (a.startsWith("--concurrency=")) args.concurrency = Number(a.slice("--concurrency=".length));
     else if (a === "--max-wall-minutes") args.maxWallMinutes = Number(argv[++i]);
     else if (a.startsWith("--max-wall-minutes=")) args.maxWallMinutes = Number(a.slice("--max-wall-minutes=".length));
+    else if (a === "--max-tokens") args.maxTokens = Number(argv[++i]);
+    else if (a.startsWith("--max-tokens=")) args.maxTokens = Number(a.slice("--max-tokens=".length));
   }
   return args;
 }
@@ -119,6 +123,7 @@ function usage() {
   --budget-minutes=N   Wall-clock budget when not --run-to-done (default config.swarm.budgetMinutes)
   --run-to-done        Run until planner declares done (hard stop: maxWallMinutes)
   --max-wall-minutes=N Hard safety stop for --run-to-done (default config.swarm.maxWallMinutes)
+  --max-tokens=N       Optional hard stop on sum(tokens_in+tokens_out); default unlimited (no cache)
   --concurrency=N
   --detach             Respawn as a detached process (console.log + swarm.pid); exit parent
   --resume             Resume an interrupted run (requires --run-id)
@@ -339,14 +344,20 @@ function formatCoverage(tree) {
   return lines.join("\n");
 }
 
-function formatBudgetLine(swarm, startedAtMs, hardDeadlineMs) {
+function formatBudgetLine(swarm, startedAtMs, hardDeadlineMs, metricsData = null) {
   const elapsedMin = Math.max(0, Math.floor((Date.now() - startedAtMs) / 60000));
+  let wall;
   if (swarm.runToDone) {
     const hardMin = Math.max(0, Math.ceil((hardDeadlineMs - startedAtMs) / 60000));
-    return `No fixed deadline. Elapsed: ${elapsedMin} min. Hard safety stop at ${hardMin} min.`;
+    wall = `No fixed deadline. Elapsed: ${elapsedMin} min. Hard safety stop at ${hardMin} min.`;
+  } else {
+    const remaining = Math.max(0, Math.ceil((hardDeadlineMs - Date.now()) / 60000));
+    wall = `Wall-clock remaining: ${remaining} minutes.`;
   }
-  const remaining = Math.max(0, Math.ceil((hardDeadlineMs - Date.now()) / 60000));
-  return `Wall-clock remaining: ${remaining} minutes.`;
+  const cap = normalizeMaxTokensInOut(swarm.maxTokensInOut);
+  if (cap == null) return wall;
+  const used = totalTokensInOut(metricsData);
+  return `${wall} Tokens: ${used}/${cap} (in+out, no cache).`;
 }
 
 function mockPlannerActions(tree, round) {
@@ -1037,6 +1048,9 @@ async function main() {
   if (cli.maxWallMinutes != null && !Number.isNaN(cli.maxWallMinutes)) {
     config.swarm.maxWallMinutes = cli.maxWallMinutes;
   }
+  if (cli.maxTokens != null && !Number.isNaN(cli.maxTokens)) {
+    config.swarm.maxTokensInOut = normalizeMaxTokensInOut(cli.maxTokens);
+  }
 
   config.coordination = true;
 
@@ -1119,9 +1133,11 @@ async function main() {
     resumed: !!cli.resume,
   });
 
+  const tokenCapLog = normalizeMaxTokensInOut(swarm.maxTokensInOut);
   console.log(
     `[swarm] id=${runId} task=${taskPack.id} mock=${cli.mock} resume=${cli.resume} runToDone=${swarm.runToDone}`
       + ` hardStop=${swarm.runToDone ? swarm.maxWallMinutes : swarm.budgetMinutes}m`
+      + ` maxTokens=${tokenCapLog == null ? "none" : tokenCapLog}`
       + ` concurrency=${swarm.concurrency}`,
   );
   console.log(`[swarm] planner=${resolveModel(config, "swarm-planner")} worker=${resolveModel(config, "worker")}`);
@@ -1245,20 +1261,26 @@ async function main() {
   try {
     while (true) {
       const pastDeadline = Date.now() >= hardDeadlineMs;
+      const tokenCap = normalizeMaxTokensInOut(swarm.maxTokensInOut);
+      const pastTokenBudget = tokenCap != null && totalTokensInOut(metrics.data) >= tokenCap;
+      const pastBudget = pastDeadline || pastTokenBudget;
       const readyNow = () => readyLeaves(tree).filter((n) => (n.attempts || 0) < swarm.maxLeafAttempts);
+      const idle = running.size === 0 && auxJobs.size === 0 && !plannerPromise;
 
       if (
         tree.done
-        && running.size === 0
-        && auxJobs.size === 0
-        && !plannerPromise
+        && idle
         && readyNow().length === 0
       ) {
         requestStop("planner_done");
         break;
       }
-      if (pastDeadline && running.size === 0 && auxJobs.size === 0 && !plannerPromise) {
+      if (pastDeadline && idle) {
         requestStop("wall_budget");
+        break;
+      }
+      if (pastTokenBudget && idle) {
+        requestStop("token_budget");
         break;
       }
       {
@@ -1274,7 +1296,7 @@ async function main() {
         }
       }
 
-      if (!pastDeadline) {
+      if (!pastBudget) {
         while (running.size < swarm.concurrency) {
           const candidates = readyNow().filter((n) => !running.has(n.id));
           if (!candidates.length) break;
@@ -1303,7 +1325,7 @@ async function main() {
       const stalled = running.size === 0 && readyNow().length === 0;
       const shouldInvitePlanner = !plannerPromise
         && !tree.done
-        && !pastDeadline
+        && !pastBudget
         && (treeEmpty || pendingReports.length >= swarm.plannerReportBatch || stalled);
 
       if (shouldInvitePlanner) {
@@ -1331,7 +1353,7 @@ async function main() {
           reviewFindings: formatFindingsForPlanner(findingsSnap),
           actionErrors: errorsText,
           coverage: formatCoverage(tree),
-          budgetLine: formatBudgetLine(swarm, startedAtMs, hardDeadlineMs),
+          budgetLine: formatBudgetLine(swarm, startedAtMs, hardDeadlineMs, metrics.data),
           fanoutTarget: swarm.concurrency * 2,
           logRound,
         }).then((plan) => {
@@ -1342,7 +1364,7 @@ async function main() {
       }
 
       if (
-        !pastDeadline
+        !pastBudget
         && !reviewInFlight
         && swarm.reviewEveryNMerges > 0
         && mergesSinceReview >= swarm.reviewEveryNMerges
@@ -1393,7 +1415,7 @@ async function main() {
       }
 
       if (
-        !pastDeadline
+        !pastBudget
         && !observeInFlight
         && swarm.observeScoreEveryMerges > 0
         && sinceObserve >= swarm.observeScoreEveryMerges

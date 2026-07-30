@@ -122,5 +122,8 @@ export function stopConsoleMessage(reason) {
   if (reason === "wall_budget") {
     return "[swarm] wall-clock budget exhausted";
   }
+  if (reason === "token_budget") {
+    return "[swarm] token budget exhausted";
+  }
   return `[swarm] stopping (${reason || "unknown"})`;
 }
