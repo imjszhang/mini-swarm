@@ -68,7 +68,9 @@
     "maxPlannerParseFails": 5,
     "maxUnproductivePlannerRounds": 3,
     "maxBlockedRescueWaves": 2,
-    "plannerCompactRetry": true
+    "plannerCompactRetry": true,
+    "leafHealthRepairAttempts": 1,
+    "harnessSelfCheckExamples": 5
   },
   "guideMaxLines": 80,
   "agentCommand": "cursor-agent"

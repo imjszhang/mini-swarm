@@ -214,6 +214,7 @@ function emptyMetricsData() {
     merge_waits: [],
     merge_wait_count: 0,
     self_check_total: 0,
+    harness_self_check_total: 0,
     visible_score: null,
     holdout_score: null,
     holdout_gap_pp: null,
@@ -457,6 +458,7 @@ export function normalizeMetrics(raw) {
   m.merge_waits = m.merge_waits || [];
   m.merge_wait_count = m.merge_wait_count ?? m.merge_waits.length;
   m.self_check_total = m.self_check_total ?? 0;
+  m.harness_self_check_total = m.harness_self_check_total ?? 0;
   m.segments = m.segments || [];
   m.finalized = m.finalized ?? true;
   m.salvaged = !!m.salvaged;

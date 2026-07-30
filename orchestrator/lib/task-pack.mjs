@@ -62,7 +62,7 @@ export function resolveTaskPack(name = "commonmark") {
       promptsDir: path.join(ROOT, "prompts"),
       skeleton: "commonmark",
       canaryInput: "canary\n",
-      canaryRequireExit0: false,
+      canaryRequireExit0: true,
       goalLabel: "CommonMark Markdown → HTML",
     };
   } else if (id === "toml-json") {

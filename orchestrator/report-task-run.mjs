@@ -150,7 +150,7 @@ function main() {
   lines.push(`|---|---|`);
   lines.push(`| task_pack | ${m.task_pack || "n/a"} |`);
   lines.push(`| run_id | ${cli.runId} |`);
-  lines.push(`| protocol | zero-signal swarm v13.3; run_to_done=${!!m.run_to_done} |`);
+  lines.push(`| protocol | hidden-grader swarm v13.3; run_to_done=${!!m.run_to_done} |`);
   lines.push(`| concurrency | ${m.swarm?.concurrency ?? "n/a"} |`);
   lines.push(`| models | planner/worker from config (see agent_calls) |`);
   lines.push(`| started / finished | ${m.started_at || "?"} / ${m.finished_at || "?"} |`);

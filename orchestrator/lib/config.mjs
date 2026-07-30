@@ -99,6 +99,8 @@ function normalizeSwarm(raw) {
     maxUnproductivePlannerRounds: s.maxUnproductivePlannerRounds ?? 3,
     maxBlockedRescueWaves: s.maxBlockedRescueWaves ?? 2,
     plannerCompactRetry: s.plannerCompactRetry !== false,
+    leafHealthRepairAttempts: s.leafHealthRepairAttempts ?? 1,
+    harnessSelfCheckExamples: s.harnessSelfCheckExamples ?? 5,
   };
 }
 

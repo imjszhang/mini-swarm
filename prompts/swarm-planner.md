@@ -50,7 +50,8 @@ the tree — there is no fixed topology.
 ## Budget
 
 {{BUDGET_LINE}}
-Do not invent score numbers or ask for test results — none are available to you.
+Do not invent suite score numbers — the scoring suite is hidden from you.
+Engineering failures (build / canary / merge / harness embedded-example checks) appear under **Previous action errors**; schedule fix tasks when you see them.
 
 ## Output
 

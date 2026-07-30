@@ -21,9 +21,9 @@ Tagged JSON shape (toml-test):
 - **In**: TOML 1.0 decoder; suite = `vendor/toml-test` file list `files-toml-1.0.0` (valid + invalid).
 - **Out**: encoder; TOML 1.1 preview features; score feedback to agents.
 
-## Zero test signal
+## Hidden grader
 
-Agents see `spec/spec.txt` section text (embedded examples only). They must **not** read `spec/examples.json` or ask for pass/fail scores. Harness scoring is observation-only.
+Agents see `spec/spec.txt` section text (embedded examples only). They must **not** read `spec/examples.json` or ask for suite pass/fail scores. Harness suite scoring is observation-only. Engineering gates (build, canary, harness checks on those same embedded examples) still apply.
 
 ## Canary
 

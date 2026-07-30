@@ -39,7 +39,7 @@ npm run build
 # optional: echo "your sample" | node dist/cli.js
 ```
 
-- There is no external test suite or score available to you. Do not search the repo for oracles. The spec text above (including its embedded examples) and DESIGN.md are your only correctness references.
+- There is no external **scoring** suite or pass-rate available to you. Do not search the repo for oracles (`examples.json`, etc.). The spec text above (including its embedded examples) and DESIGN.md are your only correctness references. The harness may still gate merge on `npm run build`, a trivial CLI canary, and a few of those same embedded examples.
 - If a source file you own grows past ~{{OVERSIZED_LINES}} lines, stop growing it — report it as oversized instead of stuffing more logic in.
 
 ## Finish

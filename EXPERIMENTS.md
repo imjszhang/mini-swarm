@@ -5,10 +5,11 @@
 - **Run A (bare)**: `npm run run:quick -- --run-id=run-a-bare-v4`
 - **Run B (coordinated)**: `npm run run:quick:coordinated -- --run-id=run-b-coordinated-v4`
 - **Run B faithful**: `npm run run:faithful -- --run-id=run-b-faithful-v7`
-- **v13 Cursor-faithful swarm**: `npm run swarm` / `npm run swarm:mock` / `npm run swarm:smoke` (planner tree + zero test signal + review stack; wall-clock budget)
+- **v13 Cursor-faithful swarm**: `npm run swarm` / `npm run swarm:mock` / `npm run swarm:smoke` (planner tree + **hidden grader** + engineering feedback + review stack; wall-clock budget)
 - **v13.1 event-driven + run-to-done**: `npm run swarm:done` / `npm run swarm -- --run-to-done --concurrency=8` (continuous dispatch, async planner/review, worker self-check, spec coverage gate)
 - **v13.2 anti-interrupt**: `npm run swarm:detached` (run-to-done + detach) / `npm run swarm:resume -- --run-id=ID` / `npm run swarm:finalize -- --run-id=ID` (heartbeat + metrics checkpoint + segment wall time)
 - **v13.3 conflict/health hardening**: serial Field Guide notes + CLI canary + observe redline + planner ID remap (`npm run swarm:detached -- --run-id=run-swarm-v13.3`)
+- **v13.3 engineering feedback loop**: pre-merge build/canary + harness self-check on **spec-embedded** examples (not `examples.json`); failures → leaf summary + planner `ACTION_ERRORS`; shared `leafHealthRepairAttempts` (default 1). Hidden grader unchanged.
 - **v13.3 second sample (TOML→toml-test JSON)**: `npm run swarm:toml:detached -- --run-id=run-swarm-toml-v13.3` / `npm run report:task-run -- --run-id=run-swarm-toml-v13.3 --baseline=run-swarm-v13.3` (`--task=toml-json`, oracle = BurntSushi toml-test)
 - **v8/v9/v10/v11/v12 high-contention A/B**: `npm run run:contention:bare` / `npm run run:contention:faithful` (`--task-set=contention`, concurrency 4, seed planner; v9 score-feedback; v10 sync+gate+global repair; v11 holdout+ledger+adaptive repair; v12 Stage B + strong ladder)
 - **Resume interrupted run**: `npm run salvage -- --run-id=RUN_ID --task-set=contention` then original command + `--resume` (task-level; agent/wall times in metrics cover last segment only — see README)
@@ -30,12 +31,12 @@
 
 Models: planner/splitter/`review-spec` = `cursor-grok-4.5-high-fast`; workers/merger/`review-diff`/`review-codebase` = `composer-2.5-fast`.
 
-### v13 architecture (zero test signal)
+### v13 architecture (hidden grader)
 
 New entry `npm run swarm` (legacy `run.mjs` / repair-engine retained as control):
 
 1. **Strong planner tree** — `swarm-planner` writes `DESIGN.md` + `tree.json` actions (`add_task` / `split_task` / …); never implements.
-2. **Zero test signal** — agents never see examples, VERIFY_CMD, or pass/fail; scorer is harness-only observation (`score_curve` + final triple).
+2. **Hidden grader** — agents never see scoring-suite examples, VERIFY_CMD, or suite pass/fail; scorer is harness-only observation (`score_curve` + final triple). Engineering feedback (build/canary/merge/review/spec-embedded checks) still reaches the swarm.
 3. **Field Guide folder** — `guide/index.md` with line budget.
 4. **Oversized VCS gate** — merge-queue blocks commits when `src/**` exceeds line budget → `splitter`.
 5. **Review stack** — diff / codebase / spec perspectives every N merges; findings return to planner.
@@ -46,7 +47,7 @@ New entry `npm run swarm` (legacy `run.mjs` / repair-engine retained as control)
 | Full pass rate | **69.1%** (363/525) | 93.0% (488/525) |
 | Visible / holdout | 68.8% / **70.9%** | 93.8% / 88.4% |
 | holdout_gap_pp | **-2.1** | +5.5 (alarm) |
-| Architecture | zero-signal swarm | test-driven pool+repair |
+| Architecture | hidden-grader swarm | test-driven pool+repair |
 | Planner rounds | 22 | seed-contention (fixed) |
 | Reviews / splits | 10 / 3 | n/a / n/a |
 | Tokens (in+out) | **9.59M** (usage 134/137) | n/a (pre-v12.1) |
@@ -57,7 +58,7 @@ New entry `npm run swarm` (legacy `run.mjs` / repair-engine retained as control)
 
 Honesty notes:
 
-- Quality is **lower** than the test-driven v12 pipeline by design (Cursor's own 4h runs were often 73–85% on a different task). Zero-signal forbids score feedback and Stage A/B repair.
+- Quality is **lower** than the test-driven v12 pipeline by design (Cursor's own 4h runs were often 73–85% on a different task). Hidden grader forbids suite score feedback and Stage A/B repair.
 - Holdout **above** visible (gap −2.1) is the reverse of v11/v12 overfit alarms — evidence that agents were not fitting the official example set.
 - Worker role is only ~47% of tokens because merger + review stack + planner also burn tokens; **cheap-model** share remains ~80%. Cursor's “workers ≥69–90%” refers to role mix on their stack, not identical accounting.
 - Declared boundary: git worktrees, not custom VCS; concurrency 4, not hundreds of agents.
@@ -74,7 +75,7 @@ Compare (observational): `npm run compare -- runs/run-b-faithful-contention-v12/
 
 Models unchanged: planner/splitter/`review-spec` = `cursor-grok-4.5-high-fast`; workers/merger/`review-diff`/`review-codebase` = `composer-2.5-fast`.
 
-### v13.1 changes (still zero test signal)
+### v13.1 changes (still hidden grader)
 
 Motivation: v13 wall 244 min with concurrency=4 but effective parallelism ~1.3 (batch barrier + blocking planner/review). Three verified defects fixed: fence-aware `getReferenceText`, `requeue_task` resets attempts, event-driven scheduler.
 
@@ -118,7 +119,7 @@ Compare: `npm run compare -- runs/run-swarm-v13/metrics.json runs/run-swarm-v13.
 
 v13.1 acceptance was **not** a software hang. Evidence: no `MERGE_HEAD`/`index.lock`; death during `Promise.race` idle; no agent `.log` close handlers after 0:21:48; orphan cursor-agent processes wrote worktrees until ~0:27. Host/Cursor terminal teardown killed the orchestrator. Metrics lived only in memory until `finish()`, so the run needed salvage.
 
-### v13.2 changes (still zero test signal)
+### v13.2 changes (still hidden grader)
 
 1. **`--detach`** — respawn with `detached:true`, console → `console.log`, PID → `swarm.pid` (life decoupled from IDE terminal).
 2. **Heartbeat** — `heartbeat.json` every 30s (gap = sync stall; stop = death).
@@ -145,7 +146,7 @@ Honesty notes:
 - Run survived a mid-flight `git status` crash (Windows status `0xC0000409`) via `--resume`; scores are live `finalized:true`, not salvage.
 - Hard-stopped on remaining `maxWallMinutes` after resume (planner never reached `done`); quality still rose vs interrupted v13.1.
 - Duplicate task IDs still waste some planner rounds despite ID ledger — recorded as action errors, not silent loss.
-- Zero test signal retained; agents never saw suite scores.
+- Hidden grader retained; agents never saw suite scores.
 
 Compare: `npm run compare -- runs/run-swarm-v13.1/metrics.json runs/run-swarm-v13.2/metrics.json`
 
@@ -163,10 +164,10 @@ Compare: `npm run compare -- runs/run-swarm-v13.1/metrics.json runs/run-swarm-v1
 v13.2 hard-stopped at **92.4%** with budget exhausted — not planner `done`. Three linked losses in the last ~3h:
 
 1. **`guide/index.md` conflict storm** — 65/82 merge conflicts hit the shared Field Guide (workers appended in their own worktrees). Late merges spent minutes resolving noise; leftover unmerged state forced planner to spawn cleanup tasks that never ran.
-2. **0% observe windows (~40 min)** — a bad merge left `entities.js` throwing on import; `tsc` still green so `ensureBuiltWithRepair` passed. Zero-signal means no agent saw the suite collapse.
+2. **0% observe windows (~40 min)** — a bad merge left `entities.js` throwing on import; `tsc` still green so `ensureBuiltWithRepair` passed. Hidden grader meant no agent saw the *suite* collapse (canary later closed this engineering gap).
 3. **Planner round waste** — 7 JSON parse failures + batches of duplicate IDs (`task-06/07/08` recycled) despite the ID ledger; done-leaf lines bloated the prompt (~340 lines).
 
-### v13.3 changes (still zero test signal)
+### v13.3 changes (still hidden grader)
 
 1. **Serial Field Guide** — workers must not edit `guide/index.md`; harness appends `guide_note` on main via `MergeQueue.enqueueFn` after a successful merge. `.gitattributes` `guide/index.md merge=union` as a backstop.
 2. **CLI canary** — after build, `node dist/cli.js` must accept a trivial stdin line (15s). Failure reuses integration-fix with a runtime-crash prompt (no suite leakage).
@@ -182,7 +183,7 @@ Honesty notes:
 
 ## Runs (2026-07-29) — v13.3 second sample: TOML → toml-test JSON
 
-Goal: reuse the **same** zero-signal swarm (v13.3) on a second verifiable task pack to test migration — not to match CommonMark’s absolute score on the first pass.
+Goal: reuse the **same** hidden-grader swarm (v13.3) on a second verifiable task pack to test migration — not to match CommonMark’s absolute score on the first pass.
 
 | Run ID | Mode | Notes |
 |---|---|---|
@@ -223,7 +224,7 @@ Models (acceptance): planner/splitter/`review-spec` = `cursor-grok-4.5-high-fast
 
 ### Reading
 
-1. **Protocol migrates** — second sample finalized under zero test signal; holdout healthy; no observe redline trips; conflicts low.
+1. **Protocol migrates** — second sample finalized under hidden grader; holdout healthy; no observe redline trips; conflicts low.
 2. **Stop-policy fix validated** — v13.3b ran **131** planner rounds to wall (vs v13.3’s **9**-round false idle). Same models; no auto model switch.
 3. **Quality improved but short of 90%** — 76.4% → **85.1%** full (+8.7pp); holdout **90.1%**. Late observe plateaued ~83–84% before final 85.1%.
 4. **Absolute CM-class score still not shown** — 85.1% ≪ CM 98.1%; remaining misses concentrate in Spec Examples / Keys / Strings / Encoding / Root.

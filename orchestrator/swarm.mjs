@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 /**
  * v13.3 Cursor-faithful swarm entry (S-A-008).
- * Event-driven planner/worker pipeline + run-to-done + zero test signal
+ * Event-driven planner/worker pipeline + run-to-done + hidden grader
+ * + engineering feedback (build/canary/spec-embedded) to planner
  * + detach / heartbeat / checkpoint / resume
  * + serial Field Guide notes / CLI canary / planner ID remap.
  * Legacy test-driven pipeline remains in run.mjs / repair-engine.mjs.
  */
-import { spawn, spawnSync } from "node:child_process";
+import { spawn } from "node:child_process";
 import { existsSync, mkdirSync, openSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -22,7 +23,7 @@ import {
   removeWorktree,
   syncWorktreeWithMain,
 } from "./lib/git.mjs";
-import { npmExec, powershellCommand, taskkillPid } from "./lib/win-exec.mjs";
+import { powershellCommand, taskkillPid } from "./lib/win-exec.mjs";
 import { appendGuideNote, readGuideIndex } from "./lib/guide.mjs";
 import { ensureHoldout, holdoutFilePath } from "./lib/holdout.mjs";
 import { extractJsonObject } from "./lib/json-parse.mjs";
@@ -32,7 +33,16 @@ import {
   buildSwarmWorkerPrompt,
 } from "./lib/prompts.mjs";
 import { formatFindingsForPlanner, runReviewStack } from "./lib/review-stack.mjs";
+import { runEmbeddedSelfCheck } from "./lib/spec-embedded-check.mjs";
 import { formatSpecToc, listSpecSections } from "./lib/spec-toc.mjs";
+import {
+  attachEngineeringError,
+  buildHealthRepairPrompt,
+  checkWorkspaceHealth,
+  createRepairBudget,
+  ensureBuilt,
+  runCliCanary,
+} from "./lib/swarm-health.mjs";
 import {
   appliedActionsAreProductive,
   nextStreaks,
@@ -116,107 +126,171 @@ function usage() {
   --help`);
 }
 
-function ensureBuilt(workspaceDir) {
-  try {
-    if (!existsSync(path.join(workspaceDir, "node_modules"))) {
-      npmExec(["install"], { cwd: workspaceDir, stdio: "ignore" });
-    }
-    npmExec(["run", "build"], { cwd: workspaceDir, encoding: "utf8" });
-    return { ok: true };
-  } catch (err) {
-    return { ok: false, stderr: String(err.stderr || err.stdout || err.message || "") };
-  }
-}
-
-/** Runtime smoke: CLI must accept pack canary stdin with exit 0. No suite oracle. */
-function runCliCanary(workspaceDir) {
-  const pack = getActiveTaskPack();
-  const cli = path.join(workspaceDir, "dist", "cli.js");
-  if (!existsSync(cli)) {
-    return { ok: false, stderr: `Missing ${cli}` };
-  }
-  const result = spawnSync(process.execPath, [cli], {
+async function runIntegrationFixAgent({
+  workspaceDir,
+  config,
+  runDir,
+  metrics,
+  taskId,
+  kind,
+  stderr,
+  phase,
+  logKey,
+}) {
+  const prompt = buildHealthRepairPrompt({ kind, stderr, phase });
+  const result = await spawnAgent({
+    role: "integration-fix",
+    prompt,
     cwd: workspaceDir,
-    input: pack.canaryInput || "canary\n",
-    encoding: "utf8",
-    timeout: 15_000,
-    windowsHide: true,
-    maxBuffer: 1024 * 1024,
+    config,
+    runDir,
+    logKey,
+    timeoutMs: (config.taskTimeoutMinutes || 20) * 60 * 1000,
   });
-  if (result.error) {
-    return { ok: false, stderr: String(result.error.message || result.error) };
-  }
-  if (result.status !== 0) {
-    return {
-      ok: false,
-      stderr: String(result.stderr || result.stdout || `cli exit ${result.status}`).trim(),
-    };
-  }
-  return { ok: true };
+  metrics.recordAgentCall({
+    role: "integration-fix",
+    taskId,
+    ok: result.ok,
+    ...agentUsage(result),
+  });
+  metrics.recordIntegrationFix?.({ taskId, ok: result.ok, kind, phase });
+  return result;
 }
 
 async function ensureBuiltWithRepair({ workspaceDir, config, runDir, metrics, taskId }) {
   const max = config.maxIntegrationFixRetries ?? 2;
+  let lastKind = "build";
+  let lastStderr = "";
   for (let attempt = 1; attempt <= max + 1; attempt += 1) {
-    const build = ensureBuilt(workspaceDir);
-    let failureKind = null;
-    let failureText = "";
-    if (!build.ok) {
-      failureKind = "build";
-      failureText = build.stderr || "";
-    } else {
-      const canary = runCliCanary(workspaceDir);
-      if (canary.ok) return { ok: true, attempts: attempt - 1 };
-      failureKind = "canary";
-      failureText = canary.stderr || "";
-    }
+    const health = checkWorkspaceHealth(workspaceDir);
+    if (health.ok) return { ok: true, attempts: attempt - 1 };
+    lastKind = health.kind || "build";
+    lastStderr = health.stderr || "";
     if (attempt > max) {
-      return { ok: false, stderr: failureText, attempts: attempt - 1, canary: failureKind === "canary" };
+      return {
+        ok: false,
+        kind: lastKind,
+        stderr: lastStderr,
+        attempts: attempt - 1,
+        canary: lastKind === "canary",
+      };
     }
-    const prompt = failureKind === "canary"
-      ? [
-        "After a merge/integration, `node dist/cli.js` crashes on startup (or exits non-zero) when fed a trivial stdin line.",
-        "Fix the runtime import/init error with the smallest change. Update DESIGN.md / contracts.ts if interfaces changed.",
-        "Do not look for external test oracles. Do not add import-time assertions that throw on module load.",
-        "",
-        "Runtime error:",
-        "```",
-        failureText.slice(0, 4000),
-        "```",
-        "",
-        "Say INTEGRATION_FIXED when done.",
-      ].join("\n")
-      : [
-        "The TypeScript build failed after a merge/integration.",
-        "Fix compile errors with the smallest change. Update DESIGN.md / contracts.ts if interfaces changed.",
-        "Do not look for external test oracles.",
-        "",
-        "Build error:",
-        "```",
-        failureText.slice(0, 4000),
-        "```",
-        "",
-        "Say INTEGRATION_FIXED when done.",
-      ].join("\n");
-    const result = await spawnAgent({
-      role: "integration-fix",
-      prompt,
-      cwd: workspaceDir,
+    await runIntegrationFixAgent({
+      workspaceDir,
       config,
       runDir,
-      logKey: `swarm-integration-${taskId}-${attempt}`,
-      timeoutMs: (config.taskTimeoutMinutes || 20) * 60 * 1000,
-    });
-    metrics.recordAgentCall({
-      role: "integration-fix",
+      metrics,
       taskId,
-      attempt,
-      ok: result.ok,
-      ...agentUsage(result),
+      kind: lastKind,
+      stderr: lastStderr,
+      phase: "post-merge",
+      logKey: `swarm-integration-${taskId}-${attempt}`,
     });
-    metrics.recordIntegrationFix?.({ taskId, attempt, ok: result.ok, kind: failureKind });
   }
-  return { ok: false };
+  return {
+    ok: false,
+    kind: lastKind,
+    stderr: lastStderr,
+    attempts: max,
+    canary: lastKind === "canary",
+  };
+}
+
+/**
+ * Pre-merge health + embedded self-check with shared repair budget.
+ * @returns {{ ok: true, checked: number } | { ok: false, engineeringError, report }}
+ */
+async function gateLeafBeforeMerge({
+  wtPath,
+  task,
+  report,
+  config,
+  runDir,
+  metrics,
+  mock,
+}) {
+  if (mock) return { ok: true, checked: 0 };
+
+  const swarm = config.swarm || {};
+  const budget = createRepairBudget(swarm.leafHealthRepairAttempts ?? 1);
+  const maxExamples = swarm.harnessSelfCheckExamples ?? 5;
+  const maxChars = swarm.specTextMaxChars ?? 64000;
+
+  const tryRepair = async (kind, stderr, phase) => {
+    if (!budget.consume()) return false;
+    await runIntegrationFixAgent({
+      workspaceDir: wtPath,
+      config,
+      runDir,
+      metrics,
+      taskId: task.id,
+      kind,
+      stderr,
+      phase,
+      logKey: `swarm-leaf-health-${task.id}-${kind}`,
+    });
+    commitAll(wtPath, `leaf-health: ${kind} fix ${task.id}`);
+    return true;
+  };
+
+  let health = checkWorkspaceHealth(wtPath);
+  if (!health.ok) {
+    const repaired = await tryRepair(health.kind, health.stderr, "pre-merge");
+    if (repaired) health = checkWorkspaceHealth(wtPath);
+    if (!health.ok) {
+      const attached = attachEngineeringError(report, {
+        phase: "pre-merge",
+        kind: health.kind || "build",
+        stderr: health.stderr || "",
+        taskId: task.id,
+      });
+      return { ok: false, ...attached };
+    }
+  }
+
+  let embedded = runEmbeddedSelfCheck({
+    workspaceDir: wtPath,
+    sections: task.spec_sections || [],
+    maxExamples,
+    maxChars,
+  });
+  if (!embedded.ok) {
+    const repaired = await tryRepair("embedded", embedded.stderr, "pre-merge");
+    if (repaired) {
+      // Rebuild after embedded fix before re-check.
+      health = checkWorkspaceHealth(wtPath);
+      if (!health.ok) {
+        const attached = attachEngineeringError(report, {
+          phase: "pre-merge",
+          kind: health.kind || "build",
+          stderr: health.stderr || "",
+          taskId: task.id,
+        });
+        return { ok: false, ...attached };
+      }
+      embedded = runEmbeddedSelfCheck({
+        workspaceDir: wtPath,
+        sections: task.spec_sections || [],
+        maxExamples,
+        maxChars,
+      });
+    }
+    if (!embedded.ok) {
+      const attached = attachEngineeringError(report, {
+        phase: "pre-merge",
+        kind: "embedded",
+        stderr: embedded.stderr || "",
+        taskId: task.id,
+      });
+      return { ok: false, ...attached };
+    }
+  }
+
+  const checked = Number(embedded.checked) || 0;
+  if (checked > 0) {
+    metrics.data.harness_self_check_total = (metrics.data.harness_self_check_total || 0) + checked;
+  }
+  return { ok: true, checked };
 }
 
 function abortLeftoverMerge(workspaceDir, label = "swarm") {
@@ -770,6 +844,37 @@ async function executeLeaf({
     return { task, ok: false, report, oversized: report.status === "oversized" };
   }
 
+  const gate = await gateLeafBeforeMerge({
+    wtPath: wt.path,
+    task,
+    report,
+    config,
+    runDir,
+    metrics,
+    mock,
+  });
+  if (!gate.ok) {
+    removeWorktree(workspaceDir, wt.path);
+    metrics.recordTask({
+      id: task.id,
+      status: "failed",
+      elapsedMs: Date.now() - started,
+      report: gate.report,
+    });
+    return {
+      task,
+      ok: false,
+      report: gate.report,
+      engineeringError: gate.engineeringError,
+    };
+  }
+  if (gate.checked > 0) {
+    report = {
+      ...report,
+      self_checked: Math.max(Number(report.self_checked) || 0, gate.checked),
+    };
+  }
+
   const sync = syncWorktreeWithMain(wt.path);
   if (sync.conflict) abortMerge(wt.path);
   metrics.recordWorktreeSync({ taskId: task.id, conflict: !!sync.conflict });
@@ -789,18 +894,24 @@ async function executeLeaf({
     });
   } catch (err) {
     removeWorktree(workspaceDir, wt.path);
-    const failedReport = {
-      ...report,
-      status: "blocked",
-      summary: `merge exception: ${err?.message || err}`,
-    };
+    const attached = attachEngineeringError(report, {
+      phase: "merge",
+      kind: "merge",
+      stderr: String(err?.message || err),
+      taskId: task.id,
+    });
     metrics.recordTask({
       id: task.id,
       status: "failed",
       elapsedMs: Date.now() - started,
-      report: failedReport,
+      report: attached.report,
     });
-    return { task, ok: false, report: failedReport };
+    return {
+      task,
+      ok: false,
+      report: attached.report,
+      engineeringError: attached.engineeringError,
+    };
   }
   removeWorktree(workspaceDir, wt.path);
 
@@ -820,8 +931,55 @@ async function executeLeaf({
     };
   }
 
-  const ok = mergeResult.ok && mergeResult.postMerge?.ok !== false;
-  if (ok && report.guide_note) {
+  if (!mergeResult.ok) {
+    const attached = attachEngineeringError(report, {
+      phase: "merge",
+      kind: "merge",
+      stderr: mergeResult.message
+        || (mergeResult.conflict ? "merge conflict unresolved" : "merge failed"),
+      taskId: task.id,
+    });
+    metrics.recordTask({
+      id: task.id,
+      status: "failed",
+      elapsedMs: Date.now() - started,
+      report: attached.report,
+      merge: { ok: false, oversized: false },
+    });
+    return {
+      task,
+      ok: false,
+      report: attached.report,
+      engineeringError: attached.engineeringError,
+      mergeResult,
+    };
+  }
+
+  if (mergeResult.postMerge?.ok === false) {
+    const pm = mergeResult.postMerge;
+    const attached = attachEngineeringError(report, {
+      phase: "post-merge",
+      kind: pm.kind || (pm.canary ? "canary" : "build"),
+      stderr: pm.stderr || "",
+      taskId: task.id,
+    });
+    metrics.recordTask({
+      id: task.id,
+      status: "failed",
+      elapsedMs: Date.now() - started,
+      report: attached.report,
+      merge: { ok: true, oversized: false, postMerge: false },
+    });
+    return {
+      task,
+      ok: false,
+      report: attached.report,
+      engineeringError: attached.engineeringError,
+      mergeResult,
+    };
+  }
+
+  if (report.guide_note) {
     try {
       await mergeQueue.enqueueFn(() => {
         appendGuideNote(workspaceDir, `[${task.id}] ${report.guide_note}`);
@@ -833,12 +991,12 @@ async function executeLeaf({
   }
   metrics.recordTask({
     id: task.id,
-    status: ok ? "done" : "failed",
+    status: "done",
     elapsedMs: Date.now() - started,
     report,
-    merge: { ok: mergeResult.ok, oversized: !!mergeResult.oversized },
+    merge: { ok: true, oversized: false },
   });
-  return { task, ok, report, mergeResult };
+  return { task, ok: true, report, mergeResult };
 }
 
 function trackPromise(set, promise) {
@@ -1324,6 +1482,10 @@ async function main() {
             };
           }
           markLeaf(tree, out.task.id, "blocked", report);
+        }
+
+        if (out.engineeringError?.message) {
+          actionErrors.push(out.engineeringError.message);
         }
 
         pendingReports.push(
