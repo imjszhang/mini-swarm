@@ -112,6 +112,11 @@ function normalizeSwarm(raw) {
     plannerCompactRetry: s.plannerCompactRetry !== false,
     leafHealthRepairAttempts: s.leafHealthRepairAttempts ?? 1,
     harnessSelfCheckExamples: s.harnessSelfCheckExamples ?? 5,
+    harnessCrossCheckExamples: s.harnessCrossCheckExamples ?? 5,
+    observePerfectStreakToStop: s.observePerfectStreakToStop ?? 2,
+    auditCleanConvergeThreshold: s.auditCleanConvergeThreshold ?? 1,
+    auditRejectAfterClean: s.auditRejectAfterClean ?? 2,
+    auditConvergedGraceRounds: s.auditConvergedGraceRounds ?? 2,
     maxTokensInOut: normalizeMaxTokensInOut(s.maxTokensInOut),
   };
 }

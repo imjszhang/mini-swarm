@@ -99,6 +99,8 @@ function stopReason(metrics, consoleLog) {
   if (consoleLog.includes("idle tree")) return "idle_tree";
   if (consoleLog.includes("wall-clock budget exhausted")) return "wall_budget";
   if (consoleLog.includes("token budget exhausted")) return "token_budget";
+  if (consoleLog.includes("observe perfect streak")) return "observe_perfect";
+  if (consoleLog.includes("audit converged")) return "audit_converged";
   return "other";
 }
 

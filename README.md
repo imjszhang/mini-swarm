@@ -180,11 +180,21 @@ are **not** claimed as Cursor fidelity.
 
 **v13.3 survivability note**: serial Field Guide notes + `guide/index.md merge=union` kill the late-run conflict storm; post-merge CLI canary + observe all-fail redline close 0% windows without leaking suite scores; duplicate planner IDs remap/idempotent instead of wasting rounds.
 
-**Hidden grader vs engineering feedback**: S-A-008 withholds the *scoring* suite from the swarm; it does not withhold compile/runtime/merge reality. Pre-merge build+canary and optional harness self-check on section-embedded examples (`leafHealthRepairAttempts`, `harnessSelfCheckExamples`) feed failures into planner `ACTION_ERRORS`. Suite fail lists and observe rates stay metrics-only.
+**Hidden grader vs engineering feedback**: S-A-008 withholds the *scoring* suite from the swarm; it does not withhold compile/runtime/merge reality. Pre-merge build+canary and optional harness self-check on section-embedded examples (`leafHealthRepairAttempts`, `harnessSelfCheckExamples`) feed failures into planner `ACTION_ERRORS`. Suite fail lists and observe rates stay metrics-only. Cross-section embedded sampling (`harnessCrossCheckExamples`, default 5) rejects merges that regress other sections without exposing suite scores.
 
 **Token budget (optional)**: `swarm.maxTokensInOut` / `--max-tokens=N` hard-stops when cumulative `tokens_in+tokens_out` reaches the cap (`stop_reason=token_budget`). Default `null` = unlimited. Cache tokens are not counted. In-flight agents drain before stop (same pattern as wall budget).
 
 **Planner stop policy**: JSON parse failures do **not** share the idle-tree counter (`maxPlannerParseFails` vs `maxUnproductivePlannerRounds`). Recovery retries stay on the configured `swarm-planner` / `json-repair` roles — harness never auto-switches models. Blocked leaves can be harness-requeued (`maxBlockedRescueWaves`) before a true idle stop.
+
+**v13.4 convergence stops** (harness-only; scores never enter agent prompts):
+
+| `stop_reason` | Trigger |
+|---|---|
+| `observe_perfect` | Observe visible score perfect for `observePerfectStreakToStop` consecutive windows (default **2**; `0` = off) |
+| `audit_converged` | All non-waived sections have clean audit count ≥ `auditCleanConvergeThreshold` (default 1), planner still does not declare `done` after `auditConvergedGraceRounds` invites (default **2**; `0` = off) |
+| `planner_done` / `idle_tree` / `wall_budget` / `token_budget` | Unchanged |
+
+Audit leaves that target a section with clean ≥ `auditRejectAfterClean` (default 2) are rejected before apply. Coverage injects per-section clean counts and “declare done NOW” when fully converged.
 
 ### Long-run ops (v13.2+)
 

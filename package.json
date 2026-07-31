@@ -39,6 +39,7 @@
     "report:task-run": "node orchestrator/report-task-run.mjs",
     "test:stop-policy": "node orchestrator/swarm-stop-policy.test.mjs",
     "test:eng-feedback": "node orchestrator/lib/swarm-health.test.mjs && node orchestrator/lib/spec-embedded-check.test.mjs",
-    "test:token-budget": "node orchestrator/lib/token-budget.test.mjs && node orchestrator/swarm-stop-policy.test.mjs"
+    "test:token-budget": "node orchestrator/lib/token-budget.test.mjs && node orchestrator/swarm-stop-policy.test.mjs",
+    "test:convergence": "node orchestrator/swarm-stop-policy.test.mjs && node orchestrator/lib/audit-convergence.test.mjs && node orchestrator/lib/spec-embedded-check.test.mjs"
   }
 }

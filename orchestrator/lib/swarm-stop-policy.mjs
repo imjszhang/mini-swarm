@@ -92,6 +92,20 @@ export function nextStreaks(state) {
 }
 
 /**
+ * Advance observe-perfect streak from a harness-only score report.
+ * Perfect = total>0 && passed===total; otherwise reset to 0.
+ * @param {number} streak
+ * @param {{ total?: number, passed?: number } | null} report
+ */
+export function nextPerfectObserveStreak(streak, report) {
+  const prev = Number(streak) || 0;
+  const total = Number(report?.total) || 0;
+  const passed = Number(report?.passed) || 0;
+  if (total > 0 && passed === total) return prev + 1;
+  return 0;
+}
+
+/**
  * @returns {{ stop: boolean, reason: null | 'planner_parse_exhausted' | 'idle_tree' }}
  */
 export function shouldStop(state) {
@@ -124,6 +138,12 @@ export function stopConsoleMessage(reason) {
   }
   if (reason === "token_budget") {
     return "[swarm] token budget exhausted";
+  }
+  if (reason === "observe_perfect") {
+    return "[swarm] observe perfect streak reached; stopping";
+  }
+  if (reason === "audit_converged") {
+    return "[swarm] audit converged and planner did not declare done; stopping";
   }
   return `[swarm] stopping (${reason || "unknown"})`;
 }

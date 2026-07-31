@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 /**
- * v13.3 Cursor-faithful swarm entry (S-A-008).
+ * v13.4 Cursor-faithful swarm entry (S-A-008).
  * Event-driven planner/worker pipeline + run-to-done + hidden grader
  * + engineering feedback (build/canary/spec-embedded) to planner
  * + detach / heartbeat / checkpoint / resume
- * + serial Field Guide notes / CLI canary / planner ID remap.
+ * + serial Field Guide notes / CLI canary / planner ID remap
+ * + observe_perfect / audit_converged stop + cross-section embedded canary.
  * Legacy test-driven pipeline remains in run.mjs / repair-engine.mjs.
  */
 import { spawn } from "node:child_process";
@@ -33,7 +34,17 @@ import {
   buildSwarmWorkerPrompt,
 } from "./lib/prompts.mjs";
 import { formatFindingsForPlanner, runReviewStack } from "./lib/review-stack.mjs";
-import { runEmbeddedSelfCheck } from "./lib/spec-embedded-check.mjs";
+import {
+  formatAuditCoverage,
+  hasCodeChanges,
+  shouldRejectAuditAction,
+  updateAuditState,
+  auditConvergence,
+} from "./lib/audit-convergence.mjs";
+import {
+  runCrossSectionSelfCheck,
+  runEmbeddedSelfCheck,
+} from "./lib/spec-embedded-check.mjs";
 import { formatSpecToc, listSpecSections } from "./lib/spec-toc.mjs";
 import {
   attachEngineeringError,
@@ -45,6 +56,7 @@ import {
 } from "./lib/swarm-health.mjs";
 import {
   appliedActionsAreProductive,
+  nextPerfectObserveStreak,
   nextStreaks,
   shouldStop,
   stopConsoleMessage,
@@ -213,13 +225,17 @@ async function gateLeafBeforeMerge({
   runDir,
   metrics,
   mock,
+  codeChanged = false,
+  seed = null,
 }) {
   if (mock) return { ok: true, checked: 0 };
 
   const swarm = config.swarm || {};
   const budget = createRepairBudget(swarm.leafHealthRepairAttempts ?? 1);
   const maxExamples = swarm.harnessSelfCheckExamples ?? 5;
+  const crossExamples = swarm.harnessCrossCheckExamples ?? 5;
   const maxChars = swarm.specTextMaxChars ?? 64000;
+  const seedBase = seed != null ? String(seed) : `${task.id}:${task.attempts || 0}`;
 
   const tryRepair = async (kind, stderr, phase) => {
     if (!budget.consume()) return false;
@@ -258,6 +274,7 @@ async function gateLeafBeforeMerge({
     sections: task.spec_sections || [],
     maxExamples,
     maxChars,
+    seed: seedBase,
   });
   if (!embedded.ok) {
     const repaired = await tryRepair("embedded", embedded.stderr, "pre-merge");
@@ -278,6 +295,7 @@ async function gateLeafBeforeMerge({
         sections: task.spec_sections || [],
         maxExamples,
         maxChars,
+        seed: `${seedBase}:retry`,
       });
     }
     if (!embedded.ok) {
@@ -291,7 +309,50 @@ async function gateLeafBeforeMerge({
     }
   }
 
-  const checked = Number(embedded.checked) || 0;
+  let checked = Number(embedded.checked) || 0;
+
+  if (codeChanged && crossExamples > 0) {
+    let cross = runCrossSectionSelfCheck({
+      workspaceDir: wtPath,
+      excludeSections: task.spec_sections || [],
+      maxExamples: crossExamples,
+      maxChars,
+      seed: `${seedBase}:cross`,
+    });
+    if (!cross.ok) {
+      const repaired = await tryRepair("embedded", cross.stderr, "pre-merge-cross");
+      if (repaired) {
+        health = checkWorkspaceHealth(wtPath);
+        if (!health.ok) {
+          const attached = attachEngineeringError(report, {
+            phase: "pre-merge-cross",
+            kind: health.kind || "build",
+            stderr: health.stderr || "",
+            taskId: task.id,
+          });
+          return { ok: false, ...attached };
+        }
+        cross = runCrossSectionSelfCheck({
+          workspaceDir: wtPath,
+          excludeSections: task.spec_sections || [],
+          maxExamples: crossExamples,
+          maxChars,
+          seed: `${seedBase}:cross-retry`,
+        });
+      }
+      if (!cross.ok) {
+        const attached = attachEngineeringError(report, {
+          phase: "pre-merge-cross",
+          kind: "embedded-cross",
+          stderr: cross.stderr || "",
+          taskId: task.id,
+        });
+        return { ok: false, ...attached };
+      }
+    }
+    checked += Number(cross.checked) || 0;
+  }
+
   if (checked > 0) {
     metrics.data.harness_self_check_total = (metrics.data.harness_self_check_total || 0) + checked;
   }
@@ -329,7 +390,7 @@ function uncoveredSections(tree) {
   return listSpecSections().filter((s) => !done.has(s) && !waived.has(s));
 }
 
-function formatCoverage(tree) {
+function formatCoverage(tree, swarm = {}) {
   const uncovered = uncoveredSections(tree);
   const waived = tree.waived_sections || [];
   const lines = [];
@@ -341,6 +402,8 @@ function formatCoverage(tree) {
   if (waived.length) {
     lines.push(`Waived: ${waived.join(", ")}`);
   }
+  const auditLines = formatAuditCoverage(tree, swarm, listSpecSections());
+  if (auditLines) lines.push(auditLines);
   return lines.join("\n");
 }
 
@@ -832,6 +895,7 @@ async function executeLeaf({
   metrics.data.self_check_total = (metrics.data.self_check_total || 0) + (Number(report.self_checked) || 0);
 
   const changed = filesChangedInWorktree(wt.path);
+  const codeChanged = hasCodeChanges(changed);
   const localOver = findOversizedFiles(wt.path, changed, swarm.oversizedFileLines);
   if (localOver.length && report.status !== "oversized") {
     report.status = "oversized";
@@ -852,7 +916,7 @@ async function executeLeaf({
       elapsedMs: Date.now() - started,
       report,
     });
-    return { task, ok: false, report, oversized: report.status === "oversized" };
+    return { task, ok: false, report, oversized: report.status === "oversized", codeChanged };
   }
 
   const gate = await gateLeafBeforeMerge({
@@ -863,6 +927,8 @@ async function executeLeaf({
     runDir,
     metrics,
     mock,
+    codeChanged,
+    seed: `${task.id}:m${Date.now()}`,
   });
   if (!gate.ok) {
     removeWorktree(workspaceDir, wt.path);
@@ -877,6 +943,7 @@ async function executeLeaf({
       ok: false,
       report: gate.report,
       engineeringError: gate.engineeringError,
+      codeChanged,
     };
   }
   if (gate.checked > 0) {
@@ -1007,7 +1074,7 @@ async function executeLeaf({
     report,
     merge: { ok: true, oversized: false },
   });
-  return { task, ok: true, report, mergeResult };
+  return { task, ok: true, report, mergeResult, codeChanged };
 }
 
 function trackPromise(set, promise) {
@@ -1161,9 +1228,11 @@ async function main() {
   let actionErrors = [];
   let mergesSinceReview = 0;
   let sinceObserve = 0;
-  let parseFailStreak = 0;
-  let unproductiveStreak = 0;
-  let blockedRescueWaves = 0;
+  let parseFailStreak = Number(metrics.data.parse_fail_streak) || 0;
+  let unproductiveStreak = Number(metrics.data.unproductive_streak) || 0;
+  let blockedRescueWaves = Number(metrics.data.blocked_rescue_waves) || 0;
+  let perfectObserveStreak = Number(metrics.data.perfect_observe_streak) || 0;
+  let auditConvergedPlannerRounds = Number(metrics.data.audit_converged_planner_rounds) || 0;
   let stopReason = null;
   let reviewInFlight = false;
   let observeInFlight = false;
@@ -1178,7 +1247,23 @@ async function main() {
     metrics.data.parse_fail_streak = parseFailStreak;
     metrics.data.unproductive_streak = unproductiveStreak;
     metrics.data.blocked_rescue_waves = blockedRescueWaves;
+    metrics.data.perfect_observe_streak = perfectObserveStreak;
+    metrics.data.audit_converged_planner_rounds = auditConvergedPlannerRounds;
     if (stopReason) metrics.data.stop_reason = stopReason;
+  }
+
+  function auditConvergedNow() {
+    const grace = Number(swarm.auditConvergedGraceRounds) || 0;
+    if (grace <= 0 && Number(swarm.auditCleanConvergeThreshold) === 0) return false;
+    if (uncoveredSections(tree).length) return false;
+    const { allConverged } = auditConvergence(tree, swarm, listSpecSections());
+    return allConverged;
+  }
+
+  function auditQuiesce() {
+    const grace = Number(swarm.auditConvergedGraceRounds) || 0;
+    if (grace <= 0) return false;
+    return auditConvergedNow() && auditConvergedPlannerRounds >= grace;
   }
 
   function requestStop(reason) {
@@ -1263,7 +1348,10 @@ async function main() {
       const pastDeadline = Date.now() >= hardDeadlineMs;
       const tokenCap = normalizeMaxTokensInOut(swarm.maxTokensInOut);
       const pastTokenBudget = tokenCap != null && totalTokensInOut(metrics.data) >= tokenCap;
-      const pastBudget = pastDeadline || pastTokenBudget;
+      const perfectStopAt = Number(swarm.observePerfectStreakToStop) || 0;
+      const pastPerfectObserve = perfectStopAt > 0 && perfectObserveStreak >= perfectStopAt;
+      const pastAuditQuiesce = auditQuiesce();
+      const pastBudget = pastDeadline || pastTokenBudget || pastPerfectObserve || pastAuditQuiesce;
       const readyNow = () => readyLeaves(tree).filter((n) => (n.attempts || 0) < swarm.maxLeafAttempts);
       const idle = running.size === 0 && auxJobs.size === 0 && !plannerPromise;
 
@@ -1273,6 +1361,14 @@ async function main() {
         && readyNow().length === 0
       ) {
         requestStop("planner_done");
+        break;
+      }
+      if (pastPerfectObserve && idle) {
+        requestStop("observe_perfect");
+        break;
+      }
+      if (pastAuditQuiesce && idle) {
+        requestStop("audit_converged");
         break;
       }
       if (pastDeadline && idle) {
@@ -1352,7 +1448,7 @@ async function main() {
           workerReports: reportsText,
           reviewFindings: formatFindingsForPlanner(findingsSnap),
           actionErrors: errorsText,
-          coverage: formatCoverage(tree),
+          coverage: formatCoverage(tree, swarm),
           budgetLine: formatBudgetLine(swarm, startedAtMs, hardDeadlineMs, metrics.data),
           fanoutTarget: swarm.concurrency * 2,
           logRound,
@@ -1426,6 +1522,8 @@ async function main() {
         const obsJob = (async () => {
           try {
             const report = observeScore({ workspaceDir, runDir, metrics, label });
+            perfectObserveStreak = nextPerfectObserveStreak(perfectObserveStreak, report);
+            checkpointStopPolicy();
             if (report && report.total > 0 && report.passed === 0) {
               const canary = runCliCanary(workspaceDir);
               const hint = (canary.stderr || "cli canary failed").split("\n")[0].slice(0, 160);
@@ -1468,9 +1566,14 @@ async function main() {
 
         if (out.ok) {
           markLeaf(tree, out.task.id, "done", report);
+          updateAuditState(tree, out.task, !!out.codeChanged);
           mergeSuccessCount += 1;
           mergesSinceReview += 1;
           sinceObserve += 1;
+          if (!auditConvergedNow()) {
+            auditConvergedPlannerRounds = 0;
+          }
+          checkpointStopPolicy();
         } else if (out.oversized) {
           markLeaf(tree, out.task.id, "blocked", report);
           const splitJob = (async () => {
@@ -1571,7 +1674,17 @@ async function main() {
         const actions = Array.isArray(plan.actions) ? [...plan.actions] : [];
 
         const doneActions = actions.filter((a) => a?.type === "done");
-        const preDoneActions = actions.filter((a) => a?.type !== "done");
+        const { rejectSections } = auditConvergence(tree, swarm, listSpecSections());
+        const preDoneActions = [];
+        for (const a of actions.filter((x) => x?.type !== "done")) {
+          const rej = shouldRejectAuditAction(a, rejectSections);
+          if (rej.reject) {
+            actionErrors.push(rej.reason);
+            console.warn(`[swarm] ${rej.reason}`);
+            continue;
+          }
+          preDoneActions.push(a);
+        }
         const preResults = applyActions(tree, preDoneActions, {
           maxTreeDepth: swarm.maxTreeDepth,
         });
@@ -1607,6 +1720,12 @@ async function main() {
           }
         }
 
+        if (auditConvergedNow() && !tree.done) {
+          auditConvergedPlannerRounds += 1;
+        } else if (!auditConvergedNow()) {
+          auditConvergedPlannerRounds = 0;
+        }
+
         const readyAfter = readyNow().length;
         const productive = appliedActionsAreProductive(preDoneActions, preResults, tree.done);
         const stalledAfter = running.size === 0 && readyAfter === 0 && !tree.done;
@@ -1638,6 +1757,8 @@ async function main() {
           parse_fail_streak: parseFailStreak,
           unproductive_streak: unproductiveStreak,
           blocked_rescue_waves: blockedRescueWaves,
+          perfect_observe_streak: perfectObserveStreak,
+          audit_converged_planner_rounds: auditConvergedPlannerRounds,
         });
       }
     }

@@ -10,6 +10,7 @@
 - **v13.2 anti-interrupt**: `npm run swarm:detached` (run-to-done + detach) / `npm run swarm:resume -- --run-id=ID` / `npm run swarm:finalize -- --run-id=ID` (heartbeat + metrics checkpoint + segment wall time)
 - **v13.3 conflict/health hardening**: serial Field Guide notes + CLI canary + observe redline + planner ID remap (`npm run swarm:detached -- --run-id=run-swarm-v13.3`)
 - **v13.3c eng-feedback re-run (CommonMark)**: same as v13.3 + pre-merge build/canary + spec-embedded harness checks (`npm run swarm:detached -- --run-id=run-swarm-v13.3c` / `npm run report:task-run -- --run-id=run-swarm-v13.3c --baseline=run-swarm-v13.3`)
+- **v13.4 convergence & stop hardening**: grader-side `observe_perfect` early stop; per-section audit clean counters + reject/re-audit gate + `audit_converged` quiesce; seeded + cross-section embedded canary (`harnessCrossCheckExamples`). Scores still never enter agent prompts.
 - **v13.3 engineering feedback loop**: pre-merge build/canary + harness self-check on **spec-embedded** examples (not `examples.json`); failures → leaf summary + planner `ACTION_ERRORS`; shared `leafHealthRepairAttempts` (default 1). Hidden grader unchanged.
 - **Token budget (optional)**: `swarm.maxTokensInOut` / `--max-tokens=N` — hard stop on sum(`tokens_in`+`tokens_out`); default unlimited; `stop_reason=token_budget`; cache not counted.
 - **v13.3 second sample (TOML→toml-test JSON)**: `npm run swarm:toml:detached -- --run-id=run-swarm-toml-v13.3` / `npm run report:task-run -- --run-id=run-swarm-toml-v13.3 --baseline=run-swarm-v13.3` (`--task=toml-json`, oracle = BurntSushi toml-test)
@@ -218,6 +219,23 @@ Compare:
 
 ```bash
 npm run compare -- runs/run-swarm-v13.3/metrics.json runs/run-swarm-v13.3c/metrics.json
+```
+
+## Protocol (2026-07-31) — v13.4 convergence & stop hardening
+
+Motivation from CommonMark `run-swarm-v13.3c`: visible hit **100%** at observe m302 (~350 min), then audit churn continued until human kill at ~462 min; final salvaged full **99.4%** (Emphasis/Code-spans regressions). Tree had **376/571** audit leaves; planner never emitted `done`. Observe scores were telemetry-only — stop policy could not see perfection.
+
+v13.4 adds three harness-side controls (no suite leakage to agents):
+
+1. **`observe_perfect`** — consecutive perfect observe windows (`observePerfectStreakToStop`, default 2) → stop after drain.
+2. **Audit convergence** — `tree.audit_state[section].clean`; clean audit (+0 code change) increments; code-changing merge resets. Coverage shows counts; reject re-audit when clean ≥ `auditRejectAfterClean`; after full converge + `auditConvergedGraceRounds` planner invites without `done` → quiesce + `audit_converged`.
+3. **Cross-section embedded canary** — after scoped self-check, sample other sections' embedded examples (`harnessCrossCheckExamples`); fail → `pre-merge-cross` engineering error.
+
+Acceptance command (same models/concurrency as v13.3c):
+
+```bash
+npm run swarm:detached -- --run-id=run-swarm-v13.4 --concurrency=8
+npm run report:task-run -- --run-id=run-swarm-v13.4 --baseline=run-swarm-v13.3c
 ```
 
 ## Runs (2026-07-29) — v13.3 second sample: TOML → toml-test JSON

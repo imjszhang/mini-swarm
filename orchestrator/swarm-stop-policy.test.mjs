@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {
   actionsAreProductive,
   appliedActionsAreProductive,
+  nextPerfectObserveStreak,
   nextStreaks,
   shouldStop,
   stopConsoleMessage,
@@ -137,6 +138,22 @@ run("parse streak hits max → planner_parse_exhausted", () => {
 run("stopConsoleMessage token_budget", () => {
   assert.match(stopConsoleMessage("token_budget"), /token budget exhausted/);
   assert.match(stopConsoleMessage("wall_budget"), /wall-clock budget exhausted/);
+});
+
+run("nextPerfectObserveStreak increments on perfect", () => {
+  assert.equal(nextPerfectObserveStreak(0, { total: 10, passed: 10 }), 1);
+  assert.equal(nextPerfectObserveStreak(1, { total: 10, passed: 10 }), 2);
+});
+
+run("nextPerfectObserveStreak resets on imperfect or empty", () => {
+  assert.equal(nextPerfectObserveStreak(3, { total: 10, passed: 9 }), 0);
+  assert.equal(nextPerfectObserveStreak(2, { total: 0, passed: 0 }), 0);
+  assert.equal(nextPerfectObserveStreak(1, null), 0);
+});
+
+run("stopConsoleMessage observe_perfect and audit_converged", () => {
+  assert.match(stopConsoleMessage("observe_perfect"), /observe perfect streak/);
+  assert.match(stopConsoleMessage("audit_converged"), /audit converged/);
 });
 
 run("actionsAreProductive recognizes productive types", () => {

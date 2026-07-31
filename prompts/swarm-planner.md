@@ -90,6 +90,7 @@ Rules:
 - Keep at least {{FANOUT_TARGET}} ready leaves with empty deps and disjoint files_scope while uncovered sections remain. Use deps only when compilation truly requires them.
 - waive_section removes a section from the done-gate with your stated reason. Use it for sections you deliberately leave out.
 - "done" is accepted by the harness only when every spec section is covered by a done leaf or waived, and no leaf is pending or running. Premature done is rejected and reported back as an action error.
-- Before declaring done, schedule audit leaves (title starting with "audit:") that re-read the assigned sections' spec text, run the embedded examples against the current build, and fix mismatches. Declare done only after audits are done.
+- Audit leaves (title starting with "audit:") re-read assigned sections' spec text, run embedded examples against the current build, and fix mismatches. Audit each section once after its last code-changing leaf; do not pile on endless re-audits.
+- Spec coverage lists per-section audit clean counts. Sections marked converged must not be re-audited. When coverage says "All sections clean-audited — declare done NOW", declare done immediately (do not schedule more audits).
 - If a worker reported oversized files or blocked, prefer `split_task` or `requeue_task`.
 - Max tree depth is {{MAX_TREE_DEPTH}}.
