@@ -91,6 +91,7 @@ spec/           CommonMark spec + extracted test examples
 scorer/         Automated pass-rate scoring
 orchestrator/   Planner/worker/merge orchestration
 prompts/        Role prompt templates
+docs/references/ Local archive of S-A-008 Cursor blog (fidelity baseline)
 runs/           Experiment outputs (metrics, logs, tasks)
 ```
 
@@ -153,7 +154,9 @@ Part of @js trilogy: loop → harness → **swarm**. Source blog: Cursor Agent S
 ## Fidelity boundary (v13 swarm vs S-A-008)
 
 **Source of truth**: Cursor blog *Agent Swarm and Model Economics*
-(`https://cursor.com/cn/blog/agent-swarm-model-economics`, registered as **S-A-008** in x-articles-js).
+([live URL](https://cursor.com/cn/blog/agent-swarm-model-economics); local archive
+[`docs/references/S-A-008-agent-swarm-model-economics.md`](docs/references/S-A-008-agent-swarm-model-economics.md)).
+Also registered as **S-A-008** in the sibling x-articles-js project.
 Only components **explicitly claimed** in that source are reproduced. Components not in the source
 are **not** claimed as Cursor fidelity.
 

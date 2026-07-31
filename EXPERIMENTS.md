@@ -24,6 +24,14 @@
 - **Compare (v10)**: `npm run compare -- runs/run-a-bare-contention-v10/metrics.json runs/run-b-faithful-contention-v10/metrics.json`
 - **Compare (v9)**: `npm run compare -- runs/run-a-bare-contention-v9b/metrics.json runs/run-b-faithful-contention-v9/metrics.json`
 
+## Source text (S-A-008)
+
+Fidelity baseline for v13+ swarm: Cursor blog *Agent Swarm and Model Economics* (Wilson Lin).
+
+- Local archive: [`docs/references/S-A-008-agent-swarm-model-economics.md`](docs/references/S-A-008-agent-swarm-model-economics.md)
+- Live: https://cursor.com/cn/blog/agent-swarm-model-economics
+- Index: [`docs/references/README.md`](docs/references/README.md)
+
 ## Runs (2026-07-27) — v13 Cursor-faithful swarm (S-A-008)
 
 | Run ID | Mode | Notes |
