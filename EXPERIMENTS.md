@@ -9,6 +9,7 @@
 - **v13.1 event-driven + run-to-done**: `npm run swarm:done` / `npm run swarm -- --run-to-done --concurrency=8` (continuous dispatch, async planner/review, worker self-check, spec coverage gate)
 - **v13.2 anti-interrupt**: `npm run swarm:detached` (run-to-done + detach) / `npm run swarm:resume -- --run-id=ID` / `npm run swarm:finalize -- --run-id=ID` (heartbeat + metrics checkpoint + segment wall time)
 - **v13.3 conflict/health hardening**: serial Field Guide notes + CLI canary + observe redline + planner ID remap (`npm run swarm:detached -- --run-id=run-swarm-v13.3`)
+- **v13.3c eng-feedback re-run (CommonMark)**: same as v13.3 + pre-merge build/canary + spec-embedded harness checks (`npm run swarm:detached -- --run-id=run-swarm-v13.3c` / `npm run report:task-run -- --run-id=run-swarm-v13.3c --baseline=run-swarm-v13.3`)
 - **v13.3 engineering feedback loop**: pre-merge build/canary + harness self-check on **spec-embedded** examples (not `examples.json`); failures → leaf summary + planner `ACTION_ERRORS`; shared `leafHealthRepairAttempts` (default 1). Hidden grader unchanged.
 - **Token budget (optional)**: `swarm.maxTokensInOut` / `--max-tokens=N` — hard stop on sum(`tokens_in`+`tokens_out`); default unlimited; `stop_reason=token_budget`; cache not counted.
 - **v13.3 second sample (TOML→toml-test JSON)**: `npm run swarm:toml:detached -- --run-id=run-swarm-toml-v13.3` / `npm run report:task-run -- --run-id=run-swarm-toml-v13.3 --baseline=run-swarm-v13.3` (`--task=toml-json`, oracle = BurntSushi toml-test)
@@ -159,6 +160,7 @@ Compare: `npm run compare -- runs/run-swarm-v13.1/metrics.json runs/run-swarm-v1
 | run-swarm-v13.3-drill | mock resume | Synthetic interrupt → `--resume --mock`: reset running→pending, **2 segments**, finalize OK |
 | unit drills | local | duplicate-id idempotent + remap/deps; done-leaf compression; throw-on-import canary; finalize clears leftover `MERGE_HEAD` |
 | **run-swarm-v13.3** | **detached** `--run-to-done` conc=8 | **Finalized** (idle tree). **98.1%** full; visible **97.7%**; holdout **100%**; conflicts **39**; zero-pass observe **0**; planner_rounds **65**; active wall ~**279** min. Compare: `npm run compare -- runs/run-swarm-v13.2/metrics.json runs/run-swarm-v13.3/metrics.json` |
+| **run-swarm-v13.3c** | **detached** `--run-to-done` conc=8; eng-feedback gates on; human interrupt + `swarm:finalize` | **Salvaged**. **99.4%** full (522/525); visible **99.5%** (437/439); holdout **98.8%** (85/86); gap **+0.7**; conflicts **53**; zero-pass observe **0**; planner_rounds **111**; self_check **5526**; eff_parallelism **9.13**; tokens in+out **63.53M**; active wall ~**462** min; weak: Emphasis (2), Code spans (1). Report: `runs/run-swarm-v13.3c/REPORT.md` |
 
 ### v13.2 late-run stall post-mortem (motivation for v13.3)
 
@@ -181,6 +183,42 @@ Honesty notes:
 
 - Canary / observe redline use **binary health only** (CLI starts / any example can render). They do not expose pass lists, expected HTML, or section scores to agents.
 - Live CommonMark acceptance (`run-swarm-v13.3`) finalized at **98.1%** full with healthy observe (no 0% windows) and conflicts far below the v13.2 guide-storm peak (39 vs 82).
+
+### v13.3 eng-feedback re-run (CommonMark)
+
+Same task pack and model tier as `run-swarm-v13.3`, with engineering feedback loop enabled (pre-merge build/canary + spec-embedded harness self-check; failures → leaf summary + planner `ACTION_ERRORS`). Hidden grader unchanged — agents still never see `examples.json` or suite scores.
+
+| Metric | run-swarm-v13.3 | **run-swarm-v13.3c** (salvaged) |
+|---|---|---|
+| Full pass rate | 98.1% (515/525) | **99.4%** (522/525) |
+| Visible / holdout | 97.7% / **100%** | **99.5%** / 98.8% |
+| holdout_gap_pp | (holdout ≥ visible) | +0.7 |
+| merge_conflict_count | 39 | 53 |
+| zero-pass observe | 0 | 0 |
+| planner_rounds | 65 | 111 |
+| self_check_total | 2376 | **5526** |
+| Active wall | ~279 min | ~**462** min (human interrupt) |
+| tokens in+out | (pre-budget logging) | **63.53M** |
+| Stop | idle_tree | **human_interrupt + salvage** |
+
+Reading:
+
+1. **Eng-feedback lifts visible/full** — +1.3pp full, +1.8pp visible vs v13.3 without reintroducing suite scores to agents.
+2. **Holdout slips slightly** — 100% → 98.8% (−1.2pp); gap +0.7 still passes the &lt;5pp bar; `overfit_alarm=false`.
+3. **Late audit churn** — visible briefly hit 439/439 mid-run, then regressed to 437/439 (Emphasis boundary cases) before salvage; extra planner rounds + conflicts vs v13.3.
+4. **Cost** — ~1.7× wall and heavy self_check volume for marginal full-suite gain; not a free lunch vs the lean v13.3 finalize.
+
+Honesty notes:
+
+- **Salvaged** after human kill near the 480m wall — not planner `done` or natural idle_tree stop.
+- Token budget left unlimited (`maxTokensInOut=null`); compare wall time, not token cap.
+- Remaining misses: Emphasis (2/132), Code spans (1/22) — long-tail inline edge cases, not structural block failures.
+
+Compare:
+
+```bash
+npm run compare -- runs/run-swarm-v13.3/metrics.json runs/run-swarm-v13.3c/metrics.json
+```
 
 ## Runs (2026-07-29) — v13.3 second sample: TOML → toml-test JSON
 
@@ -224,7 +262,7 @@ Models (acceptance): planner/splitter/`review-spec` = `cursor-grok-4.5-high-fast
 | Active wall | ~39 min | ~487 min | ~**286** min (salvaged) | ~279 min |
 | harness_self_check | — | — | **1008** | — |
 | self_check_total | 142 | 3821 | **1652** | 2376 |
-| tokens in+out | 3.81M | 63.57M | **32.23M** | (CM long-run) |
+| tokens in+out | 3.81M | 63.57M | **32.23M** | **63.53M** (CM v13.3c salvaged) |
 | Stop | idle_tree (bug) | wall_budget | **human_interrupt + salvage** | idle_tree |
 
 ### Reading
