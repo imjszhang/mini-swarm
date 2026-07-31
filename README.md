@@ -92,8 +92,14 @@ scorer/         Automated pass-rate scoring
 orchestrator/   Planner/worker/merge orchestration
 prompts/        Role prompt templates
 docs/references/ Local archive of S-A-008 Cursor blog (fidelity baseline)
+tasks/          Parallel task packs (toml-json, …) — spec + oracle + prompts per task
+skills/         Agent Skills (SKILL.md standard); swarm-task-pack = new-pack workflow
 runs/           Experiment outputs (metrics, logs, tasks)
 ```
+
+To add a new task pack, follow the [swarm-task-pack skill](skills/swarm-task-pack/SKILL.md)
+(eligibility gate → hidden oracle → spec → wiring → acceptance). Cursor / Claude Code
+discover it automatically via `.cursor/skills/` and `.claude/skills/`.
 
 Each run writes `runs/{runId}/workspace/` (gitignored) and `metrics.json`.
 
