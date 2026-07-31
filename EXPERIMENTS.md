@@ -193,6 +193,7 @@ Goal: reuse the **same** hidden-grader swarm (v13.3) on a second verifiable task
 | run-swarm-toml-v13.3 (auto, aborted) | detached | Wrong model tier (`auto`); later worktree collision on restart → archived |
 | **run-swarm-toml-v13.3** | **detached** `--task=toml-json --run-to-done` conc=8 | **Finalized** (idle tree / false early stop). **76.4%** full (425/556); visible **75.7%** (352/465); holdout **80.2%** (73/91); gap **−4.5**; conflicts **11**; zero-pass observe **0**; planner_rounds **9**; parse_failures **2**; self_check **142**; eff_parallelism **5.29**; tokens **3.81M**; wall ~**38.9** min |
 | **run-swarm-toml-v13.3b** | **detached** `--task=toml-json --run-to-done` conc=8; 1× human pause + `--resume` | **Finalized** (`wall_budget`, post stop-policy fix). **85.1%** full (473/556); visible **84.1%** (391/465); holdout **90.1%** (82/91); gap **−6**; conflicts **18**; zero-pass observe **0**; planner_rounds **131**; parse_failures **6**; self_check **3821**; eff_parallelism **9.66**; tokens in+out **63.57M** (+~271M cache_read); active wall ~**487** min |
+| **run-swarm-toml-v13.3c** | **detached** `--task=toml-json --run-to-done` conc=8; eng-feedback gates on; human interrupt + `swarm:finalize` | **Salvaged**. **86.0%** full (478/556); visible **85.2%** (396/465); holdout **90.1%** (82/91); gap **−4.9**; conflicts **45**; zero-pass observe **0**; planner_rounds **52**; harness_self_check **1008**; self_check **1652**; eff_parallelism **8.01**; tokens in+out **32.23M** (+~176M cache_read); active wall ~**286** min; Encoding **12/12** |
 
 Models (acceptance): planner/splitter/`review-spec` = `cursor-grok-4.5-high-fast`; workers/merger/`review-diff`/`review-codebase` = `composer-2.5-fast` — **same tier as CommonMark v13.3** (not `auto`).
 
@@ -200,50 +201,56 @@ Models (acceptance): planner/splitter/`review-spec` = `cursor-grok-4.5-high-fast
 
 - Oracle: BurntSushi `toml-test` @ v1.6.0 → `tasks/toml-json/spec/examples.json` (556 cases: 185 valid + 371 invalid).
 - Harness: `--task=toml-json` via `orchestrator/lib/task-pack.mjs`; scorer supports `input` / `expected` / `expect_error`.
-- Reports: `runs/run-swarm-toml-v13.3/REPORT.md`, `runs/run-swarm-toml-v13.3b/REPORT.md`.
+- Reports: `runs/run-swarm-toml-v13.3/REPORT.md`, `runs/run-swarm-toml-v13.3b/REPORT.md`, `runs/run-swarm-toml-v13.3c/REPORT.md`.
 
-### Budget (v13.3b)
+### Budget (v13.3b / v13.3c)
 
-- Time: `--run-to-done` → hard stop `swarm.maxWallMinutes` (**480**); no token spend cap (metrics only).
-- Stop was authentic wall exhaustion (~487 active min across 2 segments), not parse/idle false stop.
+- Time: `--run-to-done` → hard stop `swarm.maxWallMinutes` (**480**); token cap optional (`maxTokensInOut`, default unlimited).
+- v13.3b: authentic wall exhaustion (~487 active min).
+- v13.3c: human interrupt ~279m live + salvage finalize; token budget left off.
 
-### Compare (TOML early-idle vs post-fix vs CommonMark)
+### Compare (TOML arms vs CommonMark)
 
-| Metric | toml v13.3 | **toml v13.3b** | CM v13.3 |
-|---|---|---|---|
-| task_pack | toml-json | toml-json | commonmark |
-| Full pass rate | 76.4% | **85.1%** | **98.1%** |
-| Visible / holdout | 75.7% / 80.2% | **84.1% / 90.1%** | 97.7% / 100% |
-| holdout_gap_pp | −4.5 | **−6** | (holdout ≥ visible) |
-| merge_conflict_count | 11 | **18** | 39 |
-| zero-pass observe | 0 | **0** | 0 |
-| planner_rounds | 9 | **131** | 65 |
-| Active wall | ~39 min | ~**487** min | ~279 min |
-| self_check_total | 142 | **3821** | 2376 |
-| tokens in+out | 3.81M | **63.57M** | (CM long-run) |
-| Stop | idle_tree (bug) | **wall_budget** | idle_tree |
+| Metric | toml v13.3 | toml v13.3b | **toml v13.3c** | CM v13.3 |
+|---|---|---|---|---|
+| task_pack | toml-json | toml-json | toml-json | commonmark |
+| Full pass rate | 76.4% | 85.1% | **86.0%** | **98.1%** |
+| Visible / holdout | 75.7% / 80.2% | 84.1% / 90.1% | **85.2% / 90.1%** | 97.7% / 100% |
+| holdout_gap_pp | −4.5 | −6 | **−4.9** | (holdout ≥ visible) |
+| Encoding | (mixed) | 50% | **100%** | n/a |
+| merge_conflict_count | 11 | 18 | **45** | 39 |
+| zero-pass observe | 0 | 0 | **0** | 0 |
+| planner_rounds | 9 | 131 | **52** | 65 |
+| Active wall | ~39 min | ~487 min | ~**286** min (salvaged) | ~279 min |
+| harness_self_check | — | — | **1008** | — |
+| self_check_total | 142 | 3821 | **1652** | 2376 |
+| tokens in+out | 3.81M | 63.57M | **32.23M** | (CM long-run) |
+| Stop | idle_tree (bug) | wall_budget | **human_interrupt + salvage** | idle_tree |
 
 ### Reading
 
-1. **Protocol migrates** — second sample finalized under hidden grader; holdout healthy; no observe redline trips; conflicts low.
-2. **Stop-policy fix validated** — v13.3b ran **131** planner rounds to wall (vs v13.3’s **9**-round false idle). Same models; no auto model switch.
-3. **Quality improved but short of 90%** — 76.4% → **85.1%** full (+8.7pp); holdout **90.1%**. Late observe plateaued ~83–84% before final 85.1%.
-4. **Absolute CM-class score still not shown** — 85.1% ≪ CM 98.1%; remaining misses concentrate in Spec Examples / Keys / Strings / Encoding / Root.
-5. **Early idle root cause (v13.3)** — parse-fail and true-idle shared `idlePlannerRounds >= 2`; fixed in `orchestrator/lib/swarm-stop-policy.mjs`.
+1. **Protocol migrates** — second sample finalized under hidden grader; holdout healthy; no observe redline trips.
+2. **Stop-policy fix validated** — v13.3b ran **131** planner rounds to wall (vs v13.3’s **9**-round false idle).
+3. **Eng-feedback arm (v13.3c)** — pre-merge build/canary + spec-embedded harness checks; Encoding **50%→100%**; full **86.0%** in ~286m vs v13.3b **85.1%** in ~487m.
+4. **Late plateau persists** — visible stuck ~84–85% while leaves keep merging; Spec Examples / Keys / Strings still dominate misses.
+5. **Absolute CM-class score still not shown** — 86.0% ≪ CM 98.1%.
+6. **Early idle root cause (v13.3)** — parse-fail and true-idle shared counter; fixed in `swarm-stop-policy.mjs`.
 
 Honesty notes:
 
-- Do **not** treat short TOML walls as fair vs CM without equalized active minutes; v13.3b is the first long TOML arm (~487 min).
+- Do **not** treat short TOML walls as fair vs CM without equalized active minutes; v13.3b/c are the long TOML arms.
+- v13.3c was **salvaged** after human kill — not a natural planner_done / wall_budget stop.
 - An earlier `auto`-model attempt was aborted; acceptance numbers are grok/composer only.
 - Failure arrays in score JSON are truncated samples; use `failure_count` + `by_section` for totals.
-- \|holdout_gap\| = 6 fails the formal &lt;5pp bar, but gap is **negative** (holdout better); `overfit_alarm=false`.
-- Token cache_read is large (~271M) and separate from the 63.57M in+out total in REPORT.
+- \|holdout_gap\| on v13.3b was 6 (formal fail) with negative gap; v13.3c gap −4.9 passes the &lt;5pp bar; `overfit_alarm=false`.
+- Token cache_read is separate from in+out totals in REPORT.
 
 Compare:
 
 ```bash
-npm run compare -- runs/run-swarm-toml-v13.3/metrics.json runs/run-swarm-toml-v13.3b/metrics.json
-npm run compare -- runs/run-swarm-v13.3/metrics.json runs/run-swarm-toml-v13.3b/metrics.json
+npm run compare -- runs/run-swarm-toml-v13.3b/metrics.json runs/run-swarm-toml-v13.3c/metrics.json
+npm run compare -- runs/run-swarm-toml-v13.3/metrics.json runs/run-swarm-toml-v13.3c/metrics.json
+npm run compare -- runs/run-swarm-v13.3/metrics.json runs/run-swarm-toml-v13.3c/metrics.json
 ```
 
 ## Runs (2026-07-26) — v12 generalization loop
