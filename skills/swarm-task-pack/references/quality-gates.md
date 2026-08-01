@@ -17,6 +17,11 @@ Spec quality:
 
 - [ ] Each section embeds ~5 valid + ~2 invalid fence examples; fences parse
       (spot-check with `parseEmbeddedExamples` via a small node one-liner).
+- [ ] Embedded examples are **curated** (explicit id list in the gen-spec
+      script), with ≥2 counterintuitive cases per section — never a prefix
+      slice of the oracle.
+- [ ] Behavior-equivalence-class review done: per section, each class the
+      oracle exercises (valid AND invalid) maps to a prose sentence.
 - [ ] Invalid-behavior rules stated in prose, not only implied by ERROR examples.
 - [ ] Intro states CLI contract + "do not consult examples.json".
 - [ ] Reference implementation (if available) passes 100% of embedded examples;
@@ -58,3 +63,17 @@ Wiring:
 8. **Endless audits / no stop** — pack-agnostic since v13.4 convergence stops,
    but keep planner prompt audit rules intact when copying prompts (failure mode
    observed in the 13.3c commonmark run).
+9. **Valid-semantics starvation** — prose covers rejection rules but omits
+   counterintuitive *valid* behaviors. sqlite-micro v1 plateaued at 97.6%:
+   INTEGER affinity keeping non-integer text as-is, `CAST('abc' AS INTEGER)=0`,
+   scalar `min`/`max` propagating NULL, `"KEY"` as plain identifier — none
+   stated in prose, and all 18 final misses were outside the embedded-example
+   window, so no feedback loop (self-check, audit, canary) ever saw them.
+   Workers guessed the intuitive-but-wrong semantics. Fix: behavior-class
+   coverage + curated counterintuitive embedded examples (see
+   `pack-tuning.md`).
+10. **Subagent knowledge evaporation** — the agent who authored oracle inputs
+    saw every surprising reference-implementation output, but spec prose was
+    written by a different agent with no handoff; the surprise list died at
+    the boundary. Require the same author for inputs and prose, or a
+    per-section "surprises memo" passed between them.

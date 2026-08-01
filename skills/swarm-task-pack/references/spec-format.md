@@ -61,6 +61,13 @@ Generator pattern (`tasks/toml-json/scripts/gen-spec-txt.mjs`): pick ≤5 valid 
 ≤2 invalid oracle examples per section and emit fences. That per-section subset is
 the *only* sanctioned oracle→spec leakage.
 
+**Curate the picks.** The generator must accept an explicit id list per section
+(fall back to a slice only for sections with no curated list). A bare
+`slice(0, n)` surfaces only the trivial cases: in sqlite-micro v1, all 18 final
+misses were outside the first-5 window, invisible to worker self-checks, audit
+leaves, and the cross-section canary alike. Pin at least 2 counterintuitive
+cases per section — the ones a reasonable implementer would get wrong.
+
 ## How the harness consumes these files
 
 - **Embedded self-check (per-leaf gate):** samples up to `harnessSelfCheckExamples`

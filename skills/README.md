@@ -6,7 +6,7 @@ Cursor / Claude Code agents auto-discover them.
 
 | Skill | Purpose |
 |---|---|
-| [swarm-task-pack](./swarm-task-pack/SKILL.md) | Turn a candidate task into a runnable mini-swarm task pack: eligibility gate → hidden oracle → normative spec → harness wiring → acceptance gates |
+| [swarm-task-pack](./swarm-task-pack/SKILL.md) | Create or tune mini-swarm task packs. New pack: eligibility gate → hidden oracle → normative spec → harness wiring → acceptance gates. Existing pack: post-run failure autopsy → prose/curation/skeleton fixes (`references/pack-tuning.md`) |
 
 Skills are plain markdown workflows: any agent that can read files and run
 `npm run …` can follow them. They are for pack *authors* (humans + assistant

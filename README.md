@@ -99,15 +99,18 @@ orchestrator/   Planner/worker/merge orchestration
 prompts/        Role prompt templates
 docs/references/ Local archive of S-A-008 Cursor blog (fidelity baseline)
 tasks/          Parallel task packs (toml-json, sqlite-micro, …) — spec + oracle + prompts
-skills/         Agent Skills (SKILL.md standard); swarm-task-pack = new-pack workflow
+skills/         Agent Skills (SKILL.md standard); swarm-task-pack = pack create + tuning workflow
 runs/           Experiment outputs (metrics, logs, tasks)
 ```
 
 Task packs: **commonmark** (default), **toml-json**, **sqlite-micro** (Tier-1 micro-SQL;
 hidden grader via `node:sqlite` differential oracle). To add another, follow the
 [swarm-task-pack skill](skills/swarm-task-pack/SKILL.md)
-(eligibility gate → hidden oracle → spec → wiring → acceptance). Cursor / Claude Code
-discover it automatically via `.cursor/skills/` and `.claude/skills/`.
+(eligibility gate → hidden oracle → spec → wiring → acceptance). The same skill
+also tunes an existing pack after a run plateaus
+([pack-tuning](skills/swarm-task-pack/references/pack-tuning.md): failure
+autopsy → prose / curation / skeleton fixes). Cursor / Claude Code discover it
+automatically via `.cursor/skills/` and `.claude/skills/`.
 
 Each run writes `runs/{runId}/workspace/` (gitignored) and `metrics.json`.
 

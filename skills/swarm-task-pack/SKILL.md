@@ -1,27 +1,36 @@
 ---
 name: swarm-task-pack
-description: Turn a candidate task into a runnable mini-swarm task pack. Use when the user wants to add a new task/benchmark to mini-swarm, asks whether a task is suitable for the swarm, or needs to produce the three swarm inputs — a normative spec, a hidden oracle test suite, and the harness wiring (skeleton/prompts/canary/registration).
+description: Create or tune mini-swarm task packs. Use when the user wants to add a new task/benchmark to mini-swarm, asks whether a task is suitable for the swarm, needs to produce the three swarm inputs — a normative spec, a hidden oracle test suite, and the harness wiring (skeleton/prompts/canary/registration) — or wants to improve an existing pack after a run plateaued below target (failure autopsy → spec/curation/skeleton fixes).
 ---
 
-# swarm-task-pack — build a task pack for mini-swarm
+# swarm-task-pack — build or tune a task pack for mini-swarm
 
-You are turning a candidate task into a complete pack under `tasks/{id}/` that
+You are working on a pack under `tasks/{id}/` that
 `npm run swarm -- --task={id}` can execute. A pack is three things:
 
 1. **Spec** — normative text the agents read (`spec/spec.txt` + `spec/sections.json`).
 2. **Hidden oracle** — the scoring suite agents never see (`spec/examples.json`).
 3. **Environment** — skeleton, prompts, canary, and registration in the orchestrator.
 
-Work through the phases **in order**. Each phase ends with a gate; do not continue
-past a failed gate. Reference files (read on demand, not upfront):
+## Task router
+
+- **New pack** → work through Phase 0–4 below, in order. Each phase ends with a
+  gate; do not continue past a failed gate.
+- **Existing pack underperforming** (a finished run plateaued; user wants the
+  score up) → follow `references/pack-tuning.md`: failure autopsy → behavior
+  equivalence classes → fix channels (prose rule / example curation / skeleton
+  capacity / oracle bug) → re-run Phase 4 gates → new run id.
+
+Reference files (read on demand, not upfront):
 
 - `references/spec-format.md` — exact file formats (examples.json schema, fence syntax, holdout rules)
 - `references/pack-registration.md` — every code touchpoint in the orchestrator
 - `references/quality-gates.md` — acceptance checklist + known failure modes
+- `references/pack-tuning.md` — post-run optimization workflow for existing packs
 - `templates/TASK.md` — pack charter template
 
-The existing pack `tasks/toml-json/` is the canonical worked example; diff against
-it whenever unsure.
+The existing packs `tasks/toml-json/` and `tasks/sqlite-micro/` are canonical
+worked examples; diff against them whenever unsure.
 
 ## Phase 0 — Eligibility gate (be willing to say no)
 
@@ -63,23 +72,42 @@ authority exists for the expected output, go back to Phase 0 and reject.
 ## Phase 2 — Spec (this sets the score ceiling)
 
 Produce `spec/spec.txt` from the authoritative source text (not from the oracle).
-Quality bars, learned from the TOML-86% vs CommonMark-99% gap:
+Quality bars, learned from TOML-86% (invalid-rule starvation) and
+sqlite-micro-97.6% (valid-semantics starvation):
 
 - Split into `## {Section}` headings that exactly match `sections.json` entries.
-- Every section embeds runnable examples in the 32-backtick `example` fence format
-  (input, a line containing only `.`, expected output or the literal `ERROR`).
-  Target ≥5 valid + ≥2 invalid per section.
-- **Check invalid-behavior prose density.** Workers can only learn rejection rules
-  that the spec states. If the oracle has invalid cases whose rule appears nowhere
-  in the spec text, workers will plateau. Enumerate rejection rules explicitly.
+- **Behavior equivalence class coverage.** For each section, list the behavior
+  classes its oracle cases exercise — valid AND invalid alike (e.g. "INTEGER
+  affinity keeps non-integer text as-is", "scalar min/max propagate NULL",
+  "double-quoted keywords are plain identifiers"). Every class needs a rule
+  sentence in prose. Workers can only learn rules the spec states; anything the
+  oracle knows but the prose omits will be guessed — usually with the intuitive
+  but wrong semantics.
+- **Curate embedded examples — never default to the first N.** Target ≥5 valid +
+  ≥2 invalid per section in the 32-backtick fence format, and make at least 2 of
+  them counterintuitive cases (the ones a reasonable implementer would get
+  wrong). Build the generator to accept an explicit id list per section; prefix
+  slices surface only the trivial cases and leave the hard ones invisible to
+  every feedback loop.
+- **Same author or explicit handoff.** Whoever writes the oracle inputs discovers
+  the surprising behaviors (they watched the reference implementation run). If
+  prose is written by a different agent, require a per-section "surprises memo"
+  from the inputs author. Do not let that knowledge evaporate at a subagent
+  boundary.
 - The intro must state the CLI contract (stdin/stdout/exit codes) and the
   fence-format convention, and must tell agents not to consult `examples.json`.
 
 Prefer a generator script (`scripts/gen-spec-txt.mjs` pattern) over hand-writing,
 so the spec can be rebuilt when the oracle import changes.
 
-**Gate:** a trusted reference implementation passes 100% of the embedded examples.
-If you have no reference implementation, manually verify a random sample of ≥20.
+**Gates (one scriptable, one judgment — do both):**
+
+1. A trusted reference implementation passes 100% of the embedded examples.
+   If you have no reference implementation, manually verify a random sample of ≥20.
+2. Semantic completeness review: walk each section's behavior-class list and
+   point to the prose sentence that covers it. Formal checks (word counts,
+   fence parsing) do not substitute for this; every missing sentence here is
+   one plateau point in the run.
 
 ## Phase 3 — Environment wiring
 
@@ -89,7 +117,12 @@ All touchpoints are enumerated in `references/pack-registration.md`. Summary:
    (`initSwarmSkeleton` branch): `src/cli.ts` implementing the CLI contract,
    `src/contracts.ts` as compile-checked seams, registries that let parallel
    workers add parsers without touching shared files. The skeleton must already
-   pass the canary.
+   pass the canary. **Semantic capacity check:** the core value types must be
+   able to represent every distinction the oracle output makes — scan the oracle
+   for same-value-different-text pairs (e.g. `7` vs `7.0` needs an int/real
+   storage-class tag, not a bare `number`). Cheap workers will not refactor
+   `contracts.ts` mid-run; a type system that cannot express a rule silently
+   caps the score.
 2. **Canary** — a minimal valid input for post-merge health checks (e.g. `a = 1\n`).
 3. **Output comparator** — if equality is not exact-text, extend
    `compareCliOutput` in `orchestrator/lib/spec-embedded-check.mjs` and the
