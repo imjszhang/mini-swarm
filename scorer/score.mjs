@@ -3,12 +3,13 @@
  * Score workspace CLI against examples.json.
  *
  * Contract: workspace provides `node dist/cli.js` (stdin → stdout).
- * Compatible with CommonMark (markdown/html) and toml-json (input/expected/expect_error).
+ * Compatible with CommonMark (markdown/html), toml-json, and sqlite-micro.
  */
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { deepEqualJsonNumeric } from "../orchestrator/lib/spec-embedded-check.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -183,7 +184,15 @@ function scoreWorkspace(workspaceDir, examples, { limit, truncateChars, maxFailu
         /* compare raw */
       }
     }
-    if (actual === expected) {
+    let pass = actual === expected;
+    if (!pass && (expected.startsWith("{") || expected.startsWith("["))) {
+      try {
+        pass = deepEqualJsonNumeric(JSON.parse(actual), JSON.parse(expected));
+      } catch {
+        /* keep pass=false */
+      }
+    }
+    if (pass) {
       passed += 1;
       sectionStats[ex.section].passed += 1;
     } else {

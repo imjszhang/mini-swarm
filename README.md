@@ -44,6 +44,12 @@ npm run swarm:detached -- --run-id=run-swarm-v13.3 --concurrency=8   # long run 
 npm run swarm:resume -- --run-id=RUN_ID              # resume interrupted swarm (tree.json + checkpoint)
 npm run swarm:finalize -- --run-id=RUN_ID            # score+finalize metrics without resuming
 
+# Task packs (default commonmark; also toml-json, sqlite-micro)
+npm run task:sqlite:import      # regenerate sqlite-micro oracle + spec.txt
+npm run swarm:sqlite:mock       # mock swarm on sqlite-micro
+npm run swarm:sqlite:smoke      # live 20 min smoke
+npm run swarm:sqlite:detached   # long run --task=sqlite-micro
+
 # Resume an interrupted legacy run (task-level; requires progress.json)
 npm run salvage -- --run-id=RUN_ID --task-set=contention   # rebuild progress from wreckage
 npm run run:contention:bare -- --run-id=RUN_ID --resume    # continue skipped done tasks
@@ -92,12 +98,14 @@ scorer/         Automated pass-rate scoring
 orchestrator/   Planner/worker/merge orchestration
 prompts/        Role prompt templates
 docs/references/ Local archive of S-A-008 Cursor blog (fidelity baseline)
-tasks/          Parallel task packs (toml-json, …) — spec + oracle + prompts per task
+tasks/          Parallel task packs (toml-json, sqlite-micro, …) — spec + oracle + prompts
 skills/         Agent Skills (SKILL.md standard); swarm-task-pack = new-pack workflow
 runs/           Experiment outputs (metrics, logs, tasks)
 ```
 
-To add a new task pack, follow the [swarm-task-pack skill](skills/swarm-task-pack/SKILL.md)
+Task packs: **commonmark** (default), **toml-json**, **sqlite-micro** (Tier-1 micro-SQL;
+hidden grader via `node:sqlite` differential oracle). To add another, follow the
+[swarm-task-pack skill](skills/swarm-task-pack/SKILL.md)
 (eligibility gate → hidden oracle → spec → wiring → acceptance). Cursor / Claude Code
 discover it automatically via `.cursor/skills/` and `.claude/skills/`.
 

@@ -6,6 +6,7 @@ import {
   collectSectionExamples,
   compareCliOutput,
   deepEqualJson,
+  deepEqualJsonNumeric,
   normalizeTextOutput,
   parseEmbeddedExamples,
   sampleExamples,
@@ -75,6 +76,29 @@ run("compareCliOutput toml vs html", () => {
 
   const htmlBad = compareCliOutput("<p>a</p>", "<p>b</p>", "commonmark");
   assert.equal(htmlBad.ok, false);
+});
+
+run("deepEqualJsonNumeric tolerance and structure", () => {
+  assert.equal(deepEqualJsonNumeric([[1]], [[1]]), true);
+  assert.equal(deepEqualJsonNumeric([[1.0]], [[1]]), true);
+  assert.equal(deepEqualJsonNumeric([[1 + 1e-12]], [[1]]), true);
+  assert.equal(deepEqualJsonNumeric([[1.1]], [[1]]), false);
+  assert.equal(deepEqualJsonNumeric([[null, "a"]], [[null, "a"]]), true);
+  assert.equal(deepEqualJsonNumeric({ a: 1, b: 2 }, { b: 2, a: 1 }), true);
+  assert.equal(deepEqualJsonNumeric([1], [1, 2]), false);
+  assert.equal(deepEqualJsonNumeric({ a: 1 }, { a: 1, b: 2 }), false);
+});
+
+run("compareCliOutput sqlite-micro", () => {
+  const ok = compareCliOutput("[[1]]", "[[1]]", "sqlite-micro");
+  assert.equal(ok.ok, true);
+  const tol = compareCliOutput("[[1.0000000000001]]", "[[1]]", "sqlite-micro");
+  assert.equal(tol.ok, true);
+  const bad = compareCliOutput("[[2]]", "[[1]]", "sqlite-micro");
+  assert.equal(bad.ok, false);
+  const notJson = compareCliOutput("<p>x</p>", "[[1]]", "sqlite-micro");
+  assert.equal(notJson.ok, false);
+  assert.match(String(notJson.detail || ""), /JSON parse/);
 });
 
 run("normalizeTextOutput strips trailing ws", () => {

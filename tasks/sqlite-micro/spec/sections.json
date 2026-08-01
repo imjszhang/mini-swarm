@@ -1,0 +1,21 @@
+[
+ "Literals And Identifiers",
+ "Create Table",
+ "Insert",
+ "Select Core",
+ "Where",
+ "Order By And Limit",
+ "Update",
+ "Delete",
+ "Arithmetic Operators",
+ "Comparison And Logical Operators",
+ "Between In Like",
+ "Null Logic",
+ "Case Expression",
+ "Cast And Affinity",
+ "String Functions",
+ "Numeric Functions",
+ "Aggregates No Group By",
+ "Distinct",
+ "Errors"
+]

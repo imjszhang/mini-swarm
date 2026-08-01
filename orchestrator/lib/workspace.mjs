@@ -2,8 +2,9 @@
  * Workspace skeleton helpers shared by swarm entry (v13).
  * Intentionally duplicated from run.mjs so the legacy pipeline stays untouched.
  */
-import { mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { cpSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
+import { projectRoot } from "./config.mjs";
 import { commitAll, initRepo } from "./git.mjs";
 import { initGuideFolder } from "./guide.mjs";
 import { npmExec } from "./win-exec.mjs";
@@ -239,8 +240,12 @@ process.stdin.on("end", () => {
 
 export function initSwarmSkeleton(workspaceDir, { mock = false, skeleton = "commonmark" } = {}) {
   mkdirSync(path.join(workspaceDir, "src"), { recursive: true });
+  const pkgName =
+    skeleton === "toml-json" ? "mini-toml"
+      : skeleton === "sqlite-micro" ? "mini-sql"
+        : "mini-commonmark";
   const pkg = {
-    name: skeleton === "toml-json" ? "mini-toml" : "mini-commonmark",
+    name: pkgName,
     type: "module",
     scripts: { build: "tsc" },
     devDependencies: { typescript: "^5.6.0", "@types/node": "^22.0.0" },
@@ -260,6 +265,9 @@ export function initSwarmSkeleton(workspaceDir, { mock = false, skeleton = "comm
 
   if (skeleton === "toml-json") {
     writeTomlStubs(workspaceDir);
+  } else if (skeleton === "sqlite-micro") {
+    const src = path.join(projectRoot(), "tasks", "sqlite-micro", "skeleton", "src");
+    cpSync(src, path.join(workspaceDir, "src"), { recursive: true });
   } else {
     writeFileSync(path.join(workspaceDir, "src", "cli.ts"), `import { renderMarkdown } from "./index.js";
 let input = "";

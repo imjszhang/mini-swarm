@@ -40,7 +40,7 @@ const COMMONMARK_SECTIONS = [
 const cache = new Map();
 
 export function listTaskPackIds() {
-  return ["commonmark", "toml-json"];
+  return ["commonmark", "toml-json", "sqlite-micro"];
 }
 
 /**
@@ -79,6 +79,21 @@ export function resolveTaskPack(name = "commonmark") {
       canaryInput: "a = 1\n",
       canaryRequireExit0: true,
       goalLabel: "TOML v1.0 → toml-test tagged JSON",
+    };
+  } else if (id === "sqlite-micro") {
+    const root = path.join(ROOT, "tasks", "sqlite-micro");
+    pack = {
+      id: "sqlite-micro",
+      root,
+      specDir: path.join(root, "spec"),
+      examplesPath: path.join(root, "spec", "examples.json"),
+      specTextPath: path.join(root, "spec", "spec.txt"),
+      sectionsPath: path.join(root, "spec", "sections.json"),
+      promptsDir: path.join(root, "prompts"),
+      skeleton: "sqlite-micro",
+      canaryInput: "SELECT 1;\n",
+      canaryRequireExit0: true,
+      goalLabel: "micro-SQL (SQLite subset) → row-array JSON",
     };
   } else {
     throw new Error(`Unknown task pack: ${id}. Known: ${listTaskPackIds().join(", ")}`);

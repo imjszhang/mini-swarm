@@ -1,0 +1,1611 @@
+# micro-SQL (SQLite subset) — experiment pack
+
+This document is the normative reference for the mini-swarm **sqlite-micro** task.
+Implement an in-memory SQL engine in TypeScript that:
+
+- Accepts a SQL script on stdin (statements end with `;`).
+- Executes all statements in order.
+- On success: exit 0 and print the result of the **last SELECT** as a JSON
+  two-dimensional array (rows of column values) on a single line of stdout.
+  If the script has no SELECT, print `[]`.
+- On any error: write a message to stderr and exit non-zero.
+
+Value mapping: INTEGER/REAL → JSON number, TEXT → string, NULL → null.
+
+Do not consult `examples.json` or external score signals.
+
+Embedded examples use a fence of 32 backticks labeled `example`.
+Between the input and expected output is a single line containing only `.`.
+For invalid cases the expected side is the literal line `ERROR` (must reject).
+
+Out of scope for this experiment: JOIN, GROUP BY/HAVING, subqueries, views,
+indexes, transactions, PRAGMA/ATTACH, BLOB, datetime functions, window
+functions, collation, and column constraints (PK/UNIQUE/NOT NULL/DEFAULT/AUTOINCREMENT).
+
+
+## Literals And Identifiers
+
+This experiment implements a Tier 1 SQLite-compatible subset for an in-memory database. Each query references at most one table; JOIN, subqueries, GROUP BY, constraints, indexes, and triggers are out of scope. Statements are case-insensitive for keywords unless quoted.
+
+Integer literals are signed decimal sequences without a fractional part. Real literals contain a decimal point. Scientific notation is not supported. String literals are single-quoted; an embedded apostrophe is escaped by doubling it. Backslash escape sequences inside strings are not interpreted unless explicitly documented elsewhere. The NULL literal represents a missing value distinct from zero or an empty string.
+
+Double-quoted tokens are identifier quotes, not string literals. They may contain spaces and reserved words such as select or from. Unquoted identifiers consist of letters, digits, and underscores and must not start with a digit. Identifiers are matched case-insensitively unless quoted.
+
+SELECT may list multiple result columns separated by commas. Each column expression may carry an optional AS alias; unquoted aliases follow identifier rules, quoted aliases use double quotes. SELECT without FROM is valid and evaluates expressions only.
+
+Unary minus binds to numeric literals and parenthesized expressions. Parentheses override default precedence for nested expressions.
+
+**Must reject**
+
+- Unclosed single- or double-quoted literals
+- Malformed numeric tokens such as multiple decimal points or a trailing exponent without digits
+- Tokens that violate identifier formation rules where an identifier is required
+
+### Valid
+
+```````````````````````````````` example
+SELECT 1;
+.
+[[1]]
+````````````````````````````````
+
+```````````````````````````````` example
+SELECT 0;
+.
+[[0]]
+````````````````````````````````
+
+```````````````````````````````` example
+SELECT -1;
+.
+[[-1]]
+````````````````````````````````
+
+```````````````````````````````` example
+SELECT 42;
+.
+[[42]]
+````````````````````````````````
+
+```````````````````````````````` example
+SELECT 1000000;
+.
+[[1000000]]
+````````````````````````````````
+
+### Invalid (must reject)
+
+```````````````````````````````` example
+SELECT 'unclosed;
+.
+ERROR
+````````````````````````````````
+
+```````````````````````````````` example
+SELECT 1.2.3;
+.
+ERROR
+````````````````````````````````
+
+
+## Create Table
+
+CREATE TABLE defines a new table in the in-memory catalog. Syntax is CREATE TABLE table_name ( column_name type_name , ... ). Supported declared type names are INTEGER, REAL, TEXT, NUMERIC, and NONE. Declared types guide affinity but do not enforce rigid storage classes at insert time. PRIMARY KEY, UNIQUE, NOT NULL, CHECK, FOREIGN KEY, and DEFAULT column constraints are out of scope and must not appear.
+
+Each CREATE TABLE must name at least one column. Column names follow the same identifier rules as elsewhere. Multiple tables may exist in one session, but each query still reads or writes a single table. Creating a table with a name that already exists is an error; the engine does not replace or alter existing definitions.
+
+CREATE TABLE succeeds with no result rows. Subsequent INSERT statements populate rows. An empty table is valid and yields zero rows on SELECT. Quoted table and column names are permitted when they collide with reserved words or contain spaces.
+
+Type affinity for declared INTEGER columns prefers integer storage; REAL prefers floating point; TEXT prefers text; NUMERIC prefers numeric conversions; NONE imposes no conversion preference. These affinities affect comparisons and some casts but do not reject values of other storage classes at insert time.
+
+**Must reject**
+
+- CREATE TABLE without a table name or with an empty column list
+- Malformed column lists or missing parentheses
+- Duplicate CREATE TABLE for the same table name in one session
+- Any constraint clause beyond a bare type name
+
+### Valid
+
+```````````````````````````````` example
+CREATE TABLE t (a INTEGER, b TEXT);
+INSERT INTO t VALUES (1, 'x');
+SELECT a, b FROM t ORDER BY a;
+.
+[[1,"x"]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE nums (n INTEGER);
+INSERT INTO nums VALUES (10);
+SELECT n FROM nums;
+.
+[[10]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE mixed (i INTEGER, r REAL, s TEXT);
+INSERT INTO mixed VALUES (1, 2.5, 'hi');
+SELECT i, r, s FROM mixed;
+.
+[[1,2.5,"hi"]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE empty (a INTEGER);
+SELECT a FROM empty;
+.
+[]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t1 (x INTEGER);
+CREATE TABLE t2 (y TEXT);
+INSERT INTO t1 VALUES (7);
+INSERT INTO t2 VALUES ('z');
+SELECT x FROM t1;
+.
+[[7]]
+````````````````````````````````
+
+### Invalid (must reject)
+
+```````````````````````````````` example
+CREATE TABLE t (a INTEGER); CREATE TABLE t (b TEXT);
+.
+ERROR
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE (a INTEGER);
+.
+ERROR
+````````````````````````````````
+
+
+## Insert
+
+INSERT adds one row to a table. Two forms are supported: INSERT INTO table VALUES ( expr , ... ) and INSERT INTO table ( col , ... ) VALUES ( expr , ... ). The number of value expressions must exactly match the number of target columns. For the VALUES-only form, the expression count must equal the table's column count in definition order.
+
+When a column list is supplied, values are bound positionally to those columns in the order listed. Columns not named in the list receive NULL. NULL may be inserted explicitly into any column.
+
+INSERT succeeds with no result rows. Values are stored according to SQLite dynamic typing; declared column affinity may coerce representations but does not reject mismatched literal types at insert time. String literals, integers, reals, and NULL are all valid value expressions.
+
+Multiple value tuples in one INSERT statement are supported. INSERT OR REPLACE, UPSERT, and INSERT ... SELECT are out of scope.
+
+**Must reject**
+
+- INSERT into a table that does not exist
+- Column/value count mismatch for either INSERT form
+- References to column names not defined on the target table
+- Missing VALUES clause, empty value list, or trailing comma in the value list
+- Syntax errors in the INSERT statement
+
+### Valid
+
+```````````````````````````````` example
+CREATE TABLE t (a INTEGER, b TEXT);
+INSERT INTO t VALUES (1, 'x');
+SELECT a, b FROM t ORDER BY a;
+.
+[[1,"x"]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (a INTEGER, b TEXT);
+INSERT INTO t VALUES (1, 'a');
+INSERT INTO t VALUES (2, 'b');
+SELECT a, b FROM t ORDER BY a;
+.
+[[1,"a"],[2,"b"]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (a INTEGER, b TEXT, c INTEGER);
+INSERT INTO t (a, c) VALUES (5, 10);
+SELECT a, b, c FROM t;
+.
+[[5,null,10]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (a INTEGER);
+INSERT INTO t VALUES (NULL);
+SELECT a FROM t;
+.
+[[null]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (a INTEGER, b TEXT);
+INSERT INTO t (b, a) VALUES ('z', 3);
+SELECT a, b FROM t;
+.
+[[3,"z"]]
+````````````````````````````````
+
+### Invalid (must reject)
+
+```````````````````````````````` example
+CREATE TABLE t (a INTEGER, b TEXT); INSERT INTO t VALUES (1);
+.
+ERROR
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (a INTEGER); INSERT INTO t (b) VALUES (1);
+.
+ERROR
+````````````````````````````````
+
+
+## Select Core
+
+SELECT retrieves columns from a single table or evaluates a literal projection without FROM. The form is SELECT select_list FROM table_name. SELECT * expands to all columns in table definition order. Explicit lists may name columns, expressions, and function calls, each with an optional AS alias.
+
+When FROM is omitted, the select list is evaluated once and returns one result row. When FROM names an existing table, one result row is produced per stored row unless filtered by WHERE. Unknown table or column names are errors resolved before execution.
+
+Result column names default from the expression: bare column names keep their name, other expressions may use a supplied alias or an implementation-defined name. Quoted aliases preserve case and reserved words.
+
+SELECT does not deduplicate rows unless DISTINCT is specified in a later section. There is no GROUP BY, HAVING, JOIN, UNION, or subquery support. Correlated references and table aliases in FROM are out of scope.
+
+Expression columns may combine literals, column references, operators, and functions subject to their own sections. Ordering of rows without ORDER BY is not guaranteed but typically follows insertion order via implicit rowid.
+
+**Must reject**
+
+- SELECT with a malformed or empty select list
+- FROM referencing a table that does not exist
+- Column references not present on the named table
+- SELECT * or column lists combined with unsupported clauses such as JOIN or GROUP BY
+
+### Valid
+
+```````````````````````````````` example
+CREATE TABLE t (a INTEGER, b TEXT, c INTEGER);
+INSERT INTO t VALUES (1, 'a', 10);
+INSERT INTO t VALUES (2, 'b', 20);
+INSERT INTO t VALUES (3, 'c', 30);
+SELECT a, b FROM t ORDER BY a;
+.
+[[1,"a"],[2,"b"],[3,"c"]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (a INTEGER, b TEXT, c INTEGER);
+INSERT INTO t VALUES (1, 'a', 10);
+INSERT INTO t VALUES (2, 'b', 20);
+INSERT INTO t VALUES (3, 'c', 30);
+SELECT * FROM t ORDER BY a;
+.
+[[1,"a",10],[2,"b",20],[3,"c",30]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (a INTEGER);
+INSERT INTO t VALUES (5);
+SELECT a AS x FROM t;
+.
+[[5]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (a INTEGER, b INTEGER);
+INSERT INTO t VALUES (1, 2);
+SELECT a + b AS sum FROM t;
+.
+[[3]]
+````````````````````````````````
+
+```````````````````````````````` example
+SELECT 1 AS one, 'hi' AS s;
+.
+[[1,"hi"]]
+````````````````````````````````
+
+### Invalid (must reject)
+
+```````````````````````````````` example
+SELECT a FROM nonexistent;
+.
+ERROR
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (a INTEGER); SELECT b FROM t;
+.
+ERROR
+````````````````````````````````
+
+
+## Where
+
+WHERE filters rows from a single-table SELECT, UPDATE, or DELETE. Only rows for which the predicate evaluates to true are kept; false removes the row; NULL treats the row as not matching. This three-valued interpretation applies uniformly: a NULL condition does not pass the filter.
+
+Predicates may use comparison operators, logical AND/OR/NOT, parentheses, IS NULL, IS NOT NULL, BETWEEN, IN, and LIKE as defined in later sections. Column references must exist on the target table. WHERE is optional; omitting it applies the statement to all rows.
+
+Operator precedence follows SQLite: NOT binds tightest, then concatenation, then multiplicative arithmetic, additive arithmetic, comparisons, AND, then OR. Use parentheses to override.
+
+WHERE cannot reference aggregate results; aggregates without GROUP BY appear only in select lists of separate queries. Subqueries in predicates, EXISTS, and ANY are out of scope.
+
+For UPDATE and DELETE, WHERE restricts affected rows; without WHERE, all rows of the table are candidates. Combined with expressions that propagate NULL, filters such as col = NULL never match rows; use IS NULL instead.
+
+**Must reject**
+
+- Unknown column names in the WHERE clause
+- Incomplete predicates such as a trailing operator or missing BETWEEN bounds
+- Subqueries, EXISTS, or JOIN syntax inside WHERE
+- Syntax errors in the predicate expression
+
+### Valid
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, name TEXT, score INTEGER);
+INSERT INTO t VALUES (1, 'alice', 80);
+INSERT INTO t VALUES (2, 'bob', 90);
+INSERT INTO t VALUES (3, 'carol', 70);
+INSERT INTO t VALUES (4, 'dave', 90);
+SELECT id, name FROM t WHERE id = 2 ORDER BY id;
+.
+[[2,"bob"]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, name TEXT, score INTEGER);
+INSERT INTO t VALUES (1, 'alice', 80);
+INSERT INTO t VALUES (2, 'bob', 90);
+INSERT INTO t VALUES (3, 'carol', 70);
+INSERT INTO t VALUES (4, 'dave', 90);
+SELECT id FROM t WHERE id <> 2 ORDER BY id;
+.
+[[1],[3],[4]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, name TEXT, score INTEGER);
+INSERT INTO t VALUES (1, 'alice', 80);
+INSERT INTO t VALUES (2, 'bob', 90);
+INSERT INTO t VALUES (3, 'carol', 70);
+INSERT INTO t VALUES (4, 'dave', 90);
+SELECT id FROM t WHERE score > 80 ORDER BY id;
+.
+[[2],[4]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, name TEXT, score INTEGER);
+INSERT INTO t VALUES (1, 'alice', 80);
+INSERT INTO t VALUES (2, 'bob', 90);
+INSERT INTO t VALUES (3, 'carol', 70);
+INSERT INTO t VALUES (4, 'dave', 90);
+SELECT id FROM t WHERE score < 80 ORDER BY id;
+.
+[[3]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, name TEXT, score INTEGER);
+INSERT INTO t VALUES (1, 'alice', 80);
+INSERT INTO t VALUES (2, 'bob', 90);
+INSERT INTO t VALUES (3, 'carol', 70);
+INSERT INTO t VALUES (4, 'dave', 90);
+SELECT id FROM t WHERE score >= 90 ORDER BY id;
+.
+[[2],[4]]
+````````````````````````````````
+
+### Invalid (must reject)
+
+```````````````````````````````` example
+CREATE TABLE t (a INTEGER); SELECT a FROM t WHERE;
+.
+ERROR
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (a INTEGER); SELECT a FROM t WHERE a =;
+.
+ERROR
+````````````````````````````````
+
+
+## Order By And Limit
+
+ORDER BY sorts result rows from SELECT. Syntax is ORDER BY sort_key [ ASC | DESC ] [ , ... ]. ASC is the default. Sort keys may be column names, select-list aliases, ordinal positions counting from one in the select list, or general expressions. Multiple keys sort lexicographically left to right.
+
+NULLs sort together; relative placement among NULLs follows SQLite default ordering for the active sort direction. ORDER BY applies after WHERE and DISTINCT deduplication but before LIMIT/OFFSET trimming when all are present.
+
+LIMIT n retains at most n rows after sorting; OFFSET m skips the first m rows of the sorted stream. Non-negative integer literals are expected for LIMIT and OFFSET. LIMIT 0 yields an empty result. OFFSET without LIMIT is allowed.
+
+ORDER BY is not supported on UPDATE or DELETE in this subset. Indexed access paths and collating sequences beyond default binary/affinity comparison are out of scope.
+
+When ORDER BY references a column not in the select list, sorting still occurs on that column's values. Ordinal positions must refer to valid select-list indices.
+
+**Must reject**
+
+- ORDER BY referencing unknown columns on the queried table when a column name is required
+- Malformed ORDER BY with missing sort keys or dangling ASC/DESC
+- Invalid LIMIT/OFFSET syntax such as missing numeric operands
+- ORDER BY combined with unsupported constructs like JOIN
+
+### Valid
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, name TEXT, rank INTEGER);
+INSERT INTO t VALUES (3, 'c', 30);
+INSERT INTO t VALUES (1, 'a', 10);
+INSERT INTO t VALUES (2, 'b', 20);
+INSERT INTO t VALUES (4, 'd', 20);
+SELECT id FROM t ORDER BY id;
+.
+[[1],[2],[3],[4]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, name TEXT, rank INTEGER);
+INSERT INTO t VALUES (3, 'c', 30);
+INSERT INTO t VALUES (1, 'a', 10);
+INSERT INTO t VALUES (2, 'b', 20);
+INSERT INTO t VALUES (4, 'd', 20);
+SELECT id FROM t ORDER BY id DESC;
+.
+[[4],[3],[2],[1]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, name TEXT, rank INTEGER);
+INSERT INTO t VALUES (3, 'c', 30);
+INSERT INTO t VALUES (1, 'a', 10);
+INSERT INTO t VALUES (2, 'b', 20);
+INSERT INTO t VALUES (4, 'd', 20);
+SELECT id, rank FROM t ORDER BY rank, id;
+.
+[[1,10],[2,20],[4,20],[3,30]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, name TEXT, rank INTEGER);
+INSERT INTO t VALUES (3, 'c', 30);
+INSERT INTO t VALUES (1, 'a', 10);
+INSERT INTO t VALUES (2, 'b', 20);
+INSERT INTO t VALUES (4, 'd', 20);
+SELECT id, rank FROM t ORDER BY rank DESC, id ASC;
+.
+[[3,30],[2,20],[4,20],[1,10]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, name TEXT, rank INTEGER);
+INSERT INTO t VALUES (3, 'c', 30);
+INSERT INTO t VALUES (1, 'a', 10);
+INSERT INTO t VALUES (2, 'b', 20);
+INSERT INTO t VALUES (4, 'd', 20);
+SELECT id FROM t ORDER BY id LIMIT 2;
+.
+[[1],[2]]
+````````````````````````````````
+
+### Invalid (must reject)
+
+```````````````````````````````` example
+CREATE TABLE t (a INTEGER); SELECT a FROM t ORDER BY;
+.
+ERROR
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (a INTEGER); SELECT a FROM t ORDER BY a LIMT 1;
+.
+ERROR
+````````````````````````````````
+
+
+## Update
+
+UPDATE modifies existing rows in a single table. Syntax is UPDATE table SET col = expr [ , ... ] [ WHERE predicate ]. Each assignment sets one column to the value of its expression for every row that satisfies the optional WHERE clause. Without WHERE, all rows are updated.
+
+The SET clause must contain at least one assignment. Column names must exist on the target table. Expression evaluation uses the current row's values before any assignments in the same statement are applied to other columns of that row, matching SQLite row-update semantics for simple assignments.
+
+UPDATE succeeds with no result rows. NULL may be assigned explicitly. Affinity rules apply to stored results as with INSERT. Triggers, RETURNING, and multi-table UPDATE are out of scope.
+
+WHERE follows the same three-valued logic as SELECT: only rows with a true predicate are modified. Unknown columns in SET or WHERE are errors. Subqueries on the right-hand side of assignments are not supported.
+
+Multiple columns may be updated in one statement; assignments are evaluated using pre-update row values, then written together per row.
+
+**Must reject**
+
+- UPDATE on a table that does not exist
+- Unknown column names in SET or WHERE
+- Empty SET clause or missing assignment expressions
+- Trailing comma or syntax errors in UPDATE
+- Any JOIN, FROM clause, or subquery form of UPDATE
+
+### Valid
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, val INTEGER, tag TEXT);
+INSERT INTO t VALUES (1, 10, 'a');
+INSERT INTO t VALUES (2, 20, 'b');
+INSERT INTO t VALUES (3, 30, 'c');
+UPDATE t SET val = 11 WHERE id = 1;
+SELECT id, val FROM t WHERE id = 1;
+.
+[[1,11]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, val INTEGER, tag TEXT);
+INSERT INTO t VALUES (1, 10, 'a');
+INSERT INTO t VALUES (2, 20, 'b');
+INSERT INTO t VALUES (3, 30, 'c');
+UPDATE t SET val = val + 5;
+SELECT id, val FROM t ORDER BY id;
+.
+[[1,15],[2,25],[3,35]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, val INTEGER, tag TEXT);
+INSERT INTO t VALUES (1, 10, 'a');
+INSERT INTO t VALUES (2, 20, 'b');
+INSERT INTO t VALUES (3, 30, 'c');
+UPDATE t SET tag = 'x' WHERE id = 2;
+SELECT id, tag FROM t ORDER BY id;
+.
+[[1,"a"],[2,"x"],[3,"c"]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, val INTEGER, tag TEXT);
+INSERT INTO t VALUES (1, 10, 'a');
+INSERT INTO t VALUES (2, 20, 'b');
+INSERT INTO t VALUES (3, 30, 'c');
+UPDATE t SET val = 0 WHERE id > 2;
+SELECT id, val FROM t ORDER BY id;
+.
+[[1,10],[2,20],[3,0]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, val INTEGER, tag TEXT);
+INSERT INTO t VALUES (1, 10, 'a');
+INSERT INTO t VALUES (2, 20, 'b');
+INSERT INTO t VALUES (3, 30, 'c');
+UPDATE t SET val = 99, tag = 'z' WHERE id = 3;
+SELECT id, val, tag FROM t WHERE id = 3;
+.
+[[3,99,"z"]]
+````````````````````````````````
+
+### Invalid (must reject)
+
+```````````````````````````````` example
+UPDATE missing SET a = 1;
+.
+ERROR
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (a INTEGER); UPDATE t SET b = 1;
+.
+ERROR
+````````````````````````````````
+
+
+## Delete
+
+DELETE removes rows from a single table. Syntax is DELETE FROM table [ WHERE predicate ]. Rows for which the WHERE predicate evaluates to true are removed; false or NULL skips deletion for that row. Omitting WHERE deletes every row in the table while leaving the table definition intact.
+
+DELETE succeeds with no result rows. The table continues to exist with zero rows when all rows are deleted. TRUNCATE, DELETE with JOIN, and DELETE with LIMIT are out of scope.
+
+WHERE uses the same expression grammar and three-valued logic as SELECT and UPDATE. Unknown column references in WHERE are errors. Foreign-key cascade and trigger side effects are not modeled.
+
+After deletion, remaining rows keep their implicit rowid ordering for subsequent SELECT without ORDER BY only as an implementation detail; callers should not rely on rowid stability across deletes except where ORDER BY rowid is explicitly used if supported.
+
+Multiple DELETE statements in one script each apply to the current table state left by prior statements in the same session.
+
+**Must reject**
+
+- DELETE FROM a table that does not exist
+- Unknown column names in WHERE
+- Malformed DELETE syntax such as missing table name
+- DELETE with JOIN, USING, or LIMIT clauses
+- Syntax errors in the WHERE predicate
+
+### Valid
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, name TEXT);
+INSERT INTO t VALUES (1, 'a');
+INSERT INTO t VALUES (2, 'b');
+INSERT INTO t VALUES (3, 'c');
+INSERT INTO t VALUES (4, 'd');
+DELETE FROM t WHERE id = 2;
+SELECT id FROM t ORDER BY id;
+.
+[[1],[3],[4]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, name TEXT);
+INSERT INTO t VALUES (1, 'a');
+INSERT INTO t VALUES (2, 'b');
+INSERT INTO t VALUES (3, 'c');
+INSERT INTO t VALUES (4, 'd');
+DELETE FROM t WHERE id > 2;
+SELECT id FROM t ORDER BY id;
+.
+[[1],[2]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, name TEXT);
+INSERT INTO t VALUES (1, 'a');
+INSERT INTO t VALUES (2, 'b');
+INSERT INTO t VALUES (3, 'c');
+INSERT INTO t VALUES (4, 'd');
+DELETE FROM t;
+SELECT COUNT(*) FROM t;
+.
+[[0]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, name TEXT);
+INSERT INTO t VALUES (1, 'a');
+INSERT INTO t VALUES (2, 'b');
+INSERT INTO t VALUES (3, 'c');
+INSERT INTO t VALUES (4, 'd');
+DELETE FROM t WHERE id = 1 OR id = 4;
+SELECT id FROM t ORDER BY id;
+.
+[[2],[3]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, name TEXT);
+INSERT INTO t VALUES (1, 'a');
+INSERT INTO t VALUES (2, 'b');
+INSERT INTO t VALUES (3, 'c');
+INSERT INTO t VALUES (4, 'd');
+DELETE FROM t WHERE name = 'b';
+SELECT id, name FROM t ORDER BY id;
+.
+[[1,"a"],[3,"c"],[4,"d"]]
+````````````````````````````````
+
+### Invalid (must reject)
+
+```````````````````````````````` example
+DELETE FROM missing;
+.
+ERROR
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (a INTEGER); DELETE t WHERE a = 1;
+.
+ERROR
+````````````````````````````````
+
+
+## Arithmetic Operators
+
+Binary arithmetic operators are +, -, *, /, and %. Unary minus negates a numeric operand. Operands may be integer literals, real literals, parenthesized expressions, or column values subject to numeric affinity conversion. NULL operands propagate: any arithmetic expression involving NULL evaluates to NULL unless the whole expression is unreachable.
+
+Addition, subtraction, and multiplication use integer arithmetic when both operands are integers; if either operand is REAL, the operation is performed in floating point and the result is REAL. The division operator / truncates toward zero when both operands are integers, yielding an integer result. When either operand is REAL, / performs floating-point division and yields REAL.
+
+The modulo operator % returns the remainder after integer division; the sign of the result follows the dividend. Division or modulo by zero does not error; it yields NULL.
+
+Operator precedence is unary minus, then * / %, then + -, left-associative within each level. Parentheses override precedence. String operands in arithmetic contexts are cast to numeric values when possible; non-numeric strings become zero or NULL per SQLite conversion rules.
+
+This section covers SELECT expressions only. JOIN and subqueries are out of scope.
+
+**Must reject**
+
+- Binary operators missing a right-hand operand
+- Unary * used as a standalone operator where a factor is required
+- Adjacent operators with no operand between them
+- Any syntax error in an arithmetic expression
+
+### Valid
+
+```````````````````````````````` example
+SELECT 1 + 2;
+.
+[[3]]
+````````````````````````````````
+
+```````````````````````````````` example
+SELECT 10 - 3;
+.
+[[7]]
+````````````````````````````````
+
+```````````````````````````````` example
+SELECT 4 * 5;
+.
+[[20]]
+````````````````````````````````
+
+```````````````````````````````` example
+SELECT 20 / 4;
+.
+[[5]]
+````````````````````````````````
+
+```````````````````````````````` example
+SELECT 17 % 5;
+.
+[[2]]
+````````````````````````````````
+
+### Invalid (must reject)
+
+```````````````````````````````` example
+SELECT 1 +;
+.
+ERROR
+````````````````````````````````
+
+```````````````````````````````` example
+SELECT 1 %;
+.
+ERROR
+````````````````````````````````
+
+
+## Comparison And Logical Operators
+
+Comparison operators are =, ==, !=, <>, <, >, <=, and >=. They compare numeric values numerically and text values by binary collation order after affinity conversion. Two NULL operands compare unequal with = and equal with IS handled elsewhere; here, =, <>, and ordering operators applied to NULL yield NULL (unknown), not true or false.
+
+Logical operators AND, OR, and NOT implement SQLite three-valued logic. AND returns false if either side is false, true if both are true, otherwise NULL. OR returns true if either side is true, false if both are false, otherwise NULL. NOT maps true to false, false to true, and NULL to NULL.
+
+In SELECT projections, comparison and logical results are returned as integer 1 for true and 0 for false; NULL remains NULL. In WHERE filters, only true passes; false and NULL exclude the row.
+
+Operator precedence from tightest to loosest: NOT, comparisons, AND, OR. Parentheses override. The != token is synonymous with <>.
+
+Chained comparisons such as BETWEEN are covered separately. Subqueries, EXISTS, and JOIN predicates are out of scope.
+
+**Must reject**
+
+- Comparison operators missing a right-hand operand
+- AND or OR with a missing operand
+- NOT without a following expression
+- Malformed operator tokens or dangling operators at end of expression
+
+### Valid
+
+```````````````````````````````` example
+SELECT 1 = 1;
+.
+[[1]]
+````````````````````````````````
+
+```````````````````````````````` example
+SELECT 1 = 0;
+.
+[[0]]
+````````````````````````````````
+
+```````````````````````````````` example
+SELECT 1 <> 0;
+.
+[[1]]
+````````````````````````````````
+
+```````````````````````````````` example
+SELECT 1 != 0;
+.
+[[1]]
+````````````````````````````````
+
+```````````````````````````````` example
+SELECT 3 < 5;
+.
+[[1]]
+````````````````````````````````
+
+### Invalid (must reject)
+
+```````````````````````````````` example
+SELECT 1 =;
+.
+ERROR
+````````````````````````````````
+
+```````````````````````````````` example
+SELECT 1 AND;
+.
+ERROR
+````````````````````````````````
+
+
+## Between In Like
+
+BETWEEN expr AND expr tests inclusive range membership after pairwise comparison with three-valued logic. NOT BETWEEN negates the result. Both bounds are required. BETWEEN works on numeric and text operands using the same ordering rules as < and >.
+
+IN ( value , ... ) tests equality against a parenthesized list of expressions. NOT IN negates the result. An empty IN list always yields false for IN and true for NOT IN. NULL on either side of a tested equality inside IN follows standard NULL comparison rules; a row matches IN only if at least one non-NULL equal comparison succeeds.
+
+LIKE pattern matches use % as a sequence wildcard and _ as a single-character wildcard. NOT LIKE negates the match. By default, LIKE is case-insensitive for ASCII letters in SQLite; patterns and operands are compared accordingly unless an ESCAPE clause is present. ESCAPE defines an escape character before literal % or _ in the pattern.
+
+All three forms are valid in WHERE and in general boolean contexts. Subquery forms such as IN ( SELECT ... ) are out of scope. GLOB and REGEXP are not supported.
+
+**Must reject**
+
+- BETWEEN with only one bound or missing AND
+- IN without a parenthesized value list
+- LIKE without a pattern operand
+- Trailing commas inside IN lists or incomplete NOT IN syntax
+
+### Valid
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, name TEXT, score INTEGER, tag TEXT);
+INSERT INTO t VALUES (1, 'alpha', 10, 'a');
+INSERT INTO t VALUES (2, 'beta', 20, 'b');
+INSERT INTO t VALUES (3, 'gamma', 30, 'c');
+INSERT INTO t VALUES (4, 'delta', 40, 'd');
+INSERT INTO t VALUES (5, 'echo', 50, 'e');
+SELECT id, name FROM t WHERE score BETWEEN 20 AND 40 ORDER BY id;
+.
+[[2,"beta"],[3,"gamma"],[4,"delta"]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, name TEXT, score INTEGER, tag TEXT);
+INSERT INTO t VALUES (1, 'alpha', 10, 'a');
+INSERT INTO t VALUES (2, 'beta', 20, 'b');
+INSERT INTO t VALUES (3, 'gamma', 30, 'c');
+INSERT INTO t VALUES (4, 'delta', 40, 'd');
+INSERT INTO t VALUES (5, 'echo', 50, 'e');
+SELECT id FROM t WHERE score BETWEEN 10 AND 10 ORDER BY id;
+.
+[[1]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, name TEXT, score INTEGER, tag TEXT);
+INSERT INTO t VALUES (1, 'alpha', 10, 'a');
+INSERT INTO t VALUES (2, 'beta', 20, 'b');
+INSERT INTO t VALUES (3, 'gamma', 30, 'c');
+INSERT INTO t VALUES (4, 'delta', 40, 'd');
+INSERT INTO t VALUES (5, 'echo', 50, 'e');
+SELECT id FROM t WHERE score NOT BETWEEN 20 AND 40 ORDER BY id;
+.
+[[1],[5]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, name TEXT, score INTEGER, tag TEXT);
+INSERT INTO t VALUES (1, 'alpha', 10, 'a');
+INSERT INTO t VALUES (2, 'beta', 20, 'b');
+INSERT INTO t VALUES (3, 'gamma', 30, 'c');
+INSERT INTO t VALUES (4, 'delta', 40, 'd');
+INSERT INTO t VALUES (5, 'echo', 50, 'e');
+SELECT id FROM t WHERE score BETWEEN 15 AND 25 ORDER BY id;
+.
+[[2]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, name TEXT, score INTEGER, tag TEXT);
+INSERT INTO t VALUES (1, 'alpha', 10, 'a');
+INSERT INTO t VALUES (2, 'beta', 20, 'b');
+INSERT INTO t VALUES (3, 'gamma', 30, 'c');
+INSERT INTO t VALUES (4, 'delta', 40, 'd');
+INSERT INTO t VALUES (5, 'echo', 50, 'e');
+SELECT id FROM t WHERE score BETWEEN 0 AND 100 ORDER BY id;
+.
+[[1],[2],[3],[4],[5]]
+````````````````````````````````
+
+### Invalid (must reject)
+
+```````````````````````````````` example
+CREATE TABLE t (a INTEGER); SELECT a FROM t WHERE a BETWEEN 1;
+.
+ERROR
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (a INTEGER); SELECT a FROM t WHERE a IN;
+.
+ERROR
+````````````````````````````````
+
+
+## Null Logic
+
+NULL represents a missing or unknown value. IS NULL and IS NOT NULL are the only reliable tests for nullity. Comparisons such as col = NULL or col <> NULL always yield NULL (unknown) and never filter rows in WHERE; use IS NULL or IS NOT NULL instead.
+
+Three-valued logic governs all boolean combinations involving NULL. Arithmetic with NULL yields NULL. String concatenation with || treats NULL as empty string in SQLite, so NULL || 'x' yields 'x' and 'x' || NULL yields 'x'; both NULL operands yield NULL.
+
+Aggregates ignore NULL inputs except COUNT(*) which counts rows. CASE, CAST, and function calls each follow their own NULL propagation rules in later sections.
+
+IS NULL binds as a postfix operator to its left expression. IS NOT NULL is a single operator. NULL literal may appear in INSERT values, SELECT projections, and CASE results.
+
+Testing nullity in WHERE with IS NULL includes rows where the column is missing; IS NOT NULL excludes them. Logical combinations of nullity tests follow standard AND/OR rules.
+
+**Must reject**
+
+- IS or IS NOT without NULL
+- IS NOT without NULL following it
+- Duplicate NULL tokens used as consecutive expressions
+- Any attempt to use = NULL or <> NULL where IS forms are required for nullity tests in normative examples
+
+### Valid
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, a INTEGER, b INTEGER, s TEXT);
+INSERT INTO t VALUES (1, 1, 2, 'x');
+INSERT INTO t VALUES (2, NULL, 3, 'y');
+INSERT INTO t VALUES (3, 4, NULL, NULL);
+INSERT INTO t VALUES (4, 5, 6, 'z');
+SELECT id FROM t WHERE a IS NULL ORDER BY id;
+.
+[[2]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, a INTEGER, b INTEGER, s TEXT);
+INSERT INTO t VALUES (1, 1, 2, 'x');
+INSERT INTO t VALUES (2, NULL, 3, 'y');
+INSERT INTO t VALUES (3, 4, NULL, NULL);
+INSERT INTO t VALUES (4, 5, 6, 'z');
+SELECT id FROM t WHERE a IS NOT NULL ORDER BY id;
+.
+[[1],[3],[4]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, a INTEGER, b INTEGER, s TEXT);
+INSERT INTO t VALUES (1, 1, 2, 'x');
+INSERT INTO t VALUES (2, NULL, 3, 'y');
+INSERT INTO t VALUES (3, 4, NULL, NULL);
+INSERT INTO t VALUES (4, 5, 6, 'z');
+SELECT id FROM t WHERE b IS NULL ORDER BY id;
+.
+[[3]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, a INTEGER, b INTEGER, s TEXT);
+INSERT INTO t VALUES (1, 1, 2, 'x');
+INSERT INTO t VALUES (2, NULL, 3, 'y');
+INSERT INTO t VALUES (3, 4, NULL, NULL);
+INSERT INTO t VALUES (4, 5, 6, 'z');
+SELECT id FROM t WHERE b IS NOT NULL ORDER BY id;
+.
+[[1],[2],[4]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, a INTEGER, b INTEGER, s TEXT);
+INSERT INTO t VALUES (1, 1, 2, 'x');
+INSERT INTO t VALUES (2, NULL, 3, 'y');
+INSERT INTO t VALUES (3, 4, NULL, NULL);
+INSERT INTO t VALUES (4, 5, 6, 'z');
+SELECT id FROM t WHERE s IS NULL ORDER BY id;
+.
+[[3]]
+````````````````````````````````
+
+### Invalid (must reject)
+
+```````````````````````````````` example
+SELECT 1 WHERE NULL IS;
+.
+ERROR
+````````````````````````````````
+
+```````````````````````````````` example
+SELECT 1 WHERE 1 IS NOT;
+.
+ERROR
+````````````````````````````````
+
+
+## Case Expression
+
+CASE expressions select among alternative result values. Two forms exist. Searched CASE: CASE WHEN condition THEN result [ WHEN ... ] [ ELSE result ] END. Simple CASE: CASE base WHEN value THEN result [ WHEN ... ] [ ELSE result ] END.
+
+Conditions in searched form use the same three-valued boolean rules as WHERE. Simple form compares base to each WHEN value for equality with standard NULL rules: if base is NULL, no WHEN matches unless ELSE is present.
+
+Evaluation stops at the first matching branch. If no branch matches and ELSE is omitted, the result is NULL. Nested CASE expressions are permitted. CASE may appear in SELECT lists, WHERE, aggregates, and UPDATE assignments.
+
+WHEN and THEN are pairwise required. ELSE is optional. END must terminate every CASE. All result expressions within one CASE should be type-compatible; SQLite returns the value of the chosen branch without requiring a common declared type.
+
+CASE does not short-circuit side effects because this subset has none. Subqueries in CASE are out of scope.
+
+**Must reject**
+
+- CASE without END
+- WHEN without THEN or THEN without an expression
+- ELSE without a result expression
+- Searched CASE with WHEN immediately followed by THEN but missing a condition expression
+
+### Valid
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, grade TEXT, score INTEGER, kind TEXT);
+INSERT INTO t VALUES (1, 'A', 95, 'exam');
+INSERT INTO t VALUES (2, 'B', 82, 'quiz');
+INSERT INTO t VALUES (3, 'C', 71, 'exam');
+INSERT INTO t VALUES (4, 'D', 60, 'quiz');
+INSERT INTO t VALUES (5, 'F', 45, 'exam');
+SELECT id, CASE WHEN score >= 90 THEN 'high' ELSE 'other' END AS band FROM t ORDER BY id;
+.
+[[1,"high"],[2,"other"],[3,"other"],[4,"other"],[5,"other"]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, grade TEXT, score INTEGER, kind TEXT);
+INSERT INTO t VALUES (1, 'A', 95, 'exam');
+INSERT INTO t VALUES (2, 'B', 82, 'quiz');
+INSERT INTO t VALUES (3, 'C', 71, 'exam');
+INSERT INTO t VALUES (4, 'D', 60, 'quiz');
+INSERT INTO t VALUES (5, 'F', 45, 'exam');
+SELECT id, CASE WHEN score >= 90 THEN 'A' WHEN score >= 80 THEN 'B' WHEN score >= 70 THEN 'C' ELSE 'low' END AS tier FROM t ORDER BY id;
+.
+[[1,"A"],[2,"B"],[3,"C"],[4,"low"],[5,"low"]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, grade TEXT, score INTEGER, kind TEXT);
+INSERT INTO t VALUES (1, 'A', 95, 'exam');
+INSERT INTO t VALUES (2, 'B', 82, 'quiz');
+INSERT INTO t VALUES (3, 'C', 71, 'exam');
+INSERT INTO t VALUES (4, 'D', 60, 'quiz');
+INSERT INTO t VALUES (5, 'F', 45, 'exam');
+SELECT id, CASE grade WHEN 'A' THEN 4 WHEN 'B' THEN 3 WHEN 'C' THEN 2 ELSE 1 END AS pts FROM t ORDER BY id;
+.
+[[1,4],[2,3],[3,2],[4,1],[5,1]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, grade TEXT, score INTEGER, kind TEXT);
+INSERT INTO t VALUES (1, 'A', 95, 'exam');
+INSERT INTO t VALUES (2, 'B', 82, 'quiz');
+INSERT INTO t VALUES (3, 'C', 71, 'exam');
+INSERT INTO t VALUES (4, 'D', 60, 'quiz');
+INSERT INTO t VALUES (5, 'F', 45, 'exam');
+SELECT id, CASE kind WHEN 'exam' THEN score ELSE score - 5 END AS adj FROM t ORDER BY id;
+.
+[[1,95],[2,77],[3,71],[4,55],[5,45]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, grade TEXT, score INTEGER, kind TEXT);
+INSERT INTO t VALUES (1, 'A', 95, 'exam');
+INSERT INTO t VALUES (2, 'B', 82, 'quiz');
+INSERT INTO t VALUES (3, 'C', 71, 'exam');
+INSERT INTO t VALUES (4, 'D', 60, 'quiz');
+INSERT INTO t VALUES (5, 'F', 45, 'exam');
+SELECT id, CASE WHEN score IS NULL THEN 0 ELSE score END AS s FROM t ORDER BY id;
+.
+[[1,95],[2,82],[3,71],[4,60],[5,45]]
+````````````````````````````````
+
+### Invalid (must reject)
+
+```````````````````````````````` example
+SELECT CASE END;
+.
+ERROR
+````````````````````````````````
+
+```````````````````````````````` example
+SELECT CASE 1 WHEN 2 THEN 3 ELSE;
+.
+ERROR
+````````````````````````````````
+
+
+## Cast And Affinity
+
+CAST ( expr AS type ) converts a value to a target type. Supported target type names are INTEGER, REAL, TEXT, NUMERIC, and NONE. CAST(NULL AS any) yields NULL. CAST of non-numeric text to INTEGER or REAL yields NULL when no numeric prefix exists.
+
+Column declared types determine affinity, not rigid storage. INTEGER affinity prefers integer storage; REAL prefers floating point; TEXT prefers text; NUMERIC prefers numeric conversions; NONE applies no conversion preference. Values inserted with a different storage class remain storable; affinity affects comparisons, sorting, and some operations.
+
+The typeof function returns the storage class name of its argument: integer, real, text, or null. Affinity influences numeric operations on column values: TEXT columns may cast to numbers for arithmetic; INTEGER columns may participate in concatenation by converting to text when used with ||.
+
+Comparisons and ORDER BY apply affinity rules before comparing values. CAST overrides affinity for the duration of the expression. Unsupported cast targets such as BLOB or DATETIME are out of scope.
+
+**Must reject**
+
+- CAST missing the expression or AS clause
+- CAST with no type name or with multiple type names
+- CAST with an empty argument list
+- Malformed CAST syntax such as a missing closing parenthesis
+
+### Valid
+
+```````````````````````````````` example
+CREATE TABLE mixed (i INTEGER, r REAL, s TEXT);
+INSERT INTO mixed VALUES ('42', 3.7, 100);
+INSERT INTO mixed VALUES ('7.9', '2.5', '3.14');
+INSERT INTO mixed VALUES ('abc', 1.0, 5);
+SELECT CAST(i AS INTEGER) AS v FROM mixed ORDER BY rowid;
+.
+[[42],[7],[0]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE mixed (i INTEGER, r REAL, s TEXT);
+INSERT INTO mixed VALUES ('42', 3.7, 100);
+INSERT INTO mixed VALUES ('7.9', '2.5', '3.14');
+INSERT INTO mixed VALUES ('abc', 1.0, 5);
+SELECT CAST(r AS REAL) AS v FROM mixed ORDER BY rowid;
+.
+[[3.7],[2.5],[1]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE mixed (i INTEGER, r REAL, s TEXT);
+INSERT INTO mixed VALUES ('42', 3.7, 100);
+INSERT INTO mixed VALUES ('7.9', '2.5', '3.14');
+INSERT INTO mixed VALUES ('abc', 1.0, 5);
+SELECT CAST(s AS TEXT) AS v FROM mixed ORDER BY rowid;
+.
+[["100"],["3.14"],["5"]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE mixed (i INTEGER, r REAL, s TEXT);
+INSERT INTO mixed VALUES ('42', 3.7, 100);
+INSERT INTO mixed VALUES ('7.9', '2.5', '3.14');
+INSERT INTO mixed VALUES ('abc', 1.0, 5);
+SELECT CAST(s AS INTEGER) AS v FROM mixed ORDER BY rowid;
+.
+[[100],[3],[5]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE mixed (i INTEGER, r REAL, s TEXT);
+INSERT INTO mixed VALUES ('42', 3.7, 100);
+INSERT INTO mixed VALUES ('7.9', '2.5', '3.14');
+INSERT INTO mixed VALUES ('abc', 1.0, 5);
+SELECT CAST(s AS REAL) AS v FROM mixed ORDER BY rowid;
+.
+[[100],[3.14],[5]]
+````````````````````````````````
+
+### Invalid (must reject)
+
+```````````````````````````````` example
+SELECT CAST(1);
+.
+ERROR
+````````````````````````````````
+
+```````````````````````````````` example
+SELECT CAST AS INTEGER;
+.
+ERROR
+````````````````````````````````
+
+
+## String Functions
+
+String functions operate on TEXT values. Operands are cast to text when needed. NULL arguments generally propagate NULL except where noted for concatenation.
+
+Supported functions: length(x) returns character count; lower(x) and upper(x) change ASCII letter case; substr(x, start, len) and substring alias extract a substring with SQLite indexing rules including negative start; trim(x), ltrim(x), rtrim(x) remove whitespace, and trim(x, chars) removes leading and trailing characters from the optional second argument; replace(x, from, to) substitutes all occurrences.
+
+The || operator concatenates strings. If either operand is NULL and the other is not, the non-NULL value is returned; if both are NULL, the result is NULL. Non-text operands are cast to text before concatenation.
+
+Functions require exact arity: length, lower, upper, ltrim, and rtrim take one argument; substr takes two or three; replace takes three; trim takes one or two. Unknown functions are errors.
+
+Regular expressions, unicode-aware case mapping beyond SQLite defaults, and BLOB text conversions are out of scope.
+
+**Must reject**
+
+- String functions called with too few or too many arguments
+- replace or substr invoked without required operands
+- trim with more than two arguments
+- Unknown function names or missing parentheses
+
+### Valid
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, s TEXT);
+INSERT INTO t VALUES (1, 'Hello');
+INSERT INTO t VALUES (2, 'WORLD');
+INSERT INTO t VALUES (3, '  trim  ');
+INSERT INTO t VALUES (4, 'a-b-c');
+INSERT INTO t VALUES (5, 'xyz');
+SELECT id, length(s) AS n FROM t ORDER BY id;
+.
+[[1,5],[2,5],[3,8],[4,5],[5,3]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, s TEXT);
+INSERT INTO t VALUES (1, 'Hello');
+INSERT INTO t VALUES (2, 'WORLD');
+INSERT INTO t VALUES (3, '  trim  ');
+INSERT INTO t VALUES (4, 'a-b-c');
+INSERT INTO t VALUES (5, 'xyz');
+SELECT length('abc') AS n;
+.
+[[3]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, s TEXT);
+INSERT INTO t VALUES (1, 'Hello');
+INSERT INTO t VALUES (2, 'WORLD');
+INSERT INTO t VALUES (3, '  trim  ');
+INSERT INTO t VALUES (4, 'a-b-c');
+INSERT INTO t VALUES (5, 'xyz');
+SELECT length('') AS n;
+.
+[[0]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, s TEXT);
+INSERT INTO t VALUES (1, 'Hello');
+INSERT INTO t VALUES (2, 'WORLD');
+INSERT INTO t VALUES (3, '  trim  ');
+INSERT INTO t VALUES (4, 'a-b-c');
+INSERT INTO t VALUES (5, 'xyz');
+SELECT id, lower(s) AS v FROM t ORDER BY id;
+.
+[[1,"hello"],[2,"world"],[3,"  trim  "],[4,"a-b-c"],[5,"xyz"]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, s TEXT);
+INSERT INTO t VALUES (1, 'Hello');
+INSERT INTO t VALUES (2, 'WORLD');
+INSERT INTO t VALUES (3, '  trim  ');
+INSERT INTO t VALUES (4, 'a-b-c');
+INSERT INTO t VALUES (5, 'xyz');
+SELECT lower('AbC') AS v;
+.
+[["abc"]]
+````````````````````````````````
+
+### Invalid (must reject)
+
+```````````````````````````````` example
+SELECT length();
+.
+ERROR
+````````````````````````````````
+
+```````````````````````````````` example
+SELECT lower('a', 'b');
+.
+ERROR
+````````````````````````````````
+
+
+## Numeric Functions
+
+Numeric functions support INTEGER and REAL operands with NULL propagation. abs(x) returns absolute value. round(x) rounds to nearest integer; round(x, n) rounds to n digits after the decimal point. min(x, y) and max(x, y) return the lesser or greater numeric value after comparison.
+
+typeof(x) returns the storage class name: integer, real, text, or null. It accepts exactly one argument.
+
+These scalar functions differ from aggregate MIN and MAX covered elsewhere: the two-argument min and max are scalar comparisons, not aggregates over rows. Nested calls such as round(max(a, b)) are valid.
+
+When any required numeric argument is NULL, the result is NULL unless both operands of min/max are evaluated and one is NULL, in which case SQLite returns the non-NULL operand for two-argument min/max.
+
+round with two arguments requires exactly two; round with one requires exactly one. abs requires exactly one. Calling aggregates with zero arguments is invalid in this subset.
+
+Trigonometric, logarithmic, and random functions are out of scope.
+
+**Must reject**
+
+- abs, round, or typeof called with no arguments
+- round called with more than two arguments
+- Scalar min or max called with zero or one arguments
+- Aggregate max or min invoked with empty parentheses where an argument is required
+
+### Valid
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, v REAL, w INTEGER);
+INSERT INTO t VALUES (1, -3.5, 10);
+INSERT INTO t VALUES (2, 2.49, -4);
+INSERT INTO t VALUES (3, 0.0, 0);
+INSERT INTO t VALUES (4, 7.51, 3);
+INSERT INTO t VALUES (5, NULL, 5);
+SELECT id, abs(v) AS a FROM t ORDER BY id;
+.
+[[1,3.5],[2,2.49],[3,0],[4,7.51],[5,null]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, v REAL, w INTEGER);
+INSERT INTO t VALUES (1, -3.5, 10);
+INSERT INTO t VALUES (2, 2.49, -4);
+INSERT INTO t VALUES (3, 0.0, 0);
+INSERT INTO t VALUES (4, 7.51, 3);
+INSERT INTO t VALUES (5, NULL, 5);
+SELECT abs(-42) AS a;
+.
+[[42]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, v REAL, w INTEGER);
+INSERT INTO t VALUES (1, -3.5, 10);
+INSERT INTO t VALUES (2, 2.49, -4);
+INSERT INTO t VALUES (3, 0.0, 0);
+INSERT INTO t VALUES (4, 7.51, 3);
+INSERT INTO t VALUES (5, NULL, 5);
+SELECT abs(0) AS a;
+.
+[[0]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, v REAL, w INTEGER);
+INSERT INTO t VALUES (1, -3.5, 10);
+INSERT INTO t VALUES (2, 2.49, -4);
+INSERT INTO t VALUES (3, 0.0, 0);
+INSERT INTO t VALUES (4, 7.51, 3);
+INSERT INTO t VALUES (5, NULL, 5);
+SELECT id, round(v) AS r FROM t ORDER BY id;
+.
+[[1,-4],[2,2],[3,0],[4,8],[5,null]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, v REAL, w INTEGER);
+INSERT INTO t VALUES (1, -3.5, 10);
+INSERT INTO t VALUES (2, 2.49, -4);
+INSERT INTO t VALUES (3, 0.0, 0);
+INSERT INTO t VALUES (4, 7.51, 3);
+INSERT INTO t VALUES (5, NULL, 5);
+SELECT round(3.14159, 2) AS r;
+.
+[[3.14]]
+````````````````````````````````
+
+### Invalid (must reject)
+
+```````````````````````````````` example
+SELECT abs();
+.
+ERROR
+````````````````````````````````
+
+```````````````````````````````` example
+SELECT round(1, 2, 3);
+.
+ERROR
+````````````````````````````````
+
+
+## Aggregates No Group By
+
+Aggregate functions summarize all rows of a single-table query without GROUP BY. Supported aggregates are COUNT(*), COUNT(expr), SUM(expr), AVG(expr), MIN(expr), and MAX(expr). A SELECT containing any aggregate without GROUP BY returns exactly one row computed over the full filtered row set.
+
+COUNT(*) counts rows including those where individual columns are NULL. COUNT(expr) counts rows where expr is not NULL. SUM and AVG ignore NULL inputs; SUM of no non-NULL values is NULL; AVG of no non-NULL values is NULL. MIN and MAX ignore NULL; on an empty table or all-NULL column, MIN and MAX return NULL.
+
+Non-aggregate columns may not appear alongside aggregates in the same SELECT unless they are functionally determined, which this subset does not support; therefore valid queries use only aggregates, literals, and expressions derived from aggregates in the select list when aggregating.
+
+WHERE may filter rows before aggregation. DISTINCT inside aggregates is covered separately. GROUP BY, HAVING, window functions, and filtered aggregates are out of scope.
+
+**Must reject**
+
+- SUM, AVG, MIN, or MAX called with empty parentheses
+- COUNT used without parentheses
+- COUNT with more than one argument
+- SELECT lists mixing bare column references with aggregates on multi-row tables
+
+### Valid
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, category TEXT, amount INTEGER, flag INTEGER);
+INSERT INTO t VALUES (1, 'a', 10, 1);
+INSERT INTO t VALUES (2, 'b', 20, 0);
+INSERT INTO t VALUES (3, 'a', 30, 1);
+INSERT INTO t VALUES (4, 'c', NULL, 1);
+INSERT INTO t VALUES (5, 'b', 50, NULL);
+SELECT COUNT(*) AS n FROM t;
+.
+[[5]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, category TEXT, amount INTEGER, flag INTEGER);
+INSERT INTO t VALUES (1, 'a', 10, 1);
+INSERT INTO t VALUES (2, 'b', 20, 0);
+INSERT INTO t VALUES (3, 'a', 30, 1);
+INSERT INTO t VALUES (4, 'c', NULL, 1);
+INSERT INTO t VALUES (5, 'b', 50, NULL);
+SELECT COUNT(amount) AS n FROM t;
+.
+[[4]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, category TEXT, amount INTEGER, flag INTEGER);
+INSERT INTO t VALUES (1, 'a', 10, 1);
+INSERT INTO t VALUES (2, 'b', 20, 0);
+INSERT INTO t VALUES (3, 'a', 30, 1);
+INSERT INTO t VALUES (4, 'c', NULL, 1);
+INSERT INTO t VALUES (5, 'b', 50, NULL);
+SELECT COUNT(flag) AS n FROM t;
+.
+[[4]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, category TEXT, amount INTEGER, flag INTEGER);
+INSERT INTO t VALUES (1, 'a', 10, 1);
+INSERT INTO t VALUES (2, 'b', 20, 0);
+INSERT INTO t VALUES (3, 'a', 30, 1);
+INSERT INTO t VALUES (4, 'c', NULL, 1);
+INSERT INTO t VALUES (5, 'b', 50, NULL);
+SELECT SUM(amount) AS s FROM t;
+.
+[[110]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, category TEXT, amount INTEGER, flag INTEGER);
+INSERT INTO t VALUES (1, 'a', 10, 1);
+INSERT INTO t VALUES (2, 'b', 20, 0);
+INSERT INTO t VALUES (3, 'a', 30, 1);
+INSERT INTO t VALUES (4, 'c', NULL, 1);
+INSERT INTO t VALUES (5, 'b', 50, NULL);
+SELECT AVG(amount) AS a FROM t;
+.
+[[27.5]]
+````````````````````````````````
+
+### Invalid (must reject)
+
+```````````````````````````````` example
+SELECT SUM();
+.
+ERROR
+````````````````````````````````
+
+```````````````````````````````` example
+SELECT AVG();
+.
+ERROR
+````````````````````````````````
+
+
+## Distinct
+
+SELECT DISTINCT removes duplicate rows from the result set after evaluating the select list expressions but before ORDER BY and LIMIT unless otherwise specified. DISTINCT applies to the entire projection tuple: SELECT DISTINCT a, b deduplicates combined rows, not columns independently.
+
+DISTINCT may prefix a select list with one or more expressions, including function calls and CASE results. SELECT DISTINCT * is valid on a single table. DISTINCT combines with WHERE to deduplicate filtered rows only.
+
+COUNT(DISTINCT expr) counts unique non-NULL values of expr. Other aggregates with DISTINCT apply the aggregate after deduplicating input values. DISTINCT ON, GROUP BY, and window DISTINCT are out of scope.
+
+ORDER BY may reference select-list columns, aliases, ordinals, or columns not shown in the select list when querying a single table. When ORDER BY references a column absent from the select list, sorting still uses that column's values.
+
+LIMIT and OFFSET apply after DISTINCT and ORDER BY. Joins and subqueries are out of scope.
+
+**Must reject**
+
+- DISTINCT without a select list
+- Repeated DISTINCT keywords
+- Trailing comma after the last select-list item
+- DISTINCT combined with unsupported GROUP BY or JOIN syntax
+
+### Valid
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, color TEXT, size INTEGER);
+INSERT INTO t VALUES (1, 'red', 3);
+INSERT INTO t VALUES (2, 'blue', 1);
+INSERT INTO t VALUES (3, 'red', 2);
+INSERT INTO t VALUES (4, 'green', 3);
+INSERT INTO t VALUES (5, 'blue', 1);
+INSERT INTO t VALUES (6, 'red', 2);
+SELECT DISTINCT color FROM t ORDER BY color;
+.
+[["blue"],["green"],["red"]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, color TEXT, size INTEGER);
+INSERT INTO t VALUES (1, 'red', 3);
+INSERT INTO t VALUES (2, 'blue', 1);
+INSERT INTO t VALUES (3, 'red', 2);
+INSERT INTO t VALUES (4, 'green', 3);
+INSERT INTO t VALUES (5, 'blue', 1);
+INSERT INTO t VALUES (6, 'red', 2);
+SELECT DISTINCT size FROM t ORDER BY size;
+.
+[[1],[2],[3]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, color TEXT, size INTEGER);
+INSERT INTO t VALUES (1, 'red', 3);
+INSERT INTO t VALUES (2, 'blue', 1);
+INSERT INTO t VALUES (3, 'red', 2);
+INSERT INTO t VALUES (4, 'green', 3);
+INSERT INTO t VALUES (5, 'blue', 1);
+INSERT INTO t VALUES (6, 'red', 2);
+SELECT DISTINCT color, size FROM t ORDER BY color, size;
+.
+[["blue",1],["green",3],["red",2],["red",3]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, color TEXT, size INTEGER);
+INSERT INTO t VALUES (1, 'red', 3);
+INSERT INTO t VALUES (2, 'blue', 1);
+INSERT INTO t VALUES (3, 'red', 2);
+INSERT INTO t VALUES (4, 'green', 3);
+INSERT INTO t VALUES (5, 'blue', 1);
+INSERT INTO t VALUES (6, 'red', 2);
+SELECT DISTINCT size, color FROM t ORDER BY size, color;
+.
+[[1,"blue"],[2,"red"],[3,"green"],[3,"red"]]
+````````````````````````````````
+
+```````````````````````````````` example
+CREATE TABLE t (id INTEGER, color TEXT, size INTEGER);
+INSERT INTO t VALUES (1, 'red', 3);
+INSERT INTO t VALUES (2, 'blue', 1);
+INSERT INTO t VALUES (3, 'red', 2);
+INSERT INTO t VALUES (4, 'green', 3);
+INSERT INTO t VALUES (5, 'blue', 1);
+INSERT INTO t VALUES (6, 'red', 2);
+SELECT DISTINCT color FROM t ORDER BY color DESC;
+.
+[["red"],["green"],["blue"]]
+````````````````````````````````
+
+### Invalid (must reject)
+
+```````````````````````````````` example
+CREATE TABLE t (a INTEGER); SELECT DISTINCT FROM t;
+.
+ERROR
+````````````````````````````````
+
+```````````````````````````````` example
+SELECT DISTINCT DISTINCT 1;
+.
+ERROR
+````````````````````````````````
+
+
+## Errors
+
+The engine rejects invalid SQL with a non-zero exit status and no successful result output. This section consolidates all rejection categories for the Tier 1 in-memory single-table subset. JOIN, GROUP BY, subqueries, constraints, views, indexes, transactions, and PRAGMA are out of scope and must be rejected if present.
+
+Syntax errors cover misspelled keywords, missing required clauses, incomplete expressions, empty parenthesized lists where values are required, and trailing operators. Examples include SELECT without a projection, INSERT without VALUES, UPDATE without SET assignments, and malformed CASE or CAST syntax.
+
+Unknown table errors occur when FROM, INSERT INTO, UPDATE, or DELETE references a table name not created in the current session. Unknown column errors occur when a select list, WHERE, SET, or INSERT column list names a column not on the referenced table.
+
+Duplicate CREATE TABLE for an existing name is rejected; the first definition remains and the second fails. INSERT value and column arity mismatches are rejected: VALUES count must match column count for the chosen INSERT form, and explicit column lists must pair one value per listed column.
+
+Wrong function arity is rejected: each built-in requires its defined argument count; too few or too many arguments fail at parse or validate time. Unknown function names are treated as errors.
+
+**Must reject**
+
+- Syntax errors: malformed statements, misspelled keywords, incomplete clauses
+- Unknown table references in any statement
+- Unknown column references in expressions or assignment lists
+- Duplicate CREATE TABLE for the same table name
+- INSERT column/value count mismatches for either INSERT form
+- Built-in functions called with incorrect argument counts
+
+### Invalid (must reject)
+
+```````````````````````````````` example
+SELEC 1;
+.
+ERROR
+````````````````````````````````
+
+```````````````````````````````` example
+SELECT FROM t;
+.
+ERROR
+````````````````````````````````
+

@@ -61,6 +61,39 @@ export function deepEqualJson(a, b) {
   return JSON.stringify(canonicalizeJson(a)) === JSON.stringify(canonicalizeJson(b));
 }
 
+/**
+ * Deep equality with relative numeric tolerance.
+ * Numbers: |a-b| <= 1e-9 * max(1, |a|, |b|). Arrays element-wise; objects by key set.
+ */
+export function deepEqualJsonNumeric(a, b) {
+  if (a === b) return true;
+  if (a === null || b === null) return a === b;
+  if (typeof a === "number" && typeof b === "number") {
+    if (!Number.isFinite(a) || !Number.isFinite(b)) return false;
+    const tol = 1e-9 * Math.max(1, Math.abs(a), Math.abs(b));
+    return Math.abs(a - b) <= tol;
+  }
+  if (typeof a !== typeof b) return false;
+  if (Array.isArray(a)) {
+    if (!Array.isArray(b) || a.length !== b.length) return false;
+    for (let i = 0; i < a.length; i += 1) {
+      if (!deepEqualJsonNumeric(a[i], b[i])) return false;
+    }
+    return true;
+  }
+  if (typeof a === "object") {
+    const ak = Object.keys(a).sort();
+    const bk = Object.keys(b).sort();
+    if (ak.length !== bk.length) return false;
+    for (let i = 0; i < ak.length; i += 1) {
+      if (ak[i] !== bk[i]) return false;
+      if (!deepEqualJsonNumeric(a[ak[i]], b[bk[i]])) return false;
+    }
+    return true;
+  }
+  return false;
+}
+
 export function normalizeTextOutput(s) {
   return String(s ?? "")
     .replace(/\r\n/g, "\n")
@@ -79,6 +112,16 @@ export function compareCliOutput(actual, expected, packId = "commonmark") {
       const e = JSON.parse(String(expected || ""));
       if (deepEqualJson(a, e)) return { ok: true };
       return { ok: false, detail: "JSON mismatch (key-order insensitive)" };
+    } catch (err) {
+      return { ok: false, detail: `JSON parse: ${err.message || err}` };
+    }
+  }
+  if (packId === "sqlite-micro") {
+    try {
+      const a = JSON.parse(String(actual || ""));
+      const e = JSON.parse(String(expected || ""));
+      if (deepEqualJsonNumeric(a, e)) return { ok: true };
+      return { ok: false, detail: "JSON mismatch (numeric-tolerant)" };
     } catch (err) {
       return { ok: false, detail: `JSON parse: ${err.message || err}` };
     }
