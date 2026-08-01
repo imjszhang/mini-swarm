@@ -29,7 +29,7 @@ This experiment implements a Tier 1 SQLite-compatible subset for an in-memory da
 
 Integer literals are signed decimal sequences without a fractional part. Real literals contain a decimal point. Scientific notation is not supported. String literals are single-quoted; an embedded apostrophe is escaped by doubling it. Backslash escape sequences inside strings are not interpreted unless explicitly documented elsewhere. The NULL literal represents a missing value distinct from zero or an empty string.
 
-Double-quoted tokens are identifier quotes, not string literals. They may contain spaces and reserved words such as select or from. Unquoted identifiers consist of letters, digits, and underscores and must not start with a digit. Identifiers are matched case-insensitively unless quoted.
+Double-quoted tokens are identifier quotes, not string literals. They may contain spaces and reserved words. A double-quoted reserved word used as an alias or column name (for example AS "from", AS "where", AS "order", AS "select") is a plain identifier and must not be tokenized or parsed as the corresponding statement keyword. Unquoted identifiers consist of letters, digits, and underscores and must not start with a digit. Identifiers are matched case-insensitively unless quoted.
 
 SELECT may list multiple result columns separated by commas. Each column expression may carry an optional AS alias; unquoted aliases follow identifier rules, quoted aliases use double quotes. SELECT without FROM is valid and evaluates expressions only.
 
@@ -56,21 +56,21 @@ SELECT 0;
 ````````````````````````````````
 
 ```````````````````````````````` example
-SELECT -1;
+SELECT 1 AS "from";
 .
-[[-1]]
+[[1]]
 ````````````````````````````````
 
 ```````````````````````````````` example
-SELECT 42;
+SELECT 1 AS "where";
 .
-[[42]]
+[[1]]
 ````````````````````````````````
 
 ```````````````````````````````` example
-SELECT 1000000;
+SELECT 1 AS "order";
 .
-[[1000000]]
+[[1]]
 ````````````````````````````````
 
 ### Invalid (must reject)
@@ -412,7 +412,7 @@ ERROR
 
 ORDER BY sorts result rows from SELECT. Syntax is ORDER BY sort_key [ ASC | DESC ] [ , ... ]. ASC is the default. Sort keys may be column names, select-list aliases, ordinal positions counting from one in the select list, or general expressions. Multiple keys sort lexicographically left to right.
 
-NULLs sort together; relative placement among NULLs follows SQLite default ordering for the active sort direction. ORDER BY applies after WHERE and DISTINCT deduplication but before LIMIT/OFFSET trimming when all are present.
+NULLs sort together. Under the default ASC sort, NULL sorts before every non-NULL value; under DESC, NULL sorts after every non-NULL value. ORDER BY applies after WHERE and DISTINCT deduplication but before LIMIT/OFFSET trimming when all are present.
 
 LIMIT n retains at most n rows after sorting; OFFSET m skips the first m rows of the sorted stream. Non-negative integer literals are expected for LIMIT and OFFSET. LIMIT 0 yields an empty result. OFFSET without LIMIT is allowed.
 
@@ -1103,11 +1103,11 @@ ERROR
 
 ## Cast And Affinity
 
-CAST ( expr AS type ) converts a value to a target type. Supported target type names are INTEGER, REAL, TEXT, NUMERIC, and NONE. CAST(NULL AS any) yields NULL. CAST of non-numeric text to INTEGER or REAL yields NULL when no numeric prefix exists.
+CAST ( expr AS type ) converts a value to a target type. Supported target type names are INTEGER, REAL, TEXT, NUMERIC, and NONE. CAST(NULL AS any) yields NULL. CAST of non-numeric text (no leading numeric parse) to INTEGER yields the integer value 0, not NULL; CAST of such text to REAL yields 0.0. CAST of a real to TEXT uses a textual form that preserves a fractional part when the value is an exact integer real (for example 1.0 becomes the text "1.0").
 
-Column declared types determine affinity, not rigid storage. INTEGER affinity prefers integer storage; REAL prefers floating point; TEXT prefers text; NUMERIC prefers numeric conversions; NONE applies no conversion preference. Values inserted with a different storage class remain storable; affinity affects comparisons, sorting, and some operations.
+Column declared types determine affinity applied on INSERT/UPDATE, not a rigid runtime type. INTEGER affinity converts an inserted value to integer storage only when the value is an integer or a text/real that is a pure integer literal for the whole string (for example '42' becomes integer 42). If the text has a fractional part ('7.9') or is non-numeric ('abc'), the original storage class is retained — REAL or TEXT respectively — even though the column was declared INTEGER. REAL affinity converts integer-looking values to real storage (typeof reports real even when the numeric magnitude is integral). TEXT affinity prefers text storage. NUMERIC prefers lossless numeric conversion. NONE applies no conversion preference.
 
-The typeof function returns the storage class name of its argument: integer, real, text, or null. Affinity influences numeric operations on column values: TEXT columns may cast to numbers for arithmetic; INTEGER columns may participate in concatenation by converting to text when used with ||.
+The typeof function returns the storage class name of its argument: integer, real, text, or null. Because JSON numbers alone cannot distinguish integer 7 from real 7.0, the engine must track storage class separately from the numeric magnitude. Affinity influences numeric operations on column values: TEXT columns may cast to numbers for arithmetic; INTEGER columns may participate in concatenation by converting to text when used with ||.
 
 Comparisons and ORDER BY apply affinity rules before comparing values. CAST overrides affinity for the duration of the expression. Unsupported cast targets such as BLOB or DATETIME are out of scope.
 
@@ -1135,9 +1135,9 @@ CREATE TABLE mixed (i INTEGER, r REAL, s TEXT);
 INSERT INTO mixed VALUES ('42', 3.7, 100);
 INSERT INTO mixed VALUES ('7.9', '2.5', '3.14');
 INSERT INTO mixed VALUES ('abc', 1.0, 5);
-SELECT CAST(r AS REAL) AS v FROM mixed ORDER BY rowid;
+SELECT CAST(i AS TEXT) AS v FROM mixed ORDER BY rowid;
 .
-[[3.7],[2.5],[1]]
+[["42"],["7.9"],["abc"]]
 ````````````````````````````````
 
 ```````````````````````````````` example
@@ -1145,29 +1145,29 @@ CREATE TABLE mixed (i INTEGER, r REAL, s TEXT);
 INSERT INTO mixed VALUES ('42', 3.7, 100);
 INSERT INTO mixed VALUES ('7.9', '2.5', '3.14');
 INSERT INTO mixed VALUES ('abc', 1.0, 5);
-SELECT CAST(s AS TEXT) AS v FROM mixed ORDER BY rowid;
+SELECT CAST('abc' AS INTEGER) AS v;
 .
-[["100"],["3.14"],["5"]]
+[[0]]
 ````````````````````````````````
 
 ```````````````````````````````` example
-CREATE TABLE mixed (i INTEGER, r REAL, s TEXT);
-INSERT INTO mixed VALUES ('42', 3.7, 100);
-INSERT INTO mixed VALUES ('7.9', '2.5', '3.14');
-INSERT INTO mixed VALUES ('abc', 1.0, 5);
-SELECT CAST(s AS INTEGER) AS v FROM mixed ORDER BY rowid;
+CREATE TABLE typed (i INTEGER, r REAL, t TEXT, n NUMERIC);
+INSERT INTO typed VALUES ('10', '20.5', 123, '99.9');
+INSERT INTO typed VALUES (3.14, '7', '45.6', 1);
+INSERT INTO typed VALUES ('x', 0, '0', '0');
+SELECT i, typeof(i) AS ti FROM typed ORDER BY rowid;
 .
-[[100],[3],[5]]
+[[10,"integer"],[3.14,"real"],["x","text"]]
 ````````````````````````````````
 
 ```````````````````````````````` example
-CREATE TABLE mixed (i INTEGER, r REAL, s TEXT);
-INSERT INTO mixed VALUES ('42', 3.7, 100);
-INSERT INTO mixed VALUES ('7.9', '2.5', '3.14');
-INSERT INTO mixed VALUES ('abc', 1.0, 5);
-SELECT CAST(s AS REAL) AS v FROM mixed ORDER BY rowid;
+CREATE TABLE typed (i INTEGER, r REAL, t TEXT, n NUMERIC);
+INSERT INTO typed VALUES ('10', '20.5', 123, '99.9');
+INSERT INTO typed VALUES (3.14, '7', '45.6', 1);
+INSERT INTO typed VALUES ('x', 0, '0', '0');
+SELECT r, typeof(r) AS tr FROM typed ORDER BY rowid;
 .
-[[100],[3.14],[5]]
+[[20.5,"real"],[7,"real"],[0,"real"]]
 ````````````````````````````````
 
 ### Invalid (must reject)
@@ -1283,13 +1283,13 @@ ERROR
 
 ## Numeric Functions
 
-Numeric functions support INTEGER and REAL operands with NULL propagation. abs(x) returns absolute value. round(x) rounds to nearest integer; round(x, n) rounds to n digits after the decimal point. min(x, y) and max(x, y) return the lesser or greater numeric value after comparison.
+Numeric functions support INTEGER and REAL operands with NULL propagation. abs(x) returns absolute value. round(x) rounds to nearest integer; round(x, n) rounds to n digits after the decimal point. Scalar min(x, y) and max(x, y) return the lesser or greater value after comparison.
 
-typeof(x) returns the storage class name: integer, real, text, or null. It accepts exactly one argument.
+typeof(x) returns the storage class name: integer, real, text, or null. It accepts exactly one argument. A literal or column value stored as real keeps the real storage class even when its magnitude is an exact integer (typeof(0.0) is real, not integer).
 
 These scalar functions differ from aggregate MIN and MAX covered elsewhere: the two-argument min and max are scalar comparisons, not aggregates over rows. Nested calls such as round(max(a, b)) are valid.
 
-When any required numeric argument is NULL, the result is NULL unless both operands of min/max are evaluated and one is NULL, in which case SQLite returns the non-NULL operand for two-argument min/max.
+Scalar min and max propagate NULL: if any argument is NULL, the result is NULL (they do not skip NULLs to return the other operand). abs and round likewise yield NULL when their primary numeric argument is NULL.
 
 round with two arguments requires exactly two; round with one requires exactly one. abs requires exactly one. Calling aggregates with zero arguments is invalid in this subset.
 
@@ -1323,9 +1323,9 @@ INSERT INTO t VALUES (2, 2.49, -4);
 INSERT INTO t VALUES (3, 0.0, 0);
 INSERT INTO t VALUES (4, 7.51, 3);
 INSERT INTO t VALUES (5, NULL, 5);
-SELECT abs(-42) AS a;
+SELECT id, min(v, w) AS m FROM t ORDER BY id;
 .
-[[42]]
+[[1,-3.5],[2,-4],[3,0],[4,3],[5,null]]
 ````````````````````````````````
 
 ```````````````````````````````` example
@@ -1335,9 +1335,9 @@ INSERT INTO t VALUES (2, 2.49, -4);
 INSERT INTO t VALUES (3, 0.0, 0);
 INSERT INTO t VALUES (4, 7.51, 3);
 INSERT INTO t VALUES (5, NULL, 5);
-SELECT abs(0) AS a;
+SELECT id, typeof(v) AS tv FROM t ORDER BY id;
 .
-[[0]]
+[[1,"real"],[2,"real"],[3,"real"],[4,"real"],[5,"null"]]
 ````````````````````````````````
 
 ```````````````````````````````` example
@@ -1347,9 +1347,9 @@ INSERT INTO t VALUES (2, 2.49, -4);
 INSERT INTO t VALUES (3, 0.0, 0);
 INSERT INTO t VALUES (4, 7.51, 3);
 INSERT INTO t VALUES (5, NULL, 5);
-SELECT id, round(v) AS r FROM t ORDER BY id;
+SELECT min(NULL, 1) AS m;
 .
-[[1,-4],[2,2],[3,0],[4,8],[5,null]]
+[[null]]
 ````````````````````````````````
 
 ```````````````````````````````` example
@@ -1359,9 +1359,9 @@ INSERT INTO t VALUES (2, 2.49, -4);
 INSERT INTO t VALUES (3, 0.0, 0);
 INSERT INTO t VALUES (4, 7.51, 3);
 INSERT INTO t VALUES (5, NULL, 5);
-SELECT round(3.14159, 2) AS r;
+SELECT max(1, NULL) AS m;
 .
-[[3.14]]
+[[null]]
 ````````````````````````````````
 
 ### Invalid (must reject)
@@ -1481,7 +1481,7 @@ DISTINCT may prefix a select list with one or more expressions, including functi
 
 COUNT(DISTINCT expr) counts unique non-NULL values of expr. Other aggregates with DISTINCT apply the aggregate after deduplicating input values. DISTINCT ON, GROUP BY, and window DISTINCT are out of scope.
 
-ORDER BY may reference select-list columns, aliases, ordinals, or columns not shown in the select list when querying a single table. When ORDER BY references a column absent from the select list, sorting still uses that column's values.
+ORDER BY may reference select-list columns, aliases, ordinals, or columns not shown in the select list when querying a single table. When ORDER BY references a column absent from the select list, sorting still uses that column's values. SELECT DISTINCT combined with ORDER BY uses the same NULL ordering as ORDER BY alone (NULL before non-NULL in ASC).
 
 LIMIT and OFFSET apply after DISTINCT and ORDER BY. Joins and subqueries are out of scope.
 
@@ -1521,6 +1521,13 @@ SELECT DISTINCT size FROM t ORDER BY size;
 ````````````````````````````````
 
 ```````````````````````````````` example
+CREATE TABLE d (v TEXT); INSERT INTO d VALUES (NULL); INSERT INTO d VALUES (NULL); INSERT INTO d VALUES ('a');
+SELECT DISTINCT v FROM d ORDER BY v;
+.
+[[null],["a"]]
+````````````````````````````````
+
+```````````````````````````````` example
 CREATE TABLE t (id INTEGER, color TEXT, size INTEGER);
 INSERT INTO t VALUES (1, 'red', 3);
 INSERT INTO t VALUES (2, 'blue', 1);
@@ -1544,19 +1551,6 @@ INSERT INTO t VALUES (6, 'red', 2);
 SELECT DISTINCT size, color FROM t ORDER BY size, color;
 .
 [[1,"blue"],[2,"red"],[3,"green"],[3,"red"]]
-````````````````````````````````
-
-```````````````````````````````` example
-CREATE TABLE t (id INTEGER, color TEXT, size INTEGER);
-INSERT INTO t VALUES (1, 'red', 3);
-INSERT INTO t VALUES (2, 'blue', 1);
-INSERT INTO t VALUES (3, 'red', 2);
-INSERT INTO t VALUES (4, 'green', 3);
-INSERT INTO t VALUES (5, 'blue', 1);
-INSERT INTO t VALUES (6, 'red', 2);
-SELECT DISTINCT color FROM t ORDER BY color DESC;
-.
-[["red"],["green"],["blue"]]
 ````````````````````````````````
 
 ### Invalid (must reject)

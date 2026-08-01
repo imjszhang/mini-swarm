@@ -2,7 +2,7 @@ This experiment implements a Tier 1 SQLite-compatible subset for an in-memory da
 
 Integer literals are signed decimal sequences without a fractional part. Real literals contain a decimal point. Scientific notation is not supported. String literals are single-quoted; an embedded apostrophe is escaped by doubling it. Backslash escape sequences inside strings are not interpreted unless explicitly documented elsewhere. The NULL literal represents a missing value distinct from zero or an empty string.
 
-Double-quoted tokens are identifier quotes, not string literals. They may contain spaces and reserved words such as select or from. Unquoted identifiers consist of letters, digits, and underscores and must not start with a digit. Identifiers are matched case-insensitively unless quoted.
+Double-quoted tokens are identifier quotes, not string literals. They may contain spaces and reserved words. A double-quoted reserved word used as an alias or column name (for example AS "from", AS "where", AS "order", AS "select") is a plain identifier and must not be tokenized or parsed as the corresponding statement keyword. Unquoted identifiers consist of letters, digits, and underscores and must not start with a digit. Identifiers are matched case-insensitively unless quoted.
 
 SELECT may list multiple result columns separated by commas. Each column expression may carry an optional AS alias; unquoted aliases follow identifier rules, quoted aliases use double quotes. SELECT without FROM is valid and evaluates expressions only.
 

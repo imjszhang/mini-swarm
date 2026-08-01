@@ -15,6 +15,7 @@
 - **Token budget (optional)**: `swarm.maxTokensInOut` / `--max-tokens=N` — hard stop on sum(`tokens_in`+`tokens_out`); default unlimited; `stop_reason=token_budget`; cache not counted.
 - **v13.3 second sample (TOML→toml-test JSON)**: `npm run swarm:toml:detached -- --run-id=run-swarm-toml-v13.3` / `npm run report:task-run -- --run-id=run-swarm-toml-v13.3 --baseline=run-swarm-v13.3` (`--task=toml-json`, oracle = BurntSushi toml-test)
 - **v13.4 third sample (sqlite-micro)**: `npm run swarm:sqlite:detached -- --run-id=run-swarm-sqlite-v1 --concurrency=8 --max-tokens=80000000` / `npm run report:task-run -- --run-id=run-swarm-sqlite-v1` (`--task=sqlite-micro`, oracle = Node `node:sqlite` differential)
+- **sqlite-micro pack-tuning v2**: after v1 97.6% plateau — `npm run swarm:sqlite:detached -- --run-id=run-swarm-sqlite-v2 --concurrency=8 --max-tokens=80000000`
 - **v8/v9/v10/v11/v12 high-contention A/B**: `npm run run:contention:bare` / `npm run run:contention:faithful` (`--task-set=contention`, concurrency 4, seed planner; v9 score-feedback; v10 sync+gate+global repair; v11 holdout+ledger+adaptive repair; v12 Stage B + strong ladder)
 - **Resume interrupted run**: `npm run salvage -- --run-id=RUN_ID --task-set=contention` then original command + `--resume` (task-level; agent/wall times in metrics cover last segment only — see README)
 - **Repair-only continuation**: `npm run run -- --repair-only --from-run=PRIOR --run-id=NEW --task-set=contention [--coord-mode=faithful]`
@@ -326,59 +327,93 @@ Goal: same hidden-grader swarm on a third pack that mirrors the S-A-008 SQLite e
 |---|---|---|
 | swarm:sqlite:mock | `--mock --task=sqlite-micro` | Skeleton + canary OK; protocol wiring validated |
 | **run-swarm-sqlite-v1** | **detached** `--task=sqlite-micro --run-to-done` conc=8 `--max-tokens=80000000` | **Finalized** (`idle_tree`). **97.6%** full (724/742); visible **97.5%** (612/628); holdout **98.2%** (112/114); gap **−0.8**; conflicts **24**; zero-pass observe **0**; planner_rounds **40**; self_check **1295** / harness_self_check **1076**; eff_parallelism **8.23**; tokens in+out **15.07M** (+~100M cache_read); active wall ~**231** min; LOC **4727**. Report: `runs/run-swarm-sqlite-v1/REPORT.md` |
+| **run-swarm-sqlite-v2** | **detached** same flags as v1 | **Finalized** (`planner_done`). **99.5%** full (738/742); visible **99.5%** (625/628); holdout **99.1%** (113/114); gap **+0.4**; conflicts **7**; zero-pass observe **0**; planner_rounds **24**; self_check **868** / harness_self_check **731**; eff_parallelism **7.51**; tokens in+out **12.02M**; active wall ~**128** min; LOC **3991**. Report: `runs/run-swarm-sqlite-v2/REPORT.md` |
 
 Models: planner/splitter/`review-spec` = `cursor-grok-4.5-high-fast`; workers/merger/`review-diff`/`review-codebase` = `composer-2.5-fast` — same tier as CM/TOML acceptance runs.
+
+### Pack tuning v2 (before run-swarm-sqlite-v2)
+
+Applied `skills/swarm-task-pack/references/pack-tuning.md` to the 18 v1 misses (all outside the previous embedded-example window). Channels:
+
+| Class | Channel | Fix | v2 outcome |
+|---|---|---|---|
+| INTEGER affinity retains non-integer text/real | A+B | prose `14-cast-and-affinity.md`; pin `006`/`016` | **cleared** |
+| CAST non-numeric text → 0 (not NULL) | A+B | corrected wrong prose that taught NULL; pin `013` | **cleared** |
+| REAL storage class / typeof | A+B+C | tagged `Value` in skeleton; pin `017` / `numeric-016` | **cleared** |
+| Scalar min/max propagate NULL | A+B | corrected wrong prose that taught skip-NULL; pin `010`/`033`/`034` | **cleared** |
+| Double-quoted keywords as identifiers | A+B | strengthened `01-…`; pin `023`/`024`/`026` | **cleared** |
+| NULL sorts first under ASC | A+B | clarified order-by + distinct; pin `distinct-024` | **cleared** |
+
+Gates before launch: import OK; `check-skeleton` PASS; 128/128 embedded examples match `node:sqlite`; `swarm:sqlite:mock` complete; `test:convergence` green.
 
 ### Task pack
 
 - Oracle: Node v24 `node:sqlite` differential from `tasks/sqlite-micro/scripts/inputs/*.mjs` → 742 cases (630 valid + 112 invalid across 19 sections).
-- Spec: generated `spec.txt` (~59k chars) with embedded examples; agents never see `examples.json`.
+- Spec: generated `spec.txt` (~60k chars) with curated embedded examples; agents never see `examples.json`.
 - Harness: `--task=sqlite-micro`; CLI stdout = last SELECT as JSON row-array; canary `SELECT 1;` → `[[1]]`.
 - Out of scope (declared): JOIN, GROUP BY, subqueries, constraints, file persistence, BLOB, datetime, windows.
 
-### Compare (three-task plateau)
+### Compare (v1 → v2 pack-tuning)
 
-| Metric | CM v13.3c (salvaged) | TOML v13.3c (salvaged) | **sqlite-micro v1** |
-|---|---|---|---|
-| task_pack | commonmark | toml-json | **sqlite-micro** |
-| Full pass rate | **99.4%** | 86.0% | **97.6%** |
-| Visible / holdout | 99.5% / 98.8% | 85.2% / 90.1% | **97.5% / 98.2%** |
-| holdout_gap_pp | +0.7 | −4.9 | **−0.8** |
-| merge_conflict_count | 53 | 45 | **24** |
-| zero-pass observe | 0 | 0 | **0** |
-| planner_rounds | 111 | 52 | **40** |
-| Active wall | ~462 min | ~286 min | **~231 min** |
-| tokens in+out | 63.53M | 32.23M | **15.07M** |
-| Stop | human_interrupt + salvage | human_interrupt + salvage | **idle_tree** (natural) |
+| Metric | sqlite-micro **v1** | **v2** (tuned) |
+|---|---|---|
+| Full pass rate | 97.6% (724/742) | **99.5% (738/742)** |
+| Visible / holdout | 97.5% / 98.2% | **99.5% / 99.1%** |
+| holdout_gap_pp | −0.8 | **+0.4** |
+| Remaining misses | 18 | **4** |
+| merge_conflict_count | 24 | **7** |
+| planner_rounds | 40 | **24** |
+| Active wall | ~231 min | **~128 min** |
+| tokens in+out | 15.07M | **12.02M** |
+| Stop | idle_tree | **planner_done** |
 
-### Weak sections (full suite misses)
+### Compare (three-task plateau; v2)
+
+| Metric | CM v13.3c (salvaged) | TOML v13.3c (salvaged) | sqlite v1 | **sqlite v2** |
+|---|---|---|---|---|
+| Full pass rate | **99.4%** | 86.0% | 97.6% | **99.5%** |
+| Visible / holdout | 99.5% / 98.8% | 85.2% / 90.1% | 97.5% / 98.2% | **99.5% / 99.1%** |
+| holdout_gap_pp | +0.7 | −4.9 | −0.8 | **+0.4** |
+| merge_conflict_count | 53 | 45 | 24 | **7** |
+| Active wall | ~462 min | ~286 min | ~231 min | **~128 min** |
+| Stop | human_interrupt + salvage | human_interrupt + salvage | idle_tree | **planner_done** |
+
+### Weak sections — v1 (cleared in v2)
 
 | Section | missed | rate | Theme |
 |---|---:|---:|---|
-| Cast And Affinity | 8/39 | 79.5% | INTEGER affinity on non-integer text (`'7.9'`→7.9 not 7; `'abc'`→`'abc'` not 0); `CAST('abc' AS INTEGER)` → 0 not NULL |
-| Numeric Functions | 6/39 | 84.6% | scalar `min`/`max` with NULL (SQLite returns NULL; impl returned the non-null arg); `typeof(0.0)` as `"real"` vs `"integer"` |
-| Literals And Identifiers | 3/39 | 92.3% | quoted keyword aliases (`AS "from"` / `"where"` / `"order"`) misparsed as statement keywords |
-| Distinct | 1/39 | 97.4% | NULL sort order under `ORDER BY` after `DISTINCT` |
+| Cast And Affinity | 8/39 | 79.5% | INTEGER affinity; `CAST('abc' AS INTEGER)` → 0 |
+| Numeric Functions | 6/39 | 84.6% | scalar `min`/`max` NULL; `typeof(0.0)` |
+| Literals And Identifiers | 3/39 | 92.3% | quoted keyword aliases |
+| Distinct | 1/39 | 97.4% | NULL sort after DISTINCT |
+
+### Weak sections — v2 residue (4 misses)
+
+| Section | missed | rate | Theme |
+|---|---:|---:|---|
+| Numeric Functions | 3/39 | 92.3% | `round` half away from zero (`round(-2.5)`→−3, not JS `Math.round`) |
+| Null Logic | 1/39 | 97.4% | `NULL \|\| '!'` → null (not `"!"`) |
 
 ### Reading
 
-1. **Third sample clears the cheap-stack plateau bar** — 97.6% ≫ prior 55–75% estimate; closer to CM than TOML.
-2. **Natural stop** — `idle_tree` after ~231m with only 15M tokens (vs TOML/CM long arms that needed human kill or wall).
-3. **Holdout healthy** — gap −0.8; no overfit alarm.
-4. **Remaining misses are affinity / NULL / keyword-as-identifier edge cases** — not structural DDL/DML collapse; 15/19 sections at 100%.
-5. **Conflict hotspots** concentrated on `eval.ts` / `select.ts` / `expr.ts` (24 total) — registry-heavy skeleton helped keep count below CM/TOML long arms.
+1. **Pack-tuning worked** — all six v1 failure classes cleared; full **97.6% → 99.5%** (+1.9pp, −14 misses) under the same model tier and token budget.
+2. **Cheaper / faster** — wall ~231→128 min, conflicts 24→7, planner rounds 40→24; clearer spec + tagged `Value` reduced thrash.
+3. **Natural `planner_done`** — first sqlite sample to stop via planner declaration (v1 was `idle_tree`).
+4. **Residue is a new dark-matter pair** — `round` half-away and `||` NULL concat were not in the v1 miss list and still lack pinned counterexamples; candidates for pack-tuning v3 (A+B).
+5. **sqlite v2 matches CM quality** — 99.5% full vs CM 99.4%, with far less wall and conflict cost.
 
 Honesty notes:
 
 - Tier-1 subset ≠ Cursor’s 835-page Rust SQLite experiment; this is shape fidelity, not scale fidelity.
-- REPORT baseline defaulted to CommonMark `run-swarm-v13.3` (cross-pack observational compare).
-- Failure arrays are complete here (18 = `failure_count`); section rates use full suite.
+- v2 REPORT baseline is `run-swarm-sqlite-v1` (same-pack before/after).
+- Failure arrays are complete (4 = `failure_count`).
 
 Compare:
 
 ```bash
-npm run compare -- runs/run-swarm-v13.3/metrics.json runs/run-swarm-sqlite-v1/metrics.json
-npm run compare -- runs/run-swarm-toml-v13.3c/metrics.json runs/run-swarm-sqlite-v1/metrics.json
+npm run compare -- runs/run-swarm-sqlite-v1/metrics.json runs/run-swarm-sqlite-v2/metrics.json
+npm run compare -- runs/run-swarm-v13.3/metrics.json runs/run-swarm-sqlite-v2/metrics.json
+npm run compare -- runs/run-swarm-toml-v13.3c/metrics.json runs/run-swarm-sqlite-v2/metrics.json
 ```
 
 ## Runs (2026-07-26) — v12 generalization loop

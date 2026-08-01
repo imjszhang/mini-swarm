@@ -61,7 +61,77 @@ const SECTION_TO_PROSE = {
   Errors: "19-errors.md",
 };
 
+/**
+ * Curated embedded-example ids per section (valid first, then invalid).
+ * Built from run-swarm-sqlite-v1 failure classes so worker self-check / audit /
+ * cross-section canary can see the counterintuitive behaviors. When a section
+ * has no entry, fall back to a prefix slice of the oracle.
+ */
+const CURATED = {
+  "Literals And Identifiers": {
+    valid: [
+      "literals-and-identifiers-001",
+      "literals-and-identifiers-002",
+      "literals-and-identifiers-023", // AS "from"
+      "literals-and-identifiers-024", // AS "where"
+      "literals-and-identifiers-026", // AS "order"
+    ],
+    invalid: ["literals-and-identifiers-090", "literals-and-identifiers-091"],
+  },
+  "Cast And Affinity": {
+    valid: [
+      "cast-and-affinity-001",
+      "cast-and-affinity-006", // INTEGER affinity keeps '7.9'/'abc'
+      "cast-and-affinity-013", // CAST('abc' AS INTEGER) → 0
+      "cast-and-affinity-016", // typeof after INTEGER affinity
+      "cast-and-affinity-017", // REAL affinity → typeof real
+    ],
+    invalid: ["cast-and-affinity-090", "cast-and-affinity-091"],
+  },
+  "Numeric Functions": {
+    valid: [
+      "numeric-functions-001",
+      "numeric-functions-010", // min with NULL → NULL
+      "numeric-functions-016", // typeof(0.0) = real
+      "numeric-functions-033", // min(NULL, 1) → NULL
+      "numeric-functions-034", // max(1, NULL) → NULL
+    ],
+    invalid: ["numeric-functions-090", "numeric-functions-091"],
+  },
+  Distinct: {
+    valid: [
+      "distinct-001",
+      "distinct-002",
+      "distinct-024", // DISTINCT + ORDER BY NULL first
+      "distinct-003",
+      "distinct-004",
+    ],
+    invalid: ["distinct-090", "distinct-091"],
+  },
+  "Order By And Limit": {
+    valid: [
+      "order-by-and-limit-001",
+      "order-by-and-limit-002",
+      "order-by-and-limit-003",
+      "order-by-and-limit-004",
+      "order-by-and-limit-005",
+    ],
+    invalid: ["order-by-and-limit-090", "order-by-and-limit-091"],
+  },
+};
+
+function byId(id) {
+  const ex = examples.find((e) => e.id === id);
+  if (!ex) throw new Error(`CURATED id not found in examples.json: ${id}`);
+  return ex;
+}
+
 function pick(section, wantValid, n) {
+  const curated = CURATED[section];
+  if (curated) {
+    const ids = wantValid ? curated.valid : curated.invalid;
+    return ids.slice(0, n).map(byId);
+  }
   return examples
     .filter((e) => e.section === section && !!e.expect_error === !wantValid)
     .slice(0, n);

@@ -42,6 +42,24 @@ Oracle source: **Node.js built-in `node:sqlite` (Node v24) differential generati
 from `scripts/inputs/*.mjs`. Not an upstream suite pin. Expected values are never
 hand-authored.
 
+## Pack tuning (v2, after run-swarm-sqlite-v1)
+
+Applied `skills/swarm-task-pack/references/pack-tuning.md` against the 18 full-suite
+misses (97.6% plateau). Fix channels:
+
+| Class | Channel | Change |
+|---|---|---|
+| INTEGER affinity retains non-integer text/real | A+B | prose in `14-cast-and-affinity.md`; pin `006`/`016` |
+| CAST non-numeric text → 0 (not NULL) | A+B | corrected wrong prose; pin `013` |
+| REAL storage class / typeof | A+B+C | tagged `Value` in skeleton; pin `017` / `numeric-016` |
+| Scalar min/max propagate NULL | A+B | corrected wrong prose that taught the opposite; pin `010`/`033`/`034` |
+| Double-quoted keywords as identifiers | A+B | strengthened `01-…`; pin `023`/`024`/`026` |
+| NULL sorts first under ASC | A+B | clarified order-by + distinct prose; pin `distinct-024` |
+
+`scripts/gen-spec-txt.mjs` now accepts a per-section curated id list (still ≤5 valid
++ ≤2 invalid). Skeleton `Value` is storage-class tagged so workers can express
+integer vs real without mid-run contract refactors.
+
 ## Fidelity note (vs S-A-008 SQLite experiment)
 
 This pack reproduces the *experiment shape* of Cursor's SQLite swarm (spec-only

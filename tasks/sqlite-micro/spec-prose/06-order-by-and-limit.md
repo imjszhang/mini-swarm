@@ -1,6 +1,6 @@
 ORDER BY sorts result rows from SELECT. Syntax is ORDER BY sort_key [ ASC | DESC ] [ , ... ]. ASC is the default. Sort keys may be column names, select-list aliases, ordinal positions counting from one in the select list, or general expressions. Multiple keys sort lexicographically left to right.
 
-NULLs sort together; relative placement among NULLs follows SQLite default ordering for the active sort direction. ORDER BY applies after WHERE and DISTINCT deduplication but before LIMIT/OFFSET trimming when all are present.
+NULLs sort together. Under the default ASC sort, NULL sorts before every non-NULL value; under DESC, NULL sorts after every non-NULL value. ORDER BY applies after WHERE and DISTINCT deduplication but before LIMIT/OFFSET trimming when all are present.
 
 LIMIT n retains at most n rows after sorting; OFFSET m skips the first m rows of the sorted stream. Non-negative integer literals are expected for LIMIT and OFFSET. LIMIT 0 yields an empty result. OFFSET without LIMIT is allowed.
 

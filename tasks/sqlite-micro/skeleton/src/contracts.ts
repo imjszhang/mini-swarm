@@ -1,4 +1,13 @@
-export type { Value, Row, TableData } from "./types.js";
+export type { Value, Row, TableData, StorageClass } from "./types.js";
+export {
+  NULL_VALUE,
+  integerValue,
+  realValue,
+  textValue,
+  valueToJson,
+  rowsToJson,
+  valueToText,
+} from "./types.js";
 export { tokenize } from "./tokenizer.js";
 export type { Token } from "./tokenizer.js";
 export type {

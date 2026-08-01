@@ -4,7 +4,7 @@ DISTINCT may prefix a select list with one or more expressions, including functi
 
 COUNT(DISTINCT expr) counts unique non-NULL values of expr. Other aggregates with DISTINCT apply the aggregate after deduplicating input values. DISTINCT ON, GROUP BY, and window DISTINCT are out of scope.
 
-ORDER BY may reference select-list columns, aliases, ordinals, or columns not shown in the select list when querying a single table. When ORDER BY references a column absent from the select list, sorting still uses that column's values.
+ORDER BY may reference select-list columns, aliases, ordinals, or columns not shown in the select list when querying a single table. When ORDER BY references a column absent from the select list, sorting still uses that column's values. SELECT DISTINCT combined with ORDER BY uses the same NULL ordering as ORDER BY alone (NULL before non-NULL in ASC).
 
 LIMIT and OFFSET apply after DISTINCT and ORDER BY. Joins and subqueries are out of scope.
 
