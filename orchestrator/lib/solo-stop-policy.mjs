@@ -47,7 +47,14 @@ export function shouldStopSolo(state) {
   }
 
   const status = String(state.agentStatus || "").toLowerCase();
-  if (status === "done" && state.healthOk) {
+  const minTurns = Number(state.minTurnsBeforeAgentDone) || 0;
+  const minObserve = state.minObserveRateForAgentDone;
+  const observeRate = state.observeRate;
+  const agentDoneEligible = status === "done" && state.healthOk
+    && (minTurns <= 0 || turnIndex >= minTurns)
+    && (minObserve == null || observeRate == null || observeRate >= minObserve);
+
+  if (agentDoneEligible) {
     return { stop: true, reason: "agent_done" };
   }
 
@@ -72,6 +79,7 @@ export function shouldStopSolo(state) {
 
 export function soloStopConsoleMessage(reason) {
   if (reason === "agent_done") return "[solo] agent declared done; stopping";
+  if (reason === "agent_done_deferred") return "[solo] agent declared done but observe below threshold; continuing";
   if (reason === "observe_perfect") return "[solo] observe perfect streak reached; stopping";
   if (reason === "wall_budget") return "[solo] wall-clock budget exhausted";
   if (reason === "token_budget") return "[solo] token budget exhausted";

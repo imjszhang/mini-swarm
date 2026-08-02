@@ -535,12 +535,28 @@ async function main() {
         maxTurns: solo.maxTurns,
         agentStatus: report.status,
         healthOk,
+        observeRate: observe?.rate ?? null,
+        minObserveRateForAgentDone: solo.minObserveRateForAgentDone,
+        minTurnsBeforeAgentDone: solo.minTurnsBeforeAgentDone,
         perfectObserveStreak,
         observePerfectStreakToStop: solo.observePerfectStreakToStop,
         unproductiveStreak,
         maxUnproductiveTurns: solo.maxUnproductiveTurns,
         treatBlockedAsStop: false,
       });
+      if (
+        report.status === "done"
+        && healthOk
+        && !decision.stop
+        && solo.minObserveRateForAgentDone != null
+        && observe?.rate != null
+        && observe.rate < solo.minObserveRateForAgentDone
+      ) {
+        console.log(
+          `[solo] defer agent_done: observe=${(observe.rate * 100).toFixed(1)}%`
+            + ` < min=${(solo.minObserveRateForAgentDone * 100).toFixed(0)}%`,
+        );
+      }
       if (decision.stop) {
         stopReason = decision.reason;
         break;

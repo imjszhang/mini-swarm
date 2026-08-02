@@ -39,6 +39,33 @@ assert.deepEqual(
   { stop: true, reason: "agent_done" },
 );
 assert.deepEqual(
+  shouldStopSolo(base({
+    agentStatus: "done",
+    healthOk: true,
+    observeRate: 0.845,
+    minObserveRateForAgentDone: 0.9,
+  })),
+  { stop: false, reason: null },
+);
+assert.deepEqual(
+  shouldStopSolo(base({
+    agentStatus: "done",
+    healthOk: true,
+    observeRate: 0.91,
+    minObserveRateForAgentDone: 0.9,
+  })),
+  { stop: true, reason: "agent_done" },
+);
+assert.deepEqual(
+  shouldStopSolo(base({
+    agentStatus: "done",
+    healthOk: true,
+    turnIndex: 1,
+    minTurnsBeforeAgentDone: 3,
+  })),
+  { stop: false, reason: null },
+);
+assert.deepEqual(
   shouldStopSolo(base({ agentStatus: "done", healthOk: false })),
   { stop: false, reason: null },
 );

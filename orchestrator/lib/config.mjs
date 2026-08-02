@@ -132,6 +132,8 @@ function normalizeSolo(raw) {
     observePerfectStreakToStop: s.observePerfectStreakToStop ?? 2,
     maxUnproductiveTurns: s.maxUnproductiveTurns ?? 3,
     harnessSelfCheckExamples: s.harnessSelfCheckExamples ?? 5,
+    minObserveRateForAgentDone: s.minObserveRateForAgentDone ?? 0.9,
+    minTurnsBeforeAgentDone: s.minTurnsBeforeAgentDone ?? 1,
     maxTokensInOut: normalizeMaxTokensInOut(s.maxTokensInOut),
   };
 }

@@ -45,6 +45,7 @@ Goal: produce a **comparable no-coordination arm** against hidden-grader swarm o
 - No planner tree, review stack, Field Guide serial notes, or splitter
 - Multi-turn loop: each turn is one `cursor-agent -p` call (`turnTimeoutMinutes`, default 30)
 - Stop reasons: `agent_done` | `observe_perfect` | `wall_budget` | `token_budget` | `idle_agent` | `max_turns`
+- **Premature `done` gate** (2026-08-02): harness ignores agent `status=done` when observe rate &lt; `solo.minObserveRateForAgentDone` (default **90%**); loop continues until observe threshold, `observe_perfect`, wall/token budget, or idle streak
 
 ### Commands
 
@@ -58,6 +59,32 @@ npm run compare -- runs/run-swarm-v13.3/metrics.json runs/run-solo-v1/metrics.js
 ```
 
 Wiring mock (`run-solo-mock-v1`): finalized `agent_done` after 2 scripted turns (skeleton score only; not an acceptance arm).
+
+### Live acceptance (2026-08-02)
+
+Model: `composer-2.5-fast` (`models.solo`); auth: `CURSOR_API_KEY` (ortle3x3); branch `cursor/solo-agent-baseline`.
+
+| Run ID | Pack | Turns | Wall | Tokens (in+out) | Full | Holdout | Stop | vs swarm baseline |
+|---|---|---:|---:|---:|---:|---:|---|---|
+| **run-solo-v1** | commonmark | 1 | 3.6 min | 112k | **100.0%** (525/525) | 100.0% | agent_done | ≥ v13.3c 99.4% / 462 min / 63.5M |
+| **run-solo-sqlite-v1** | sqlite-micro | 1 | 4.6 min | 175k | **96.6%** (717/742) | 95.6% | agent_done | −2.9pp vs sqlite-v2 99.5% / 128 min / 12.0M |
+| **run-solo-toml-v1** | toml-json | 2 | 13.6 min | 215k | **83.5%** (464/556) | 78.0% (gap **+6.5**, overfit) | agent_done (premature) | −2.5pp vs toml-v13.3c 86.0% / 286 min / 32.2M |
+| **run-solo-toml-v1b** | toml-json | — | — | — | — | — | *in flight* | Re-run with `minObserveRateForAgentDone=0.9` gate |
+
+**Cross-pack read (solo vs hidden-grader swarm):**
+
+- **CommonMark**: solo sufficient — 100% in one turn; swarm coordination adds ~128× wall and ~567× tokens for marginal +0.6pp vs v13.3c.
+- **SQLite**: solo fast (−28× wall) but **−2.9pp** full; weak `DISTINCT` (72%); swarm v2 still wins on quality.
+- **TOML**: largest gap — solo **Control 32%**; v1 agent self-reported `done` at 84.5% observe → v1b adds observe gate before honoring `agent_done`.
+
+Reports: `runs/run-solo-v1/REPORT.md`, `runs/run-solo-sqlite-v1/REPORT.md`, `runs/run-solo-toml-v1/REPORT.md`.
+
+```bash
+npm run compare -- runs/run-swarm-v13.3c/metrics.json runs/run-solo-v1/metrics.json
+npm run compare -- runs/run-swarm-sqlite-v2/metrics.json runs/run-solo-sqlite-v1/metrics.json
+npm run compare -- runs/run-swarm-toml-v13.3c/metrics.json runs/run-solo-toml-v1/metrics.json
+npm run solo:toml:detached -- --run-id=run-solo-toml-v1b   # observe gate re-run
+```
 
 ## Source text (S-A-008)
 

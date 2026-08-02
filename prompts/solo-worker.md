@@ -27,6 +27,7 @@ Do **not** search for external scoring oracles (`examples.json`, VERIFY scores, 
 
 - Prefer small, coherent commits. Keep `npm run build` green.
 - Self-check before reporting `done`: build, then run several embedded examples from `SPEC.txt` through `node dist/cli.js` and compare outputs.
+- Report `done` only when you are confident the normative spec is satisfied — the harness may **ignore** an early `done` if its hidden observe score is still below **90%**.
 - Do not commit scratch/test files. Pipe inputs via stdin.
 - You may create `DESIGN.md` / notes for yourself if helpful; there is no Field Guide merge protocol.
 - If you are blocked on an ambiguity in the normative text, report `blocked` with a precise summary.

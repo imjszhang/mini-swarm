@@ -83,6 +83,8 @@
     "observePerfectStreakToStop": 2,
     "maxUnproductiveTurns": 3,
     "harnessSelfCheckExamples": 5,
+    "minObserveRateForAgentDone": 0.9,
+    "minTurnsBeforeAgentDone": 1,
     "maxTokensInOut": null
   },
   "guideMaxLines": 80,
