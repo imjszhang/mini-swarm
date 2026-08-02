@@ -153,8 +153,8 @@ function main() {
   lines.push(`|---|---|`);
   lines.push(`| task_pack | ${m.task_pack || "n/a"} |`);
   lines.push(`| run_id | ${cli.runId} |`);
-  lines.push(`| protocol | hidden-grader swarm v13.3; run_to_done=${!!m.run_to_done} |`);
-  lines.push(`| concurrency | ${m.swarm?.concurrency ?? "n/a"} |`);
+  lines.push(`| protocol | hidden-grader ${m.architecture || "swarm"}; mode=${m.coordination_mode || "n/a"}; run_to_done=${!!m.run_to_done} |`);
+  lines.push(`| concurrency | ${m.solo?.concurrency ?? m.swarm?.concurrency ?? (m.swarm === false ? 1 : "n/a")} |`);
   lines.push(`| models | planner/worker from config (see agent_calls) |`);
   lines.push(`| started / finished | ${m.started_at || "?"} / ${m.finished_at || "?"} |`);
   lines.push(`| segments | ${(m.segments || []).length} |`);

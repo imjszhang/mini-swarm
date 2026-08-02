@@ -16,6 +16,7 @@
 - **v13.3 second sample (TOML→toml-test JSON)**: `npm run swarm:toml:detached -- --run-id=run-swarm-toml-v13.3` / `npm run report:task-run -- --run-id=run-swarm-toml-v13.3 --baseline=run-swarm-v13.3` (`--task=toml-json`, oracle = BurntSushi toml-test)
 - **v13.4 third sample (sqlite-micro)**: `npm run swarm:sqlite:detached -- --run-id=run-swarm-sqlite-v1 --concurrency=8 --max-tokens=80000000` / `npm run report:task-run -- --run-id=run-swarm-sqlite-v1` (`--task=sqlite-micro`, oracle = Node `node:sqlite` differential)
 - **sqlite-micro pack-tuning v2**: after v1 97.6% plateau — `npm run swarm:sqlite:detached -- --run-id=run-swarm-sqlite-v2 --concurrency=8 --max-tokens=80000000`
+- **Solo single-agent baseline**: `npm run solo:mock` / `npm run solo:detached -- --run-id=run-solo-v1` / `npm run solo:resume -- --run-id=ID` — one agent, one workspace, same task packs + hidden grader + holdout/metrics as swarm; no planner tree / worktrees / merge (`architecture=solo-v1`)
 - **v8/v9/v10/v11/v12 high-contention A/B**: `npm run run:contention:bare` / `npm run run:contention:faithful` (`--task-set=contention`, concurrency 4, seed planner; v9 score-feedback; v10 sync+gate+global repair; v11 holdout+ledger+adaptive repair; v12 Stage B + strong ladder)
 - **Resume interrupted run**: `npm run salvage -- --run-id=RUN_ID --task-set=contention` then original command + `--resume` (task-level; agent/wall times in metrics cover last segment only — see README)
 - **Repair-only continuation**: `npm run run -- --repair-only --from-run=PRIOR --run-id=NEW --task-set=contention [--coord-mode=faithful]`
@@ -25,6 +26,38 @@
 - **Compare (v11)**: `npm run compare -- runs/run-a-bare-contention-v11/metrics.json runs/run-b-faithful-contention-v11/metrics.json`
 - **Compare (v10)**: `npm run compare -- runs/run-a-bare-contention-v10/metrics.json runs/run-b-faithful-contention-v10/metrics.json`
 - **Compare (v9)**: `npm run compare -- runs/run-a-bare-contention-v9b/metrics.json runs/run-b-faithful-contention-v9/metrics.json`
+
+## Protocol (2026-08-02) — solo single-agent baseline
+
+Goal: produce a **comparable no-coordination arm** against hidden-grader swarm on the same task packs. Inspired by med-research-ai `js-agent-runner` (direct agent baseline), implemented natively in mini-swarm so metrics stay aligned with `finalizeRun` / `compare` / `report-task-run`.
+
+### Fairness (held equal)
+
+- Task pack (`--task=commonmark|toml-json|sqlite-micro`) and CLI contract
+- Hidden grader: agents never see `examples.json` / suite scores; harness observe is telemetry-only
+- Holdout seed / ratio (`config.holdout`)
+- Default model tier: `models.solo` = `composer-2.5-fast` (same cheap tier as swarm workers); optional `--model=` for a strong-model arm
+- Wall / token budgets via `config.solo` (`budgetMinutes`, `maxWallMinutes`, `maxTokensInOut`)
+
+### Declared differences vs swarm
+
+- Concurrency **1** (no worktrees, no merge conflicts by construction)
+- No planner tree, review stack, Field Guide serial notes, or splitter
+- Multi-turn loop: each turn is one `cursor-agent -p` call (`turnTimeoutMinutes`, default 30)
+- Stop reasons: `agent_done` | `observe_perfect` | `wall_budget` | `token_budget` | `idle_agent` | `max_turns`
+
+### Commands
+
+```bash
+npm run test:solo
+npm run solo:mock -- --run-id=run-solo-mock-v1
+npm run solo:smoke
+npm run solo:detached -- --run-id=run-solo-v1
+npm run report:task-run -- --run-id=run-solo-v1 --baseline=run-swarm-v13.3
+npm run compare -- runs/run-swarm-v13.3/metrics.json runs/run-solo-v1/metrics.json
+```
+
+Wiring mock (`run-solo-mock-v1`): finalized `agent_done` after 2 scripted turns (skeleton score only; not an acceptance arm).
 
 ## Source text (S-A-008)
 

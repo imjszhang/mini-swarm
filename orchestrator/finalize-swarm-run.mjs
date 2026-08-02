@@ -50,12 +50,14 @@ async function main() {
   const taskId = cli.task || seed?.task_pack || "commonmark";
   setActiveTaskPack(taskId);
   const metrics = createMetricsCollector(runDir, { seed: seed || undefined, resume: false });
+  const isSolo = seed?.architecture === "solo-v1" || seed?.coordination_mode === "solo";
   metrics.setMeta({
-    coordination: true,
-    coordination_mode: "faithful-swarm",
-    architecture: seed?.architecture || "v13.3-swarm",
+    coordination: isSolo ? false : true,
+    coordination_mode: seed?.coordination_mode || (isSolo ? "solo" : "faithful-swarm"),
+    architecture: seed?.architecture || (isSolo ? "solo-v1" : "v13.3-swarm"),
     task_pack: taskId,
-    swarm: true,
+    swarm: isSolo ? false : true,
+    ...(isSolo && seed?.solo ? { solo: seed.solo } : {}),
   });
 
   const result = finalizeRun({

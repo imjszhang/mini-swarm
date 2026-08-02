@@ -323,3 +323,19 @@ export function buildReviewSpecPrompt({ designMd, specToc, contracts }) {
     CONTRACTS: contracts || "_None._",
   });
 }
+
+export function buildSoloPrompt({
+  goalLabel,
+  turnIndex,
+  budgetLine,
+  feedback,
+  promptsDir = null,
+}) {
+  const dir = promptsDir || getActiveTaskPack().promptsDir;
+  return fillTemplate(loadPrompt("solo-worker", dir), {
+    GOAL_LABEL: goalLabel || getActiveTaskPack().goalLabel || "Task pack",
+    TURN_INDEX: String(turnIndex ?? 1),
+    BUDGET_LINE: budgetLine || "_None._",
+    FEEDBACK: feedback || "_None yet (first turn)._",
+  });
+}
