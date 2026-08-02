@@ -16,7 +16,7 @@ Fixed model routing: planner and workers use `composer-2.5-fast` by default (`co
 
 - Node.js 20+
 - Git
-- `cursor-agent` CLI (logged in)
+- `cursor-agent` CLI + `CURSOR_API_KEY` in project `.env` (see `.env.example`; copied from js-evolution-agent, **ortle3x3** account — no `cursor-agent login` required)
 
 ## Quick start
 

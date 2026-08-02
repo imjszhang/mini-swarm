@@ -1,6 +1,7 @@
 import { execFileSync, spawn } from "node:child_process";
 import { existsSync, mkdirSync, readdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
+import "./lib/load-env.mjs";
 import { resolveModel } from "./lib/config.mjs";
 
 /** Kill agent process tree (Windows SIGTERM often leaves cursor-agent grandchildren alive). */
