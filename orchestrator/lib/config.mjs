@@ -121,6 +121,23 @@ function normalizeSwarm(raw) {
   };
 }
 
+function normalizeSolo(raw) {
+  const s = raw.solo && typeof raw.solo === "object" ? raw.solo : {};
+  return {
+    budgetMinutes: s.budgetMinutes ?? 240,
+    runToDone: !!s.runToDone,
+    maxWallMinutes: s.maxWallMinutes ?? 480,
+    turnTimeoutMinutes: s.turnTimeoutMinutes ?? 30,
+    maxTurns: s.maxTurns ?? 200,
+    observePerfectStreakToStop: s.observePerfectStreakToStop ?? 2,
+    maxUnproductiveTurns: s.maxUnproductiveTurns ?? 3,
+    harnessSelfCheckExamples: s.harnessSelfCheckExamples ?? 5,
+    minObserveRateForAgentDone: s.minObserveRateForAgentDone ?? 0.9,
+    minTurnsBeforeAgentDone: s.minTurnsBeforeAgentDone ?? 1,
+    maxTokensInOut: normalizeMaxTokensInOut(s.maxTokensInOut),
+  };
+}
+
 /**
  * Resolve model slug for a role. Strong roles → models.strong → worker;
  * reviewer-like → models.reviewer → worker; else models[role] → worker.
@@ -141,6 +158,7 @@ export function listConfiguredModels(config) {
     "planner", "worker", "merger", "reviewer", "strong",
     "adjudicator", "cluster", "decomposer", "repair-strong", "overfit-reviewer",
     "swarm-planner", "splitter", "review-diff", "review-codebase", "review-spec",
+    "solo",
   ];
   const set = new Set();
   for (const role of roles) set.add(resolveModel(config, role));
@@ -163,6 +181,11 @@ export function loadConfig(overrides = {}) {
     ...raw,
     ...overrides,
     swarm: { ...(raw.swarm || {}), ...(overrides.swarm || {}) },
+  });
+  merged.solo = normalizeSolo({
+    ...raw,
+    ...overrides,
+    solo: { ...(raw.solo || {}), ...(overrides.solo || {}) },
   });
   return merged;
 }

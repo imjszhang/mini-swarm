@@ -16,7 +16,7 @@ Fixed model routing: planner and workers use `composer-2.5-fast` by default (`co
 
 - Node.js 20+
 - Git
-- `cursor-agent` CLI (logged in)
+- `cursor-agent` CLI + `CURSOR_API_KEY` in project `.env` (see `.env.example`; copied from js-evolution-agent, **ortle3x3** account — no `cursor-agent login` required)
 
 ## Quick start
 
@@ -49,6 +49,16 @@ npm run task:sqlite:import      # regenerate sqlite-micro oracle + spec.txt
 npm run swarm:sqlite:mock       # mock swarm on sqlite-micro
 npm run swarm:sqlite:smoke      # live 20 min smoke
 npm run swarm:sqlite:detached   # long run --task=sqlite-micro
+
+# Solo single-agent baseline (same packs + hidden grader; for swarm vs solo compare)
+npm run solo:mock               # scripted turns; no LLM
+npm run solo:smoke              # live 15 min / max 4 turns
+npm run solo:detached -- --run-id=run-solo-v1
+npm run solo:resume -- --run-id=RUN_ID
+npm run solo:toml:detached -- --run-id=run-solo-toml-v1
+npm run solo:sqlite:detached -- --run-id=run-solo-sqlite-v1
+npm run test:solo               # stop-policy unit tests
+# Finalize interrupted solo/swarm: npm run swarm:finalize -- --run-id=RUN_ID
 
 # Resume an interrupted legacy run (task-level; requires progress.json)
 npm run salvage -- --run-id=RUN_ID --task-set=contention   # rebuild progress from wreckage

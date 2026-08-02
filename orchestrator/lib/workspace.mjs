@@ -8,6 +8,7 @@ import { projectRoot } from "./config.mjs";
 import { commitAll, initRepo } from "./git.mjs";
 import { initGuideFolder } from "./guide.mjs";
 import { npmExec } from "./win-exec.mjs";
+import { resolveTaskPack } from "./task-pack.mjs";
 
 function writeContentionStubs(workspaceDir) {
   mkdirSync(path.join(workspaceDir, "src", "blocks"), { recursive: true });
@@ -285,4 +286,22 @@ process.stdin.on("end", () => { process.stdout.write(renderMarkdown(input)); });
   } else {
     commitAll(workspaceDir, "chore: skeleton");
   }
+}
+
+/**
+ * Solo baseline workspace: git + task skeleton + SPEC.txt (no guide/DESIGN scaffolding).
+ * Agent reads SPEC.txt via tools; harness never injects the full suite into prompts.
+ *
+ * @param {string} workspaceDir
+ * @param {{ mock?: boolean, pack?: object|string }} [opts]
+ */
+export function initSoloWorkspace(workspaceDir, { mock = false, pack = "commonmark" } = {}) {
+  const taskPack = typeof pack === "string" ? resolveTaskPack(pack) : pack;
+  rmSync(workspaceDir, { recursive: true, force: true });
+  mkdirSync(workspaceDir, { recursive: true });
+  initRepo(workspaceDir);
+  writeFileSync(path.join(workspaceDir, ".gitignore"), "node_modules/\ndist/\n", "utf8");
+  initSwarmSkeleton(workspaceDir, { mock, skeleton: taskPack.skeleton });
+  cpSync(taskPack.specTextPath, path.join(workspaceDir, "SPEC.txt"));
+  commitAll(workspaceDir, "chore: add SPEC.txt");
 }
