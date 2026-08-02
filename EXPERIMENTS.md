@@ -69,13 +69,13 @@ Model: `composer-2.5-fast` (`models.solo`); auth: `CURSOR_API_KEY` (ortle3x3); b
 | **run-solo-v1** | commonmark | 1 | 3.6 min | 112k | **100.0%** (525/525) | 100.0% | agent_done | ≥ v13.3c 99.4% / 462 min / 63.5M |
 | **run-solo-sqlite-v1** | sqlite-micro | 1 | 4.6 min | 175k | **96.6%** (717/742) | 95.6% | agent_done | −2.9pp vs sqlite-v2 99.5% / 128 min / 12.0M |
 | **run-solo-toml-v1** | toml-json | 2 | 13.6 min | 215k | **83.5%** (464/556) | 78.0% (gap **+6.5**, overfit) | agent_done (premature) | −2.5pp vs toml-v13.3c 86.0% / 286 min / 32.2M |
-| **run-solo-toml-v1b** | toml-json | — | — | — | — | — | *in flight* | Re-run with `minObserveRateForAgentDone=0.9` gate |
+| **run-solo-toml-v1b** | toml-json | 52 | 68.0 min | 2.29M | **96.9%** (539/556) | 95.6% (gap **+1.6**) | agent_done (observe gate) | **+10.9pp** vs toml-v13.3c; −4.1× wall / −14× tokens |
 
 **Cross-pack read (solo vs hidden-grader swarm):**
 
 - **CommonMark**: solo sufficient — 100% in one turn; swarm coordination adds ~128× wall and ~567× tokens for marginal +0.6pp vs v13.3c.
 - **SQLite**: solo fast (−28× wall) but **−2.9pp** full; weak `DISTINCT` (72%); swarm v2 still wins on quality.
-- **TOML**: largest gap — solo **Control 32%**; v1 agent self-reported `done` at 84.5% observe → v1b adds observe gate before honoring `agent_done`.
+- **TOML**: v1 premature `done` at 83.5%; **v1b** with observe≥90% gate → **96.9%** full in 52 turns / 68 min / 2.29M tokens — **beats** toml-v13.3c swarm (86.0%) at −4× wall / −14× tokens. Gate deferred `done` ~50× while observe 83–89%.
 
 Reports: `runs/run-solo-v1/REPORT.md`, `runs/run-solo-sqlite-v1/REPORT.md`, `runs/run-solo-toml-v1/REPORT.md`.
 
