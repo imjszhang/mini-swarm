@@ -105,7 +105,7 @@ export class MergeQueue {
         }
         const result = await this._mergeOne(item);
         if (result.ok && item.afterMerge) {
-          result.postMerge = await item.afterMerge();
+          result.postMerge = await item.afterMerge(result);
         }
         item.resolve(result);
       } catch (err) {
@@ -148,6 +148,7 @@ export class MergeQueue {
       oversized_files: oversized,
       taskId,
       gate: "oversized",
+      preSha,
     };
   }
 
@@ -219,12 +220,12 @@ export class MergeQueue {
 
       const oversized = this._oversizedGate(preSha, taskId);
       if (oversized) return oversized;
-      return { ok: true, conflict: true, resolved: true, taskId, attempt };
+      return { ok: true, conflict: true, resolved: true, taskId, attempt, preSha };
     }
 
     // Retries exhausted — hard-reset to pre-merge state (abort may be invalid if already committed).
     resetHard(this.mainDir, preSha);
-    return { ok: false, conflict: true, resolved: false, taskId, gate: "conflict-markers" };
+    return { ok: false, conflict: true, resolved: false, taskId, gate: "conflict-markers", preSha };
   }
 
   async _mergeOne({ branch, taskId, workerRole = "worker" }) {
@@ -236,7 +237,7 @@ export class MergeQueue {
       if (!hits.length) {
         const oversized = this._oversizedGate(preSha, taskId);
         if (oversized) return oversized;
-        return { ok: true, conflict: false, taskId };
+        return { ok: true, conflict: false, taskId, preSha };
       }
       const marked = hits.map((h) => h.file);
       this.metrics.recordMergeGateRejection({ taskId, files: marked, phase: "clean-merge" });
@@ -259,7 +260,7 @@ export class MergeQueue {
     }
 
     if (!mergeResult.conflict) {
-      return { ok: false, conflict: false, taskId, message: mergeResult.message };
+      return { ok: false, conflict: false, taskId, message: mergeResult.message, preSha };
     }
 
     const files = listConflictFiles(this.mainDir);

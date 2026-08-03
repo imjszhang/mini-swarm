@@ -87,6 +87,17 @@ run("shouldRejectAuditAction", () => {
   assert.match(bad.reason, /already clean-audited/);
 });
 
+run("audit rejection can degrade to advisory", () => {
+  const advisory = shouldRejectAuditAction(
+    { type: "add_task", title: "audit: x", spec_sections: ["Paragraphs"] },
+    ["Paragraphs"],
+    { enforce: false },
+  );
+  assert.equal(advisory.reject, false);
+  assert.equal(advisory.advisory, true);
+  assert.match(advisory.reason, /quality gate is not met/);
+});
+
 run("formatAuditCoverage includes declare done NOW", () => {
   const tree = {
     waived_sections: [],

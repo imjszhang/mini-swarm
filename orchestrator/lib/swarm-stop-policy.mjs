@@ -106,6 +106,50 @@ export function nextPerfectObserveStreak(streak, report) {
 }
 
 /**
+ * Hidden quality gate for planner `done`.
+ * A configured gate requires an observe result from the current merge count.
+ *
+ * @returns {'accept' | 'defer_stale' | 'reject_below_gate'}
+ */
+export function doneGateDecision({
+  mock = false,
+  minObserveRateForDone = 0.9,
+  lastObserve = null,
+  mergeCount = 0,
+} = {}) {
+  if (mock || minObserveRateForDone == null) return "accept";
+  if (lastObserve?.rate == null || lastObserve?.atMergeCount == null) {
+    return "defer_stale";
+  }
+  const rate = Number(lastObserve?.rate);
+  const atMergeCount = Number(lastObserve?.atMergeCount);
+  if (!Number.isFinite(rate)
+    || !Number.isFinite(atMergeCount)
+    || atMergeCount !== Number(mergeCount)) {
+    return "defer_stale";
+  }
+  return rate >= Number(minObserveRateForDone)
+    ? "accept"
+    : "reject_below_gate";
+}
+
+/**
+ * True when the latest observe window gained less than the configured
+ * percentage-point threshold.
+ */
+export function observePlateau(history, window = 4, minGainPp = 0.5) {
+  const size = Math.floor(Number(window) || 0);
+  if (size <= 1) return false;
+  const rates = (history || [])
+    .map((entry) => (entry?.rate == null ? Number.NaN : Number(entry.rate)))
+    .filter(Number.isFinite);
+  if (rates.length < size) return false;
+  const recent = rates.slice(-size);
+  const gainPp = (recent[recent.length - 1] - recent[0]) * 100;
+  return gainPp < Number(minGainPp || 0);
+}
+
+/**
  * @returns {{ stop: boolean, reason: null | 'planner_parse_exhausted' | 'idle_tree' }}
  */
 export function shouldStop(state) {
@@ -141,6 +185,9 @@ export function stopConsoleMessage(reason) {
   }
   if (reason === "observe_perfect") {
     return "[swarm] observe perfect streak reached; stopping";
+  }
+  if (reason === "observe_plateau") {
+    return "[swarm] observe quality plateau reached; stopping";
   }
   if (reason === "audit_converged") {
     return "[swarm] audit converged and planner did not declare done; stopping";

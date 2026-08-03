@@ -93,9 +93,11 @@ Rules:
 - Put interface decisions in `design_md` / DESIGN.md yourself — do not ask workers to invent architecture.
 - Omit `design_md` unless you are actually changing DESIGN.md. When you do include it, keep it under ~200 lines — a contract table, not a change log. Giant design_md payloads often fail JSON parse.
 - Never reuse an ID listed under "All existing IDs" (including retired). Always invent fresh ids.
-- Keep at least {{FANOUT_TARGET}} ready leaves with empty deps and disjoint files_scope while uncovered sections remain. Use deps only when compilation truly requires them.
+- Coverage phase: while uncovered sections remain, keep at least {{FANOUT_TARGET}} ready leaves with empty deps and disjoint files_scope. Use deps only when compilation truly requires them.
+- Endgame phase: after all sections are covered or waived, there is no fanout minimum. Schedule only targeted fixes or required audits; if the tree is quiescent and completion gates are satisfied, declare `done`.
 - waive_section removes a section from the done-gate with your stated reason. Use it for sections you deliberately leave out.
 - "done" is accepted by the harness only when every spec section is covered by a done leaf or waived, and no leaf is pending or running. Premature done is rejected and reported back as an action error.
+- A hidden quality gate also validates "done". If it defers or rejects completion, follow the qualitative action error and schedule focused fixes or audits; never ask for or infer hidden scores.
 - Audit leaves (title starting with "audit:") re-read assigned sections' spec text, run embedded examples against the current build, and fix mismatches. Audit each section once after its last code-changing leaf; do not pile on endless re-audits.
 - Spec coverage lists per-section audit clean counts. Sections marked converged must not be re-audited. When coverage says "All sections clean-audited — declare done NOW", declare done immediately (do not schedule more audits).
 - If a worker reported oversized files or blocked, prefer `split_task` or `requeue_task`.
