@@ -45,6 +45,10 @@ Answer three questions with evidence, not optimism:
 3. **Decomposable?** Does the spec split into 10+ sections with low coupling, so
    parallel workers rarely edit the same lines? A single tightly-wound algorithm
    (one 500-line function) fails even if 1 and 2 pass.
+   Note (v13.6): the harness no longer forces a ready-leaf fanout minimum;
+   concurrency follows disjoint `files_scope` demand (capped by
+   `swarm.concurrency`). Prefer packs that are also honest under the solo→swarm
+   ladder (`npm run ladder`) — small packs may correctly terminate at solo.
 
 **Gate:** if any answer is no, stop and tell the user the task is not swarm-suitable,
 which question failed, and (if possible) how to reshape it. A confident rejection is

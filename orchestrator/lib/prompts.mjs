@@ -257,7 +257,7 @@ export function buildSwarmPlannerPrompt({
   coverage,
   actionErrors,
   budgetLine,
-  fanoutTarget,
+  maxConcurrency,
   maxTreeDepth,
   promptsDir = null,
 }) {
@@ -272,7 +272,7 @@ export function buildSwarmPlannerPrompt({
     COVERAGE: coverage || "_None._",
     ACTION_ERRORS: actionErrors || "_None._",
     BUDGET_LINE: budgetLine || "_None._",
-    FANOUT_TARGET: String(fanoutTarget ?? 8),
+    MAX_CONCURRENCY: String(maxConcurrency ?? 8),
     MAX_TREE_DEPTH: String(maxTreeDepth ?? 2),
   });
 }

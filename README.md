@@ -58,6 +58,14 @@ npm run solo:resume -- --run-id=RUN_ID
 npm run solo:toml:detached -- --run-id=run-solo-toml-v1
 npm run solo:sqlite:detached -- --run-id=run-solo-sqlite-v1
 npm run test:solo               # stop-policy unit tests
+
+# v13.6 demand-driven width + solo→swarm ladder
+npm run test:width              # frontier / backpressure pure tests
+npm run test:ladder             # escalate decision pure tests
+npm run ladder:mock             # L0 solo mock → escalate → swarm mock
+npm run ladder:toml:detached -- --run-id=run-ladder-toml-v13.6
+npm run swarm:toml:detached -- --run-id=run-swarm-toml-v13.6 --concurrency=8
+# --width-mode=fixed restores v13.5 constant concurrency; demand is default
 # Finalize interrupted solo/swarm: npm run swarm:finalize -- --run-id=RUN_ID
 
 # Resume an interrupted legacy run (task-level; requires progress.json)
@@ -205,6 +213,8 @@ are **not** claimed as Cursor fidelity.
 | 12 | Fixed wall-clock budget + metrics | `swarm.budgetMinutes` (default 240) or `--run-to-done` + `maxWallMinutes`; optional `maxTokensInOut` / `--max-tokens` (default unlimited; stops on `tokens_in+tokens_out`, not cache); four core metrics + commits/conflicts/LOC |
 
 **v13.1 parallelism note**: event-driven pipeline (continuous dispatch, async planner/review) raised measured `effective_parallelism` from ~1.3 (v13 batch barrier) to ~6 at concurrency=8. Hundreds of concurrent agents remain a declared boundary (git merge queue serial floor).
+
+**v13.6 demand-driven width**: default `swarm.widthMode=demand` sets per-tick concurrency to `min(swarm.concurrency, frontierDemand, backpressureCap)` from disjoint ready/running `files_scope` + recent merge-queue waits. `swarm.concurrency` is a **cap**, not a forced target. Planner prompts no longer require a minimum ready-leaf fanout. `--width-mode=fixed` restores the v13.5 constant / `endgameConcurrency` behavior. Solo→swarm ladder: `npm run ladder` / `ladder:toml:detached` (L0 solo, escalate with `--seed-workspace` when visible &lt; `ladder.l0TargetObserve`).
 
 **v13.2 anti-interrupt note**: long runs must use `swarm:detached` so the process is not reaped with the IDE terminal. `heartbeat.json` + `metrics.json` checkpoints enable `--resume`; `swarm:finalize` scores a dead run without continuing. Segmented wall time excludes death gaps.
 

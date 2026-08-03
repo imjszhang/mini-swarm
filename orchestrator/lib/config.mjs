@@ -108,6 +108,11 @@ function normalizeSwarm(raw) {
     maxLeafAttempts: s.maxLeafAttempts ?? 3,
     maxTotalLeafAttempts: s.maxTotalLeafAttempts ?? 9,
     endgameConcurrency: s.endgameConcurrency ?? 2,
+    widthMode: s.widthMode === "fixed" ? "fixed" : "demand",
+    backpressureWindow: s.backpressureWindow ?? 5,
+    mergeWaitMediumSec: s.mergeWaitMediumSec ?? 60,
+    mergeWaitHighSec: s.mergeWaitHighSec ?? 180,
+    narrowFrontierAdvisoryRounds: s.narrowFrontierAdvisoryRounds ?? 2,
     maxPlannerParseFails: s.maxPlannerParseFails ?? 5,
     maxUnproductivePlannerRounds: s.maxUnproductivePlannerRounds ?? 3,
     maxBlockedRescueWaves: s.maxBlockedRescueWaves ?? 2,
@@ -142,6 +147,15 @@ function normalizeSolo(raw) {
     minObserveRateForAgentDone: s.minObserveRateForAgentDone ?? 0.9,
     minTurnsBeforeAgentDone: s.minTurnsBeforeAgentDone ?? 1,
     maxTokensInOut: normalizeMaxTokensInOut(s.maxTokensInOut),
+  };
+}
+
+function normalizeLadder(raw) {
+  const s = raw.ladder && typeof raw.ladder === "object" ? raw.ladder : {};
+  return {
+    l0MaxMinutes: s.l0MaxMinutes ?? 30,
+    l0TargetObserve: s.l0TargetObserve ?? 0.9,
+    specCharsSkipL0: s.specCharsSkipL0 == null ? null : Number(s.specCharsSkipL0),
   };
 }
 
@@ -193,6 +207,11 @@ export function loadConfig(overrides = {}) {
     ...raw,
     ...overrides,
     solo: { ...(raw.solo || {}), ...(overrides.solo || {}) },
+  });
+  merged.ladder = normalizeLadder({
+    ...raw,
+    ...overrides,
+    ladder: { ...(raw.ladder || {}), ...(overrides.ladder || {}) },
   });
   return merged;
 }

@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 /**
- * v13.5 Cursor-faithful swarm entry (S-A-008).
+ * v13.6 Cursor-faithful swarm entry (S-A-008).
  * Event-driven planner/worker pipeline + run-to-done + hidden grader
  * + engineering feedback (build/canary/spec-embedded) to planner
  * + detach / heartbeat / checkpoint / resume
  * + serial Field Guide notes / CLI canary / planner ID remap
- * + observe_perfect / audit_converged stop + cross-section embedded canary.
+ * + observe_perfect / audit_converged / observe_plateau stop
+ * + demand-driven width (frontier + merge backpressure) + seed-workspace.
  * Legacy test-driven pipeline remains in run.mjs / repair-engine.mjs.
  */
 import { spawn } from "node:child_process";
@@ -66,6 +67,12 @@ import {
   stopConsoleMessage,
 } from "./lib/swarm-stop-policy.mjs";
 import {
+  backpressureCap,
+  frontierDemand,
+  nextNarrowFrontierStreak,
+  scopeDisjoint,
+} from "./lib/width-policy.mjs";
+import {
   applyActions,
   createEmptyTree,
   formatTreeForPlanner,
@@ -81,7 +88,11 @@ import {
   scoreScope,
 } from "./lib/verifier.mjs";
 import { getActiveTaskPack, setActiveTaskPack } from "./lib/task-pack.mjs";
-import { initSwarmSkeleton, initSwarmWorkspace } from "./lib/workspace.mjs";
+import {
+  initSwarmSkeleton,
+  initSwarmWorkspace,
+  initSwarmWorkspaceFromSeed,
+} from "./lib/workspace.mjs";
 import { MergeQueue, checkScopeViolation, findOversizedFiles } from "./merge-queue.mjs";
 import {
   activeWallMinutes,
@@ -107,6 +118,8 @@ function parseArgs(argv) {
     detach: false,
     resume: false,
     task: "commonmark",
+    widthMode: null,
+    seedWorkspace: null,
     help: false,
   };
   for (let i = 0; i < argv.length; i += 1) {
@@ -128,6 +141,10 @@ function parseArgs(argv) {
     else if (a.startsWith("--max-wall-minutes=")) args.maxWallMinutes = Number(a.slice("--max-wall-minutes=".length));
     else if (a === "--max-tokens") args.maxTokens = Number(argv[++i]);
     else if (a.startsWith("--max-tokens=")) args.maxTokens = Number(a.slice("--max-tokens=".length));
+    else if (a === "--width-mode") args.widthMode = argv[++i];
+    else if (a.startsWith("--width-mode=")) args.widthMode = a.slice("--width-mode=".length);
+    else if (a === "--seed-workspace") args.seedWorkspace = argv[++i];
+    else if (a.startsWith("--seed-workspace=")) args.seedWorkspace = a.slice("--seed-workspace=".length);
   }
   return args;
 }
@@ -140,7 +157,9 @@ function usage() {
   --run-to-done        Run until planner declares done (hard stop: maxWallMinutes)
   --max-wall-minutes=N Hard safety stop for --run-to-done (default config.swarm.maxWallMinutes)
   --max-tokens=N       Optional hard stop on sum(tokens_in+tokens_out); default unlimited (no cache)
-  --concurrency=N
+  --concurrency=N      Max parallel leaves (demand width) or target width (fixed mode)
+  --width-mode=demand|fixed   Concurrency policy (default config.swarm.widthMode)
+  --seed-workspace=PATH  Seed main workspace from an existing solo/swarm workspace
   --detach             Respawn as a detached process (console.log + swarm.pid); exit parent
   --resume             Resume an interrupted run (requires --run-id)
   --mock               Scripted planner/worker; no LLM
@@ -473,6 +492,55 @@ function completedSections(tree) {
   return [...done];
 }
 
+/**
+ * Seed coverage ledger from an already-built workspace (solo→swarm escalate).
+ * Sections whose embedded examples all pass become synthetic done leaves.
+ * @returns {string[]} seeded section names
+ */
+function seedCoverageFromWorkspace({
+  tree,
+  workspaceDir,
+  swarm,
+  taskPack,
+}) {
+  const health = checkWorkspaceHealth(workspaceDir, taskPack);
+  if (!health.ok) {
+    console.warn(`[swarm] seed coverage skipped: workspace health failed (${health.kind || "unknown"})`);
+    return [];
+  }
+  const seeded = [];
+  let n = 0;
+  for (const section of listSpecSections()) {
+    const result = runEmbeddedSelfCheck({
+      workspaceDir,
+      sections: [section],
+      maxExamples: swarm.harnessSelfCheckExamples,
+      pack: taskPack,
+      seed: "ladder-seed",
+    });
+    if (!(result.checked > 0 && result.ok)) continue;
+    n += 1;
+    const id = `seed-${n}`;
+    tree.nodes[id] = {
+      id,
+      kind: "leaf",
+      title: `Seeded from solo baseline: ${section}`,
+      parent: null,
+      deps: [],
+      status: "done",
+      files_scope: [],
+      spec_sections: [section],
+      notes: "seeded from solo baseline",
+      report: { summary: "embedded examples pass at seed time" },
+      attempts: 0,
+      total_attempts: 0,
+      verified: { sha: headSha(workspaceDir), checked: result.checked },
+    };
+    seeded.push(section);
+  }
+  return seeded;
+}
+
 function formatCoverage(tree, swarm = {}) {
   const uncovered = uncoveredSections(tree);
   const waived = tree.waived_sections || [];
@@ -711,7 +779,7 @@ async function invitePlanner({
   actionErrors,
   coverage,
   budgetLine,
-  fanoutTarget,
+  maxConcurrency,
   logRound,
 }) {
   const swarm = config.swarm;
@@ -738,7 +806,7 @@ async function invitePlanner({
     coverage: coverage || "_None._",
     actionErrors: actionErrors || "_None._",
     budgetLine: budgetLine || "_None._",
-    fanoutTarget,
+    maxConcurrency,
     maxTreeDepth: swarm.maxTreeDepth,
   });
   const result = await spawnAgent({
@@ -1227,6 +1295,9 @@ async function main() {
     config.swarm.concurrency = cli.concurrency;
     config.concurrency = cli.concurrency;
   }
+  if (cli.widthMode === "demand" || cli.widthMode === "fixed") {
+    config.swarm.widthMode = cli.widthMode;
+  }
   if (cli.budgetMinutes != null && !Number.isNaN(cli.budgetMinutes)) {
     config.swarm.budgetMinutes = cli.budgetMinutes;
   }
@@ -1303,11 +1374,34 @@ async function main() {
     metrics = createMetricsCollector(runDir);
     startedAtMs = Date.now();
     hardDeadlineMs = startedAtMs + (swarm.runToDone ? swarm.maxWallMinutes : swarm.budgetMinutes) * 60 * 1000;
-    initSwarmWorkspace(workspaceDir, { guideMaxLines: swarm.guideMaxLines });
-    initSwarmSkeleton(workspaceDir, { mock: cli.mock, skeleton: taskPack.skeleton });
+    if (cli.seedWorkspace) {
+      const seedAbs = path.isAbsolute(cli.seedWorkspace)
+        ? cli.seedWorkspace
+        : path.join(projectRoot(), cli.seedWorkspace);
+      initSwarmWorkspaceFromSeed(workspaceDir, seedAbs, { guideMaxLines: swarm.guideMaxLines });
+    } else {
+      initSwarmWorkspace(workspaceDir, { guideMaxLines: swarm.guideMaxLines });
+      initSwarmSkeleton(workspaceDir, { mock: cli.mock, skeleton: taskPack.skeleton });
+    }
     ensureHoldout(runDir, examplesPath(), config);
     tree = createEmptyTree();
+    let seededSections = [];
+    if (cli.seedWorkspace && !cli.mock) {
+      seededSections = seedCoverageFromWorkspace({
+        tree,
+        workspaceDir,
+        swarm,
+        taskPack,
+      });
+      console.log(`[swarm] seeded ${seededSections.length} sections from ${cli.seedWorkspace}`);
+    }
     saveTree(runDir, tree);
+    if (cli.seedWorkspace) {
+      metrics.setMeta({
+        seed_workspace: cli.seedWorkspace,
+        seeded_sections: seededSections,
+      });
+    }
   }
 
   metrics.setMeta({
@@ -1317,7 +1411,8 @@ async function main() {
     task_set: "swarm-tree",
     task_pack: taskPack.id,
     swarm: true,
-    architecture: "v13.5-swarm",
+    architecture: "v13.6-swarm",
+    width_mode: swarm.widthMode,
     run_to_done: !!swarm.runToDone,
     resumed: !!cli.resume,
   });
@@ -1355,6 +1450,8 @@ async function main() {
   let blockedRescueWaves = Number(metrics.data.blocked_rescue_waves) || 0;
   let perfectObserveStreak = Number(metrics.data.perfect_observe_streak) || 0;
   let auditConvergedPlannerRounds = Number(metrics.data.audit_converged_planner_rounds) || 0;
+  let lastWidthRecorded = null;
+  let narrowFrontierStreak = 0;
   let qualityMergeCount = Number(metrics.data.quality_merge_count);
   if (!Number.isFinite(qualityMergeCount)) qualityMergeCount = mergeSuccessCount;
   let lastObserve = metrics.data.last_observe && typeof metrics.data.last_observe === "object"
@@ -1618,18 +1715,53 @@ async function main() {
         || pastPerfectObserve
         || pastAuditQuiesce
         || pastObservePlateau;
-      const currentConcurrency = Math.max(
-        1,
-        Number(
-          uncoveredSections(tree).length === 0
-            ? swarm.endgameConcurrency
-            : swarm.concurrency,
-        ) || 1,
-      );
       const readyNow = () => readyLeaves(tree).filter((n) => (
         (n.attempts || 0) < swarm.maxLeafAttempts
         && (n.total_attempts || 0) < swarm.maxTotalLeafAttempts
       ));
+      let currentConcurrency;
+      let demandForCurve = null;
+      let capForCurve = null;
+      if (swarm.widthMode === "fixed") {
+        // v13.5 original behavior (endgameConcurrency only in this branch)
+        currentConcurrency = Math.max(
+          1,
+          Number(
+            uncoveredSections(tree).length === 0
+              ? swarm.endgameConcurrency
+              : swarm.concurrency,
+          ) || 1,
+        );
+      } else {
+        const runningLeavesNow = [...running.keys()].map((id) => tree.nodes[id]).filter(Boolean);
+        const demand = frontierDemand(runningLeavesNow, readyNow());
+        const waitsMs = (metrics.data.merge_waits || [])
+          .filter((w) => w.label === "merge")
+          .slice(-swarm.backpressureWindow)
+          .map((w) => Number(w.waitMs) || 0);
+        const cap = backpressureCap({
+          waitsMs,
+          window: swarm.backpressureWindow,
+          mediumSec: swarm.mergeWaitMediumSec,
+          highSec: swarm.mergeWaitHighSec,
+          maxConcurrency: swarm.concurrency,
+        });
+        demandForCurve = demand;
+        capForCurve = cap;
+        currentConcurrency = Math.max(1, Math.min(swarm.concurrency, demand, cap));
+      }
+      if (currentConcurrency !== lastWidthRecorded) {
+        metrics.data.width_curve = metrics.data.width_curve || [];
+        metrics.data.width_curve.push({
+          at: new Date().toISOString(),
+          width: currentConcurrency,
+          demand: demandForCurve,
+          cap: capForCurve,
+          running: running.size,
+          ready: readyNow().length,
+        });
+        lastWidthRecorded = currentConcurrency;
+      }
       const idle = running.size === 0 && auxJobs.size === 0 && !plannerPromise;
 
       if (
@@ -1686,7 +1818,9 @@ async function main() {
 
       if (!pastBudget) {
         while (running.size < currentConcurrency) {
-          const candidates = readyNow().filter((n) => !running.has(n.id));
+          const runningLeavesNow = [...running.keys()].map((id) => tree.nodes[id]).filter(Boolean);
+          const candidates = readyNow().filter((n) => !running.has(n.id)
+            && (swarm.widthMode === "fixed" || scopeDisjoint(n, runningLeavesNow)));
           if (!candidates.length) break;
           const leaf = candidates[0];
           markLeaf(tree, leaf.id, "running");
@@ -1719,6 +1853,18 @@ async function main() {
         && (treeEmpty || pendingReports.length >= swarm.plannerReportBatch || stalled);
 
       if (shouldInvitePlanner) {
+        if (swarm.widthMode !== "fixed") {
+          narrowFrontierStreak = nextNarrowFrontierStreak(narrowFrontierStreak, {
+            uncovered: uncoveredSections(tree).length,
+            frontierSize: readyNow().length + running.size,
+          });
+          if (narrowFrontierStreak >= swarm.narrowFrontierAdvisoryRounds) {
+            actionErrors.push(
+              "Frontier is narrow (fewer than 2 ready+running leaves) while sections remain uncovered. If independent sections exist, decompose them into separate leaves with disjoint files_scope. Do not create filler tasks.",
+            );
+            narrowFrontierStreak = 0;
+          }
+        }
         const reportsSnap = pendingReports.splice(0);
         const findingsSnap = pendingFindings.splice(0);
         const errorsSnap = actionErrors.splice(0);
@@ -1744,7 +1890,7 @@ async function main() {
           actionErrors: errorsText,
           coverage: formatCoverage(tree, swarm),
           budgetLine: formatBudgetLine(swarm, startedAtMs, hardDeadlineMs, metrics.data),
-          fanoutTarget: currentConcurrency * 2,
+          maxConcurrency: swarm.concurrency,
           logRound,
         }).then((plan) => {
           plannerResult = plan;

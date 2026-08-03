@@ -93,8 +93,8 @@ Rules:
 - Put interface decisions in `design_md` / DESIGN.md yourself — do not ask workers to invent architecture.
 - Omit `design_md` unless you are actually changing DESIGN.md. When you do include it, keep it under ~200 lines — a contract table, not a change log. Giant design_md payloads often fail JSON parse.
 - Never reuse an ID listed under "All existing IDs" (including retired). Always invent fresh ids.
-- Coverage phase: while uncovered sections remain, keep at least {{FANOUT_TARGET}} ready leaves with empty deps and disjoint files_scope. Use deps only when compilation truly requires them.
-- Endgame phase: after all sections are covered or waived, there is no fanout minimum. Schedule only targeted fixes or required audits; if the tree is quiescent and completion gates are satisfied, declare `done`.
+- Decompose along the spec's natural boundaries. The harness dispatches up to {{MAX_CONCURRENCY}} leaves in parallel, but only leaves that are truly independent (empty deps, disjoint files_scope) run together. Never add tasks just to raise parallelism; prefer fewer, larger leaves when work is coupled. Use deps only when compilation truly requires them.
+- Endgame phase: after all sections are covered or waived, schedule only targeted fixes or required audits; if the tree is quiescent and completion gates are satisfied, declare `done`.
 - waive_section removes a section from the done-gate with your stated reason. Use it for sections you deliberately leave out.
 - "done" is accepted by the harness only when every spec section is covered by a done leaf or waived, and no leaf is pending or running. Premature done is rejected and reported back as an action error.
 - A hidden quality gate also validates "done". If it defers or rejects completion, follow the qualitative action error and schedule focused fixes or audits; never ask for or infer hidden scores.

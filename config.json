@@ -68,6 +68,11 @@
     "maxLeafAttempts": 3,
     "maxTotalLeafAttempts": 9,
     "endgameConcurrency": 2,
+    "widthMode": "demand",
+    "backpressureWindow": 5,
+    "mergeWaitMediumSec": 60,
+    "mergeWaitHighSec": 180,
+    "narrowFrontierAdvisoryRounds": 2,
     "maxPlannerParseFails": 5,
     "maxUnproductivePlannerRounds": 3,
     "maxBlockedRescueWaves": 2,
@@ -93,6 +98,11 @@
     "minObserveRateForAgentDone": 0.9,
     "minTurnsBeforeAgentDone": 1,
     "maxTokensInOut": null
+  },
+  "ladder": {
+    "l0MaxMinutes": 30,
+    "l0TargetObserve": 0.9,
+    "specCharsSkipL0": null
   },
   "guideMaxLines": 80,
   "agentCommand": "cursor-agent"

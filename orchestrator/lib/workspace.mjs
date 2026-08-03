@@ -2,13 +2,15 @@
  * Workspace skeleton helpers shared by swarm entry (v13).
  * Intentionally duplicated from run.mjs so the legacy pipeline stays untouched.
  */
-import { cpSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { projectRoot } from "./config.mjs";
 import { commitAll, initRepo } from "./git.mjs";
 import { initGuideFolder } from "./guide.mjs";
 import { npmExec } from "./win-exec.mjs";
 import { resolveTaskPack } from "./task-pack.mjs";
+
+const SEED_SKIP_DIRS = new Set(["node_modules", "dist", "cursor-compile-cache"]);
 
 function writeContentionStubs(workspaceDir) {
   mkdirSync(path.join(workspaceDir, "src", "blocks"), { recursive: true });
@@ -312,4 +314,54 @@ export function initSoloWorkspace(workspaceDir, { mock = false, pack = "commonma
   initSwarmSkeleton(workspaceDir, { mock, skeleton: taskPack.skeleton });
   cpSync(taskPack.specTextPath, path.join(workspaceDir, "SPEC.txt"));
   commitAll(workspaceDir, "chore: add SPEC.txt");
+}
+
+/**
+ * Seed a swarm main workspace from an existing solo/swarm workspace.
+ * Preserves git history; skips build caches; ensures swarm scaffolding files.
+ */
+export function initSwarmWorkspaceFromSeed(workspaceDir, seedDir, { guideMaxLines = 80 } = {}) {
+  if (!seedDir || !existsSync(seedDir)) {
+    throw new Error(`seed workspace not found: ${seedDir}`);
+  }
+  rmSync(workspaceDir, { recursive: true, force: true });
+  mkdirSync(path.dirname(workspaceDir), { recursive: true });
+  cpSync(seedDir, workspaceDir, {
+    recursive: true,
+    filter: (src) => {
+      const base = path.basename(src);
+      return !SEED_SKIP_DIRS.has(base);
+    },
+  });
+
+  if (!existsSync(path.join(workspaceDir, "DESIGN.md"))) {
+    writeFileSync(path.join(workspaceDir, "DESIGN.md"), "# Design\n\n(Planner will expand this.)\n", "utf8");
+  }
+  initGuideFolder(workspaceDir, { maxLines: guideMaxLines });
+
+  const giPath = path.join(workspaceDir, ".gitignore");
+  const giWant = "node_modules/\ndist/\ncursor-compile-cache/\n";
+  if (!existsSync(giPath)) {
+    writeFileSync(giPath, giWant, "utf8");
+  } else {
+    const cur = readFileSync(giPath, "utf8");
+    const lines = new Set(cur.split(/\r?\n/).filter(Boolean));
+    for (const line of ["node_modules/", "dist/", "cursor-compile-cache/"]) {
+      if (!lines.has(line)) lines.add(line);
+    }
+    writeFileSync(giPath, `${[...lines].join("\n")}\n`, "utf8");
+  }
+
+  const gaPath = path.join(workspaceDir, ".gitattributes");
+  const unionLine = "guide/index.md merge=union";
+  if (!existsSync(gaPath)) {
+    writeFileSync(gaPath, `${unionLine}\n`, "utf8");
+  } else {
+    const cur = readFileSync(gaPath, "utf8");
+    if (!cur.includes("guide/index.md")) {
+      writeFileSync(gaPath, `${cur.replace(/\s*$/, "")}\n${unionLine}\n`, "utf8");
+    }
+  }
+
+  commitAll(workspaceDir, "chore: seed workspace from solo baseline");
 }

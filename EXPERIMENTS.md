@@ -17,6 +17,7 @@
 - **v13.4 third sample (sqlite-micro)**: `npm run swarm:sqlite:detached -- --run-id=run-swarm-sqlite-v1 --concurrency=8 --max-tokens=80000000` / `npm run report:task-run -- --run-id=run-swarm-sqlite-v1` (`--task=sqlite-micro`, oracle = Node `node:sqlite` differential)
 - **sqlite-micro pack-tuning v2**: after v1 97.6% plateau — `npm run swarm:sqlite:detached -- --run-id=run-swarm-sqlite-v2 --concurrency=8 --max-tokens=80000000`
 - **Solo single-agent baseline**: `npm run solo:mock` / `npm run solo:detached -- --run-id=run-solo-v1` / `npm run solo:resume -- --run-id=ID` — one agent, one workspace, same task packs + hidden grader + holdout/metrics as swarm; no planner tree / worktrees / merge (`architecture=solo-v1`)
+- **v13.6 demand-driven width + ladder**: `widthMode=demand` (default) — concurrency = min(cap, frontierDemand, merge backpressure); no planner fanout minimum; `--width-mode=fixed` for v13.5 constants. Ladder: `npm run ladder` / `ladder:toml:detached` (L0 solo → escalate with `--seed-workspace` when visible &lt; 0.9)
 - **v8/v9/v10/v11/v12 high-contention A/B**: `npm run run:contention:bare` / `npm run run:contention:faithful` (`--task-set=contention`, concurrency 4, seed planner; v9 score-feedback; v10 sync+gate+global repair; v11 holdout+ledger+adaptive repair; v12 Stage B + strong ladder)
 - **Resume interrupted run**: `npm run salvage -- --run-id=RUN_ID --task-set=contention` then original command + `--resume` (task-level; agent/wall times in metrics cover last segment only — see README)
 - **Repair-only continuation**: `npm run run -- --repair-only --from-run=PRIOR --run-id=NEW --task-set=contention [--coord-mode=faithful]`
@@ -377,6 +378,86 @@ npm run report:task-run -- --run-id=run-swarm-toml-v13.5c --baseline=run-swarm-t
 npm run compare -- runs/run-swarm-toml-v13.3c/metrics.json runs/run-swarm-toml-v13.5c/metrics.json
 npm run report:task-run -- --run-id=run-swarm-v13.5b --baseline=run-swarm-v13.3c
 npm run compare -- runs/run-swarm-v13.3c/metrics.json runs/run-swarm-v13.5b/metrics.json
+```
+
+## Protocol & acceptance (2026-08-03) — v13.6 fifth lever (demand-driven width + ladder)
+
+Motivation: S-A-008 never hard-codes “open N agents”. Parallelism is an *output*
+of the planner tree’s natural width (independent leaves with disjoint
+`files_scope`). mini-swarm previously did the opposite: fixed `concurrency=8`
+plus a planner prompt that forced `keep at least FANOUT_TARGET ready leaves`
+(`fanoutTarget = concurrency × 2`). That is supply-side coercion — the failure
+mode Cursor’s own blog warns against (activity ≠ productivity; Coase threshold).
+
+v13.6 adds a fifth harness-side lever (still no scores in agent prompts):
+
+1. **Demand-driven width** (`widthMode=demand`, default) — each tick
+   `width = min(maxConcurrency, frontierDemand, backpressureCap)`.
+   `frontierDemand` is a greedy count of running∪ready leaves with pairwise
+   disjoint `files_scope` (empty scope counts as independent). Dispatch also
+   refuses scope-overlapping candidates. `swarm.concurrency` is now a **cap**,
+   not a target. `--width-mode=fixed` restores the v13.5 two-stage constant
+   (`endgameConcurrency` after full coverage).
+2. **Merge backpressure** — recent `merge_waits` (label=`merge`) average above
+   `mergeWaitHighSec` / `mergeWaitMediumSec` caps width at 2 / 4.
+3. **Fanout prompt reversal** — planner is told the max concurrency and that
+   filler tasks are forbidden; no numeric ready-leaf minimum. Narrow-frontier
+   advisory (qualitative only) fires when uncovered sections remain and
+   ready+running &lt; 2 for `narrowFrontierAdvisoryRounds` planner invites.
+4. **Solo→swarm ladder** (`npm run ladder`) — L0 solo for `l0MaxMinutes`; if
+   visible &lt; `l0TargetObserve` (and not `observe_perfect`), escalate to swarm
+   with `--seed-workspace` from the solo workspace. Harness seeds synthetic
+   done leaves for sections whose embedded examples already pass (mock skips
+   seeding). There is no separate L1 — demand width naturally collapses to
+   planner + serial workers on a narrow tree.
+
+### Acceptance (TOML live; CommonMark manual/pending)
+
+| Run ID | Status | Full | Visible / holdout | Stop | Wall | Tokens | Conflicts | Notes |
+|---|---|---:|---:|---|---:|---:|---:|---|
+| `run-swarm-toml-v13.6` | **final acceptance** | **93.9%** (522/556) | 94.2% / 92.3% | `planner_done` | **49.6m** | **3.66M** | **5** | demand width; avg width 2.60 ≈ demand 2.53 |
+| `run-ladder-toml-v13.6` | **final acceptance (L0)** | **91.5%** (via `-l0`) | 91.6% / 91.2% | L0 `wall_budget` → ladder `visible_above_target` | **~31m** | **~0.72M** (L0) | n/a | **no escalate** — Coase-correct |
+| `run-swarm-v13.6` / `run-ladder-v13.6` | **pending / manual** | — | — | — | — | — | — | CommonMark; do not auto-run |
+
+Demand-arm vs `run-swarm-toml-v13.5c`: full **91.9% → 93.9%** (+2.0pp), wall
+**56.7m → 49.6m**, tokens **9.44M → 3.66M** (−61%), conflicts **23 → 5**,
+`effective_parallelism` **3.7 → 1.76** with `width_curve` tracking frontier
+(max width 6, never forced to 8). Hypothesis supported.
+
+Ladder-arm: L0 solo hit visible **91.6%** (≥ `l0TargetObserve=0.9`) under the
+30‑minute L0 cap and **correctly refused to open a swarm**. `ladder.json`
+records `escalated:false` / `reason:visible_above_target`. This is the intended
+Coase-threshold outcome for a pack that fits one agent.
+
+Judging:
+
+- **Demand arm**: full within ~91.9% ±2pp and natural stop = quality parity;
+  conflicts &lt; 23 and `width_curve` tracking frontier (narrower scissors vs
+  v13.5c’s configured 8 vs eff_parallelism 3.7) = hypothesis supported.
+- **Ladder arm**: stop at L0 with visible ≥ 0.9 = task below Coase threshold
+  (correct answer). Escalate = check `seeded_sections` non-empty, swarm only
+  patches weak sections; compare total tokens/quality to `run-solo-toml-v1b`
+  (96.9% / 2.29M).
+- Honesty: all three current packs may terminate at L0/L1-equivalent width.
+  Wide L2 escalation needs a future pack that exceeds a single context window.
+
+Commands:
+
+```bash
+npm run test:width && npm run test:ladder && npm run test:convergence
+npm run swarm:mock -- --run-id=run-swarm-v13.6-mock
+npm run swarm:mock -- --run-id=run-swarm-v13.6-mock-fixed --width-mode=fixed
+npm run ladder:mock -- --run-id=run-ladder-v13.6-mock
+
+npm run swarm:toml:detached -- --run-id=run-swarm-toml-v13.6 --concurrency=8
+npm run report:task-run -- --run-id=run-swarm-toml-v13.6 --baseline=run-swarm-toml-v13.5c
+npm run compare -- runs/run-swarm-toml-v13.5c/metrics.json runs/run-swarm-toml-v13.6/metrics.json
+
+npm run ladder:toml:detached -- --run-id=run-ladder-toml-v13.6
+
+# CommonMark (manual; not part of automated acceptance)
+npm run swarm:detached -- --run-id=run-swarm-v13.6 --concurrency=8
+npm run ladder -- --task=commonmark --run-id=run-ladder-v13.6 --detach
 ```
 
 ## Runs (2026-07-29) — v13.3 second sample: TOML → toml-test JSON

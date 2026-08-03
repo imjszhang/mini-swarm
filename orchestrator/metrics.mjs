@@ -218,6 +218,7 @@ function emptyMetricsData() {
     oversized_blocks: [],
     merge_waits: [],
     merge_wait_count: 0,
+    width_curve: [],
     self_check_total: 0,
     harness_self_check_total: 0,
     visible_score: null,
@@ -485,6 +486,7 @@ export function normalizeMetrics(raw) {
   m.oversized_blocks = m.oversized_blocks || [];
   m.merge_waits = m.merge_waits || [];
   m.merge_wait_count = m.merge_wait_count ?? m.merge_waits.length;
+  m.width_curve = m.width_curve || [];
   m.self_check_total = m.self_check_total ?? 0;
   m.harness_self_check_total = m.harness_self_check_total ?? 0;
   m.segments = m.segments || [];
