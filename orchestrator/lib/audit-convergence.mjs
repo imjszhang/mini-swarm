@@ -123,7 +123,7 @@ export function auditConvergence(tree, cfg = {}, allSections = null) {
  * Whether an add_task action is an audit leaf that targets a reject section.
  * @returns {{ reject: boolean, section?: string, reason?: string }}
  */
-export function shouldRejectAuditAction(action, rejectSections) {
+export function shouldRejectAuditAction(action, rejectSections, { enforce = true } = {}) {
   if (!action || action.type !== "add_task") return { reject: false };
   if (!isAuditLeaf(action)) return { reject: false };
   const reject = new Set(rejectSections || []);
@@ -132,9 +132,12 @@ export function shouldRejectAuditAction(action, rejectSections) {
   for (const s of sections) {
     if (reject.has(s)) {
       return {
-        reject: true,
+        reject: !!enforce,
+        advisory: !enforce,
         section: s,
-        reason: `audit rejected: section ${s} already clean-audited; do not re-audit`,
+        reason: enforce
+          ? `audit rejected: section ${s} already clean-audited; do not re-audit`
+          : `audit advisory: section ${s} was already clean-audited, but quality gate is not met`,
       };
     }
   }

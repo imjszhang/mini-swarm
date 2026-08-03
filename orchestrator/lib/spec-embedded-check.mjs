@@ -36,8 +36,8 @@ export function parseEmbeddedExamples(text) {
     if (lines.length && lines[lines.length - 1] === "") lines.pop();
     const dotIdx = lines.findIndex((l) => l === ".");
     if (dotIdx < 0) continue;
-    const input = lines.slice(0, dotIdx).join("\n");
-    const expected = lines.slice(dotIdx + 1).join("\n");
+    const input = lines.slice(0, dotIdx).join("\n").replaceAll("→", "\t");
+    const expected = lines.slice(dotIdx + 1).join("\n").replaceAll("→", "\t");
     const expectError = expected.trim() === "ERROR";
     examples.push({ input, expected, expectError });
   }

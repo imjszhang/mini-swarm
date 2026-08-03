@@ -75,7 +75,7 @@ Model: `composer-2.5-fast` (`models.solo`); auth: `CURSOR_API_KEY` (ortle3x3); b
 
 - **CommonMark**: solo sufficient — 100% in one turn; swarm coordination adds ~128× wall and ~567× tokens for marginal +0.6pp vs v13.3c.
 - **SQLite**: solo fast (−28× wall) but **−2.9pp** full; weak `DISTINCT` (72%); swarm v2 still wins on quality.
-- **TOML**: v1 premature `done` at 83.5%; **v1b** with observe≥90% gate → **96.9%** full in 52 turns / 68 min / 2.29M tokens — **beats** toml-v13.3c swarm (86.0%) at −4× wall / −14× tokens. Gate deferred `done` ~50× while observe 83–89%.
+- **TOML**: largest gap — solo **Control 32%**; v1 agent self-reported `done` at 84.5% observe → v1b adds observe gate before honoring `agent_done`.
 
 Reports: `runs/run-solo-v1/REPORT.md`, `runs/run-solo-sqlite-v1/REPORT.md`, `runs/run-solo-toml-v1/REPORT.md`.
 
@@ -306,6 +306,77 @@ Acceptance command (same models/concurrency as v13.3c):
 ```bash
 npm run swarm:detached -- --run-id=run-swarm-v13.4 --concurrency=8
 npm run report:task-run -- --run-id=run-swarm-v13.4 --baseline=run-swarm-v13.3c
+```
+
+## Protocol & acceptance (2026-08-02) — v13.5 four-lever control-loop refactor
+
+Motivation: v13.3/v13.4 treated hidden observe scores mostly as telemetry while
+planner coverage, self-reported audit cleanliness, and stale pre-merge checks
+controlled stopping. Solo's `agent_done` already had a 90% harness-side quality
+gate, so the architecture comparison used asymmetric stop semantics.
+
+v13.5 changes four harness-side levers without exposing scores to agents:
+
+1. **Persistent-state verification** — assigned examples run before merge; after
+   merge, main must pass build/canary, assigned examples, and regression samples
+   from sections already completed in the verified tree. A failed post-merge
+   gate gets one integration-fix attempt, then rolls main back to `preSha`.
+   Observe scoring is serialized through the merge queue.
+2. **Hidden quality control** — planner `done`, audit quiescence, and true idle
+   stop require a fresh observe score at or above 90%. A full-coverage run can
+   stop on four fresh observe windows with less than 0.5pp net gain
+   (`observe_plateau`). Agents receive only the rejection/defer bit, never the
+   score.
+3. **Verified ledger** — done leaves record the verified main SHA and checked
+   count; `total_attempts` is monotonic across requeues and capped at 9; stop
+   drain reconciles successful in-flight merges instead of discarding them.
+4. **Adaptive coordination tax** — concurrency stays 8 during coverage and
+   falls to 2 after all sections are covered. Planner fanout has no lower bound
+   in endgame. Task packs may provide `swarmOverrides` while CLI flags remain
+   highest priority.
+
+Important correction during acceptance: the first implementation retained the
+old broad cross-section gate on incomplete worktrees/main. That rejects a valid
+early leaf because unrelated sections are not implemented yet. Final v13.5
+samples only regression-check sections already represented by verified done
+leaves.
+
+| Run ID | Status | Full | Visible / holdout | Stop | Wall | Tokens in+out | Planner rounds | Conflicts |
+|---|---|---:|---:|---|---:|---:|---:|---:|
+| `run-swarm-toml-v13.5c` | **final acceptance** | **91.9%** (511/556) | 92.5% / 89.0% | `observe_plateau` | **56.7m** | **9.44M** | 17 | 23 |
+| `run-swarm-v13.5b` | **final acceptance** | **99.8%** (524/525) | 99.8% / 100% | `observe_plateau` | **357.7m** | **28.09M** | 51 | 40 |
+| `run-swarm-toml-v13.5b` | transitional, not acceptance | 96.6% (537/556) | 96.8% / 95.6% | `observe_plateau` | 22.2m | 4.97M | 7 | 13 |
+| `run-swarm-toml-v13.5` / `run-swarm-v13.5` | aborted development arms | — | — | human stop | — | — | — | — |
+
+Final-arm comparison:
+
+- **TOML vs v13.3c**: full **86.0% → 91.9%** (+5.9pp), wall
+  **281.6m → 56.7m** (−80%), tokens **32.23M → 9.44M** (−71%),
+  planner rounds **52 → 17**. Holdout remains close (89.0%) but the
+  visible-minus-holdout gap is +3.5pp.
+- **CommonMark vs v13.3c**: full **99.4% → 99.8%** (+0.4pp), wall
+  **459.2m → 357.7m** (−22%), tokens **63.53M → 28.09M** (−56%),
+  planner rounds **111 → 51**. The run stopped naturally rather than via human
+  salvage.
+- The post-merge rollback gate rejected 3 TOML and 12 CommonMark regressions.
+  Endgame concurrency reduced effective parallelism, but also cut commits,
+  conflicts, planner churn, and total model work.
+- CommonMark briefly reached 100% visible at quality merge 102, then one later
+  merge regressed one visible case; the plateau stop finalized at 99.8%. The
+  remaining weakness is therefore rollback sampling coverage, not inability to
+  reach the target.
+- Live logs also exposed Cursor's `cursor-compile-cache/` as an unignored
+  generated directory, inflating conflict files without contributing code.
+  Workspace initialization now ignores it; acceptance conflict counts above
+  still include that pre-fix noise and are conservative.
+
+Reports and comparisons:
+
+```bash
+npm run report:task-run -- --run-id=run-swarm-toml-v13.5c --baseline=run-swarm-toml-v13.3c
+npm run compare -- runs/run-swarm-toml-v13.3c/metrics.json runs/run-swarm-toml-v13.5c/metrics.json
+npm run report:task-run -- --run-id=run-swarm-v13.5b --baseline=run-swarm-v13.3c
+npm run compare -- runs/run-swarm-v13.3c/metrics.json runs/run-swarm-v13.5b/metrics.json
 ```
 
 ## Runs (2026-07-29) — v13.3 second sample: TOML → toml-test JSON

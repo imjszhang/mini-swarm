@@ -3,8 +3,10 @@ import assert from "node:assert/strict";
 import {
   actionsAreProductive,
   appliedActionsAreProductive,
+  doneGateDecision,
   nextPerfectObserveStreak,
   nextStreaks,
+  observePlateau,
   shouldStop,
   stopConsoleMessage,
 } from "./lib/swarm-stop-policy.mjs";
@@ -153,7 +155,50 @@ run("nextPerfectObserveStreak resets on imperfect or empty", () => {
 
 run("stopConsoleMessage observe_perfect and audit_converged", () => {
   assert.match(stopConsoleMessage("observe_perfect"), /observe perfect streak/);
+  assert.match(stopConsoleMessage("observe_plateau"), /quality plateau/);
   assert.match(stopConsoleMessage("audit_converged"), /audit converged/);
+});
+
+run("done gate accepts, defers stale, and rejects below gate", () => {
+  assert.equal(doneGateDecision({
+    minObserveRateForDone: 0.9,
+    lastObserve: { rate: 0.91, atMergeCount: 3 },
+    mergeCount: 3,
+  }), "accept");
+  assert.equal(doneGateDecision({
+    minObserveRateForDone: 0.9,
+    lastObserve: { rate: 0.95, atMergeCount: 2 },
+    mergeCount: 3,
+  }), "defer_stale");
+  assert.equal(doneGateDecision({
+    minObserveRateForDone: 0.9,
+    lastObserve: { rate: null, atMergeCount: 3 },
+    mergeCount: 3,
+  }), "defer_stale");
+  assert.equal(doneGateDecision({
+    minObserveRateForDone: 0.9,
+    lastObserve: { rate: 0.89, atMergeCount: 3 },
+    mergeCount: 3,
+  }), "reject_below_gate");
+  assert.equal(doneGateDecision({
+    minObserveRateForDone: null,
+    lastObserve: null,
+    mergeCount: 3,
+  }), "accept");
+  assert.equal(doneGateDecision({ mock: true }), "accept");
+});
+
+run("observe plateau requires a full low-gain window", () => {
+  assert.equal(observePlateau([{ rate: 0.8 }, { rate: 0.81 }], 4, 0.5), false);
+  assert.equal(observePlateau([
+    { rate: null }, { rate: null }, { rate: null }, { rate: null },
+  ], 4, 0.5), false);
+  assert.equal(observePlateau([
+    { rate: 0.9 }, { rate: 0.902 }, { rate: 0.903 }, { rate: 0.904 },
+  ], 4, 0.5), true);
+  assert.equal(observePlateau([
+    { rate: 0.9 }, { rate: 0.902 }, { rate: 0.904 }, { rate: 0.906 },
+  ], 4, 0.5), false);
 });
 
 run("actionsAreProductive recognizes productive types", () => {

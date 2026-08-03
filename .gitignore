@@ -1,5 +1,6 @@
 .env
 node_modules/
+cursor-compile-cache/
 workspace/
 runs/*/workspace/
 runs/*/worktrees/

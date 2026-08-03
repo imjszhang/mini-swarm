@@ -130,7 +130,11 @@ export function initSwarmWorkspace(workspaceDir, { guideMaxLines = 80 } = {}) {
   initRepo(workspaceDir);
   writeFileSync(path.join(workspaceDir, "DESIGN.md"), "# Design\n\n(Planner will expand this.)\n", "utf8");
   initGuideFolder(workspaceDir, { maxLines: guideMaxLines });
-  writeFileSync(path.join(workspaceDir, ".gitignore"), "node_modules/\ndist/\n", "utf8");
+  writeFileSync(
+    path.join(workspaceDir, ".gitignore"),
+    "node_modules/\ndist/\ncursor-compile-cache/\n",
+    "utf8",
+  );
   // Append-only Field Guide: union merge absorbs concurrent worker edits if any slip through.
   writeFileSync(
     path.join(workspaceDir, ".gitattributes"),
@@ -300,7 +304,11 @@ export function initSoloWorkspace(workspaceDir, { mock = false, pack = "commonma
   rmSync(workspaceDir, { recursive: true, force: true });
   mkdirSync(workspaceDir, { recursive: true });
   initRepo(workspaceDir);
-  writeFileSync(path.join(workspaceDir, ".gitignore"), "node_modules/\ndist/\n", "utf8");
+  writeFileSync(
+    path.join(workspaceDir, ".gitignore"),
+    "node_modules/\ndist/\ncursor-compile-cache/\n",
+    "utf8",
+  );
   initSwarmSkeleton(workspaceDir, { mock, skeleton: taskPack.skeleton });
   cpSync(taskPack.specTextPath, path.join(workspaceDir, "SPEC.txt"));
   commitAll(workspaceDir, "chore: add SPEC.txt");

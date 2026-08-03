@@ -85,7 +85,11 @@ function remapActionRefs(action, idRemap) {
  * Apply a single planner action. Returns { ok, error?, id?, remapped?, idempotent? }.
  * When `idRemap` (Map) is provided, duplicate IDs are remapped or treated as idempotent.
  */
-export function applyAction(tree, action, { maxTreeDepth = 2, idRemap = null } = {}) {
+export function applyAction(
+  tree,
+  action,
+  { maxTreeDepth = 2, maxTotalLeafAttempts = Infinity, idRemap = null } = {},
+) {
   if (!action || typeof action !== "object") return { ok: false, error: "invalid action" };
   const a = remapActionRefs(action, idRemap);
   const type = a.type;
@@ -161,6 +165,7 @@ export function applyAction(tree, action, { maxTreeDepth = 2, idRemap = null } =
       notes: a.notes || "",
       report: null,
       attempts: 0,
+      total_attempts: 0,
     };
     return {
       ok: true,
@@ -183,7 +188,7 @@ export function applyAction(tree, action, { maxTreeDepth = 2, idRemap = null } =
         ...child,
         parent: node.parent || from,
         deps: child.deps || node.deps,
-      }, { maxTreeDepth, idRemap });
+      }, { maxTreeDepth, maxTotalLeafAttempts, idRemap });
       if (!r.ok) return r;
       ids.push(r.id);
     }
@@ -202,9 +207,18 @@ export function applyAction(tree, action, { maxTreeDepth = 2, idRemap = null } =
     const id = a.id;
     const node = tree.nodes[id];
     if (!node || node.kind !== "leaf") return { ok: false, error: `requeue_task: missing leaf ${id}` };
+    const totalAttempts = Number(node.total_attempts) || 0;
+    const maxTotal = Number(maxTotalLeafAttempts);
+    if (Number.isFinite(maxTotal) && totalAttempts >= maxTotal) {
+      return {
+        ok: false,
+        error: `requeue_task: ${id} reached maxTotalLeafAttempts ${maxTotal}; split or retire this leaf`,
+      };
+    }
     node.status = "pending";
     node.report = null;
     node.attempts = 0;
+    delete node.verified;
     return { ok: true, id };
   }
 
@@ -247,12 +261,17 @@ export function readyLeaves(tree) {
   );
 }
 
-export function markLeaf(tree, id, status, report = null) {
+export function markLeaf(tree, id, status, report = null, { verified = null } = {}) {
   const n = tree.nodes[id];
   if (!n || n.kind !== "leaf") return false;
   n.status = status;
   if (report != null) n.report = report;
-  if (status === "running") n.attempts = (n.attempts || 0) + 1;
+  if (status === "running") {
+    n.attempts = (n.attempts || 0) + 1;
+    n.total_attempts = (n.total_attempts || 0) + 1;
+    delete n.verified;
+  }
+  if (status === "done" && verified != null) n.verified = verified;
   return true;
 }
 
@@ -278,7 +297,7 @@ export function treeStats(tree) {
 export function formatTreeForPlanner(tree) {
   const lines = ["# Task tree", ""];
   let retiredHidden = 0;
-  const doneIds = [];
+  const doneLeaves = [];
   for (const n of Object.values(tree.nodes)) {
     if (n.kind === "plan") {
       lines.push(`- PLAN ${n.id}: ${n.title} [${n.status}] parent=${n.parent || "-"}`);
@@ -289,21 +308,23 @@ export function formatTreeForPlanner(tree) {
       continue;
     }
     if (n.status === "done") {
-      doneIds.push(n.id);
+      doneLeaves.push(n);
       continue;
     }
     lines.push(
       `- LEAF ${n.id}: ${n.title} [${n.status}] scope=${JSON.stringify(n.files_scope || [])}`
         + ` sections=${JSON.stringify(n.spec_sections || [])}`
-        + ` attempts=${n.attempts || 0}`,
+        + ` attempts=${n.attempts || 0}`
+        + ` total_attempts=${n.total_attempts || 0}`,
     );
     if (n.report?.summary) lines.push(`  report: ${String(n.report.summary).slice(0, 160)}`);
     if (n.report?.oversized_files?.length) {
       lines.push(`  oversized: ${n.report.oversized_files.join(", ")}`);
     }
   }
-  if (doneIds.length) {
-    lines.push(`Done leaves (${doneIds.length}): ${doneIds.join(", ")}`);
+  if (doneLeaves.length) {
+    const doneSummary = doneLeaves.map((n) => `${n.id}(total_attempts=${n.total_attempts || 0})`);
+    lines.push(`Done leaves (${doneLeaves.length}): ${doneSummary.join(", ")}`);
   }
   if (retiredHidden > 0) lines.push(`(+${retiredHidden} retired leaves hidden)`);
   if (!Object.keys(tree.nodes).length) lines.push("_Empty — please create the initial decomposition._");

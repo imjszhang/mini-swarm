@@ -64,6 +64,7 @@ export function resolveTaskPack(name = "commonmark") {
       canaryInput: "canary\n",
       canaryRequireExit0: true,
       goalLabel: "CommonMark Markdown → HTML",
+      swarmOverrides: {},
     };
   } else if (id === "toml-json") {
     const root = path.join(ROOT, "tasks", "toml-json");
@@ -79,6 +80,7 @@ export function resolveTaskPack(name = "commonmark") {
       canaryInput: "a = 1\n",
       canaryRequireExit0: true,
       goalLabel: "TOML v1.0 → toml-test tagged JSON",
+      swarmOverrides: {},
     };
   } else if (id === "sqlite-micro") {
     const root = path.join(ROOT, "tasks", "sqlite-micro");
@@ -94,6 +96,7 @@ export function resolveTaskPack(name = "commonmark") {
       canaryInput: "SELECT 1;\n",
       canaryRequireExit0: true,
       goalLabel: "micro-SQL (SQLite subset) → row-array JSON",
+      swarmOverrides: {},
     };
   } else {
     throw new Error(`Unknown task pack: ${id}. Known: ${listTaskPackIds().join(", ")}`);

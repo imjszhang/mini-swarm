@@ -194,6 +194,7 @@ function emptyMetricsData() {
     score_feedbacks: [],
     worktree_syncs: [],
     merge_gate_rejections: [],
+    post_merge_gate_failures: [],
     global_repairs: [],
     repair_clusters: [],
     repair_stage_b: [],
@@ -207,6 +208,10 @@ function emptyMetricsData() {
     oracle_literal_hits: [],
     swarm_planner_rounds: 0,
     planner_parse_failures: 0,
+    quality_merge_count: 0,
+    last_observe: null,
+    observe_history: [],
+    stop_observe_rate: null,
     tree_stats: null,
     reviews: [],
     splits: [],
@@ -228,6 +233,7 @@ function emptyMetricsData() {
     worktree_sync_count: 0,
     worktree_sync_conflict_count: 0,
     merge_gate_rejection_count: 0,
+    post_merge_gate_failure_count: 0,
     global_repair_count: 0,
     conflict_count: 0,
     tasks: [],
@@ -337,6 +343,10 @@ export function createMetricsCollector(runDir, opts = {}) {
     recordMergeGateRejection(entry) {
       data.merge_gate_rejections.push({ ...entry, at: new Date().toISOString() });
       data.merge_gate_rejection_count = data.merge_gate_rejections.length;
+    },
+    recordPostMergeGateFailure(entry) {
+      data.post_merge_gate_failures.push({ ...entry, at: new Date().toISOString() });
+      data.post_merge_gate_failure_count = data.post_merge_gate_failures.length;
     },
     recordGlobalRepair(entry) {
       data.global_repairs.push({ ...entry, at: new Date().toISOString() });
@@ -451,6 +461,7 @@ export function normalizeMetrics(raw) {
   m.score_feedbacks = m.score_feedbacks || [];
   m.worktree_syncs = m.worktree_syncs || [];
   m.merge_gate_rejections = m.merge_gate_rejections || [];
+  m.post_merge_gate_failures = m.post_merge_gate_failures || [];
   m.global_repairs = m.global_repairs || [];
   m.repair_clusters = m.repair_clusters || [];
   m.repair_stage_b = m.repair_stage_b || [];
@@ -464,6 +475,10 @@ export function normalizeMetrics(raw) {
   m.oracle_literal_hits = m.oracle_literal_hits || [];
   m.swarm_planner_rounds = m.swarm_planner_rounds ?? 0;
   m.planner_parse_failures = m.planner_parse_failures ?? 0;
+  m.quality_merge_count = m.quality_merge_count ?? 0;
+  m.last_observe = m.last_observe ?? null;
+  m.observe_history = m.observe_history || [];
+  m.stop_observe_rate = m.stop_observe_rate ?? null;
   m.tree_stats = m.tree_stats ?? null;
   m.reviews = m.reviews || [];
   m.splits = m.splits || [];
@@ -496,6 +511,8 @@ export function normalizeMetrics(raw) {
   m.worktree_sync_conflict_count = m.worktree_sync_conflict_count
     ?? m.worktree_syncs.filter((e) => e.conflict).length;
   m.merge_gate_rejection_count = m.merge_gate_rejection_count ?? m.merge_gate_rejections.length;
+  m.post_merge_gate_failure_count = m.post_merge_gate_failure_count
+    ?? m.post_merge_gate_failures.length;
   m.global_repair_count = m.global_repair_count ?? m.global_repairs.length;
   m.conflict_count = m.merge_conflict_count + m.scope_violation_count;
   m.churn = m.churn ?? null;

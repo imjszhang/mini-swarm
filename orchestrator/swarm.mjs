@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * v13.4 Cursor-faithful swarm entry (S-A-008).
+ * v13.5 Cursor-faithful swarm entry (S-A-008).
  * Event-driven planner/worker pipeline + run-to-done + hidden grader
  * + engineering feedback (build/canary/spec-embedded) to planner
  * + detach / heartbeat / checkpoint / resume
@@ -20,8 +20,10 @@ import {
   commitAll,
   createWorktree,
   filesChangedInWorktree,
+  headSha,
   readDesign,
   removeWorktree,
+  resetHard,
   syncWorktreeWithMain,
 } from "./lib/git.mjs";
 import { powershellCommand, taskkillPid } from "./lib/win-exec.mjs";
@@ -56,8 +58,10 @@ import {
 } from "./lib/swarm-health.mjs";
 import {
   appliedActionsAreProductive,
+  doneGateDecision,
   nextPerfectObserveStreak,
   nextStreaks,
+  observePlateau,
   shouldStop,
   stopConsoleMessage,
 } from "./lib/swarm-stop-policy.mjs";
@@ -172,45 +176,6 @@ async function runIntegrationFixAgent({
   });
   metrics.recordIntegrationFix?.({ taskId, ok: result.ok, kind, phase });
   return result;
-}
-
-async function ensureBuiltWithRepair({ workspaceDir, config, runDir, metrics, taskId }) {
-  const max = config.maxIntegrationFixRetries ?? 2;
-  let lastKind = "build";
-  let lastStderr = "";
-  for (let attempt = 1; attempt <= max + 1; attempt += 1) {
-    const health = checkWorkspaceHealth(workspaceDir);
-    if (health.ok) return { ok: true, attempts: attempt - 1 };
-    lastKind = health.kind || "build";
-    lastStderr = health.stderr || "";
-    if (attempt > max) {
-      return {
-        ok: false,
-        kind: lastKind,
-        stderr: lastStderr,
-        attempts: attempt - 1,
-        canary: lastKind === "canary",
-      };
-    }
-    await runIntegrationFixAgent({
-      workspaceDir,
-      config,
-      runDir,
-      metrics,
-      taskId,
-      kind: lastKind,
-      stderr: lastStderr,
-      phase: "post-merge",
-      logKey: `swarm-integration-${taskId}-${attempt}`,
-    });
-  }
-  return {
-    ok: false,
-    kind: lastKind,
-    stderr: lastStderr,
-    attempts: max,
-    canary: lastKind === "canary",
-  };
 }
 
 /**
@@ -359,6 +324,119 @@ async function gateLeafBeforeMerge({
   return { ok: true, checked };
 }
 
+/**
+ * Validate the merged main workspace and roll back the entire merge (including
+ * attempted integration fixes) when the configured repair budget is exhausted.
+ */
+async function gateMainAfterMerge({
+  mergeResult,
+  workspaceDir,
+  config,
+  runDir,
+  metrics,
+  taskId,
+  sections = [],
+  regressionSections = [],
+  mock = false,
+}) {
+  if (mock) return { ok: true, checked: 0 };
+
+  const swarm = config.swarm || {};
+  const maxRepairs = Math.max(0, Number(swarm.postMergeRepairAttempts) || 0);
+  const maxExamples = Math.max(0, Number(swarm.postMergeEmbeddedExamples) || 0);
+  const crossExamples = regressionSections.length > 0
+    ? Math.max(0, Number(swarm.harnessCrossCheckExamples) || 0)
+    : 0;
+  const maxChars = swarm.specTextMaxChars ?? 64000;
+  const preSha = mergeResult?.preSha;
+
+  const check = (attempt) => {
+    const health = checkWorkspaceHealth(workspaceDir);
+    if (!health.ok) {
+      return {
+        ok: false,
+        kind: health.kind || "build",
+        stderr: health.stderr || "",
+        canary: health.kind === "canary",
+      };
+    }
+    const embedded = runEmbeddedSelfCheck({
+      workspaceDir,
+      sections,
+      maxExamples,
+      maxChars,
+      seed: `${taskId}:post-merge:${attempt}`,
+    });
+    if (!embedded.ok) return { ...embedded, kind: "embedded" };
+    if (crossExamples > 0) {
+      const crossResult = runEmbeddedSelfCheck({
+        workspaceDir,
+        sections: regressionSections,
+        maxExamples: crossExamples,
+        maxChars,
+        seed: `${taskId}:post-merge-cross:${attempt}`,
+      });
+      if (!crossResult.ok) return crossResult;
+      return {
+        ok: true,
+        checked: (Number(embedded.checked) || 0) + (Number(crossResult.checked) || 0),
+      };
+    }
+    return { ok: true, checked: Number(embedded.checked) || 0 };
+  };
+
+  let gate = check(0);
+  for (let attempt = 1; !gate.ok && attempt <= maxRepairs; attempt += 1) {
+    await runIntegrationFixAgent({
+      workspaceDir,
+      config,
+      runDir,
+      metrics,
+      taskId,
+      kind: gate.kind === "embedded-cross" ? "embedded" : (gate.kind || "post-merge"),
+      stderr: gate.stderr || "",
+      phase: "post-merge-gate",
+      logKey: `swarm-post-merge-${taskId}-${attempt}`,
+    });
+    commitAll(workspaceDir, `post-merge: integration fix ${taskId}`);
+    gate = check(attempt);
+  }
+
+  if (gate.ok) {
+    if (gate.checked > 0) {
+      metrics.data.harness_self_check_total =
+        (metrics.data.harness_self_check_total || 0) + gate.checked;
+    }
+    return { ...gate, verifiedSha: headSha(workspaceDir) };
+  }
+
+  const failedSha = headSha(workspaceDir);
+  metrics.recordPostMergeGateFailure?.({
+    taskId,
+    kind: gate.kind || "post-merge",
+    attempts: maxRepairs,
+    preSha,
+    failedSha,
+  });
+  if (!preSha) {
+    throw new Error(`post-merge gate failed for ${taskId} without preSha`);
+  }
+  resetHard(workspaceDir, preSha);
+  const rolledBack = headSha(workspaceDir) === preSha;
+  if (!rolledBack) {
+    throw new Error(`post-merge rollback failed for ${taskId} to ${preSha}`);
+  }
+  metrics.checkpoint();
+  return {
+    ...gate,
+    ok: false,
+    preSha,
+    failedSha,
+    rolledBack,
+    attempts: maxRepairs,
+  };
+}
+
 function abortLeftoverMerge(workspaceDir, label = "swarm") {
   const mergeHead = path.join(workspaceDir, ".git", "MERGE_HEAD");
   if (!existsSync(mergeHead)) return false;
@@ -380,14 +458,19 @@ function dumpPlannerParseFail(runDir, logRound, text, suffix = "") {
 }
 
 function uncoveredSections(tree) {
+  const done = new Set(completedSections(tree));
+  const waived = new Set(tree.waived_sections || []);
+  return listSpecSections().filter((s) => !done.has(s) && !waived.has(s));
+}
+
+function completedSections(tree) {
   const done = new Set();
   for (const n of Object.values(tree.nodes || {})) {
     if (n.kind === "leaf" && n.status === "done") {
       for (const s of n.spec_sections || []) done.add(s);
     }
   }
-  const waived = new Set(tree.waived_sections || []);
-  return listSpecSections().filter((s) => !done.has(s) && !waived.has(s));
+  return [...done];
 }
 
 function formatCoverage(tree, swarm = {}) {
@@ -759,12 +842,15 @@ function blockedLeafIds(tree) {
     .map((n) => n.id);
 }
 
-function harnessRequeueBlocked(tree, limit) {
+function harnessRequeueBlocked(tree, limit, maxTotalLeafAttempts) {
   const ids = blockedLeafIds(tree).slice(0, Math.max(0, limit));
-  if (!ids.length) return [];
+  if (!ids.length) return { requeued: [], errors: [] };
   const actions = ids.map((id) => ({ type: "requeue_task", id }));
-  applyActions(tree, actions);
-  return ids;
+  const results = applyActions(tree, actions, { maxTotalLeafAttempts });
+  return {
+    requeued: ids.filter((_, i) => results[i]?.ok),
+    errors: results.filter((r) => !r.ok).map((r) => r.error),
+  };
 }
 
 async function runSplitter({
@@ -776,6 +862,8 @@ async function runSplitter({
   mergeQueue,
   oversized,
   mock,
+  onMainMutation,
+  regressionSections = [],
 }) {
   const files = (oversized || []).map((o) => (typeof o === "string" ? o : `${o.file} (${o.lines} lines)`));
   const splitId = `split-${Date.now()}`;
@@ -806,17 +894,33 @@ async function runSplitter({
       ...agentUsage(result),
     });
     commitAll(wt.path, "split: oversized files");
-    await mergeQueue.enqueue({
+    const mergeResult = await mergeQueue.enqueue({
       branch: wt.branch,
       taskId: splitId,
-      afterMerge: () => ensureBuiltWithRepair({
-        workspaceDir,
-        config,
-        runDir,
-        metrics,
-        taskId: splitId,
-      }),
+      afterMerge: async (result) => {
+        const gate = await gateMainAfterMerge({
+          mergeResult: result,
+          workspaceDir,
+          config,
+          runDir,
+          metrics,
+          taskId: splitId,
+          sections: [],
+          regressionSections,
+          mock,
+        });
+        if (gate.ok) onMainMutation?.();
+        return gate;
+      },
     });
+    if (!mergeResult.ok || mergeResult.postMerge?.ok === false) {
+      return {
+        status: "blocked",
+        summary: mergeResult.postMerge?.rolledBack
+          ? "splitter merge failed post-merge validation and was rolled back"
+          : "splitter merge failed",
+      };
+    }
     return extractJsonObject(result.output || "") || { status: result.ok ? "done" : "blocked" };
   } finally {
     removeWorktree(workspaceDir, wt.path);
@@ -833,6 +937,8 @@ async function executeLeaf({
   mergeQueue,
   mock,
   hardDeadlineMs,
+  onMainMutation,
+  regressionSections = [],
 }) {
   if (Date.now() >= hardDeadlineMs) {
     return { task, ok: false, report: { status: "blocked", summary: "budget exhausted before dispatch" } };
@@ -927,7 +1033,10 @@ async function executeLeaf({
     runDir,
     metrics,
     mock,
-    codeChanged,
+    // Cross-section checks belong on the persistent post-merge main state.
+    // Running them on an early leaf's incomplete worktree rejects valid
+    // feature work merely because unrelated sections are not implemented yet.
+    codeChanged: false,
     seed: `${task.id}:m${Date.now()}`,
   });
   if (!gate.ok) {
@@ -962,13 +1071,21 @@ async function executeLeaf({
     mergeResult = await mergeQueue.enqueue({
       branch: wt.branch,
       taskId: task.id,
-      afterMerge: () => ensureBuiltWithRepair({
-        workspaceDir,
-        config,
-        runDir,
-        metrics,
-        taskId: task.id,
-      }),
+      afterMerge: async (result) => {
+        const postMerge = await gateMainAfterMerge({
+          mergeResult: result,
+          workspaceDir,
+          config,
+          runDir,
+          metrics,
+          taskId: task.id,
+          sections: task.spec_sections || [],
+          regressionSections: codeChanged ? regressionSections : [],
+          mock,
+        });
+        if (postMerge.ok) onMainMutation?.();
+        return postMerge;
+      },
     });
   } catch (err) {
     removeWorktree(workspaceDir, wt.path);
@@ -1103,7 +1220,9 @@ async function main() {
     process.exit(1);
   }
 
-  const config = loadConfig();
+  const config = loadConfig({
+    swarm: taskPack.swarmOverrides || {},
+  });
   if (cli.concurrency != null && !Number.isNaN(cli.concurrency)) {
     config.swarm.concurrency = cli.concurrency;
     config.concurrency = cli.concurrency;
@@ -1170,6 +1289,9 @@ async function main() {
     mergeSuccessCount = Object.values(tree.nodes || {}).filter(
       (n) => n.kind === "leaf" && n.status === "done",
     ).length;
+    metrics.data.quality_merge_count = Number.isFinite(Number(seed?.quality_merge_count))
+      ? Number(seed.quality_merge_count)
+      : mergeSuccessCount;
     const consumed = activeWallMinutes(metrics.data);
     const budgetMin = swarm.runToDone ? swarm.maxWallMinutes : swarm.budgetMinutes;
     const remaining = Math.max(5, budgetMin - consumed);
@@ -1195,7 +1317,7 @@ async function main() {
     task_set: "swarm-tree",
     task_pack: taskPack.id,
     swarm: true,
-    architecture: "v13.3-swarm",
+    architecture: "v13.5-swarm",
     run_to_done: !!swarm.runToDone,
     resumed: !!cli.resume,
   });
@@ -1233,11 +1355,21 @@ async function main() {
   let blockedRescueWaves = Number(metrics.data.blocked_rescue_waves) || 0;
   let perfectObserveStreak = Number(metrics.data.perfect_observe_streak) || 0;
   let auditConvergedPlannerRounds = Number(metrics.data.audit_converged_planner_rounds) || 0;
+  let qualityMergeCount = Number(metrics.data.quality_merge_count);
+  if (!Number.isFinite(qualityMergeCount)) qualityMergeCount = mergeSuccessCount;
+  let lastObserve = metrics.data.last_observe && typeof metrics.data.last_observe === "object"
+    ? { ...metrics.data.last_observe }
+    : null;
+  let observeHistory = Array.isArray(metrics.data.observe_history)
+    ? [...metrics.data.observe_history]
+    : [];
   let stopReason = null;
   let reviewInFlight = false;
   let observeInFlight = false;
+  let forceObserve = false;
   /** @type {Map<string, any>} */
   const leafResults = new Map();
+  let acceptLeafResults = true;
   let plannerResult = null;
   let plannerSettled = false;
   /** Snapshots to restore if planner returns null. */
@@ -1249,7 +1381,19 @@ async function main() {
     metrics.data.blocked_rescue_waves = blockedRescueWaves;
     metrics.data.perfect_observe_streak = perfectObserveStreak;
     metrics.data.audit_converged_planner_rounds = auditConvergedPlannerRounds;
+    metrics.data.quality_merge_count = qualityMergeCount;
+    metrics.data.last_observe = lastObserve;
+    metrics.data.observe_history = observeHistory;
     if (stopReason) metrics.data.stop_reason = stopReason;
+  }
+
+  function currentDoneGate() {
+    return doneGateDecision({
+      mock: cli.mock,
+      minObserveRateForDone: swarm.minObserveRateForDone,
+      lastObserve,
+      mergeCount: qualityMergeCount,
+    });
   }
 
   function auditConvergedNow() {
@@ -1263,45 +1407,154 @@ async function main() {
   function auditQuiesce() {
     const grace = Number(swarm.auditConvergedGraceRounds) || 0;
     if (grace <= 0) return false;
-    return auditConvergedNow() && auditConvergedPlannerRounds >= grace;
+    return currentDoneGate() === "accept"
+      && auditConvergedNow()
+      && auditConvergedPlannerRounds >= grace;
   }
 
   function requestStop(reason) {
     stopReason = reason;
     metrics.data.stop_reason = reason;
+    if (reason === "idle_tree" || reason === "observe_plateau") {
+      metrics.data.stop_observe_rate = lastObserve?.rate ?? null;
+    }
     checkpointStopPolicy();
     console.log(stopConsoleMessage(reason));
-    const resetN = resetRunningLeaves(tree);
-    if (resetN) {
-      console.log(`[swarm] reset ${resetN} in-flight leaves → pending before stop`);
-      saveTree(runDir, tree);
+  }
+
+  function noteMainMutation() {
+    qualityMergeCount += 1;
+    checkpointStopPolicy();
+  }
+
+  function applySuccessfulLeafResult(out, { drained = false } = {}) {
+    const taskId = out?.task?.id;
+    const node = tree.nodes[taskId];
+    if (!taskId || !node || node.kind !== "leaf" || node.status === "done") return false;
+    const report = out.report || {};
+    markLeaf(tree, taskId, "done", report, {
+      verified: {
+        sha: out.mergeResult?.postMerge?.verifiedSha || headSha(workspaceDir),
+        checked: Number(out.mergeResult?.postMerge?.checked) || 0,
+      },
+    });
+    updateAuditState(tree, out.task, !!out.codeChanged);
+    mergeSuccessCount += 1;
+    mergesSinceReview += 1;
+    sinceObserve += 1;
+    if (drained) {
+      metrics.data.drain_reconciled_done = (metrics.data.drain_reconciled_done || 0) + 1;
     }
+    if (!auditConvergedNow()) {
+      auditConvergedPlannerRounds = 0;
+    }
+    checkpointStopPolicy();
+    return true;
+  }
+
+  function scheduleObserve(reason = "periodic") {
+    if (observeInFlight || stopReason) return null;
+    observeInFlight = true;
+    forceObserve = false;
+    sinceObserve = 0;
+    const requestedAt = qualityMergeCount;
+    const label = `m${requestedAt}-${reason}`;
+    const job = mergeQueue.enqueueFn(() => {
+      const atMergeCount = qualityMergeCount;
+      const report = observeScore({ workspaceDir, runDir, metrics, label });
+      perfectObserveStreak = nextPerfectObserveStreak(perfectObserveStreak, report);
+      lastObserve = {
+        rate: report?.rate ?? null,
+        total: Number(report?.total) || 0,
+        passed: Number(report?.passed) || 0,
+        atMergeCount,
+      };
+      observeHistory.push(lastObserve);
+      forceObserve = false;
+      checkpointStopPolicy();
+      metrics.checkpoint({
+        tree_stats: treeStats(tree),
+        swarm_planner_rounds: tree.planner_rounds,
+      });
+      if (report && report.total > 0 && report.passed === 0) {
+        const canary = runCliCanary(workspaceDir);
+        const hint = (canary.stderr || "cli canary failed").split("\n")[0].slice(0, 160);
+        console.warn(`[swarm] observe redline: zero passes (m${atMergeCount}); canary=${canary.ok}`);
+        actionErrors.push(
+          `URGENT: main workspace CLI appears broken (observe all-fail). `
+            + `Schedule a fix task immediately. Hint: ${hint}`,
+        );
+      }
+      return { kind: "observe", report };
+    }, `observe-${label}`).finally(() => {
+      observeInFlight = false;
+    });
+    trackPromise(auxJobs, job);
+    return job;
   }
 
   async function drainInflightAfterStop(graceMs = 30000) {
     const pending = [...running.values(), plannerPromise, ...auxJobs].filter(Boolean);
-    if (!pending.length) return;
-    console.log(`[swarm] draining ${pending.length} in-flight jobs (grace ${graceMs}ms)`);
     let timedOut = false;
-    await Promise.race([
-      Promise.allSettled(pending),
-      new Promise((resolve) => {
-        setTimeout(() => {
-          timedOut = true;
-          resolve();
-        }, graceMs);
-      }),
-    ]);
+    if (pending.length) {
+      console.log(`[swarm] draining ${pending.length} in-flight jobs (grace ${graceMs}ms)`);
+      await Promise.race([
+        Promise.allSettled(pending),
+        new Promise((resolve) => {
+          setTimeout(() => {
+            timedOut = true;
+            resolve();
+          }, graceMs);
+        }),
+      ]);
+    }
     if (timedOut) console.warn("[swarm] drain grace elapsed; continuing finalize");
-    // Drop late results without applying — tree already reset for stop.
-    leafResults.clear();
+
+    for (const [taskId, out] of [...leafResults.entries()]) {
+      leafResults.delete(taskId);
+      running.delete(taskId);
+      if (out?.ok) {
+        applySuccessfulLeafResult(out, { drained: true });
+      } else {
+        const node = tree.nodes[taskId];
+        if (node?.kind === "leaf" && node.status === "running") {
+          markLeaf(tree, taskId, "pending", out?.report || null);
+          metrics.recordTask({
+            id: taskId,
+            status: "pending",
+            drain_reset: true,
+          });
+          metrics.data.drain_reset_pending = (metrics.data.drain_reset_pending || 0) + 1;
+        }
+      }
+    }
+
+    acceptLeafResults = false;
+    const unresolvedIds = [...running.keys()];
+    const resetN = resetRunningLeaves(tree);
+    for (const taskId of unresolvedIds) {
+      const node = tree.nodes[taskId];
+      if (node?.kind === "leaf" && node.status === "pending") {
+        metrics.recordTask({
+          id: taskId,
+          status: "pending",
+          drain_reset: true,
+        });
+      }
+    }
+    if (resetN) {
+      metrics.data.drain_reset_pending = (metrics.data.drain_reset_pending || 0) + resetN;
+      console.log(`[swarm] reset ${resetN} unsettled in-flight leaves → pending after drain`);
+    }
     running.clear();
     plannerPromise = null;
     plannerSettled = false;
     plannerResult = null;
-    // Re-assert pending for any leaf still marked running after late writes.
-    const resetN = resetRunningLeaves(tree);
-    if (resetN) saveTree(runDir, tree);
+    saveTree(runDir, tree);
+    metrics.checkpoint({
+      tree_stats: treeStats(tree),
+      swarm_planner_rounds: tree.planner_rounds,
+    });
   }
 
   if (resumeNotice) {
@@ -1351,8 +1604,32 @@ async function main() {
       const perfectStopAt = Number(swarm.observePerfectStreakToStop) || 0;
       const pastPerfectObserve = perfectStopAt > 0 && perfectObserveStreak >= perfectStopAt;
       const pastAuditQuiesce = auditQuiesce();
-      const pastBudget = pastDeadline || pastTokenBudget || pastPerfectObserve || pastAuditQuiesce;
-      const readyNow = () => readyLeaves(tree).filter((n) => (n.attempts || 0) < swarm.maxLeafAttempts);
+      const observeIsFresh = Number(lastObserve?.atMergeCount) === qualityMergeCount;
+      const pastObservePlateau = observeIsFresh
+        && currentDoneGate() === "accept"
+        && uncoveredSections(tree).length === 0
+        && observePlateau(
+          observeHistory,
+          swarm.observePlateauWindow,
+          swarm.observeMinGainPp,
+        );
+      const pastBudget = pastDeadline
+        || pastTokenBudget
+        || pastPerfectObserve
+        || pastAuditQuiesce
+        || pastObservePlateau;
+      const currentConcurrency = Math.max(
+        1,
+        Number(
+          uncoveredSections(tree).length === 0
+            ? swarm.endgameConcurrency
+            : swarm.concurrency,
+        ) || 1,
+      );
+      const readyNow = () => readyLeaves(tree).filter((n) => (
+        (n.attempts || 0) < swarm.maxLeafAttempts
+        && (n.total_attempts || 0) < swarm.maxTotalLeafAttempts
+      ));
       const idle = running.size === 0 && auxJobs.size === 0 && !plannerPromise;
 
       if (
@@ -1371,6 +1648,10 @@ async function main() {
         requestStop("audit_converged");
         break;
       }
+      if (pastObservePlateau && idle) {
+        requestStop("observe_plateau");
+        break;
+      }
       if (pastDeadline && idle) {
         requestStop("wall_budget");
         break;
@@ -1386,14 +1667,25 @@ async function main() {
           maxPlannerParseFails: swarm.maxPlannerParseFails,
           maxUnproductivePlannerRounds: swarm.maxUnproductivePlannerRounds,
         });
-        if (stop.stop) {
-          requestStop(stop.reason);
-          break;
+        if (stop.stop && idle) {
+          if (stop.reason !== "idle_tree" || currentDoneGate() === "accept") {
+            requestStop(stop.reason);
+            break;
+          }
+          const qualityDecision = currentDoneGate();
+          actionErrors.push(
+            qualityDecision === "defer_stale"
+              ? "idle stop deferred: hidden quality observation is stale; observe scheduled"
+              : "idle stop deferred: hidden quality gate not met; schedule focused fixes or audits",
+          );
+          unproductiveStreak = 0;
+          if (qualityDecision === "defer_stale") forceObserve = true;
+          checkpointStopPolicy();
         }
       }
 
       if (!pastBudget) {
-        while (running.size < swarm.concurrency) {
+        while (running.size < currentConcurrency) {
           const candidates = readyNow().filter((n) => !running.has(n.id));
           if (!candidates.length) break;
           const leaf = candidates[0];
@@ -1409,8 +1701,10 @@ async function main() {
             mergeQueue,
             mock: cli.mock,
             hardDeadlineMs,
+            onMainMutation: noteMainMutation,
+            regressionSections: completedSections(tree),
           }).then((out) => {
-            leafResults.set(leaf.id, out);
+            if (acceptLeafResults) leafResults.set(leaf.id, out);
             return { kind: "leaf", taskId: leaf.id };
           });
           running.set(leaf.id, p);
@@ -1450,7 +1744,7 @@ async function main() {
           actionErrors: errorsText,
           coverage: formatCoverage(tree, swarm),
           budgetLine: formatBudgetLine(swarm, startedAtMs, hardDeadlineMs, metrics.data),
-          fanoutTarget: swarm.concurrency * 2,
+          fanoutTarget: currentConcurrency * 2,
           logRound,
         }).then((plan) => {
           plannerResult = plan;
@@ -1513,32 +1807,12 @@ async function main() {
       if (
         !pastBudget
         && !observeInFlight
-        && swarm.observeScoreEveryMerges > 0
-        && sinceObserve >= swarm.observeScoreEveryMerges
+        && (forceObserve || (
+          swarm.observeScoreEveryMerges > 0
+          && sinceObserve >= swarm.observeScoreEveryMerges
+        ))
       ) {
-        sinceObserve = 0;
-        observeInFlight = true;
-        const label = `m${mergeSuccessCount}`;
-        const obsJob = (async () => {
-          try {
-            const report = observeScore({ workspaceDir, runDir, metrics, label });
-            perfectObserveStreak = nextPerfectObserveStreak(perfectObserveStreak, report);
-            checkpointStopPolicy();
-            if (report && report.total > 0 && report.passed === 0) {
-              const canary = runCliCanary(workspaceDir);
-              const hint = (canary.stderr || "cli canary failed").split("\n")[0].slice(0, 160);
-              console.warn(`[swarm] observe redline: zero passes (m${mergeSuccessCount}); canary=${canary.ok}`);
-              actionErrors.push(
-                `URGENT: main workspace CLI appears broken (observe all-fail). `
-                  + `Schedule a fix task immediately. Hint: ${hint}`,
-              );
-            }
-            return { kind: "observe" };
-          } finally {
-            observeInFlight = false;
-          }
-        })();
-        trackPromise(auxJobs, obsJob);
+        scheduleObserve(forceObserve ? "done-gate" : "periodic");
       }
 
       const inflight = [
@@ -1565,15 +1839,7 @@ async function main() {
         const attempts = tree.nodes[taskId]?.attempts || 0;
 
         if (out.ok) {
-          markLeaf(tree, out.task.id, "done", report);
-          updateAuditState(tree, out.task, !!out.codeChanged);
-          mergeSuccessCount += 1;
-          mergesSinceReview += 1;
-          sinceObserve += 1;
-          if (!auditConvergedNow()) {
-            auditConvergedPlannerRounds = 0;
-          }
-          checkpointStopPolicy();
+          applySuccessfulLeafResult(out);
         } else if (out.oversized) {
           markLeaf(tree, out.task.id, "blocked", report);
           const splitJob = (async () => {
@@ -1587,6 +1853,8 @@ async function main() {
               mergeQueue,
               oversized: report?.oversized_files || out.mergeResult?.oversized_files || [],
               mock: cli.mock,
+              onMainMutation: noteMainMutation,
+              regressionSections: completedSections(tree),
             });
             metrics.data.splits = metrics.data.splits || [];
             metrics.data.splits.push({
@@ -1675,18 +1943,26 @@ async function main() {
 
         const doneActions = actions.filter((a) => a?.type === "done");
         const { rejectSections } = auditConvergence(tree, swarm, listSpecSections());
+        const enforceAuditReject = currentDoneGate() === "accept";
         const preDoneActions = [];
         for (const a of actions.filter((x) => x?.type !== "done")) {
-          const rej = shouldRejectAuditAction(a, rejectSections);
+          const rej = shouldRejectAuditAction(a, rejectSections, {
+            enforce: enforceAuditReject,
+          });
           if (rej.reject) {
             actionErrors.push(rej.reason);
             console.warn(`[swarm] ${rej.reason}`);
             continue;
           }
+          if (rej.advisory) {
+            actionErrors.push(rej.reason);
+            console.log(`[swarm] ${rej.reason}`);
+          }
           preDoneActions.push(a);
         }
         const preResults = applyActions(tree, preDoneActions, {
           maxTreeDepth: swarm.maxTreeDepth,
+          maxTotalLeafAttempts: swarm.maxTotalLeafAttempts,
         });
         for (const r of preResults) {
           if (!r.ok) {
@@ -1708,13 +1984,23 @@ async function main() {
           } else if (busy) {
             actionErrors.push("done rejected: leaves still pending or running");
           } else {
-            const doneResults = applyActions(tree, doneActions, {
-              maxTreeDepth: swarm.maxTreeDepth,
-            });
-            for (const r of doneResults) {
-              if (!r.ok) {
-                console.warn(`[swarm] action failed: ${r.error}`);
-                actionErrors.push(r.error);
+            const qualityDecision = currentDoneGate();
+            if (qualityDecision === "defer_stale") {
+              actionErrors.push("done deferred: hidden quality observation is stale; observe scheduled");
+              forceObserve = true;
+              scheduleObserve("done-gate");
+            } else if (qualityDecision === "reject_below_gate") {
+              actionErrors.push("done rejected: hidden quality gate not met; schedule focused fixes or audits");
+            } else {
+              const doneResults = applyActions(tree, doneActions, {
+                maxTreeDepth: swarm.maxTreeDepth,
+                maxTotalLeafAttempts: swarm.maxTotalLeafAttempts,
+              });
+              for (const r of doneResults) {
+                if (!r.ok) {
+                  console.warn(`[swarm] action failed: ${r.error}`);
+                  actionErrors.push(r.error);
+                }
               }
             }
           }
@@ -1741,9 +2027,17 @@ async function main() {
           unproductiveStreak,
         });
         if (next.didRescue) {
-          const requeued = harnessRequeueBlocked(tree, swarm.concurrency);
-          actionErrors.push(`harness requeued blocked: ${requeued.join(", ") || "(none)"}`);
-          console.log(`[swarm] harness rescue wave ${next.blockedRescueWaves}: requeued ${requeued.length} blocked leaves`);
+          const rescue = harnessRequeueBlocked(
+            tree,
+            currentConcurrency,
+            swarm.maxTotalLeafAttempts,
+          );
+          actionErrors.push(`harness requeued blocked: ${rescue.requeued.join(", ") || "(none)"}`);
+          actionErrors.push(...rescue.errors);
+          console.log(
+            `[swarm] harness rescue wave ${next.blockedRescueWaves}:`
+              + ` requeued ${rescue.requeued.length} blocked leaves`,
+          );
         }
         parseFailStreak = next.parseFailStreak;
         unproductiveStreak = next.unproductiveStreak;
