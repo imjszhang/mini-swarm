@@ -2,6 +2,7 @@
 import assert from "node:assert/strict";
 import {
   auditConvergence,
+  auditScopeError,
   formatAuditCoverage,
   hasCodeChanges,
   isAuditLeaf,
@@ -71,6 +72,30 @@ run("auditConvergence allConverged and rejectSections", () => {
   assert.equal(r.allConverged, true);
   assert.deepEqual(r.convergedSections.sort(), ["ATX headings", "Paragraphs"]);
   assert.deepEqual(r.rejectSections, ["Paragraphs"]);
+});
+
+run("auditScopeError requires files_scope on audit leaves", () => {
+  assert.equal(
+    auditScopeError({ type: "add_task", title: "audit: x", files_scope: [] }),
+    "audit leaf must declare files_scope (implementation files for its sections); empty scope is rejected",
+  );
+  assert.equal(
+    auditScopeError({ type: "add_task", title: "audit: x" }),
+    "audit leaf must declare files_scope (implementation files for its sections); empty scope is rejected",
+  );
+  assert.equal(
+    auditScopeError({
+      type: "add_task",
+      title: "audit: x",
+      files_scope: ["src/inline/emphasis.ts"],
+    }),
+    null,
+  );
+  assert.equal(
+    auditScopeError({ type: "add_task", title: "implement x", files_scope: [] }),
+    null,
+  );
+  assert.equal(auditScopeError({ type: "done" }), null);
 });
 
 run("shouldRejectAuditAction", () => {

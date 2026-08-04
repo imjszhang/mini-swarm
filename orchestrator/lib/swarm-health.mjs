@@ -83,14 +83,19 @@ export function truncateStderr(stderr, max = 1000) {
 
 /**
  * Human-readable engineering error for planner ACTION_ERRORS / leaf summary.
- * @param {{ phase: string, kind: string, stderr?: string, taskId?: string }} eng
+ * @param {{ phase: string, kind: string, stderr?: string, taskId?: string, crossScopeLog?: string }} eng
  */
 export function formatEngineeringError(eng, maxStderr = 1000) {
   const phase = eng?.phase || "engineering";
   const kind = eng?.kind || "unknown";
   const body = truncateStderr(eng?.stderr, maxStderr) || "(no stderr)";
   const prefix = eng?.taskId ? `${eng.taskId}: ` : "";
-  return `${prefix}${phase} ${kind} failed: ${body}`;
+  let msg = `${prefix}${phase} ${kind} failed: ${body}`;
+  const cross = String(eng?.crossScopeLog || "").trim();
+  if (cross) {
+    msg += `\nRecent cross-scope commits (git log --grep="cross-scope:"):\n${cross}`;
+  }
+  return msg;
 }
 
 /**
@@ -114,6 +119,7 @@ export function attachEngineeringError(report, eng) {
       kind: eng.kind,
       stderr: eng.stderr || "",
       taskId: eng.taskId,
+      crossScopeLog: eng.crossScopeLog || "",
       message,
     },
   };

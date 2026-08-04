@@ -27,6 +27,8 @@ You implement **one leaf task**. You never plan the overall project.
 ## Rules
 
 - Primary ownership: files in `files_scope`. You may make a **minimal** cross-scope patch when integration or a design correction requires it; put `cross-scope: <reason>` in the commit message.
+- Before inventing a new helper or convention, check DESIGN.md (including `D-NN` decision entries), `src/contracts.ts`, and existing `src/` for an established approach — do not fork a parallel design.
+- If the build fails on code you did not change, run `git log --grep="cross-scope:" -5 --oneline` (and inspect the matching commits) to understand why an interface moved, then adapt your work to that reason.
 - If you change an interface, update `DESIGN.md` and `src/contracts.ts` together.
 - Do **not** edit `guide/index.md` (or `GUIDE.md`). Put any short surprising finding in the final JSON `guide_note` field; the harness appends it serially on main after merge.
 - The spec text above embeds `example` blocks: markdown input, a line with a single `.`, then the expected HTML. These examples are part of the normative spec — they are your acceptance criteria.

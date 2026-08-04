@@ -247,6 +247,25 @@ export function readDesign(workspaceDir) {
   return existsSync(p) ? readFileSync(p, "utf8") : "";
 }
 
+/**
+ * Recent commits that declare a cross-scope patch (v13.7 conduction aid).
+ * @returns {string} oneline log or empty string
+ */
+export function recentCrossScopeLog(workspaceDir, limit = 5) {
+  const n = Math.max(1, Math.min(20, Number(limit) || 5));
+  try {
+    return git(workspaceDir, [
+      "log",
+      `--grep=cross-scope:`,
+      `-${n}`,
+      "--oneline",
+      "--no-decorate",
+    ]).trim();
+  } catch {
+    return "";
+  }
+}
+
 export function filesChangedInWorktree(wtDir) {
   try {
     const out = git(wtDir, ["diff", "--name-only", "main...HEAD"]);

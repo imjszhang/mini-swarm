@@ -13,7 +13,8 @@ You see **only a snapshot of the current source tree** (no diff, no scores).
 {{FILE_EXCERPTS}}
 
 Find structural problems: god files, missing wiring, inconsistent interfaces,
-dead stubs. Reply JSON:
+dead stubs, and **duplicate implementations of the same concept** (parallel
+helpers / parsers / conventions that should share one DESIGN.md decision). Reply JSON:
 
 ```json
 {

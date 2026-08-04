@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 /**
- * v13.6 Cursor-faithful swarm entry (S-A-008).
+ * v13.7 Cursor-faithful swarm entry (S-A-008 alignment).
  * Event-driven planner/worker pipeline + run-to-done + hidden grader
  * + engineering feedback (build/canary/spec-embedded) to planner
  * + detach / heartbeat / checkpoint / resume
  * + serial Field Guide notes / CLI canary / planner ID remap
  * + observe_perfect / audit_converged / observe_plateau stop
- * + demand-driven width (frontier + merge backpressure) + seed-workspace.
+ * + demand-driven width (frontier + merge backpressure) + seed-workspace
+ * + wildcard empty-scope / DESIGN.md three-way merge / audit scope gate.
  * Legacy test-driven pipeline remains in run.mjs / repair-engine.mjs.
  */
 import { spawn } from "node:child_process";
@@ -23,6 +24,7 @@ import {
   filesChangedInWorktree,
   headSha,
   readDesign,
+  recentCrossScopeLog,
   removeWorktree,
   resetHard,
   syncWorktreeWithMain,
@@ -40,10 +42,12 @@ import { formatFindingsForPlanner, runReviewStack } from "./lib/review-stack.mjs
 import {
   formatAuditCoverage,
   hasCodeChanges,
+  auditScopeError,
   shouldRejectAuditAction,
   updateAuditState,
   auditConvergence,
 } from "./lib/audit-convergence.mjs";
+import { mergeDesign } from "./lib/design-merge.mjs";
 import {
   runCrossSectionSelfCheck,
   runEmbeddedSelfCheck,
@@ -248,6 +252,7 @@ async function gateLeafBeforeMerge({
         kind: health.kind || "build",
         stderr: health.stderr || "",
         taskId: task.id,
+        crossScopeLog: recentCrossScopeLog(wtPath),
       });
       return { ok: false, ...attached };
     }
@@ -271,6 +276,7 @@ async function gateLeafBeforeMerge({
           kind: health.kind || "build",
           stderr: health.stderr || "",
           taskId: task.id,
+          crossScopeLog: recentCrossScopeLog(wtPath),
         });
         return { ok: false, ...attached };
       }
@@ -313,6 +319,7 @@ async function gateLeafBeforeMerge({
             kind: health.kind || "build",
             stderr: health.stderr || "",
             taskId: task.id,
+            crossScopeLog: recentCrossScopeLog(wtPath),
           });
           return { ok: false, ...attached };
         }
@@ -493,6 +500,30 @@ function completedSections(tree) {
 }
 
 /**
+ * Mark a section as a synthetic done leaf + audit clean credit (v13.7).
+ */
+function addSeedLeaf(tree, section, { n, checked = 1, sha = null } = {}) {
+  const id = `seed-${n}`;
+  tree.nodes[id] = {
+    id,
+    kind: "leaf",
+    title: `Seeded from solo baseline: ${section}`,
+    parent: null,
+    deps: [],
+    status: "done",
+    files_scope: [],
+    spec_sections: [section],
+    notes: "seeded from solo baseline",
+    report: { summary: "embedded examples pass at seed time" },
+    attempts: 0,
+    total_attempts: 0,
+    verified: { sha, checked },
+  };
+  if (!tree.audit_state || typeof tree.audit_state !== "object") tree.audit_state = {};
+  tree.audit_state[section] = { clean: 1 };
+}
+
+/**
  * Seed coverage ledger from an already-built workspace (solo→swarm escalate).
  * Sections whose embedded examples all pass become synthetic done leaves.
  * @returns {string[]} seeded section names
@@ -520,25 +551,25 @@ function seedCoverageFromWorkspace({
     });
     if (!(result.checked > 0 && result.ok)) continue;
     n += 1;
-    const id = `seed-${n}`;
-    tree.nodes[id] = {
-      id,
-      kind: "leaf",
-      title: `Seeded from solo baseline: ${section}`,
-      parent: null,
-      deps: [],
-      status: "done",
-      files_scope: [],
-      spec_sections: [section],
-      notes: "seeded from solo baseline",
-      report: { summary: "embedded examples pass at seed time" },
-      attempts: 0,
-      total_attempts: 0,
-      verified: { sha: headSha(workspaceDir), checked: result.checked },
-    };
+    addSeedLeaf(tree, section, {
+      n,
+      checked: result.checked,
+      sha: headSha(workspaceDir),
+    });
     seeded.push(section);
   }
   return seeded;
+}
+
+/** Mock-only seed: credit first two sections so ladder mock exercises audit_state. */
+function seedCoverageMock(tree) {
+  const sections = listSpecSections().slice(0, 2);
+  let n = 0;
+  for (const section of sections) {
+    n += 1;
+    addSeedLeaf(tree, section, { n, checked: 1, sha: null });
+  }
+  return sections;
 }
 
 function formatCoverage(tree, swarm = {}) {
@@ -646,11 +677,21 @@ function mockPlannerActions(tree, round) {
       rationale: "mock initial tree",
     };
   }
-  const actions = uncoveredSections(tree).map((section) => ({
-    type: "waive_section",
-    section,
-    reason: "mock waive",
-  }));
+  const actions = [];
+  // v13.7: intentionally emit a scopeless audit so harness rejection is exercised in mock.
+  if (round === 1) {
+    actions.push({
+      type: "add_task",
+      id: "audit-mock-noscope",
+      title: "audit: mock no-scope (should be rejected)",
+      files_scope: [],
+      spec_sections: uncoveredSections(tree).slice(0, 1),
+      notes: "mock: empty files_scope must be rejected",
+    });
+  }
+  for (const section of uncoveredSections(tree)) {
+    actions.push({ type: "waive_section", section, reason: "mock waive" });
+  }
   actions.push({ type: "done" });
   return { actions, rationale: "mock done" };
 }
@@ -1386,13 +1427,15 @@ async function main() {
     ensureHoldout(runDir, examplesPath(), config);
     tree = createEmptyTree();
     let seededSections = [];
-    if (cli.seedWorkspace && !cli.mock) {
-      seededSections = seedCoverageFromWorkspace({
-        tree,
-        workspaceDir,
-        swarm,
-        taskPack,
-      });
+    if (cli.seedWorkspace) {
+      seededSections = cli.mock
+        ? seedCoverageMock(tree)
+        : seedCoverageFromWorkspace({
+          tree,
+          workspaceDir,
+          swarm,
+          taskPack,
+        });
       console.log(`[swarm] seeded ${seededSections.length} sections from ${cli.seedWorkspace}`);
     }
     saveTree(runDir, tree);
@@ -1411,7 +1454,7 @@ async function main() {
     task_set: "swarm-tree",
     task_pack: taskPack.id,
     swarm: true,
-    architecture: "v13.6-swarm",
+    architecture: "v13.7-swarm",
     width_mode: swarm.widthMode,
     run_to_done: !!swarm.runToDone,
     resumed: !!cli.resume,
@@ -1868,7 +1911,12 @@ async function main() {
         const reportsSnap = pendingReports.splice(0);
         const findingsSnap = pendingFindings.splice(0);
         const errorsSnap = actionErrors.splice(0);
-        plannerSnap = { reportsSnap, findingsSnap, errorsSnap };
+        plannerSnap = {
+          reportsSnap,
+          findingsSnap,
+          errorsSnap,
+          designBase: readDesign(workspaceDir),
+        };
         tree.planner_rounds += 1;
         metrics.data.swarm_planner_rounds = tree.planner_rounds;
         const logRound = tree.planner_rounds;
@@ -2076,12 +2124,24 @@ async function main() {
           });
           continue;
         }
+        const designBase = plannerSnap?.designBase ?? "";
         plannerSnap = null;
 
         if (plan.design_md && typeof plan.design_md === "string" && plan.design_md.trim()) {
+          const theirs = plan.design_md;
           await mergeQueue.enqueueFn(() => {
-            writeFileSync(path.join(workspaceDir, "DESIGN.md"), plan.design_md, "utf8");
-            commitAll(workspaceDir, "planner: update DESIGN.md");
+            const ours = readDesign(workspaceDir);
+            const result = mergeDesign({ base: designBase, ours, theirs });
+            if (result.conflict) {
+              metrics.data.design_write_conflicts = (metrics.data.design_write_conflicts || 0) + 1;
+              actionErrors.push(result.summary || "DESIGN.md merge conflict; kept main version");
+              console.warn(`[swarm] ${result.summary || "DESIGN.md merge conflict"}`);
+              return;
+            }
+            if (result.merged != null && result.merged !== ours) {
+              writeFileSync(path.join(workspaceDir, "DESIGN.md"), result.merged, "utf8");
+              commitAll(workspaceDir, "planner: update DESIGN.md");
+            }
           }, "design-update");
         }
 
@@ -2092,6 +2152,12 @@ async function main() {
         const enforceAuditReject = currentDoneGate() === "accept";
         const preDoneActions = [];
         for (const a of actions.filter((x) => x?.type !== "done")) {
+          const scopeErr = auditScopeError(a);
+          if (scopeErr) {
+            actionErrors.push(scopeErr);
+            console.warn(`[swarm] ${scopeErr}`);
+            continue;
+          }
           const rej = shouldRejectAuditAction(a, rejectSections, {
             enforce: enforceAuditReject,
           });

@@ -120,6 +120,19 @@ export function auditConvergence(tree, cfg = {}, allSections = null) {
 }
 
 /**
+ * Audit leaves must declare files_scope (v13.7). Empty scope is a wildcard that
+ * serializes the whole swarm; planner must name the implementation files.
+ * @returns {string|null} error message, or null if ok / not an audit add_task
+ */
+export function auditScopeError(action) {
+  if (!action || action.type !== "add_task") return null;
+  if (!isAuditLeaf(action)) return null;
+  const scope = Array.isArray(action.files_scope) ? action.files_scope.filter(Boolean) : [];
+  if (scope.length) return null;
+  return "audit leaf must declare files_scope (implementation files for its sections); empty scope is rejected";
+}
+
+/**
  * Whether an add_task action is an audit leaf that targets a reject section.
  * @returns {{ reject: boolean, section?: string, reason?: string }}
  */

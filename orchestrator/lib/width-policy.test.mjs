@@ -29,13 +29,32 @@ import {
   assert.equal(frontierDemand([], ready), 2);
 }
 
+// v13.7: empty scope is wildcard — exclusive, demand=1 when first
 {
   const ready = [
     { id: "empty", files_scope: [] },
     { id: "missing" },
     { id: "a", files_scope: ["src/a.ts"] },
   ];
-  assert.equal(frontierDemand([], ready), 3);
+  assert.equal(frontierDemand([], ready), 1, "wildcard first blocks all others");
+}
+
+{
+  const ready = [
+    { id: "a", files_scope: ["src/a.ts"] },
+    { id: "empty", files_scope: [] },
+    { id: "b", files_scope: ["src/b.ts"] },
+  ];
+  assert.equal(frontierDemand([], ready), 2, "scoped leaves first; wildcard after demand>0 ignored");
+}
+
+{
+  const running = [{ id: "w", files_scope: [] }];
+  const ready = [
+    { id: "a", files_scope: ["src/a.ts"] },
+    { id: "b", files_scope: ["src/b.ts"] },
+  ];
+  assert.equal(frontierDemand(running, ready), 1, "running wildcard holds exclusive demand");
 }
 
 {
@@ -99,8 +118,14 @@ import {
   const running = [{ files_scope: ["src/a.ts"] }];
   assert.equal(scopeDisjoint({ files_scope: ["src/a.ts"] }, running), false);
   assert.equal(scopeDisjoint({ files_scope: ["src/b.ts"] }, running), true);
-  assert.equal(scopeDisjoint({ files_scope: [] }, running), true);
-  assert.equal(scopeDisjoint({}, running), true);
+  // v13.7: wildcard candidate blocked when anything is running
+  assert.equal(scopeDisjoint({ files_scope: [] }, running), false);
+  assert.equal(scopeDisjoint({}, running), false);
+  // wildcard candidate ok only when idle
+  assert.equal(scopeDisjoint({ files_scope: [] }, []), true);
+  // any candidate blocked when wildcard is running
+  assert.equal(scopeDisjoint({ files_scope: ["src/b.ts"] }, [{ files_scope: [] }]), false);
+  assert.equal(scopeDisjoint({ files_scope: [] }, [{ files_scope: [] }]), false);
 }
 
 {

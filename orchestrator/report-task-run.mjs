@@ -181,6 +181,10 @@ function main() {
   lines.push(`| holdout | ${pct(holdout?.rate)} (${holdout?.passed}/${holdout?.total}) |`);
   lines.push(`| holdout_gap_pp | ${m.holdout_gap_pp ?? "n/a"} |`);
   lines.push(`| overfit_alarm | ${!!m.overfit_alarm} |`);
+  const waivedList = Array.isArray(m.waived_sections) ? m.waived_sections : [];
+  const waivedCount = m.waived_section_count ?? waivedList.length;
+  lines.push(`| waived_sections | ${waivedCount}${waivedList.length ? `: ${waivedList.join(", ")}` : ""} |`);
+  lines.push(`| design_write_conflicts | ${m.design_write_conflicts ?? 0} |`);
   lines.push("");
   const weak = weakSections(full);
   lines.push("### Weak sections (by misses)");

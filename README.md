@@ -66,6 +66,11 @@ npm run ladder:mock             # L0 solo mock → escalate → swarm mock
 npm run ladder:toml:detached -- --run-id=run-ladder-toml-v13.6
 npm run swarm:toml:detached -- --run-id=run-swarm-toml-v13.6 --concurrency=8
 # --width-mode=fixed restores v13.5 constant concurrency; demand is default
+
+# v13.7 S-A-008 alignment (wildcard empty-scope, DESIGN.md 3-way merge, split-brain prompts)
+npm run test:design-merge
+npm run swarm:mock -- --run-id=run-swarm-v13.7-mock
+npm run swarm:toml:detached -- --run-id=run-swarm-toml-v13.7 --concurrency=8
 # Finalize interrupted solo/swarm: npm run swarm:finalize -- --run-id=RUN_ID
 
 # Resume an interrupted legacy run (task-level; requires progress.json)

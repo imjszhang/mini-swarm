@@ -18,6 +18,7 @@
 - **sqlite-micro pack-tuning v2**: after v1 97.6% plateau — `npm run swarm:sqlite:detached -- --run-id=run-swarm-sqlite-v2 --concurrency=8 --max-tokens=80000000`
 - **Solo single-agent baseline**: `npm run solo:mock` / `npm run solo:detached -- --run-id=run-solo-v1` / `npm run solo:resume -- --run-id=ID` — one agent, one workspace, same task packs + hidden grader + holdout/metrics as swarm; no planner tree / worktrees / merge (`architecture=solo-v1`)
 - **v13.6 demand-driven width + ladder**: `widthMode=demand` (default) — concurrency = min(cap, frontierDemand, merge backpressure); no planner fanout minimum; `--width-mode=fixed` for v13.5 constants. Ladder: `npm run ladder` / `ladder:toml:detached` (L0 solo → escalate with `--seed-workspace` when visible &lt; 0.9)
+- **v13.7 S-A-008 alignment**: empty `files_scope` is a wildcard (exclusive); audit leaves must declare scope; DESIGN.md three-way merge on planner writeback; split-brain / cross-scope prompt rules; seed audit credit; waived_sections in REPORT
 - **v8/v9/v10/v11/v12 high-contention A/B**: `npm run run:contention:bare` / `npm run run:contention:faithful` (`--task-set=contention`, concurrency 4, seed planner; v9 score-feedback; v10 sync+gate+global repair; v11 holdout+ledger+adaptive repair; v12 Stage B + strong ladder)
 - **Resume interrupted run**: `npm run salvage -- --run-id=RUN_ID --task-set=contention` then original command + `--resume` (task-level; agent/wall times in metrics cover last segment only — see README)
 - **Repair-only continuation**: `npm run run -- --repair-only --from-run=PRIOR --run-id=NEW --task-set=contention [--coord-mode=faithful]`
@@ -394,8 +395,9 @@ v13.6 adds a fifth harness-side lever (still no scores in agent prompts):
 1. **Demand-driven width** (`widthMode=demand`, default) — each tick
    `width = min(maxConcurrency, frontierDemand, backpressureCap)`.
    `frontierDemand` is a greedy count of running∪ready leaves with pairwise
-   disjoint `files_scope` (empty scope counts as independent). Dispatch also
-   refuses scope-overlapping candidates. `swarm.concurrency` is now a **cap**,
+   disjoint `files_scope` (v13.6 treated empty scope as independent; **v13.7
+   reverses this to wildcard/exclusive**). Dispatch also refuses
+   scope-overlapping candidates. `swarm.concurrency` is now a **cap**,
    not a target. `--width-mode=fixed` restores the v13.5 two-stage constant
    (`endgameConcurrency` after full coverage).
 2. **Merge backpressure** — recent `merge_waits` (label=`merge`) average above
@@ -407,9 +409,10 @@ v13.6 adds a fifth harness-side lever (still no scores in agent prompts):
 4. **Solo→swarm ladder** (`npm run ladder`) — L0 solo for `l0MaxMinutes`; if
    visible &lt; `l0TargetObserve` (and not `observe_perfect`), escalate to swarm
    with `--seed-workspace` from the solo workspace. Harness seeds synthetic
-   done leaves for sections whose embedded examples already pass (mock skips
-   seeding). There is no separate L1 — demand width naturally collapses to
-   planner + serial workers on a narrow tree.
+   done leaves for sections whose embedded examples already pass (v13.7 mock
+   credits first two sections + `audit_state.clean=1`). There is no separate
+   L1 — demand width naturally collapses to planner + serial workers on a
+   narrow tree.
 
 ### Acceptance (TOML live; CommonMark manual/pending)
 
@@ -458,6 +461,64 @@ npm run ladder:toml:detached -- --run-id=run-ladder-toml-v13.6
 # CommonMark (manual; not part of automated acceptance)
 npm run swarm:detached -- --run-id=run-swarm-v13.6 --concurrency=8
 npm run ladder -- --task=commonmark --run-id=run-ladder-v13.6 --detach
+```
+
+## Protocol & acceptance (2026-08-04) — v13.7 S-A-008 alignment hardening
+
+Motivation: re-read of Cursor S-A-008 against v13.6 found three mechanism gaps
+worth fixing now, plus small cleanups. Not a new lever — an alignment patch.
+
+1. **Empty scope = wildcard** — `frontierDemand` / `scopeDisjoint` treat empty
+   `files_scope` as exclusive (conflicts with everything). Audit `add_task`
+   without scope is rejected (`auditScopeError`). Closes the hole where audit
+   leaves raced scoped workers.
+2. **DESIGN.md three-way merge** — planner invite snapshots DESIGN.md; writeback
+   uses `git merge-file` against main. Conflicts keep main and surface an
+   action error; `design_write_conflicts` is counted. Stops planner full-replace
+   from clobbering worker interface updates.
+3. **Split-brain / cross-scope conduction (prompt)** — planner must not let two
+   leaves decide the same open question (`D-NN` decision entries); workers
+   check DESIGN/contracts before inventing helpers and read
+   `git log --grep="cross-scope:"` on foreign build failures; review-codebase
+   looks for duplicate concept implementations; engineering errors attach
+   recent cross-scope commit lines.
+4. **Seed audit credit + waive visibility** — ladder seed writes
+   `audit_state[section].clean=1`; finalize/REPORT expose `waived_sections`
+   and `design_write_conflicts`.
+
+### Honesty (explicitly not in v13.7)
+
+- Sub-planner hierarchy / recursive deep trees (`maxTreeDepth=2` stay)
+- Compiler-checked decision references (prompt `D-NN` only)
+- `frontierDemand` greedy under-estimate (prefer narrow; known approximation)
+- Planner prompt unbounded ID list growth (scale item for v13.8)
+
+### Acceptance (TOML live)
+
+| Run ID | Status | Full | Visible / holdout | Stop | Wall | Tokens | Conflicts | Notes |
+|---|---|---:|---:|---|---:|---:|---:|---|
+| `run-swarm-toml-v13.7` | **final acceptance** | **92.6%** (515/556) | 93.3% / 89.0% | `planner_done` | **70.5m** | **6.46M** | **5** | design_write_conflicts=0; waived Encoding; width avg 2.73 max 8 |
+| `run-swarm-v13.7` | **pending / manual** | — | — | — | — | — | — | CommonMark; do not auto-run |
+
+Judging vs `run-swarm-toml-v13.6` (93.9% / 3.66M / conflicts 5):
+
+- full **92.6%** ≥ ~92% = quality parity (**PASS**; −1.3pp vs v13.6)
+- conflicts **5** ≤ 5 (**PASS**)
+- `design_write_conflicts`=0 recorded (**PASS**)
+- `width_curve` avg 2.73 / max 8 — no pathological collapse (**PASS**)
+- Cost honesty: wall 49.6→70.5m and tokens 3.66M→6.46M (alignment gates + more audit/rescue churn); waived `Encoding` visible in REPORT
+- Mock: `run-swarm-v13.7-mock` rejected scopeless audit; `run-ladder-v13.7-mock` seeded 2 sections with `audit_state.clean=1`
+
+Commands:
+
+```bash
+npm run test:width && npm run test:design-merge && npm run test:convergence
+npm run swarm:mock -- --run-id=run-swarm-v13.7-mock
+npm run ladder:mock -- --run-id=run-ladder-v13.7-mock
+
+npm run swarm:toml:detached -- --run-id=run-swarm-toml-v13.7 --concurrency=8
+npm run report:task-run -- --run-id=run-swarm-toml-v13.7 --baseline=run-swarm-toml-v13.6
+npm run compare -- runs/run-swarm-toml-v13.6/metrics.json runs/run-swarm-toml-v13.7/metrics.json
 ```
 
 ## Runs (2026-07-29) — v13.3 second sample: TOML → toml-test JSON

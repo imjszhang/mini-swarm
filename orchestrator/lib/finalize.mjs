@@ -65,11 +65,17 @@ export function finalizeRun({
     ? Number(((visible.report.rate - holdout.report.rate) * 100).toFixed(1))
     : null;
 
+  const waivedSections = Array.isArray(tree.waived_sections)
+    ? [...tree.waived_sections]
+    : [];
+
   metrics.data.tree_stats = treeStats(tree);
   metrics.data.reviews = metrics.data.reviews || [];
   metrics.data.splits = metrics.data.splits || [];
   metrics.data.oversized_blocks = metrics.data.oversized_blocks || [];
   metrics.data.swarm_planner_rounds = tree.planner_rounds;
+  metrics.data.waived_sections = waivedSections;
+  metrics.data.waived_section_count = waivedSections.length;
   if (salvaged) metrics.data.salvaged = true;
   saveTree(runDir, tree);
 
@@ -85,6 +91,8 @@ export function finalizeRun({
     churn: computeChurn(workspaceDir),
     tree_stats: treeStats(tree),
     swarm_planner_rounds: tree.planner_rounds,
+    waived_sections: waivedSections,
+    waived_section_count: waivedSections.length,
     salvaged: !!salvaged,
   });
 
