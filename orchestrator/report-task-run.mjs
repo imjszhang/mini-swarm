@@ -213,6 +213,7 @@ function main() {
   lines.push(`| merge_conflict_count | ${m.merge_conflict_count ?? (m.merge_conflicts || []).length} |`);
   lines.push(`| zero-pass observe windows | ${zeroObserveCount(m)} |`);
   lines.push(`| planner_parse_failures | ${m.planner_parse_failures || 0} |`);
+  lines.push(`| planner_spawn_failures | ${m.planner_spawn_failures || 0} |`);
   lines.push(`| planner_rounds | ${m.swarm_planner_rounds ?? tree?.planner_rounds ?? "n/a"} |`);
   lines.push(`| self_check_total | ${m.self_check_total || 0} |`);
   lines.push(`| reviews | ${(m.reviews || []).length} |`);

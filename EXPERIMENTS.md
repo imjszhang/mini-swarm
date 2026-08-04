@@ -19,6 +19,7 @@
 - **Solo single-agent baseline**: `npm run solo:mock` / `npm run solo:detached -- --run-id=run-solo-v1` / `npm run solo:resume -- --run-id=ID` — one agent, one workspace, same task packs + hidden grader + holdout/metrics as swarm; no planner tree / worktrees / merge (`architecture=solo-v1`)
 - **v13.6 demand-driven width + ladder**: `widthMode=demand` (default) — concurrency = min(cap, frontierDemand, merge backpressure); no planner fanout minimum; `--width-mode=fixed` for v13.5 constants. Ladder: `npm run ladder` / `ladder:toml:detached` (L0 solo → escalate with `--seed-workspace` when visible &lt; 0.9)
 - **v13.7 S-A-008 alignment**: empty `files_scope` is a wildcard (exclusive); audit leaves must declare scope; DESIGN.md three-way merge on planner writeback; split-brain / cross-scope prompt rules; seed audit credit; waived_sections in REPORT
+- **v13.7.1 defect patch**: planner spawn-fail retry (no empty→json-repair); `planner_spawn_failures` metric; waive evidence gate; audit `files_scope` prompt = start set not boundary. Mechanism-only validation (no new live run).
 - **v8/v9/v10/v11/v12 high-contention A/B**: `npm run run:contention:bare` / `npm run run:contention:faithful` (`--task-set=contention`, concurrency 4, seed planner; v9 score-feedback; v10 sync+gate+global repair; v11 holdout+ledger+adaptive repair; v12 Stage B + strong ladder)
 - **Resume interrupted run**: `npm run salvage -- --run-id=RUN_ID --task-set=contention` then original command + `--resume` (task-level; agent/wall times in metrics cover last segment only — see README)
 - **Repair-only continuation**: `npm run run -- --repair-only --from-run=PRIOR --run-id=NEW --task-set=contention [--coord-mode=faithful]`
@@ -519,6 +520,45 @@ npm run ladder:mock -- --run-id=run-ladder-v13.7-mock
 npm run swarm:toml:detached -- --run-id=run-swarm-toml-v13.7 --concurrency=8
 npm run report:task-run -- --run-id=run-swarm-toml-v13.7 --baseline=run-swarm-toml-v13.6
 npm run compare -- runs/run-swarm-toml-v13.6/metrics.json runs/run-swarm-toml-v13.7/metrics.json
+```
+
+## Protocol & acceptance (2026-08-04) — v13.7.1 defect patch (same PR)
+
+Post-mortem of `run-swarm-toml-v13.7` confirmed four real defects; this patch
+fixes them without claiming a new live score.
+
+1. **Planner spawn → json-repair fabrication** — empty/`ok=false` planner
+   output was routed to json-repair, which (with workspace cwd + tools)
+   fabricated real actions. Now: detect spawn failure, count
+   `planner_spawn_failures`, retry same prompt once, then `return null`
+   (plan==null path). json-repair only sees non-empty malformed text; cwd
+   is `runDir`.
+2. **Spawn failures invisible** — `planner_parse_failures` stayed 0 when
+   repair "succeeded". REPORT / compare now show `planner_spawn_failures`.
+3. **Waive without evidence** — `waive_section` applied even when the
+   section's visible suite still failed. The first patch used embedded spec
+   examples, but the v13.7 Encoding workspace proved that insufficient
+   (embedded 2/2 while visible 6/10). The final gate runs a section-scoped,
+   holdout-excluding `scoreScope`, fails closed on missing/scorer evidence,
+   and reports only aggregate failure counts to the planner. Mock mode opts
+   out explicitly with `skipped=true`.
+4. **Audit scope attention boundary** — planner prompts now say
+   `files_scope` is a start set, not a boundary; cross-file section
+   semantics required. "No dedicated file" is not a waive reason.
+
+### Honesty
+
+- v13.7 live −1.3pp vs v13.6 is within run variance + infra keychain faults
+  (5/19 planner rounds empty); not treated as an alignment regression.
+- **No new live TOML acceptance run** in this patch — validation is unit +
+  mock only (`swarm:mock`, `ladder:mock`).
+
+Commands:
+
+```bash
+npm run test:convergence
+npm run swarm:mock -- --run-id=run-swarm-v13.7.1-mock
+npm run ladder:mock -- --run-id=run-ladder-v13.7.1-mock
 ```
 
 ## Runs (2026-07-29) — v13.3 second sample: TOML → toml-test JSON

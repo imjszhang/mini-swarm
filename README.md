@@ -71,6 +71,8 @@ npm run swarm:toml:detached -- --run-id=run-swarm-toml-v13.6 --concurrency=8
 npm run test:design-merge
 npm run swarm:mock -- --run-id=run-swarm-v13.7-mock
 npm run swarm:toml:detached -- --run-id=run-swarm-toml-v13.7 --concurrency=8
+# v13.7.1 defect patch (spawn-fail retry, waive gate, audit-scope prompt) — mock/unit only
+npm run swarm:mock -- --run-id=run-swarm-v13.7.1-mock
 # Finalize interrupted solo/swarm: npm run swarm:finalize -- --run-id=RUN_ID
 
 # Resume an interrupted legacy run (task-level; requires progress.json)

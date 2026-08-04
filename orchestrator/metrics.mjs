@@ -208,6 +208,7 @@ function emptyMetricsData() {
     oracle_literal_hits: [],
     swarm_planner_rounds: 0,
     planner_parse_failures: 0,
+    planner_spawn_failures: 0,
     quality_merge_count: 0,
     last_observe: null,
     observe_history: [],
@@ -477,6 +478,7 @@ export function normalizeMetrics(raw) {
   m.oracle_literal_hits = m.oracle_literal_hits || [];
   m.swarm_planner_rounds = m.swarm_planner_rounds ?? 0;
   m.planner_parse_failures = m.planner_parse_failures ?? 0;
+  m.planner_spawn_failures = m.planner_spawn_failures ?? 0;
   m.quality_merge_count = m.quality_merge_count ?? 0;
   m.last_observe = m.last_observe ?? null;
   m.observe_history = m.observe_history || [];

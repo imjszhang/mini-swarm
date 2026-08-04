@@ -133,6 +133,56 @@ export function auditScopeError(action) {
 }
 
 /**
+ * Convert a visible scoreScope result into fail-closed waiver evidence.
+ */
+export function visibleWaiveCheck(section, scored) {
+  if (!scored?.report || scored.report.parse_error) {
+    return { ok: false, checked: 0, error: "visible scorer failed" };
+  }
+  const stat = scored.report?.by_section?.[section]
+    || scored.report?.by_group?.[section];
+  const total = Number(stat?.total) || 0;
+  const passed = Number(stat?.passed) || 0;
+  if (total <= 0) {
+    return { ok: false, checked: 0, error: "section absent from visible score" };
+  }
+  return {
+    ok: passed === total,
+    checked: total,
+    failed: Math.max(0, total - passed),
+  };
+}
+
+/**
+ * Reject waive_section unless current visible-suite evidence proves the section
+ * is clean (v13.7.1). Mock checks may opt out explicitly with skipped=true.
+ * @param {object} action
+ * @param {{ ok?: boolean, checked?: number, failed?: number, failures?: unknown[], skipped?: boolean, error?: string } | null | undefined} checkResult
+ * @returns {string|null}
+ */
+export function waiveGateError(action, checkResult) {
+  if (!action || action.type !== "waive_section") return null;
+  const section = typeof action.section === "string" ? action.section : "";
+  const label = section || "(unknown)";
+  if (checkResult?.skipped) return null;
+  if (!checkResult || typeof checkResult !== "object") {
+    return `waive_section rejected: ${label} has no current visible-suite evidence`;
+  }
+  const checked = Number(checkResult.checked) || 0;
+  if (checked <= 0) {
+    const detail = checkResult.error ? ` (${checkResult.error})` : "";
+    return `waive_section rejected: ${label} has no scorable visible examples${detail}`;
+  }
+  if (checkResult.ok) return null;
+  const failN = Number.isFinite(checkResult.failed)
+    ? Math.max(0, Number(checkResult.failed))
+    : Array.isArray(checkResult.failures)
+    ? checkResult.failures.length
+    : checked;
+  return `waive_section rejected: ${label} still has ${failN}/${checked} failing visible example(s); fix or cover before waiving`;
+}
+
+/**
  * Whether an add_task action is an audit leaf that targets a reject section.
  * @returns {{ reject: boolean, section?: string, reason?: string }}
  */

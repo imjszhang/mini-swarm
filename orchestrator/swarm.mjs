@@ -1,13 +1,14 @@
 #!/usr/bin/env node
 /**
- * v13.7 Cursor-faithful swarm entry (S-A-008 alignment).
+ * v13.7.1 Cursor-faithful swarm entry (S-A-008 alignment + defect patch).
  * Event-driven planner/worker pipeline + run-to-done + hidden grader
  * + engineering feedback (build/canary/spec-embedded) to planner
  * + detach / heartbeat / checkpoint / resume
  * + serial Field Guide notes / CLI canary / planner ID remap
  * + observe_perfect / audit_converged / observe_plateau stop
  * + demand-driven width (frontier + merge backpressure) + seed-workspace
- * + wildcard empty-scope / DESIGN.md three-way merge / audit scope gate.
+ * + wildcard empty-scope / DESIGN.md three-way merge / audit scope gate
+ * + planner spawn-fail retry / waive evidence gate (v13.7.1).
  * Legacy test-driven pipeline remains in run.mjs / repair-engine.mjs.
  */
 import { spawn } from "node:child_process";
@@ -46,8 +47,11 @@ import {
   shouldRejectAuditAction,
   updateAuditState,
   auditConvergence,
+  visibleWaiveCheck,
+  waiveGateError,
 } from "./lib/audit-convergence.mjs";
 import { mergeDesign } from "./lib/design-merge.mjs";
+import { isSpawnFailure } from "./lib/planner-spawn.mjs";
 import {
   runCrossSectionSelfCheck,
   runEmbeddedSelfCheck,
@@ -850,24 +854,47 @@ async function invitePlanner({
     maxConcurrency,
     maxTreeDepth: swarm.maxTreeDepth,
   });
-  const result = await spawnAgent({
+  const timeoutMs = (config.taskTimeoutMinutes || 20) * 60 * 1000;
+  const spawnPlanner = (logKey) => spawnAgent({
     role: "swarm-planner",
     prompt,
     cwd: workspaceDir,
     config,
     runDir,
-    logKey: `swarm-planner-${logRound}`,
-    timeoutMs: (config.taskTimeoutMinutes || 20) * 60 * 1000,
+    logKey,
+    timeoutMs,
   });
+
+  let result = await spawnPlanner(`swarm-planner-${logRound}`);
   metrics.recordAgentCall({
     role: "swarm-planner",
     ok: result.ok,
     ...agentUsage(result),
   });
+
+  // v13.7.1: empty/failed spawn is NOT a parse failure — retry once, never json-repair.
+  if (isSpawnFailure(result)) {
+    metrics.data.planner_spawn_failures = (metrics.data.planner_spawn_failures || 0) + 1;
+    console.warn("[swarm] planner spawn failed (empty or ok=false); retrying once");
+    result = await spawnPlanner(`swarm-planner-${logRound}-retry`);
+    metrics.recordAgentCall({
+      role: "swarm-planner",
+      ok: result.ok,
+      ...agentUsage(result),
+    });
+    if (isSpawnFailure(result)) {
+      metrics.data.planner_spawn_failures = (metrics.data.planner_spawn_failures || 0) + 1;
+      console.warn("[swarm] planner spawn failed after retry; skipping json-repair");
+      dumpPlannerParseFail(runDir, logRound, result.output || "", "-spawn");
+      return null;
+    }
+  }
+
   let parsed = extractJsonObject(result.output || "");
   if (parsed) return parsed;
 
   // One cheap JSON-repair retry (role falls back to worker model).
+  // Only reached with non-empty malformed output. cwd=runDir to limit fabrication surface.
   console.warn("[swarm] planner JSON parse failed; attempting json-repair");
   dumpPlannerParseFail(runDir, logRound, result.output || "");
   const repairPrompt = [
@@ -883,11 +910,11 @@ async function invitePlanner({
   const repair = await spawnAgent({
     role: "json-repair",
     prompt: repairPrompt,
-    cwd: workspaceDir,
+    cwd: runDir,
     config,
     runDir,
     logKey: `swarm-planner-${logRound}-json-repair`,
-    timeoutMs: Math.min((config.taskTimeoutMinutes || 20) * 60 * 1000, 5 * 60 * 1000),
+    timeoutMs: Math.min(timeoutMs, 5 * 60 * 1000),
   });
   metrics.recordAgentCall({
     role: "json-repair",
@@ -1454,7 +1481,7 @@ async function main() {
     task_set: "swarm-tree",
     task_pack: taskPack.id,
     swarm: true,
-    architecture: "v13.7-swarm",
+    architecture: "v13.7.1-swarm",
     width_mode: swarm.widthMode,
     run_to_done: !!swarm.runToDone,
     resumed: !!cli.resume,
@@ -2157,6 +2184,32 @@ async function main() {
             actionErrors.push(scopeErr);
             console.warn(`[swarm] ${scopeErr}`);
             continue;
+          }
+          if (a?.type === "waive_section") {
+            const section = typeof a.section === "string" ? a.section.trim() : "";
+            const slug = section.replace(/[^a-z0-9._-]+/gi, "-").replace(/^-+|-+$/g, "")
+              || "unknown";
+            const checkResult = cli.mock
+              ? { ok: true, checked: 0, skipped: true }
+              : visibleWaiveCheck(
+                  section,
+                  scoreScope(
+                    workspaceDir,
+                    path.join(runDir, `score-waive-${tree.planner_rounds}-${slug}.json`),
+                    {
+                      groups: [section].filter(Boolean),
+                      holdoutFile: holdoutFilePath(runDir),
+                      holdoutMode: "exclude",
+                      maxFailures: 20,
+                    },
+                  ),
+                );
+            const waiveErr = waiveGateError(a, checkResult);
+            if (waiveErr) {
+              actionErrors.push(waiveErr);
+              console.warn(`[swarm] ${waiveErr}`);
+              continue;
+            }
           }
           const rej = shouldRejectAuditAction(a, rejectSections, {
             enforce: enforceAuditReject,

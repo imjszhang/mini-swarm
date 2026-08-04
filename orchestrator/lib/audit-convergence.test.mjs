@@ -9,6 +9,8 @@ import {
   isCodePath,
   shouldRejectAuditAction,
   updateAuditState,
+  visibleWaiveCheck,
+  waiveGateError,
 } from "./audit-convergence.mjs";
 
 function run(name, fn) {
@@ -96,6 +98,79 @@ run("auditScopeError requires files_scope on audit leaves", () => {
     null,
   );
   assert.equal(auditScopeError({ type: "done" }), null);
+});
+
+run("waiveGateError rejects failing sections", () => {
+  assert.equal(waiveGateError({ type: "add_task" }, { ok: false, checked: 3 }), null);
+  assert.match(
+    waiveGateError({ type: "waive_section", section: "Encoding" }, null),
+    /no current visible-suite evidence/,
+  );
+  assert.equal(
+    waiveGateError(
+      { type: "waive_section", section: "Encoding" },
+      { ok: true, checked: 0, skipped: true },
+    ),
+    null,
+  );
+  assert.match(
+    waiveGateError(
+      { type: "waive_section", section: "Encoding" },
+      { ok: false, checked: 0, error: "scorer failed" },
+    ),
+    /no scorable visible examples \(scorer failed\)/,
+  );
+  assert.equal(
+    waiveGateError(
+      { type: "waive_section", section: "Encoding" },
+      { ok: true, checked: 4 },
+    ),
+    null,
+  );
+  const err = waiveGateError(
+    { type: "waive_section", section: "Encoding" },
+    { ok: false, checked: 4, failures: [{}, {}, {}, {}] },
+  );
+  assert.match(err, /waive_section rejected: Encoding still has 4\/4/);
+  assert.match(err, /visible example/);
+  const err2 = waiveGateError(
+    { type: "waive_section", section: "Control" },
+    { ok: false, checked: 3 },
+  );
+  assert.match(err2, /Control still has 3\/3/);
+});
+
+run("visibleWaiveCheck uses current visible section totals", () => {
+  const scored = {
+    // scoreScope exits non-zero when examples fail, while still returning a
+    // valid report; the section totals are the authoritative evidence.
+    ok: false,
+    report: {
+      by_section: {
+        Encoding: { passed: 6, total: 10 },
+        Control: { passed: 31, total: 31 },
+      },
+    },
+  };
+  assert.deepEqual(visibleWaiveCheck("Encoding", scored), {
+    ok: false,
+    checked: 10,
+    failed: 4,
+  });
+  assert.deepEqual(visibleWaiveCheck("Control", scored), {
+    ok: true,
+    checked: 31,
+    failed: 0,
+  });
+  assert.match(
+    waiveGateError(
+      { type: "waive_section", section: "Encoding" },
+      visibleWaiveCheck("Encoding", scored),
+    ),
+    /4\/10 failing visible example/,
+  );
+  assert.equal(visibleWaiveCheck("Missing", scored).checked, 0);
+  assert.equal(visibleWaiveCheck("Encoding", { ok: false }).checked, 0);
 });
 
 run("shouldRejectAuditAction", () => {

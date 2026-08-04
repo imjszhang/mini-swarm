@@ -171,6 +171,7 @@ row("loc", a.loc, b.loc);
 row("swarm_planner_rounds", a.swarm_planner_rounds ?? 0, b.swarm_planner_rounds ?? 0);
 row("review stacks", (a.reviews || []).length, (b.reviews || []).length);
 row("planner parse failures", a.planner_parse_failures ?? 0, b.planner_parse_failures ?? 0);
+row("planner spawn failures", a.planner_spawn_failures ?? 0, b.planner_spawn_failures ?? 0);
 row(
   "active segments",
   (a.segments || []).length || "-",
