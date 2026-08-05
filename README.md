@@ -223,6 +223,8 @@ are **not** claimed as Cursor fidelity.
 
 **v13.6 demand-driven width**: default `swarm.widthMode=demand` sets per-tick concurrency to `min(swarm.concurrency, frontierDemand, backpressureCap)` from disjoint ready/running `files_scope` + recent merge-queue waits. `swarm.concurrency` is a **cap**, not a forced target. Planner prompts no longer require a minimum ready-leaf fanout. `--width-mode=fixed` restores the v13.5 constant / `endgameConcurrency` behavior. Solo→swarm ladder: `npm run ladder` / `ladder:toml:detached` (L0 solo, escalate with `--seed-workspace` when visible &lt; `ladder.l0TargetObserve`).
 
+**v13.8 review + fix context**: `review-diff` windows from `lastReviewSha` (run start / previous review tip) → `HEAD`, not `HEAD~1` (which often was a serial `guide:` note commit). `integration-fix` prompts now include DESIGN.md, recent diff, and recent `cross-scope:` log. Forward plan: [`ROADMAP.md`](ROADMAP.md).
+
 **v13.2 anti-interrupt note**: long runs must use `swarm:detached` so the process is not reaped with the IDE terminal. `heartbeat.json` + `metrics.json` checkpoints enable `--resume`; `swarm:finalize` scores a dead run without continuing. Segmented wall time excludes death gaps.
 
 **v13.3 survivability note**: serial Field Guide notes + `guide/index.md merge=union` kill the late-run conflict storm; post-merge CLI canary + observe all-fail redline close 0% windows without leaking suite scores; duplicate planner IDs remap/idempotent instead of wasting rounds.

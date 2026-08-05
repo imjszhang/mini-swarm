@@ -125,9 +125,52 @@ export function attachEngineeringError(report, eng) {
   };
 }
 
+/**
+ * Shared DESIGN / diff / cross-scope context for integration-fix prompts.
+ * Without this, the fixer is asked to update interfaces while seeing only stderr.
+ */
+export function formatHealthRepairContext({
+  designMd = "",
+  diff = "",
+  crossScopeLog = "",
+} = {}) {
+  const parts = [
+    "",
+    "## DESIGN.md (current)",
+    "```",
+    truncateStderr(designMd, 4000) || "_None._",
+    "```",
+    "",
+    "## Recent diff",
+    "```",
+    truncateStderr(diff, 6000) || "_No diff available._",
+    "```",
+  ];
+  const cross = String(crossScopeLog || "").trim();
+  if (cross) {
+    parts.push(
+      "",
+      "## Recent cross-scope commits (git log --grep=\"cross-scope:\")",
+      "```",
+      truncateStderr(cross, 2000),
+      "```",
+      "If the failure is outside the files you expected, read these commits for the reason before patching.",
+    );
+  }
+  return parts.join("\n");
+}
+
 /** Prompt for integration-fix role (pre- or post-merge). */
-export function buildHealthRepairPrompt({ kind, stderr, phase = "post-merge" }) {
+export function buildHealthRepairPrompt({
+  kind,
+  stderr,
+  phase = "post-merge",
+  designMd = "",
+  diff = "",
+  crossScopeLog = "",
+} = {}) {
   const text = truncateStderr(stderr, 4000);
+  const context = formatHealthRepairContext({ designMd, diff, crossScopeLog });
   if (kind === "canary") {
     return [
       `After ${phase}, \`node dist/cli.js\` fails the pack canary (startup / trivial stdin).`,
@@ -138,6 +181,7 @@ export function buildHealthRepairPrompt({ kind, stderr, phase = "post-merge" }) 
       "```",
       text,
       "```",
+      context,
       "",
       "Say INTEGRATION_FIXED when done.",
     ].join("\n");
@@ -152,6 +196,7 @@ export function buildHealthRepairPrompt({ kind, stderr, phase = "post-merge" }) 
       "```",
       text,
       "```",
+      context,
       "",
       "Say INTEGRATION_FIXED when done.",
     ].join("\n");
@@ -165,6 +210,7 @@ export function buildHealthRepairPrompt({ kind, stderr, phase = "post-merge" }) 
     "```",
     text,
     "```",
+    context,
     "",
     "Say INTEGRATION_FIXED when done.",
   ].join("\n");
