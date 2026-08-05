@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * v13.7.1 Cursor-faithful swarm entry (S-A-008 alignment + defect patch).
+ * v13.8 Cursor-faithful swarm entry (S-A-008 alignment).
  * Event-driven planner/worker pipeline + run-to-done + hidden grader
  * + engineering feedback (build/canary/spec-embedded) to planner
  * + detach / heartbeat / checkpoint / resume
@@ -8,7 +8,8 @@
  * + observe_perfect / audit_converged / observe_plateau stop
  * + demand-driven width (frontier + merge backpressure) + seed-workspace
  * + wildcard empty-scope / DESIGN.md three-way merge / audit scope gate
- * + planner spawn-fail retry / waive evidence gate (v13.7.1).
+ * + planner spawn-fail retry / waive evidence gate (v13.7.1)
+ * + review-diff since lastReviewSha; integration-fix DESIGN/diff/cross-scope (v13.8).
  * Legacy test-driven pipeline remains in run.mjs / repair-engine.mjs.
  */
 import { spawn } from "node:child_process";
@@ -23,6 +24,7 @@ import {
   commitAll,
   createWorktree,
   filesChangedInWorktree,
+  getDiff,
   headSha,
   readDesign,
   recentCrossScopeLog,
@@ -185,7 +187,14 @@ async function runIntegrationFixAgent({
   phase,
   logKey,
 }) {
-  const prompt = buildHealthRepairPrompt({ kind, stderr, phase });
+  const prompt = buildHealthRepairPrompt({
+    kind,
+    stderr,
+    phase,
+    designMd: readDesign(workspaceDir),
+    diff: getDiff(workspaceDir),
+    crossScopeLog: recentCrossScopeLog(workspaceDir),
+  });
   const result = await spawnAgent({
     role: "integration-fix",
     prompt,
@@ -1481,7 +1490,7 @@ async function main() {
     task_set: "swarm-tree",
     task_pack: taskPack.id,
     swarm: true,
-    architecture: "v13.7.1-swarm",
+    architecture: "v13.8-swarm",
     width_mode: swarm.widthMode,
     run_to_done: !!swarm.runToDone,
     resumed: !!cli.resume,
@@ -1514,6 +1523,11 @@ async function main() {
   let pendingFindings = [];
   let actionErrors = [];
   let mergesSinceReview = 0;
+  /** Left side of next review-diff; advances after each review stack. */
+  let lastReviewSha = metrics.data.last_review_sha || null;
+  if (!lastReviewSha && !cli.resume) {
+    lastReviewSha = headSha(workspaceDir) || null;
+  }
   let sinceObserve = 0;
   let parseFailStreak = Number(metrics.data.parse_fail_streak) || 0;
   let unproductiveStreak = Number(metrics.data.unproductive_streak) || 0;
@@ -1988,10 +2002,18 @@ async function main() {
             if (cli.mock) {
               const findings = [{ severity: "low", perspective: "mock", summary: "mock review finding" }];
               pendingFindings.push(...findings);
+              const sinceSha = lastReviewSha;
+              const tip = headSha(workspaceDir);
+              if (tip) {
+                lastReviewSha = tip;
+                metrics.data.last_review_sha = tip;
+              }
               metrics.data.reviews = metrics.data.reviews || [];
               metrics.data.reviews.push({
                 at: new Date().toISOString(),
                 after_merges: afterMerges,
+                since_sha: sinceSha || null,
+                tip_sha: tip || null,
                 findings,
               });
               return { kind: "review" };
@@ -2000,18 +2022,27 @@ async function main() {
             const snapId = `review-${afterMerges}`;
             const wt = createWorktree(workspaceDir, worktreesRoot, snapId);
             try {
+              const sinceSha = lastReviewSha;
               const stack = await runReviewStack({
                 workspaceDir: wt.path,
                 config,
                 runDir,
                 metrics,
                 perspectives: swarm.reviewPerspectives,
+                sinceSha,
               });
               pendingFindings.push(...stack.findings);
+              const tip = headSha(wt.path) || headSha(workspaceDir);
+              if (tip) {
+                lastReviewSha = tip;
+                metrics.data.last_review_sha = tip;
+              }
               metrics.data.reviews = metrics.data.reviews || [];
               metrics.data.reviews.push({
                 at: new Date().toISOString(),
                 after_merges: afterMerges,
+                since_sha: sinceSha || null,
+                tip_sha: tip || null,
                 findings: stack.findings,
               });
             } finally {

@@ -522,6 +522,45 @@ npm run report:task-run -- --run-id=run-swarm-toml-v13.7 --baseline=run-swarm-to
 npm run compare -- runs/run-swarm-toml-v13.6/metrics.json runs/run-swarm-toml-v13.7/metrics.json
 ```
 
+## Protocol & acceptance (2026-08-06) — v13.8 review window + fix context
+
+Post-mortem of `run-swarm-toml-v13.7` (artifacts only on that run's workspace/logs)
+confirmed two mechanisms were idle / harmful:
+
+1. **R-01 review-diff window** — after each successful leaf merge the harness
+   commits `guide: note from <task>` on main *before* the review counter
+   fires. `getDiff` defaulted to `HEAD~1..HEAD`, so all 7 review-diff
+   prompts in that run saw only `guide/index.md`. Findings still flowed to
+   the planner (including high-severity speculation about unseen `src/`
+   files). Fix: capture `lastReviewSha` at run start / after each review;
+   `runReviewStack({ sinceSha })` diffs that SHA→HEAD; prompt forbids
+   inventing findings from bookkeeping-only diffs. Metrics record
+   `since_sha` / `tip_sha` per review.
+2. **R-03 integration-fix context** — swarm used
+   `buildHealthRepairPrompt({ kind, stderr, phase })` with no DESIGN.md,
+   no diff, no cross-scope log (legacy `buildIntegrationFixPrompt` was
+   unused). Fix: inject DESIGN + recent diff + `recentCrossScopeLog` into
+   every pre-/post-merge integration-fix prompt.
+
+Architecture string: `v13.8-swarm`. See [`ROADMAP.md`](ROADMAP.md) R-01 / R-03.
+
+### Honesty
+
+- **No new live TOML acceptance run** in this patch — validation is unit +
+  mock only. Live score vs `run-swarm-toml-v13.7` is pending.
+- Resuming a pre-v13.8 run without `last_review_sha` in metrics: first
+  review-diff falls back to `HEAD~1` until a v13.8 review records `tip_sha`.
+- R-02a (guide budget) and R-04 (plan deps deadlock) were **not** triggered
+  in v13.7 live and are not in this PR.
+
+Commands:
+
+```bash
+npm run test:review-stack && npm run test:eng-feedback && npm run test:convergence
+npm run swarm:mock -- --run-id=run-swarm-v13.8-mock
+npm run ladder:mock -- --run-id=run-ladder-v13.8-mock
+```
+
 ## Protocol & acceptance (2026-08-04) — v13.7.1 defect patch (same PR)
 
 Post-mortem of `run-swarm-toml-v13.7` confirmed four real defects; this patch

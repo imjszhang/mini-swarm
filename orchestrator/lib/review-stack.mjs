@@ -14,6 +14,19 @@ import {
 import { formatSpecToc } from "./spec-toc.mjs";
 import { agentUsage, spawnAgent } from "../runner.mjs";
 
+/**
+ * Resolve the git ref used as the left side of review-diff.
+ * Prefer the SHA captured at the previous review (or run start) so the
+ * window spans all merges since then — not just HEAD~1 (often a guide note).
+ * @param {string|null|undefined} sinceSha
+ * @returns {string}
+ */
+export function resolveReviewDiffRef(sinceSha) {
+  const s = String(sinceSha || "").trim();
+  if (/^[0-9a-f]{7,40}$/i.test(s)) return s;
+  return "HEAD~1";
+}
+
 function walkListing(dir, rel = "src", out = [], depth = 0) {
   const abs = path.join(dir, rel);
   if (!existsSync(abs)) return out;
@@ -71,6 +84,7 @@ async function runOne({ role, prompt, cwd, config, runDir, metrics, logKey }) {
 
 /**
  * Run up to N perspectives (diff / codebase / spec). Mixed model tiers via role map.
+ * @param {string|null} [sinceSha] Left side of review-diff (previous review tip SHA).
  */
 export async function runReviewStack({
   workspaceDir,
@@ -78,12 +92,14 @@ export async function runReviewStack({
   runDir,
   metrics,
   perspectives = 3,
+  sinceSha = null,
 }) {
   const jobs = [];
   if (perspectives >= 1) {
+    const diffRef = resolveReviewDiffRef(sinceSha);
     jobs.push(runOne({
       role: "review-diff",
-      prompt: buildReviewDiffPrompt({ diff: getDiff(workspaceDir) }),
+      prompt: buildReviewDiffPrompt({ diff: getDiff(workspaceDir, diffRef) }),
       cwd: workspaceDir,
       config,
       runDir,
