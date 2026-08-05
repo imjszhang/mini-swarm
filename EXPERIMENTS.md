@@ -548,6 +548,8 @@ Architecture string: `v13.8-swarm`. See [`ROADMAP.md`](ROADMAP.md) R-01 / R-03.
 
 - **No new live TOML acceptance run** in this patch — validation is unit +
   mock only. Live score vs `run-swarm-toml-v13.7` is pending.
+- Resuming a pre-v13.8 run without `last_review_sha` in metrics: first
+  review-diff falls back to `HEAD~1` until a v13.8 review records `tip_sha`.
 - R-02a (guide budget) and R-04 (plan deps deadlock) were **not** triggered
   in v13.7 live and are not in this PR.
 

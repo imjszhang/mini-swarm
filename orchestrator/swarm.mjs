@@ -1524,7 +1524,10 @@ async function main() {
   let actionErrors = [];
   let mergesSinceReview = 0;
   /** Left side of next review-diff; advances after each review stack. */
-  let lastReviewSha = metrics.data.last_review_sha || headSha(workspaceDir) || null;
+  let lastReviewSha = metrics.data.last_review_sha || null;
+  if (!lastReviewSha && !cli.resume) {
+    lastReviewSha = headSha(workspaceDir) || null;
+  }
   let sinceObserve = 0;
   let parseFailStreak = Number(metrics.data.parse_fail_streak) || 0;
   let unproductiveStreak = Number(metrics.data.unproductive_streak) || 0;
@@ -1999,10 +2002,18 @@ async function main() {
             if (cli.mock) {
               const findings = [{ severity: "low", perspective: "mock", summary: "mock review finding" }];
               pendingFindings.push(...findings);
+              const sinceSha = lastReviewSha;
+              const tip = headSha(workspaceDir);
+              if (tip) {
+                lastReviewSha = tip;
+                metrics.data.last_review_sha = tip;
+              }
               metrics.data.reviews = metrics.data.reviews || [];
               metrics.data.reviews.push({
                 at: new Date().toISOString(),
                 after_merges: afterMerges,
+                since_sha: sinceSha || null,
+                tip_sha: tip || null,
                 findings,
               });
               return { kind: "review" };
